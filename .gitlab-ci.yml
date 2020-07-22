@@ -1,3 +1,7 @@
+variables:
+  IBM_BUILD_SUBDIR: provider/file-ibm
+  #IBM_INT_TEST_SUBDIR: testing/file-test-ibm
+
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
@@ -7,14 +11,18 @@ include:
     ref: 'master'
     file: 'build/maven.yml'
 
-  - project: 'osdu/platform/ci-cd-pipelines'
-    ref: 'master'
-    file: 'scanners/gitlab-ultimate.yml'
+  # - project: 'osdu/platform/ci-cd-pipelines'
+  #   ref: 'master'
+  #   file: 'scanners/gitlab-ultimate.yml'
+  #
+  # - project: 'osdu/platform/ci-cd-pipelines'
+  #   ref: 'master'
+  #   file: 'scanners/fossa.yml'
+  #
+  # - project: 'osdu/platform/ci-cd-pipelines'
+  #   ref: 'master'
+  #   file: 'publishing/pages.yml'
 
-  - project: 'osdu/platform/ci-cd-pipelines'
+  - project: "osdu/platform/ci-cd-pipelines"
     ref: 'master'
-    file: 'scanners/fossa.yml'
-
-  - project: 'osdu/platform/ci-cd-pipelines'
-    ref: 'master'
-    file: 'publishing/pages.yml'
+    file: "cloud-providers/ibm.yml"

@@ -40,3 +40,6 @@ buildNumber.properties
 ### macOS ###
 # General
 .DS_Store
+.project
+.settings
+.classpath
