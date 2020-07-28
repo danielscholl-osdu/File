@@ -52,7 +52,7 @@
     <javax.inject.version>1</javax.inject.version>
     <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
     <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
-    <os-core-common.version>0.0.13-gcp</os-core-common.version>
+    <os-core-common.version>0.3.5</os-core-common.version>
     <lombok.version>1.18.0</lombok.version>
   </properties>
 
@@ -270,21 +270,21 @@
   </build>
 
   <repositories>
-    <repository>
-      <id>${gitlab-server}</id>
-      <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
-    </repository>
-  </repositories>
+		<repository>
+			<id>${repo.releases.id}</id>
+			<url>${repo.releases.url}</url>
+		</repository>
+	</repositories>
 
-  <distributionManagement>
-    <repository>
-      <id>${gitlab-server}</id>
-      <url>https://community.opengroup.org/api/v4/projects/90/packages/maven</url>
-    </repository>
-    <snapshotRepository>
-      <id>${gitlab-server}</id>
-      <url>https://community.opengroup.org/api/v4/projects/90/packages/maven</url>
-    </snapshotRepository>
-  </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>${publish.releases.id}</id>
+			<url>${publish.releases.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>${publish.snapshots.id}</id>
+			<url>${publish.snapshots.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
