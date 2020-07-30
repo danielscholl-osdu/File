@@ -1,6 +1,22 @@
 variables:
-  IBM_BUILD_SUBDIR: provider/file-ibm
-  #IBM_INT_TEST_SUBDIR: testing/file-test-ibm
+  OSDU_BUILD_SUBDIR: provider/file-gcp-datastore
+  # OSDU_INT_TEST_SUBDIR: testing/file-test-core
+  OSDU_SERVICE: file
+  OSDU_BUCKET: nice-etching-277309-file 
+  OSDU_NAMESPACE: osdu-namespace
+  OSDU_VPC_CONNECTOR: osdu-connector
+  OSDU_RECORDS_ROOT_URL: https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2
+  OSDU_VENDOR: gcp-datastore
+  OSDU_USER_ID: common-user
+  OSDU_APPLICATION_NAME: os-file
+  OSDU_SERVICE_ACCOUNT: osdu-gcp-sa@osdu-cicd-epam.iam.gserviceaccount.com
+  OSDU_ENV_VARS: OSDU_ENTITLEMENTS_URL=$OSDU_ENTITLEMENTS_URL,FILE_LOCATION_BUCKET_NAME=$OSDU_BUCKET,SPRING_CLOUD_GCP_DATASTORE_NAMESPACE=$OSDU_NAMESPACE,FILE_LOCATION_USER_ID=$OSDU_USER_ID,GCP_RECORDS_ROOT_URL=$OSDU_RECORDS_ROOT_URL --vpc-connector=$OSDU_VPC_CONNECTOR 
+  OSDU_ENVIRONMENT: dev
+  OSDU_PROJECT: nice-etching-277309
+  OSDU_TENANT_NAME: osdu
+  OSDU_DEPLOY_ENV: empty
+  PORT: 8080
+
 
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
@@ -24,5 +40,5 @@ include:
   #   file: 'publishing/pages.yml'
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: 'master'
-    file: "cloud-providers/ibm.yml"
+    ref: 'osdu-gcp-cloudrun'
+    file: 'cloud-providers/osdu-cloudrun.yml'
