@@ -25,7 +25,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>File Test</name>
+  <name>file-test</name>
   <description>Integration tests for File service</description>
 
   <licenses>
