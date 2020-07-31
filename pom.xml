@@ -37,7 +37,6 @@
 
   <modules>
     <module>file-core</module>
-    <module>testing/file-test-core</module>
 <!--    <module>provider/file-aws</module> FIX: Missing dependencies  -->
     <module>provider/file-gcp</module>
     <module>provider/file-ibm</module>
@@ -146,12 +145,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>file-test-core</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
