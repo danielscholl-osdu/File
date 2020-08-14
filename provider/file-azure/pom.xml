@@ -81,6 +81,13 @@
       <artifactId>azure-active-directory-spring-boot-starter</artifactId>
       <version>2.1.7</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>25.1-jre</version>
+    </dependency>
+
     <!--
  Override the spring-boot version of these dependencies to the ones
  required by the azure-core library. This needs to be done for each
@@ -114,6 +121,12 @@
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.checkerframework</groupId>
+      <artifactId>checker-compat-qual</artifactId>
+      <version>2.5.5</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <repositories>

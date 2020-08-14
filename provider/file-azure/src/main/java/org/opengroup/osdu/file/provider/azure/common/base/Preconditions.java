@@ -16,14 +16,11 @@
 
 package org.opengroup.osdu.file.provider.azure.common.base;
 
-
-import com.google.common.annotations.GwtCompatible;
 import com.google.common.base.Strings;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
-@GwtCompatible
 public final class Preconditions {
   private Preconditions() {
   }
