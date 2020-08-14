@@ -17,8 +17,10 @@
 package org.opengroup.osdu.file.provider.azure.repository;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.opengroup.osdu.azure.CosmosStore;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 import org.opengroup.osdu.file.provider.azure.model.entity.FileLocationEntity;
@@ -46,27 +48,27 @@ public class FileLocationEntityRepository {
 
   @Nullable
   FileLocationEntity findByFileID(String fileID) {
-    FileLocationEntity entity = null;
-    //entity = new FileLocationEntity(fileID, fileID, "GCS", "https://blob/container/filepath", new Date(), "me");
-    return entity;
+    if (fileID == null) {
+      throw new IllegalArgumentException("The given fileID is null");
+    }
+    Optional<FileLocationEntity> fileLocationEntity = cosmosStore.findItem(headers.getPartitionId(),cosmosDBName,fileLocationContainer,fileID,fileID,FileLocationEntity.class);
+    if (!fileLocationEntity.isPresent())
+      return null;
+    return fileLocationEntity.get();
   }
 
   public FileLocationEntity save(FileLocationEntity entity) {
+      if (entity == null) {
+        throw new IllegalArgumentException("The given file location entity is null");
+      }
       entity.setId(entity.getFileID());
-      System.out.println("Saving " + entity);
       cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, fileLocationContainer, entity);
-      /*
-      Optional<FileLocationEntity> FileLocationEntity = db.findById(entity.getId());
-      if (FileLocationEntity.isPresent())
-        throw new AppException(400, "Bad Request", "File location exists");
-      db.save(entity);
-      */
       return entity;
   }
 
   Page<FileLocationEntity> findFileList(@Param("time_from") Date from, @Param("time_to") Date to,
                                         @Param("user_id") String userID, Pageable pageable) {
-    return null;
+    throw new UnsupportedOperationException("findFileList not supported");
   }
 
 }

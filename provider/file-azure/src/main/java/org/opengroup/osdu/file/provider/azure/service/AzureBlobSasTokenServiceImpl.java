@@ -44,7 +44,6 @@ public class AzureBlobSasTokenServiceImpl {
                 .credential(defaultCredential)
                 .buildClient();
 
-
         BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
                 .credential(defaultCredential)
                 .endpoint(containerUrl)
