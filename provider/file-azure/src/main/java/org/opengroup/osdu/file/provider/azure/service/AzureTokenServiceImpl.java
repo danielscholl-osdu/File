@@ -25,17 +25,19 @@ import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.UnsupportedTemporalTypeException;
+import java.util.concurrent.TimeUnit;
 
 /*
 For a given blob object, generator a SAS Token that'll let bearers access the blob for 24 hours.
  */
 @Log
 @Component
-public class AzureBlobSasTokenServiceImpl {
+public class AzureTokenServiceImpl {
 
     private DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
 
-    public String signContainer(String containerUrl) {
+    public String signContainer(String containerUrl, long duration, TimeUnit timeUnit) {
         BlobUrlParts parts = BlobUrlParts.parse(containerUrl);
         String endpoint = calcBlobAccountUrl(parts);
 
@@ -50,11 +52,11 @@ public class AzureBlobSasTokenServiceImpl {
                 .containerName(parts.getBlobContainerName())
                 .buildClient();
 
-        OffsetDateTime expiresInHalfADay = calcTokenExpirationDate();
-        UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expiresInHalfADay);
+        OffsetDateTime expires = calcTokenExpirationDate(duration, timeUnit);
+        UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expires);
 
         BlobSasPermission readOnlyPerms = BlobSasPermission.parse("r");
-        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expiresInHalfADay, readOnlyPerms);
+        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, readOnlyPerms);
 
         String sasToken = blobContainerClient.generateUserDelegationSas(tokenProps, key);
 
@@ -62,7 +64,7 @@ public class AzureBlobSasTokenServiceImpl {
         return sasUri;
     }
 
-    public String sign(String blobUrl) {
+    public String sign(String blobUrl, long duration, TimeUnit timeUnit) {
         BlobUrlParts parts = BlobUrlParts.parse(blobUrl);
         String endpoint = calcBlobAccountUrl(parts);
         BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
@@ -73,10 +75,10 @@ public class AzureBlobSasTokenServiceImpl {
                 .credential(defaultCredential)
                 .endpoint(blobUrl)
                 .buildClient();
-        OffsetDateTime expiresInHalfADay = calcTokenExpirationDate();
-        UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expiresInHalfADay);
+        OffsetDateTime expires = calcTokenExpirationDate(duration, timeUnit);
+        UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expires);
         BlobSasPermission readOnlyPerms = BlobSasPermission.parse("r");
-        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expiresInHalfADay, readOnlyPerms);
+        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, readOnlyPerms);
         String sasToken = tokenSource.generateUserDelegationSas(tokenProps, key);
         String sasUri = String.format("%s?%s", blobUrl, sasToken);
         System.out.println(String.format("sasUri=%s", sasUri));
@@ -87,7 +89,22 @@ public class AzureBlobSasTokenServiceImpl {
         return String.format("https://%s.blob.core.windows.net", parts.getAccountName());
     }
 
-    private OffsetDateTime calcTokenExpirationDate() {
-        return OffsetDateTime.now(ZoneOffset.UTC).plusHours(12);
+    private OffsetDateTime calcTokenExpirationDate(long duration, TimeUnit timeUnit) {
+      if (timeUnit == null) {
+        throw new UnsupportedTemporalTypeException("Unsupported temporal type");
+      }
+      if (timeUnit == TimeUnit.DAYS) {
+        return OffsetDateTime.now(ZoneOffset.UTC).plusDays(duration);
+      } else if (timeUnit == TimeUnit.SECONDS){
+        return OffsetDateTime.now(ZoneOffset.UTC).plusSeconds(duration);
+      } else if (timeUnit == TimeUnit.NANOSECONDS){
+        return OffsetDateTime.now(ZoneOffset.UTC).plusNanos(duration);
+      } else if (timeUnit == TimeUnit.MINUTES){
+        return OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(duration);
+      } else if (timeUnit == TimeUnit.HOURS){
+        return OffsetDateTime.now(ZoneOffset.UTC).plusHours(duration);
+      } else {
+          throw new UnsupportedTemporalTypeException("Unsupported temporal type");
+      }
     }
 }

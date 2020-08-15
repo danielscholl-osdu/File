@@ -39,7 +39,7 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
-import org.opengroup.osdu.file.provider.azure.service.AzureBlobSasTokenServiceImpl;
+import org.opengroup.osdu.file.provider.azure.service.AzureTokenServiceImpl;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -60,7 +60,7 @@ public class StorageImpl implements Storage {
   private static String storageAccount;
 
   @Inject
-  AzureBlobSasTokenServiceImpl token;
+  AzureTokenServiceImpl token;
 
   public StorageImpl() {
     this.storageAccount = getStorageAccount();
@@ -97,7 +97,7 @@ public class StorageImpl implements Storage {
 
   @SneakyThrows
   @Override
-  public URL signUrl(BlobInfo blobInfo, long duration, TimeUnit unit) {
+  public URL signUrl(BlobInfo blobInfo, long duration, TimeUnit timeUnit) {
     URL url = null;
     try {
       log.debug("Signing the blob in container {} for path {}", blobInfo.getContainer(), blobInfo.getName());
@@ -105,7 +105,7 @@ public class StorageImpl implements Storage {
       String blobURL = generateBlobPath(storageAccount, blobInfo.getContainer(), blobInfo.getName());
       System.out.println(String.format("Signing the blob %s", blobURL));
       log.debug("Signing the blob {}", blobURL);
-      String signedUrl = token.sign(blobURL);
+      String signedUrl = token.sign(blobURL, duration, timeUnit);
       System.out.println(String.format("signedUrl: %s", signedUrl));
       return new URL(signedUrl);
     }
