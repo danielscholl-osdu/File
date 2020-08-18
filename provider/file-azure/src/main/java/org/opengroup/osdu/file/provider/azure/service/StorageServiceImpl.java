@@ -25,6 +25,8 @@ import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -89,7 +91,6 @@ public class StorageServiceImpl implements IStorageService {
     log.debug("Created folderName {} for fileID {}", folderName, filename);
     return format("%s/%s/%s", userDesID, folderName, filename);
     //return format("%s/%s", folderName, filename);
-
   }
 
 }

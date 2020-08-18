@@ -76,6 +76,7 @@ public class LocationServiceImpl implements ILocationService {
     validationService.validateFileLocationRequest(request);
 
     String fileID = request.getFileID();
+
     FileLocation fileLocation = fileLocationRepository.findByFileID(fileID);
 
     if (fileLocation == null) {

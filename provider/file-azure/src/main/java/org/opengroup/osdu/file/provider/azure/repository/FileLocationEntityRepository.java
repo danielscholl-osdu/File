@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.opengroup.osdu.azure.CosmosStore;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 import org.opengroup.osdu.file.provider.azure.model.entity.FileLocationEntity;
@@ -49,7 +48,7 @@ public class FileLocationEntityRepository {
   @Nullable
   FileLocationEntity findByFileID(String fileID) {
     if (fileID == null) {
-      throw new IllegalArgumentException("The given fileID is null");
+      return null;
     }
     Optional<FileLocationEntity> fileLocationEntity = cosmosStore.findItem(headers.getPartitionId(),cosmosDBName,fileLocationContainer,fileID,fileID,FileLocationEntity.class);
     if (!fileLocationEntity.isPresent())

@@ -54,16 +54,19 @@ import java.util.concurrent.TimeUnit;
 public class StorageImpl implements Storage {
 
   private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-  private static String clientSecret = System.getProperty("AZURE_CLIENT_SECRET", System.getenv("TESTER_SERVICEPRINCIPAL_SECRET"));
-  private static String clientId = System.getProperty("AZURE_CLIENT_ID", System.getenv("INTEGRATION_TESTER"));
+
+  private static String clientSecret = System.getProperty("AZURE_CLIENT_SECRET", System.getenv("CLIENT_SECRET"));
+  private static String clientId = System.getProperty("AZURE_CLIENT_ID", System.getenv("CLIENT_ID"));
   private static String tenantId = System.getProperty("AZURE_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
+  private static String azureStorageAccount = System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
+
   private static String storageAccount;
 
   @Inject
   AzureTokenServiceImpl token;
 
   public StorageImpl() {
-    this.storageAccount = getStorageAccount();
+    this.storageAccount = azureStorageAccount;
   }
 
   @Override
@@ -94,7 +97,6 @@ public class StorageImpl implements Storage {
     return null;
   }
 
-
   @SneakyThrows
   @Override
   public URL signUrl(BlobInfo blobInfo, long duration, TimeUnit timeUnit) {
@@ -106,7 +108,6 @@ public class StorageImpl implements Storage {
       System.out.println(String.format("Signing the blob %s", blobURL));
       log.debug("Signing the blob {}", blobURL);
       String signedUrl = token.sign(blobURL, duration, timeUnit);
-      System.out.println(String.format("signedUrl: %s", signedUrl));
       return new URL(signedUrl);
     }
     catch (MalformedURLException e) {
