@@ -28,9 +28,6 @@ import java.time.ZoneOffset;
 import java.time.temporal.UnsupportedTemporalTypeException;
 import java.util.concurrent.TimeUnit;
 
-/*
-For a given blob object, generator a SAS Token that'll let bearers access the blob for 24 hours.
- */
 @Log
 @Component
 public class AzureTokenServiceImpl {
@@ -81,7 +78,6 @@ public class AzureTokenServiceImpl {
         BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, readOnlyPerms);
         String sasToken = tokenSource.generateUserDelegationSas(tokenProps, key);
         String sasUri = String.format("%s?%s", blobUrl, sasToken);
-        System.out.println(String.format("sasUri=%s", sasUri));
         return sasUri;
     }
 
@@ -91,7 +87,7 @@ public class AzureTokenServiceImpl {
 
     private OffsetDateTime calcTokenExpirationDate(long duration, TimeUnit timeUnit) {
       if (timeUnit == null) {
-        throw new UnsupportedTemporalTypeException("Unsupported temporal type");
+        throw new NullPointerException("Time unit cannot be nulll");
       }
       if (timeUnit == TimeUnit.DAYS) {
         return OffsetDateTime.now(ZoneOffset.UTC).plusDays(duration);
@@ -104,7 +100,7 @@ public class AzureTokenServiceImpl {
       } else if (timeUnit == TimeUnit.HOURS){
         return OffsetDateTime.now(ZoneOffset.UTC).plusHours(duration);
       } else {
-          throw new UnsupportedTemporalTypeException("Unsupported temporal type");
+        throw new UnsupportedTemporalTypeException("Unsupported temporal type");
       }
     }
 }

@@ -30,6 +30,7 @@ import org.opengroup.osdu.file.provider.azure.storage.BlobId;
 import org.opengroup.osdu.file.provider.azure.storage.BlobInfo;
 import org.opengroup.osdu.file.provider.azure.storage.Storage;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriUtils;
@@ -43,16 +44,19 @@ public class StorageRepository implements IStorageRepository {
   @Inject
   final Storage storage;
 
-  private static String storageAccount;
+  @Value("${azure.storage.account}")
+  private static String azureStorageAccount;
+
+  private String storageAccount;
 
   public StorageRepository(Storage storage) {
     this.storage = storage;
     this.storageAccount = getStorageAccount();
   }
+
   @Override
   public SignedObject createSignedObject(String containerName, String filepath) {
     log.debug("Creating the signed blob in container {} for path {}", containerName, filepath);
-    System.out.println(String.format("Creating the signed blob in container %s for path %s", containerName, filepath));
     BlobId blobId = BlobId.of(containerName, filepath);
     BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
         .setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -70,7 +74,7 @@ public class StorageRepository implements IStorageRepository {
   }
 
   public static String getStorageAccount() {
-    return System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
+    return azureStorageAccount;
   }
 
   private URI getObjectUri(Blob blob) {
