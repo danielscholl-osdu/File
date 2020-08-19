@@ -37,26 +37,20 @@ public class AzureTokenServiceImpl {
     public String signContainer(String containerUrl, long duration, TimeUnit timeUnit) {
         BlobUrlParts parts = BlobUrlParts.parse(containerUrl);
         String endpoint = calcBlobAccountUrl(parts);
-
         BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
                 .endpoint(endpoint)
                 .credential(defaultCredential)
                 .buildClient();
-
         BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
                 .credential(defaultCredential)
                 .endpoint(containerUrl)
                 .containerName(parts.getBlobContainerName())
                 .buildClient();
-
         OffsetDateTime expires = calcTokenExpirationDate(duration, timeUnit);
         UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expires);
-
         BlobSasPermission readOnlyPerms = BlobSasPermission.parse("r");
         BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, readOnlyPerms);
-
         String sasToken = blobContainerClient.generateUserDelegationSas(tokenProps, key);
-
         String sasUri = String.format("%s?%s", containerUrl, sasToken);
         return sasUri;
     }

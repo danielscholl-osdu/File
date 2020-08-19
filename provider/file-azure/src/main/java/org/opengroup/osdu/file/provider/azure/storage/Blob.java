@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class Blob extends BlobInfo {
-  private static final long serialVersionUID = -6806832496717441434L;
+  private static final long serialVersionUID = -6806832496757441434L;
   private transient Storage storage;
 
   Blob(Storage storage, BlobInfo.BuilderImpl infoBuilder) {

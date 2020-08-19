@@ -42,7 +42,7 @@ import javax.inject.Inject;
 public class StorageRepository implements IStorageRepository {
 
   @Inject
-  final Storage storage;
+  private Storage storage;
 
   private String storageAccount = getStorageAccount();
 
@@ -59,7 +59,6 @@ public class StorageRepository implements IStorageRepository {
         .build();
     Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
     log.debug("Created the blob in container {} for path {}", containerName, filepath);
-    System.out.println(String.format("Created the  blob in container %s for path %s", containerName, filepath));
     URL signedUrl = storage.signUrl(blobInfo, 7L, TimeUnit.DAYS);
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
         blob.getGeneratedId(), signedUrl);

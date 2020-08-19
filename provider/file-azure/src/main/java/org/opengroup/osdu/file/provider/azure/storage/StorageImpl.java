@@ -103,9 +103,7 @@ public class StorageImpl implements Storage {
   public URL signUrl(BlobInfo blobInfo, long duration, TimeUnit timeUnit) {
     try {
       log.debug("Signing the blob in container {} for path {}", blobInfo.getContainer(), blobInfo.getName());
-      System.out.println(String.format("Signing the blob in container %s for path %s", blobInfo.getContainer(), blobInfo.getName()));
       String blobURL = generateBlobPath(storageAccount, blobInfo.getContainer(), blobInfo.getName());
-      System.out.println(String.format("Signing the blob %s", blobURL));
       log.debug("Signing the blob {}", blobURL);
       String signedUrl = token.sign(blobURL, duration, timeUnit);
       return new URL(signedUrl);
