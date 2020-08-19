@@ -44,7 +44,7 @@ public class FileLocationApi {
 
   // TODO: Create the permission for os-file and change pre authorize annotation
   @PostMapping("/getLocation")
-  //@PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
   public LocationResponse getLocation(@RequestBody LocationRequest request) {
     log.debug("Location request received : {}", request);
     LocationResponse locationResponse = locationService.getLocation(request, headers);
@@ -54,7 +54,7 @@ public class FileLocationApi {
 
   // TODO: Create the permission for os-file and change pre authorize annotation
   @PostMapping("/getFileLocation")
-  //@PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
   public FileLocationResponse getFileLocation(@RequestBody FileLocationRequest request) {
     log.debug("File location request received : {}", request);
     FileLocationResponse fileLocationResponse = locationService.getFileLocation(request, headers);
