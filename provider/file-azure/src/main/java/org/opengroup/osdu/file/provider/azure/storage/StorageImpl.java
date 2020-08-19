@@ -97,10 +97,10 @@ public class StorageImpl implements Storage {
     return null;
   }
 
+
   @SneakyThrows
   @Override
   public URL signUrl(BlobInfo blobInfo, long duration, TimeUnit timeUnit) {
-    URL url = null;
     try {
       log.debug("Signing the blob in container {} for path {}", blobInfo.getContainer(), blobInfo.getName());
       System.out.println(String.format("Signing the blob in container %s for path %s", blobInfo.getContainer(), blobInfo.getName()));

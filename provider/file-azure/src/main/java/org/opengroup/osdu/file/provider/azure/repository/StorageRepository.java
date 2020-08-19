@@ -44,14 +44,10 @@ public class StorageRepository implements IStorageRepository {
   @Inject
   final Storage storage;
 
-  @Value("${azure.storage.account}")
-  private static String azureStorageAccount;
-
-  private String storageAccount;
+  private String storageAccount = getStorageAccount();
 
   public StorageRepository(Storage storage) {
     this.storage = storage;
-    this.storageAccount = getStorageAccount();
   }
 
   @Override
@@ -62,7 +58,7 @@ public class StorageRepository implements IStorageRepository {
         .setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
         .build();
     Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
-    log.debug("Created the  blob in container {} for path {}", containerName, filepath);
+    log.debug("Created the blob in container {} for path {}", containerName, filepath);
     System.out.println(String.format("Created the  blob in container %s for path %s", containerName, filepath));
     URL signedUrl = storage.signUrl(blobInfo, 7L, TimeUnit.DAYS);
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
@@ -74,7 +70,7 @@ public class StorageRepository implements IStorageRepository {
   }
 
   public static String getStorageAccount() {
-    return azureStorageAccount;
+    return System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
   }
 
   private URI getObjectUri(Blob blob) {
