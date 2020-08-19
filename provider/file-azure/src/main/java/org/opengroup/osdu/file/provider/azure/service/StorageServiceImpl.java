@@ -90,7 +90,6 @@ public class StorageServiceImpl implements IStorageService {
         .format(instant);
     log.debug("Created folderName {} for fileID {}", folderName, filename);
     return format("%s/%s/%s", userDesID, folderName, filename);
-    //return format("%s/%s", folderName, filename);
   }
 
 }

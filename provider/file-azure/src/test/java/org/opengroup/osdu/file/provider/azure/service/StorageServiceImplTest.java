@@ -75,16 +75,18 @@ class StorageServiceImplTest {
     SignedUrl signedUrl = storageService.createSignedUrl(
         TestUtils.FILE_ID, TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION);
 
+    System.out.println("URL" + signedUrl.getUrl().toString());
+    System.out.println("URI" + signedUrl.getUri().toString());
     // then
-    //then(signedUrl).satisfies(url -> {
-    //  then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
-    //  then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
-    //  then(url.getCreatedAt()).isBefore(now());
-    //  then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
-    //});
+    then(signedUrl).satisfies(url -> {
+      //then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
+      //then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
+      then(url.getCreatedAt()).isBefore(now());
+      then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
+    });
 
-    //verify(storageRepository).createSignedObject(eq(TestUtils.CONTAINER_NAME), filenameCaptor.capture());
-    //then(filenameCaptor.getValue()).matches(TestUtils.USER_DES_ID + ".*?" + TestUtils.UUID_REGEX);
+    verify(storageRepository).createSignedObject(eq(TestUtils.CONTAINER_NAME), filenameCaptor.capture());
+    then(filenameCaptor.getValue()).matches(TestUtils.USER_DES_ID + ".*?" + TestUtils.UUID_REGEX);
   }
 
   @Test
@@ -97,11 +99,11 @@ class StorageServiceImplTest {
         TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
 
     // then
-    /*then(thrown)
+    then(thrown)
         .isInstanceOf(BadRequestException.class)
         .hasMessageContaining("The maximum filepath length is 1024 characters");
     verify(storageRepository, never()).createSignedObject(anyString(), anyString());
-    */
+
   }
 
   private SignedObject getSignedObject() {
