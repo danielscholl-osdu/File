@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import java.io.Serializable;
 
 public final class BlobId implements Serializable {
-  private static final long serialVersionUID = -6156002883225601925L;
+  private static final long serialVersionUID = -6156002883225601325L;
   private final String container;
   private final String name;
   private final Long generation;

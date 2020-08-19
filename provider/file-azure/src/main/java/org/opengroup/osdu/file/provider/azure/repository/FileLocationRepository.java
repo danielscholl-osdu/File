@@ -58,7 +58,7 @@ public class FileLocationRepository implements IFileLocationRepository {
     log.info("Saving file location : {}", fileLocation);
     FileLocationEntity saved = fileLocationEntityRepository
         .save(fileLocationMapper.toEntity(fileLocation));
-    log.info("Fetch saved file location : {}", saved);
+    log.debug("Fetch saved file location : {}", saved);
     return fileLocationMapper.toFileLocation(saved);
   }
 
