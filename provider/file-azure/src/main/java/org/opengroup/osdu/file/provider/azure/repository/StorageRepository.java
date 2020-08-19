@@ -46,10 +46,6 @@ public class StorageRepository implements IStorageRepository {
 
   private String storageAccount = getStorageAccount();
 
-  public StorageRepository(Storage storage) {
-    this.storage = storage;
-  }
-
   @Override
   public SignedObject createSignedObject(String containerName, String filepath) {
     log.debug("Creating the signed blob in container {} for path {}", containerName, filepath);

@@ -40,6 +40,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
 import org.opengroup.osdu.file.provider.azure.service.AzureTokenServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -55,19 +56,20 @@ public class StorageImpl implements Storage {
 
   private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
-  private static String clientSecret = System.getProperty("AZURE_CLIENT_SECRET", System.getenv("CLIENT_SECRET"));
-  private static String clientId = System.getProperty("AZURE_CLIENT_ID", System.getenv("CLIENT_ID"));
-  private static String tenantId = System.getProperty("AZURE_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
-  private static String azureStorageAccount = System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
+  @Value("${azure.client.secret}")
+  private String clientSecret;
 
-  private static String storageAccount;
+  @Value("${azure.client.id}")
+  private String clientId;
+
+  @Value("${azure.tenant.id}")
+  private String tenantId;
+
+  @Value("${azure_storage.account}")
+  private String storageAccount;
 
   @Inject
   AzureTokenServiceImpl token;
-
-  public StorageImpl() {
-    this.storageAccount = azureStorageAccount;
-  }
 
   @Override
   public Blob create(BlobInfo blobInfo, byte[] content) {
@@ -96,7 +98,6 @@ public class StorageImpl implements Storage {
     }
     return null;
   }
-
 
   @SneakyThrows
   @Override
