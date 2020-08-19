@@ -60,6 +60,7 @@ public class FileLocationEntityRepository {
       if (entity == null) {
         throw new IllegalArgumentException("The given file location entity is null");
       }
+      // Internal set of id
       entity.setId(entity.getFileID());
       cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, fileLocationContainer, entity);
       return entity;
