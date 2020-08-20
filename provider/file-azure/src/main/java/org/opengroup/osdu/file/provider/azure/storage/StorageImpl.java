@@ -78,7 +78,6 @@ public class StorageImpl implements Storage {
     return this.internalCreate(blobInfo, content);
   }
 
-  @SneakyThrows
   private Blob internalCreate(BlobInfo info, final byte[] content) {
     String blobPath = generateBlobPath(storageAccount, info.getContainer(), info.getName());
     BlobUrlParts parts = BlobUrlParts.parse(blobPath);
@@ -86,6 +85,7 @@ public class StorageImpl implements Storage {
     if (!blobContainerClient.exists()) {
       createContainer(parts.getBlobContainerName());
     }
+    /* Wei
     BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
     if (!blockBlobClient.exists()) {
       try (ByteArrayInputStream dataStream = new ByteArrayInputStream(content)) {
@@ -96,7 +96,8 @@ public class StorageImpl implements Storage {
         throw e;
       }
     }
-    return null;
+    */
+    return new Blob(this, new BlobInfo.BuilderImpl(info.getBlobId()));
   }
 
   @SneakyThrows
