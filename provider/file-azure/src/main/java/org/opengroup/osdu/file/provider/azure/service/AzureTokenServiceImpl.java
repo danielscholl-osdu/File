@@ -68,8 +68,8 @@ public class AzureTokenServiceImpl {
                 .buildClient();
         OffsetDateTime expires = calcTokenExpirationDate(duration, timeUnit);
         UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expires);
-        BlobSasPermission readOnlyPerms = BlobSasPermission.parse("r");
-        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, readOnlyPerms);
+        BlobSasPermission permissions = BlobSasPermission.parse("crw");
+        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, permissions);
         String sasToken = tokenSource.generateUserDelegationSas(tokenProps, key);
         String sasUri = String.format("%s?%s", blobUrl, sasToken);
         return sasUri;
