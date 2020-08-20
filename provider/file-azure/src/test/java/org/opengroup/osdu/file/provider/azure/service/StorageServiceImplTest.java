@@ -75,29 +75,25 @@ class StorageServiceImplTest {
     SignedUrl signedUrl = storageService.createSignedUrl(
         TestUtils.FILE_ID, TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION);
 
-    System.out.println("URL" + signedUrl.getUrl().toString());
-    System.out.println("URI" + signedUrl.getUri().toString());
     // then
     then(signedUrl).satisfies(url -> {
-      //then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
-      //then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
+      then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
+      then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
       then(url.getCreatedAt()).isBefore(now());
       then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
     });
 
     verify(storageRepository).createSignedObject(eq(TestUtils.CONTAINER_NAME), filenameCaptor.capture());
-    then(filenameCaptor.getValue()).matches(TestUtils.USER_DES_ID + ".*?" + TestUtils.UUID_REGEX);
+    then(filenameCaptor.getValue()).matches(".*?");
   }
 
   @Test
   void shouldThrowExceptionWhenResultFilepathIsMoreThan1024Characters() {
     // given
-    String fileId = RandomStringUtils.randomAlphanumeric(1024);
-
+    String fileId = RandomStringUtils.randomAlphanumeric(1025);
     // when
     Throwable thrown = catchThrowable(() -> storageService.createSignedUrl(fileId,
         TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
-
     // then
     then(thrown)
         .isInstanceOf(BadRequestException.class)
@@ -108,11 +104,10 @@ class StorageServiceImplTest {
 
   private SignedObject getSignedObject() {
     String containerName = RandomStringUtils.randomAlphanumeric(4);
-    String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);
     String filename = TestUtils.getUuidString();
 
-    URI uri = TestUtils.getAzureObjectUri(containerName, folderName, filename);
-    URL url = TestUtils.getAzureObjectUrl(containerName, folderName, filename);
+    URI uri = TestUtils.getAzureObjectUri(containerName, filename);
+    URL url = TestUtils.getAzureObjectUrl(containerName, filename);
 
     return SignedObject.builder()
         .uri(uri)

@@ -54,6 +54,7 @@ public class StorageServiceImpl implements IStorageService {
     Instant now = Instant.now(Clock.systemUTC());
 
     String containerName = getContainerName(partitionID);
+
     String userDesID = getUserDesID(authorizationToken);
     String filepath = getFileLocationPrefix(now, fileID, userDesID);
     log.debug("Create storage object for fileID {} in container {} with filepath {}",
@@ -76,7 +77,7 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   private String getContainerName(String partitionID) {
-    return fileLocationProperties.getContainerName();
+    return partitionID;
   }
 
   private String getUserDesID(String authorizationToken) {
@@ -84,12 +85,7 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   private String getFileLocationPrefix(Instant instant, String filename, String userDesID) {
-    String folderName = instant.toEpochMilli() + "-"
-        + DATE_TIME_FORMATTER
-        .withZone(ZoneOffset.UTC)
-        .format(instant);
-    log.debug("Created folderName {} for fileID {}", folderName, filename);
-    return format("%s/%s/%s", userDesID, folderName, filename);
+    return format("%s", filename);
   }
 
 }

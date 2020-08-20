@@ -34,12 +34,12 @@ public final class TestUtils {
   public static final String AUTHORIZATION_TOKEN = "authToken";
   public static final String PARTITION = "partition";
   public static final String USER_DES_ID = "osdu-user";
-  public static final String CONTAINER_NAME = "osdu-container";
+  public static final String CONTAINER_NAME = "partition";
   public static final String STORAGE_NAME = "adotestfqofqosn0o4sa";
 
   public static final String UUID_REGEX = "(.{8})(.{4})(.{4})(.{4})(.{12})";
   public static final Pattern AZURE_OBJECT_URI
-      = Pattern.compile("^https://[\\w,\\s-]+/[\\w,\\s-]+/[\\w,\\s-]+/?.*$");
+      = Pattern.compile("^https://[\\w,\\s-]+/[\\w,\\s-]+/?.*$");
   public static final Condition<String> UUID_CONDITION
           = new Condition<>(TestUtils::isValidUuid, "Valid UUID");
   public static final Condition<String> AZURE_URL_CONDITION
@@ -68,15 +68,15 @@ public final class TestUtils {
     }
   }
 
-  public static URI getAzureObjectUri(String containerName, String folderName, String filename) {
-    return URI.create(format("%s%s.blob.core.windows.net/%s/%s/%s", AZURE_PROTOCOL, STORAGE_NAME, containerName, folderName, filename));
+  public static URI getAzureObjectUri(String containerName, String filename) {
+    return URI.create(format("%s%stest/%s/%s", AZURE_PROTOCOL, STORAGE_NAME, containerName, filename));
   }
 
   @SneakyThrows
-  public static URL getAzureObjectUrl(String containerName, String folderName, String filename) {
+  public static URL getAzureObjectUrl(String containerName, String filename) {
     return new URL(format(
-        "%s%s.blob.core.windows.net/%s/%s/%s?sv=2019-07-07&se=2020-08-08T13A36A49Z&skoid=0fa47244-83d8-4311-b05c-fefb49d8b0a9&sktid=58975fd3-4977-44d0-bea8-37af0baac100&skt=2020-08-08T013A3649Z&ske=2020-08-08T133649Z&sks=b&skv=2019-07-07&sr=b&sp=r&sig=Hh5xGUpvTkEDeArXaWmV6FnSOMbYLRdHSfGlOlsC7wD2020-08-07",
-        AZURE_PROTOCOL, STORAGE_NAME, containerName, folderName, filename));
+        "%s%stest/%s/%s?sv=2019-07-07&se=2020-08-08T13A36A49Z&skoid=0fa47244-83d8-4311-b05c-fefb49d8b0a9&sktid=58975fd3-4977-44d0-bea8-37af0baac100&skt=2020-08-08T013A3649Z&ske=2020-08-08T133649Z&sks=b&skv=2019-07-07&sr=b&sp=r&sig=Hh5xGUpvTkEDeArXaWmV6FnSOMbYLRdHSfGlOlsC7wD2020-08-07",
+        AZURE_PROTOCOL, STORAGE_NAME, containerName, filename));
   }
 
   public static Instant now() {
