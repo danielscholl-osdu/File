@@ -17,14 +17,20 @@
 package org.opengroup.osdu.file.provider.azure.repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
+import com.azure.cosmos.FeedOptions;
+import com.azure.cosmos.SqlParameter;
+import com.azure.cosmos.SqlParameterList;
+import com.azure.cosmos.SqlQuerySpec;
 import org.opengroup.osdu.azure.CosmosStore;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 import org.opengroup.osdu.file.provider.azure.model.entity.FileLocationEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
@@ -66,9 +72,21 @@ public class FileLocationEntityRepository {
       return entity;
   }
 
+  //@Query("SELECT * FROM `file-locations`"
+  //   + " WHERE CreatedAt >= @time_from AND CreatedAt <= @time_to AND CreatedBy = @user_id")
   Page<FileLocationEntity> findFileList(@Param("time_from") Date from, @Param("time_to") Date to,
                                         @Param("user_id") String userID, Pageable pageable) {
-    throw new UnsupportedOperationException("findFileList not supported");
+    //SqlQuerySpec query = new SqlQuerySpec("SELECT * FROM FileLocationEntity f WHERE f.createdAt >= @time_from AND f.createdAt <= @time_to AND f.createdBy = '@user_id'");
+    SqlQuerySpec query = new SqlQuerySpec("SELECT * FROM FileLocationEntity f");
+    //f WHERE f.createdBy = "@user_id"");
+    SqlParameterList pars = query.getParameters();
+    //pars.add(new SqlParameter("@time_from", from));
+    //pars.add(new SqlParameter("@time_to", to));
+    //pars.add(new SqlParameter("@user_id", userID));
+    List<FileLocationEntity> fileList = cosmosStore.queryItemsAsync(headers.getPartitionId(), cosmosDBName, fileLocationContainer, query,
+        FileLocationEntity.class,(short)pageable.getPageSize(), pageable.getPageNumber());
+    Page<FileLocationEntity> page = new PageImpl(fileList,  pageable, fileList.size());
+    return page;
   }
 
 }
