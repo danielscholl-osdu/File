@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
+
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.file.model.SignedObject;
@@ -30,7 +32,6 @@ import org.opengroup.osdu.file.provider.azure.storage.BlobId;
 import org.opengroup.osdu.file.provider.azure.storage.BlobInfo;
 import org.opengroup.osdu.file.provider.azure.storage.Storage;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriUtils;

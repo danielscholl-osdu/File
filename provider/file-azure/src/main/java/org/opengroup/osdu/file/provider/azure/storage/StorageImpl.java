@@ -35,7 +35,6 @@ import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.BlobUrlParts;
-import com.azure.storage.blob.specialized.BlockBlobClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
@@ -44,7 +43,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
