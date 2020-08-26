@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayNameGenerator;
 
 /**
- * JUnit display name generator. It replaces a "camelCase" name
- * by "Capitalized Whitespace Separated" name.
+ * JUnit display name generator. It replaces a "camelCase" name by "Capitalized Whitespace
+ * Separated" name.
  */
 public class ReplaceCamelCase extends DisplayNameGenerator.Standard {
 
