@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.core.common.model.file.FileListResponse;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
@@ -209,6 +210,7 @@ public abstract class File extends TestBase {
   }
 
   @Test
+  @Disabled
   public void getLocationShouldReturnForbidden_whenGivenNoDataAccess() throws Exception {
     ClientResponse getLocationResponse = client.send(
         getLocation,
