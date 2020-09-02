@@ -35,6 +35,7 @@ import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.BlobUrlParts;
+import com.azure.storage.blob.specialized.BlockBlobClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
@@ -43,6 +44,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -76,6 +79,7 @@ public class StorageImpl implements Storage {
     return this.internalCreate(blobInfo, content);
   }
 
+  @SneakyThrows
   private Blob internalCreate(BlobInfo info, final byte[] content) {
     String blobPath = generateBlobPath(storageAccount, info.getContainer(), info.getName());
     BlobUrlParts parts = BlobUrlParts.parse(blobPath);
@@ -83,7 +87,6 @@ public class StorageImpl implements Storage {
     if (!blobContainerClient.exists()) {
       createContainer(parts.getBlobContainerName());
     }
-    /* Wei
     BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
     if (!blockBlobClient.exists()) {
       try (ByteArrayInputStream dataStream = new ByteArrayInputStream(content)) {
@@ -94,7 +97,6 @@ public class StorageImpl implements Storage {
         throw e;
       }
     }
-    */
     return new Blob(this, new BlobInfo.BuilderImpl(info.getBlobId()));
   }
 

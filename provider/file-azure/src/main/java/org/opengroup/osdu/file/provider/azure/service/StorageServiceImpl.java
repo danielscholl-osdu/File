@@ -85,7 +85,12 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   private String getFileLocationPrefix(Instant instant, String filename, String userDesID) {
-    return format("%s", filename);
+    String folderName = instant.toEpochMilli() + "-"
+        + DATE_TIME_FORMATTER
+        .withZone(ZoneOffset.UTC)
+        .format(instant);
+
+    return format("%s/%s/%s", userDesID, folderName, filename);
   }
 
 }
