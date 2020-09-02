@@ -20,7 +20,10 @@ import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -32,70 +35,73 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class AzureTokenServiceImpl {
 
-    private DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
+  @Value("${azure_storage.account}")
+  private static String storageAccount;
 
-    public String signContainer(String containerUrl, long duration, TimeUnit timeUnit) {
-        BlobUrlParts parts = BlobUrlParts.parse(containerUrl);
-        String endpoint = calcBlobAccountUrl(parts);
-        BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
-                .endpoint(endpoint)
-                .credential(defaultCredential)
-                .buildClient();
-        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
-                .credential(defaultCredential)
-                .endpoint(containerUrl)
-                .containerName(parts.getBlobContainerName())
-                .buildClient();
-        OffsetDateTime expires = calcTokenExpirationDate(duration, timeUnit);
-        UserDelegationKey key = rbacKeySource.getUserDelegationKey(null, expires);
-        BlobSasPermission readOnlyPerms = BlobSasPermission.parse("r");
-        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, readOnlyPerms);
-        String sasToken = blobContainerClient.generateUserDelegationSas(tokenProps, key);
-        String sasUri = String.format("%s?%s", containerUrl, sasToken);
-        return sasUri;
+  private static String storageAccount_STATIC;
+
+  private Supplier<UserDelegationKey> memoizedSupplier = null;
+
+  @Value("${azure_storage.account}")
+  public void setStorageAccountStatic(String accountName){
+    AzureTokenServiceImpl.storageAccount_STATIC = accountName;
+  }
+
+  public AzureTokenServiceImpl() {
+    memoizedSupplier = Suppliers.memoizeWithExpiration(
+        AzureTokenServiceImpl::getUserDelegationKey, 1, TimeUnit.DAYS);
+  }
+
+  private static DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
+
+  private static UserDelegationKey getUserDelegationKey() {
+    String endpoint = calcBlobAccountUrl(storageAccount_STATIC);
+    BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
+        .endpoint(endpoint)
+        .credential(defaultCredential)
+        .buildClient();
+    OffsetDateTime expires = calcTokenExpirationDate(1, TimeUnit.DAYS);
+    return rbacKeySource.getUserDelegationKey(null, expires);
+  }
+
+  public String sign(String blobUrl, long duration, TimeUnit timeUnit) {
+    UserDelegationKey key = memoizedSupplier.get();
+    BlobClient tokenSource = new BlobClientBuilder()
+        .credential(defaultCredential)
+        .endpoint(blobUrl)
+        .buildClient();
+    BlobSasPermission permissions = BlobSasPermission.parse("rw");
+    OffsetDateTime expires = calcTokenExpirationDate(7L, TimeUnit.DAYS);
+    BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, permissions);
+    String sasToken = tokenSource.generateUserDelegationSas(tokenProps, key);
+    String sasUri = String.format("%s?%s", blobUrl, sasToken);
+    return sasUri;
+  }
+
+  private static String calcBlobAccountUrl(String accountName) {
+    return String.format("https://%s.blob.core.windows.net", accountName);
+  }
+
+  private static String calcBlobAccountUrl(BlobUrlParts parts) {
+    return String.format("https://%s.blob.core.windows.net", parts.getAccountName());
+  }
+
+  private static OffsetDateTime calcTokenExpirationDate(long duration, TimeUnit timeUnit) {
+    if (timeUnit == null) {
+      throw new NullPointerException("Time unit cannot be null");
     }
-
-    public String sign(String blobUrl, long duration, TimeUnit timeUnit) {
-        BlobUrlParts parts = BlobUrlParts.parse(blobUrl);
-        String endpoint = calcBlobAccountUrl(parts);
-        BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
-                .endpoint(endpoint)
-                .credential(defaultCredential)
-                .buildClient();
-        BlobClient tokenSource = new BlobClientBuilder()
-                .credential(defaultCredential)
-                .endpoint(blobUrl)
-                .buildClient();
-        OffsetDateTime expires = calcTokenExpirationDate(duration, timeUnit);
-        UserDelegationKey key = rbacKeySource.getUserDelegationKey(OffsetDateTime.now(ZoneOffset.UTC).minusMinutes(1), expires);
-
-        BlobSasPermission permissions = BlobSasPermission.parse("rw");
-        BlobServiceSasSignatureValues tokenProps = new BlobServiceSasSignatureValues(expires, permissions);
-        String sasToken = tokenSource.generateUserDelegationSas(tokenProps, key);
-        String sasUri = String.format("%s?%s", blobUrl, sasToken);
-        return sasUri;
+    if (timeUnit == TimeUnit.DAYS) {
+      return OffsetDateTime.now(ZoneOffset.UTC).plusDays(duration);
+    } else if (timeUnit == TimeUnit.SECONDS) {
+      return OffsetDateTime.now(ZoneOffset.UTC).plusSeconds(duration);
+    } else if (timeUnit == TimeUnit.NANOSECONDS) {
+      return OffsetDateTime.now(ZoneOffset.UTC).plusNanos(duration);
+    } else if (timeUnit == TimeUnit.MINUTES) {
+      return OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(duration);
+    } else if (timeUnit == TimeUnit.HOURS) {
+      return OffsetDateTime.now(ZoneOffset.UTC).plusHours(duration);
+    } else {
+      throw new UnsupportedTemporalTypeException("Unsupported temporal type");
     }
-
-    private String calcBlobAccountUrl(BlobUrlParts parts) {
-        return String.format("https://%s.blob.core.windows.net", parts.getAccountName());
-    }
-
-    private OffsetDateTime calcTokenExpirationDate(long duration, TimeUnit timeUnit) {
-      if (timeUnit == null) {
-        throw new NullPointerException("Time unit cannot be nulll");
-      }
-      if (timeUnit == TimeUnit.DAYS) {
-        return OffsetDateTime.now(ZoneOffset.UTC).plusDays(duration);
-      } else if (timeUnit == TimeUnit.SECONDS){
-        return OffsetDateTime.now(ZoneOffset.UTC).plusSeconds(duration);
-      } else if (timeUnit == TimeUnit.NANOSECONDS){
-        return OffsetDateTime.now(ZoneOffset.UTC).plusNanos(duration);
-      } else if (timeUnit == TimeUnit.MINUTES){
-        return OffsetDateTime.now(ZoneOffset.UTC).plusMinutes(duration);
-      } else if (timeUnit == TimeUnit.HOURS){
-        return OffsetDateTime.now(ZoneOffset.UTC).plusHours(duration);
-      } else {
-        throw new UnsupportedTemporalTypeException("Unsupported temporal type");
-      }
-    }
+  }
 }
