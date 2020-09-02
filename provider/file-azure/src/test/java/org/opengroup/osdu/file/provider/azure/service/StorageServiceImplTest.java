@@ -90,7 +90,7 @@ class StorageServiceImplTest {
   @Test
   void shouldThrowExceptionWhenResultFilepathIsMoreThan1024Characters() {
     // given
-    String fileId = RandomStringUtils.randomAlphanumeric(1025);
+    String fileId = RandomStringUtils.randomAlphanumeric(1024);
     // when
     Throwable thrown = catchThrowable(() -> storageService.createSignedUrl(fileId,
         TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
@@ -104,10 +104,11 @@ class StorageServiceImplTest {
 
   private SignedObject getSignedObject() {
     String containerName = RandomStringUtils.randomAlphanumeric(4);
+    String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);
     String filename = TestUtils.getUuidString();
 
-    URI uri = TestUtils.getAzureObjectUri(containerName, filename);
-    URL url = TestUtils.getAzureObjectUrl(containerName, filename);
+    URI uri = TestUtils.getAzureObjectUri(containerName, folderName, filename);
+    URL url = TestUtils.getAzureObjectUrl(containerName, folderName, filename);
 
     return SignedObject.builder()
         .uri(uri)

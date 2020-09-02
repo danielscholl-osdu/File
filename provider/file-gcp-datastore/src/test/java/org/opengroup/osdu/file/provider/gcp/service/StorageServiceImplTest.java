@@ -74,7 +74,7 @@ class StorageServiceImplTest {
     // when
     SignedUrl signedUrl = storageService.createSignedUrl(
         TestUtils.FILE_ID, TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION);
-    System.out.println("URI" + signedUrl.getUri().toString());
+
     // then
     then(signedUrl).satisfies(url -> {
       then(url.getUrl().toString()).is(TestUtils.GCS_URL_CONDITION);
