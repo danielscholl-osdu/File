@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class AzureTokenServiceImpl {
 
   @Value("${azure_storage.account}")
-  private static String storageAccount;
+  private String storageAccount;
 
   private static String storageAccount_STATIC;
 
@@ -44,7 +44,7 @@ public class AzureTokenServiceImpl {
 
   @Value("${azure_storage.account}")
   public void setStorageAccountStatic(String accountName){
-    AzureTokenServiceImpl.storageAccount_STATIC = accountName;
+    storageAccount_STATIC = accountName;
   }
 
   public AzureTokenServiceImpl() {
