@@ -42,6 +42,7 @@
     <module>provider/file-gcp</module>
     <module>provider/file-ibm</module>
     <module>provider/file-gcp-datastore</module>
+    <module>provider/file-azure</module>
   </modules>
 
   <properties>

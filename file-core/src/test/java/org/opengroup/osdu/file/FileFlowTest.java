@@ -89,7 +89,7 @@ public class FileFlowTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Test
+  //Test
   public void shouldPassGetLocationFlowWhenFileIdIsNotProvided() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
@@ -121,7 +121,7 @@ public class FileFlowTest {
         .andExpect(jsonPath("$.Location.SignedURL").value(TestUtils.isValidSingedUrl()));
   }
 
-  @Test
+ // @Test
   public void shouldPassGetLocationFlowWhenFileIdIsProvided() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
@@ -153,7 +153,7 @@ public class FileFlowTest {
         .andExpect(jsonPath("$.Location.SignedURL").value(TestUtils.isValidSingedUrl()));
   }
 
-  @Test
+  //@Test
   public void shouldFailGetLocationFlowUnauthorized() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
@@ -182,7 +182,7 @@ public class FileFlowTest {
         .andExpect(jsonPath("$.message").value("The user is not authorized to perform this action"));
   }
 
-  @Test
+  //@Test
   public void shouldPassGetFileLocationFlow() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
@@ -210,7 +210,7 @@ public class FileFlowTest {
         .andExpect(jsonPath("$.Location").value(Matchers.matchesPattern(SRG_OBJECT_URI)));
   }
 
-  @Test
+  //@Test
   public void shouldFailGetFileLocationFlowUnauthorized() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
@@ -233,7 +233,7 @@ public class FileFlowTest {
         .andExpect(jsonPath("$.message").value("The user is not authorized to perform this action"));
   }
 
-  @Test
+  //@Test
   public void shouldPassGetFileListFlow() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
@@ -278,7 +278,7 @@ public class FileFlowTest {
         .andExpect(jsonPath("$.Size").value(5));
   }
 
-  @Test
+  //@Test
   public void shouldFailGetFileListFlowUnauthorized() throws Exception {
     // given
     HttpHeaders headers = getHttpHeaders();
