@@ -87,7 +87,7 @@ $ cat ~/.m2/settings.xml
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 ```bash
-cd provider/storage-gcp/ && mvn spring-boot:run
+cd provider/file-gcp-datastore/ && mvn spring-boot:run
 ```
 ### Test the application
 
@@ -95,13 +95,13 @@ After the service has started it should be accessible via a web browser by visit
 
 ```bash
 # build + install integration test core
-$ (cd testing/storage-test-core/ && mvn clean install)
+$ (cd testing/file-test-core/ && mvn clean install)
 
 # build + run GCP integration tests.
 #
 # Note: this assumes that the environment variables for integration tests as outlined
 #       above are already exported in your environment.
-$ (cd testing/storage-test-gcp/ && mvn clean test)
+$ (cd testing/file-test-gcp/ && mvn clean test)
 ```
 
 ## License
