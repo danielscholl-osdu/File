@@ -24,14 +24,12 @@ import java.time.ZoneId;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestFile extends File {
   protected static final DummyRecordsHelper RECORDS_HELPER = new DummyRecordsHelper();
 
   @BeforeAll
   public static void setUp() throws IOException {
-    System.out.println("Inside Setup method ");
     client = new HttpClientAzure();
     cloudStorageUtil = new StorageUtilAzure();
   }
@@ -39,7 +37,6 @@ public class TestFile extends File {
   @Test
   @Override
   public void getLocationShouldReturnForbidden_whenGivenNoDataAccess() throws Exception {
-    System.out.println("Override1");
     ClientResponse getLocationResponse = client.send(
         getLocation,
         "POST",
@@ -51,7 +48,6 @@ public class TestFile extends File {
   @Test
   @Override
   public void shouldReturnUnauthorized_whenGivenAnonimus() throws Exception {
-    System.out.println("Override2");
     ClientResponse getLocationResponse = client.send(
         getLocation,
         "POST",
@@ -63,7 +59,6 @@ public class TestFile extends File {
   @Test
   @Override
   public void shouldReturnUnauthorized_whenPartitionIdNotGiven() throws Exception {
-    System.out.println("Override3");
     ClientResponse getLocationResponse = client.send(
         getLocation,
         "POST",
@@ -75,7 +70,6 @@ public class TestFile extends File {
   @Test
   @Override
   public void shouldReturnUnauthorized_whenGivenInvalidPartitionId() throws Exception {
-    System.out.println("Override4");
     ClientResponse getLocationResponse = client.send(
         getLocation,
         "POST",
