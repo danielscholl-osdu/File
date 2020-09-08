@@ -5,26 +5,34 @@ version: 2
 cli:
   server: https://app.fossa.com
   fetcher: custom
-  project: file-service
+  project: File
 analyze:
   modules:
-  - name: os-file
+  - name: file
     type: mvn
     target: pom.xml
-    path: .
-  - name: file-core
-    type: mvn
-    target: file-core/pom.xml
     path: .
   - name: file-test-core
     type: mvn
     target: testing/file-test-core/pom.xml
     path: .
+  - name: file-core
+    type: mvn
+    target: file-core/pom.xml
+    path: .
   - name: file-gcp
     type: mvn
     target: provider/file-gcp/pom.xml
     path: .
+  - name: file-ibm
+    type: mvn
+    target: provider/file-ibm/pom.xml
+    path: .
   - name: file-gcp-datastore
     type: mvn
     target: provider/file-gcp-datastore/pom.xml
+    path: .
+  - name: file-azure
+    type: mvn
+    target: provider/file-azure/pom.xml
     path: .
