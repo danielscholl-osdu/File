@@ -54,7 +54,7 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_AD_APP_RESOURCE_ID` | `********` | AAD client application ID | yes | output of infrastructure deployment |
 | `osdu_entitlements_url` | ex `https://foo-entitlements.azurewebsites.net` | Entitlements API endpoint | no | output of infrastructure deployment |
 | `osdu_entitlements_app_key` | `********` | The API key clients will need to use when calling the entitlements | yes | -- |
-| `spring.application.name` | `entitlements-azure` | Name of application. Needed by App Insights | no | -- |
+| `spring.application.name` | `file-azure` | Name of application. Needed by App Insights | no | -- |
 | `osdu_storage_url` | `https://storage.azurewebsites.net/api/storage/v2` | Storage API endpoint | no | -- |
 
 **Required to run integration tests**
