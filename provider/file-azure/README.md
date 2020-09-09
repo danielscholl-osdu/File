@@ -160,7 +160,7 @@ export AZURE_BASE=""
 export AZURE_INVALID_JWT=""
 
 # Pipeline Level Variable
-export AZURE_SERVICE="entitlements"
+export AZURE_SERVICE="file"
 export AZURE_BUILD_SUBDIR="."
 export AZURE_TEST_SUBDIR="integration-tests"
 export AZURE_OSDU_TENANT="opendes"
@@ -176,7 +176,7 @@ export AZURE_APPSERVICE_PLAN="${AZURE_BASENAME}-osdu-r2-sp"
 export AZURE_APPSERVICE_NAME="${AZURE_BASENAME_21}-au-${AZURE_SERVICE}"
 
 # Required for Testing
-export ENTITLEMENT_URL="https://${AZURE_BASENAME_21}-au-entitlements.azurewebsites.net/"
+export ENTITLEMENT_URL="https://${AZURE_BASENAME_21}-au-file.azurewebsites.net/"
 export AZURE_AD_TENANT_ID="${AZURE_TENANT_ID}"
 export INTEGRATION_TESTER="${AZURE_PRINCIPAL_ID}"
 export ENTITLEMENT_MEMBER_NAME_VALID="${AZURE_PRINCIPAL_ID}"
@@ -239,7 +239,6 @@ az webapp config set --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_APPSER
 
 ```bash
 mvn clean test -f $AZURE_TEST_SUBDIR/pom.xml
-```
 
 
 ## License
