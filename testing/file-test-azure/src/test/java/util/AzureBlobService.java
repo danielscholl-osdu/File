@@ -14,10 +14,23 @@
 
 package util;
 
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.azure.storage.blob.BlobUrlParts;
+import com.azure.storage.blob.specialized.BlockBlobClient;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class AzureBlobService {
 
-
-
+    private static String clientSecret = System.getProperty("TESTER_SERVICEPRINCIPAL_SECRET", System.getenv("TESTER_SERVICEPRINCIPAL_SECRET"));
+    private static String clientId = System.getProperty("INTEGRATION_TESTER", System.getenv("INTEGRATION_TESTER"));
+    private static String tenantId = System.getProperty("AZURE_AD_TENANT_ID", System.getenv("AZURE_AD_TENANT_ID"));
     private static String storageAccount;
 
     AzureBlobService(String storageAccount) {
@@ -28,9 +41,49 @@ public class AzureBlobService {
         return System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
     }
 
-    private static String generateContainerPath(String accountName, String containerName) {
-        return String.format("https://%s.blob.core.windows.net/%s", accountName, containerName);
+
+
+
+    private BlobContainerClient getBlobContainerClient(String accountName, String containerName) {
+        ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
+                .clientSecret(clientSecret)
+                .clientId(clientId)
+                .tenantId(tenantId)
+                .build();
+        BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
+                .endpoint(getBlobAccountUrl(accountName))
+                .credential(clientSecretCredential)
+                .containerName(containerName)
+                .buildClient();
+        return blobContainerClient;
     }
+
+    private static String getBlobAccountUrl(String accountName) {
+        return String.format("https://%s.blob.core.windows.net", accountName);
+    }
+
+
+    private static String generateBlobName(String blobName) {
+        return blobName.replace(":","_");
+    }
+
+
+
+    private static String generateBlobPath(String accountName, String containerName, String blobName) {
+        return String.format("https://%s.blob.core.windows.net/%s%s", accountName, containerName, blobName);
+    }
+
+    public void deleteObject(String containerName, String blobName) {
+      String blobPath = generateBlobPath(storageAccount, containerName, generateBlobName(blobName));
+      BlobUrlParts parts = BlobUrlParts.parse(blobPath);
+      BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
+      BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
+      if (blockBlobClient.exists()) {
+        blockBlobClient.delete();
+      }
+    }
+
+
 
 
 }
