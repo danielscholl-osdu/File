@@ -24,7 +24,7 @@ public class AzureBlobServiceConfig {
         this.storageAccount = storageAccount;
     }
 
-  public AzureBlobService azureBlobService() {
-    return new AzureBlobService(storageAccount);
-  }
+    public AzureBlobService azureBlobService() {
+        return new AzureBlobService(storageAccount);
+    }
 }

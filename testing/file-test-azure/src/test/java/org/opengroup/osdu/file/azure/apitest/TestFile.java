@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import static org.hamcrest.CoreMatchers.containsString;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.opengroup.osdu.core.common.model.file.FileLocationResponse;
 import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.file.apitest.Config;
@@ -27,12 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestFile extends File {
   protected static final DummyRecordsHelper RECORDS_HELPER = new DummyRecordsHelper();
-
+  private static String containerName = System.getProperty("DATA_PARTITION_ID", System.getenv("DATA_PARTITION_ID"));
   @BeforeAll
   public static void setUp() throws IOException {
     client = new HttpClientAzure();
     cloudStorageUtil = new StorageUtilAzure();
   }
+
 
   @Test
   @Override
@@ -55,7 +57,6 @@ public class TestFile extends File {
         "{}");
     assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
   }
-
   @Test
   @Override
   public void shouldReturnUnauthorized_whenPartitionIdNotGiven() throws Exception {
@@ -136,9 +137,10 @@ public class TestFile extends File {
     String resp = "ConstraintViolationException: Invalid FileLocationRequest";
     assertThat(responseObject.message, containsString(resp));
   }
+
   @Test
   public void getFileListShouldReturnForbidden_whenGivenNoDataAccess() throws Exception {
-        ClientResponse getLocationResponse = client.send(
+    ClientResponse getLocationResponse = client.send(
         getFileList,
         "POST",
         getHeaders(Config.getDataPartitionId(), client.getNoDataAccessToken()),
@@ -146,7 +148,7 @@ public class TestFile extends File {
     assertEquals(HttpStatus.SC_UNAUTHORIZED, getLocationResponse.getStatus());
   }
 
- @Test
+  @Test
   public void getFileListShouldReturnUnauthorized_whenGivenAnonimus() throws Exception {
     ClientResponse getLocationResponse = client.send(
         getFileList,
@@ -175,12 +177,13 @@ public class TestFile extends File {
         "{}");
     assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
   }
+
   @Test
   public void getFileList_shouldReturnBadrequest_whenrecordnotFound() throws Exception {
     LocalDateTime from = LocalDateTime.now(ZoneId.of(Config.getTimeZone()));
     LocalDateTime to = LocalDateTime.now(ZoneId.of(Config.getTimeZone()));
 
-    String fileListRequestBody = FileUtilsAzure.generateFileListRequestBody(0,from, to, (short) 1);
+    String fileListRequestBody = FileUtilsAzure.generateFileListRequestBody(0, from, to, (short) 1);
 
     ClientResponse fileListResponse = client.send(
         getFileList,
@@ -191,6 +194,7 @@ public class TestFile extends File {
     assertNotNull(fileListResponse);
     assertEquals(HttpStatus.SC_BAD_REQUEST, fileListResponse.getStatus());
   }
+
   @Test
   public void getFileListShouldReturnBadrequest_whenRequestBodyEmpty() throws Exception {
     ClientResponse getFileLocationResponse = client.send(
@@ -205,8 +209,7 @@ public class TestFile extends File {
     assertThat(responseObject.message, containsString(resp));
   }
 
-//To Do
-// This tear down method should get refactored to clean up the  signed file location when there is change in azure main implementation
+
   @AfterAll
   public static void tearDown() throws Exception {
     if (!locationResponses.isEmpty()) {
@@ -219,11 +222,14 @@ public class TestFile extends File {
 
         FileLocationResponse fileLocationResponse = mapper
             .readValue(getFileLocationResponse.getEntity(String.class), FileLocationResponse.class);
+        if(fileLocationResponse!=null && StringUtils.isNotBlank(fileLocationResponse.getLocation())) {
+          String fileLoc[] = fileLocationResponse.getLocation().split(containerName);
+          String fileName = fileLoc[1];
+          cloudStorageUtil.deleteCloudFile(containerName, fileName);
 
-        String filename = fileLocationResponse.getLocation();
-
-        cloudStorageUtil.deleteCloudFile("TestContainer", filename);
+        }
       }
     }
   }
 }
+
