@@ -373,4 +373,11 @@ and indexes.
 | -------------- | ---------------------------------- | ----------- |
 | file-locations | `CreatedBy: ASC`, `CreatedAt: ASC` | Collection  |
 
+## Running integration tests
+Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
+
+### GCP
+Instructions for running the GCP integration tests can be found [here](provider/file-gcp-datastore/README.md).
+
+
 [application-default-credentials]: https://developers.google.com/identity/protocols/application-default-credentials#calling
