@@ -63,9 +63,9 @@ public class AzureBlobService {
     }
 
 
-    private static String generateBlobName(String blobName) {
+  /*  private static String generateBlobName(String blobName) {
         return blobName.replace(":","_");
-    }
+    }*/
 
 
 
@@ -74,7 +74,7 @@ public class AzureBlobService {
     }
 
     public void deleteObject(String containerName, String blobName) {
-      String blobPath = generateBlobPath(storageAccount, containerName, generateBlobName(blobName));
+      String blobPath = generateBlobPath(storageAccount, containerName, blobName);
       BlobUrlParts parts = BlobUrlParts.parse(blobPath);
       BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
       BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
