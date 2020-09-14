@@ -19,7 +19,13 @@ variables:
   OSDU_GCP_TENANT_NAME: osdu
   OSDU_GCP_DEPLOY_ENV: empty
   OSDU_GCP_PORT: 8080
-
+  # OSDU GCP integration tests variables
+  FILE_SERVICE_HOST: https://os-file-attcrcktoa-uc.a.run.app
+  TARGET_AUDIENCE: $OSDU_GCP_INTEGRATION_TEST_AUDIENCE
+  DATA_PARTITION_ID: $OSDU_GCP_TENANT_NAME
+  USER_ID: common-user 
+  TIME_ZONE: UTC+0
+  FILE_BUCKET: nice-etching-277309-file
 
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
