@@ -27,6 +27,11 @@ variables:
   TIME_ZONE: UTC+0
   FILE_BUCKET: nice-etching-277309-file
 
+  #Azure
+  AZURE_SERVICE: file
+  AZURE_BUILD_SUBDIR: provider/file-azure
+  AZURE_TEST_SUBDIR: testing/file-test-azure
+
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
@@ -55,3 +60,7 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     ref: 'master'
     file: 'cloud-providers/osdu-gcp-cloudrun.yml'
+
+  - project: 'osdu/platform/ci-cd-pipelines'
+    ref: 'master'
+    file: 'cloud-providers/azure.yml'
