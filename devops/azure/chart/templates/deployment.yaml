@@ -15,17 +15,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  name: {{ .Release.Name }}
   namespace: osdu
 spec:
   replicas: {{ .Values.global.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-{{ .Chart.Name }}
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-{{ .Chart.Name }}
+        app: {{ .Chart.Name }}
         aadpodidbinding: osdu-identity
     spec:
       volumes:
@@ -36,7 +36,7 @@ spec:
           volumeAttributes:
             secretProviderClass: azure-keyvault
       containers:
-        - name: {{ .Release.Name }}-{{ .Chart.Name }}
+        - name: {{ .Chart.Name }}
           image: {{ .Values.image.repository }}/{{ .Chart.Name }}-{{ .Values.image.branch }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: Always
           ports:
