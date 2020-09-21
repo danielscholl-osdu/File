@@ -23,4 +23,4 @@ service:
   type: ClusterIP
   port: 80
   probe:
-    path: /api/file/v2/swagger-ui.html
+    path: /api/file/v2/readiness_check

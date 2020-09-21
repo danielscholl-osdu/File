@@ -41,10 +41,10 @@ spec:
           imagePullPolicy: Always
           ports:
           - containerPort: {{ .Values.service.port }}
-          #readinessProbe:
-            #httpGet:
-              #path: {{ .Values.service.probe.path }}
-              #port: {{ .Values.service.port }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.service.probe.path }}
+              port: {{ .Values.service.port }}
           volumeMounts:
           - name: azure-keyvault
             mountPath: "/mnt/azure-keyvault"

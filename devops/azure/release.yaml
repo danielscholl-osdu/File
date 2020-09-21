@@ -70,11 +70,10 @@ spec:
           imagePullPolicy: Always
           ports:
           - containerPort: 80
-          #Omitting bc health check is different for this service
-          #readinessProbe:
-            #httpGet:
-              #path: /api/file/v2/swagger-ui.html
-              #port: 80
+          readinessProbe:
+            httpGet:
+              path: /api/file/v2/readiness_check
+              port: 80
           volumeMounts:
           - name: azure-keyvault
             mountPath: "/mnt/azure-keyvault"
