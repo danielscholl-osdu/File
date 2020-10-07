@@ -39,6 +39,7 @@
   <modules>
     <module>file-test-core</module>
     <module>file-test-gcp</module>
+	<module>file-test-azure</module>
   </modules>
 
   <repositories>

@@ -19,7 +19,18 @@ variables:
   OSDU_GCP_TENANT_NAME: osdu
   OSDU_GCP_DEPLOY_ENV: empty
   OSDU_GCP_PORT: 8080
+  # OSDU GCP integration tests variables
+  FILE_SERVICE_HOST: https://os-file-attcrcktoa-uc.a.run.app
+  TARGET_AUDIENCE: $OSDU_GCP_INTEGRATION_TEST_AUDIENCE
+  DATA_PARTITION_ID: $OSDU_GCP_TENANT_NAME
+  USER_ID: common-user 
+  TIME_ZONE: UTC+0
+  FILE_BUCKET: nice-etching-277309-file
 
+  #Azure
+  AZURE_SERVICE: file
+  AZURE_BUILD_SUBDIR: provider/file-azure
+  AZURE_TEST_SUBDIR: testing/file-test-azure
 
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
@@ -49,3 +60,7 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     ref: 'master'
     file: 'cloud-providers/osdu-gcp-cloudrun.yml'
+
+  - project: 'osdu/platform/ci-cd-pipelines'
+    ref: 'master'
+    file: 'cloud-providers/azure.yml'
