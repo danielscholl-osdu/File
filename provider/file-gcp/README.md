@@ -114,11 +114,38 @@ $ cat ~/.m2/settings.xml
     </servers>
 </settings>
 ```
-#### Datastore
 
-The service account for File service must have the `datastore.indexes.*` permissions. The
-predefined **roles/datastore.indexAdmin** and **roles/datastore.owner** roles include the required
-permission.
+#### Firestore collections
+
+The GCP implementation of the File service uses Cloud Firestore with the following collections
+and indexes.
+
+##### `file-locations` collection
+
+| Field     | Type     | Description                                                               |
+| --------- | -------- | ------------------------------------------------------------------------- |
+| FileID    | `Object` | Unique file ID that references a file data object with Driver, Location, CreatedAt, and CreatedBy |
+| Driver    | `String` | Description of the storage where files were loaded                        |
+| Location  | `String` | Direct URI to the file in storage                                         |
+| CreatedAt | `String` | Time when the record was created                                          |
+| CreatedBy | `String` | ID of the user that requested file location                               |
+
+> **Note**: The `Location` value might be different from the signed URL returned to the user.
+> **Note**: The `CreatedBy` property isn't supported in the OSDU R2 Prototype.
+
+#### Indexes
+
+##### Single Field
+
+| Collection ID  | Field path | Collection scope | Collection group scope |
+| -------------- | ---------- | ---------------- | ---------------------- |
+| file-locations | FileID     | _no changes_     | _no changes_           |
+
+##### Composite
+
+| Collection ID  | Fields                             | Query scope |
+| -------------- | ---------------------------------- | ----------- |
+| file-locations | `CreatedBy: ASC`, `CreatedAt: ASC` | Collection  |
 
 ### Build and run the application
 
@@ -155,7 +182,7 @@ mvn clean install -DskipTests
 
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 ```bash
-cd provider/file-gcp-datastore/ && mvn spring-boot:run
+cd provider/file-gcp/ && mvn spring-boot:run
 ```
 
 ### Test the application
