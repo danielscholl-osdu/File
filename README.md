@@ -306,78 +306,9 @@ The File service has several Service Provider Interfaces that the classes need t
 | StorageService         | Obligatory to implement | `file-core/src/main/java/.../provider/interfaces/StorageService`         |
 | ValidationService      | Optional to implement   | `file-core/src/main/java/.../provider/interfaces/ValidationService`      |
 
-## GCP implementation
-
-The GCP Identity and Access Management service account for the File service must have the
-`iam.serviceAccounts.signBlob` permission.
-
-The predefined **Cloud Functions Service Agent**, **Cloud Run Service Agent**, and **Service Account
-Token Creator** roles include the required permission.
-
-For development purposes, it's recommended to create a separate service account.
-It's enough to grant the **Service Account Token Creator** role to the development service account.
-
-Obtaining user credentials for Application Default Credentials isn't suitable in this case because
-signing a blob is only available with the service account credentials. Remember to set the
-`GOOGLE_APPLICATION_CREDENTIALS` environment variable. Follow the [instructions on the Google
-developer's portal][application-default-credentials].
-
-### Persistence layer
-
-The GCP implementation contains two mutually exclusive modules to work with the persistence layer.
-Presently, OSDU R2 connects to legacy Cloud Datastore for compatibility with the current OpenDES
-implementation. In the future OSDU releases, Cloud Datastore will be replaced by a Cloud Firestore
-implementation that's already available in the project.
-
-* The Cloud Datastore implementation is located in the **provider/file-gcp-datastore** folder.
-* The Cloud Firestore implementation is located in the **provider/file-gcp** folder.
-
-To learn more about available collections, follow to the [Firestore collections](#firestore-collections)
-section.
-
-## Datastore
-
-The service account for File service must have the `datastore.indexes.*` permissions. The
-predefined **roles/datastore.indexAdmin** and **roles/datastore.owner** roles include the required
-permission.
-
-## Firestore collections
-
-The GCP implementation of the File service uses Cloud Firestore with the following collections
-and indexes.
-
-### `file-locations` collection
-
-| Field     | Type     | Description                                                               |
-| --------- | -------- | ------------------------------------------------------------------------- |
-| FileID    | `Object` | Unique file ID that references a file data object with Driver, Location, CreatedAt, and CreatedBy |
-| Driver    | `String` | Description of the storage where files were loaded                        |
-| Location  | `String` | Direct URI to the file in storage                                         |
-| CreatedAt | `String` | Time when the record was created                                          |
-| CreatedBy | `String` | ID of the user that requested file location                               |
-
-> **Note**: The `Location` value might be different from the signed URL returned to the user.
-> **Note**: The `CreatedBy` property isn't supported in the OSDU R2 Prototype.
-
-### Indexes
-
-#### Single Field
-
-| Collection ID  | Field path | Collection scope | Collection group scope |
-| -------------- | ---------- | ---------------- | ---------------------- |
-| file-locations | FileID     | _no changes_     | _no changes_           |
-
-#### Composite
-
-| Collection ID  | Fields                             | Query scope |
-| -------------- | ---------------------------------- | ----------- |
-| file-locations | `CreatedBy: ASC`, `CreatedAt: ASC` | Collection  |
-
 ## Running integration tests
 Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
-### GCP
-Instructions for running the GCP integration tests can be found [here](provider/file-gcp-datastore/README.md).
-
-
-[application-default-credentials]: https://developers.google.com/identity/protocols/application-default-credentials#calling
+## GCP Implementation
+* All documentation for The Cloud Datastore implementation of File service is located [here](./provider/file-gcp-datastore/README.md).
+* All documentation for The Cloud Firestore implementation of File service is located [here](./provider/file-gcp/README.md).
