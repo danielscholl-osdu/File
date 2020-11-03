@@ -23,12 +23,15 @@ import com.google.gson.JsonParser;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.io.FileInputStream;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -40,10 +43,14 @@ import org.apache.http.util.EntityUtils;
 
 public class GoogleServiceAccount {
 
+  public final static Predicate<String> CREDENTIALS_CONTENT_ACCEPTANCE_TESTER = s -> s.trim().startsWith("{");
   final ServiceAccountCredentials serviceAccount;
 
-  public GoogleServiceAccount(String serviceAccountJson) throws IOException {
-    try (InputStream inputStream = new FileInputStream(serviceAccountJson)) {
+  public GoogleServiceAccount(String serviceAccountValue) throws IOException {
+
+    serviceAccountValue = new DecodedContentExtractor(serviceAccountValue, CREDENTIALS_CONTENT_ACCEPTANCE_TESTER).getContent();
+
+    try (InputStream inputStream = new ByteArrayInputStream(serviceAccountValue.getBytes())) {
       this.serviceAccount = ServiceAccountCredentials.fromStream(inputStream);
     }
   }
