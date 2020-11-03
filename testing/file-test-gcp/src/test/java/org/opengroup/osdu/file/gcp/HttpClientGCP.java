@@ -18,15 +18,19 @@
 package org.opengroup.osdu.file.gcp;
 
 import java.io.IOException;
+
+import lombok.extern.java.Log;
 import org.opengroup.osdu.file.HttpClient;
 import org.opengroup.osdu.file.apitest.Config;
 import org.opengroup.osdu.file.gcp.util.GoogleServiceAccount;
 
+@Log
 public class HttpClientGCP extends HttpClient {
 
   @Override
   public String getAccessToken() throws IOException {
     if (accessToken == null || accessToken.isEmpty()) {
+      log.info("Get INTEGRATION_TESTER credentials");
       accessToken = new GoogleServiceAccount(Config.getIntegrationTester())
           .getAuthToken(Config.getTargetAudience());
     }
@@ -36,6 +40,7 @@ public class HttpClientGCP extends HttpClient {
   @Override
   public String getNoDataAccessToken() throws IOException {
     if (noDataAccessToken == null || noDataAccessToken.isEmpty()) {
+      log.info("Get NO_DATA_ACCESS_TESTER credentials");
       noDataAccessToken = new GoogleServiceAccount(
           Config.getNoAccessTester())
           .getAuthToken(Config.getTargetAudience());
