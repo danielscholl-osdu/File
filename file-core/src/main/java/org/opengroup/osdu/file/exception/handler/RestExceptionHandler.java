@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.file.errors.Error;
+import org.opengroup.osdu.file.errors.model.*;
+import org.opengroup.osdu.file.exception.*;
+import org.opengroup.osdu.file.service.storage.StorageException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -46,6 +53,123 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
   final JaxRsDpsLog log;
+  private static final String CORRELATION_ID = "correlation-id";
+  @ExceptionHandler({ HttpMessageConversionException.class})
+  protected ResponseEntity<Object> handleEnumValidationException(HttpMessageConversionException ex, WebRequest request) {
+    String errorMessage = ex.getMostSpecificCause().getLocalizedMessage();
+    Error error = new Error(HttpStatus.BAD_REQUEST);
+    error.setCode(400);
+    error.setMessage("Validation Error");
+    error.addErrors(new BadRequestError(errorMessage));
+
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+  @ExceptionHandler(StorageException.class)
+  protected ResponseEntity<Object> handleStorageException(StorageException ex, WebRequest request) {
+    String errorMessage = ex.getMessage();
+    Error error = new Error(HttpStatus.resolve(ex.getHttpResponse().getResponseCode()));
+    error.setMessage("Storage record error");
+    StorageError storageError  = new StorageError();
+    storageError.setErrorProperties(ex.getHttpResponse().getBody());
+    error.addErrors(storageError);
+    error.setCode(ex.getHttpResponse().getResponseCode());
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+
+
+  @ExceptionHandler(ApplicationException.class)
+  protected ResponseEntity<Object> handleApplicationException(ApplicationException ex, WebRequest request) {
+    String errorMessage = ex.getErrorMsg();
+    Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR);
+    error.setCode(500);
+    error.setMessage(ex.getErrorMsg());
+    error.addErrors(new InternalServerError(errorMessage));
+
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+  /*
+   * Triggered when a runtime exception is thrown
+   */
+  @ExceptionHandler(RuntimeException.class)
+  protected ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
+    String errorMessage = "Internal server error";
+    Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR);
+    error.setCode(500);
+    error.setMessage(errorMessage);
+    error.addErrors(new InternalServerError(errorMessage));
+
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(OsduBadRequestException.class)
+  protected ResponseEntity<Object> handleBadRequest(OsduBadRequestException ex, WebRequest request) {
+    String errorMessage = ex.getMessage();
+    Error error = new Error(HttpStatus.BAD_REQUEST);
+    error.setCode(400);
+    error.setMessage(ex.getMessage());
+    error.addErrors(new BadRequestError(errorMessage));
+
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+    String errorMessage = ex.getErrorMsg();
+    Error error = new Error(HttpStatus.NOT_FOUND);
+    error.setCode(404);
+    error.setMessage(errorMessage);
+    error.addErrors(new NotFoundError(errorMessage));
+
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+
+  @ExceptionHandler(OsduUnauthorizedException.class)
+  protected ResponseEntity<Object> handleAccessDeniedException(OsduUnauthorizedException ex, WebRequest request) {
+    String errorMessage = ex.getMessage();
+    Error error = new Error(HttpStatus.UNAUTHORIZED);
+    error.setCode(401);
+    error.setMessage(errorMessage);
+    error.addErrors(new AuthorizationError(errorMessage));
+
+    errorMessage = getCorrelationId(request) + errorMessage;
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers, HttpStatus status, WebRequest request) {
+    String errorMessage = "Parameter validation error :" + ex.getBindingResult().getFieldErrors().toString();
+    Error error = new Error(HttpStatus.BAD_REQUEST);
+    error.setCode(400);
+    error.setMessage("Validation Error");
+    error.addValidationErrors(ex.getBindingResult().getFieldErrors());
+
+    errorMessage = errorMessage + getCorrelationId(request);
+    log.error(errorMessage);
+    log.warning(errorMessage, ex);
+    return buildResponseEntity(error);
+  }
 
   @ExceptionHandler({ JsonParseException.class, IllegalStateException.class,
       MismatchedInputException.class, IllegalArgumentException.class })
@@ -88,11 +212,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
   @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+                                                                HttpHeaders headers, HttpStatus status, WebRequest request) {
     ApiError apiError = ApiError.builder()
-        .status(status)
-        .message(ex.getLocalizedMessage())
-        .build();
+                                .status(status)
+                                .message("Invalid Json Input")
+                                .build();
     return handleExceptionInternal(ex, apiError, headers, status, request);
   }
 
@@ -115,6 +239,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     } else {
       return new ResponseEntity<>(e.getError(), httpStatus);
     }
+  }
+
+  protected ResponseEntity<Object> buildResponseEntity(Error error) {
+    return new ResponseEntity<>(error, error.getStatus());
+  }
+
+  protected String getCorrelationId(WebRequest request) {
+    return Optional
+        .ofNullable(request.getHeader(CORRELATION_ID)).map(value -> value + " : ").orElse("");
   }
 
 }

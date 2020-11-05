@@ -19,20 +19,19 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>org.opengroup.osdu</groupId>
-    <artifactId>os-file-test</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-
-  <artifactId>file-test-gcp</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
-
+<!--  <parent>-->
+<!--    <groupId>org.opengroup.osdu</groupId>-->
+<!--    <artifactId>os-file-test</artifactId>-->
+<!--    <version>0.0.1-SNAPSHOT</version>-->
+<!--  </parent>-->
 
   <name>file-test-gcp</name>
   <description>GCP implementation of test project for file service</description>
+  <groupId>org.opengroup.osdu</groupId>
+  <artifactId>file-test-gcp</artifactId>
+  <packaging>jar</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -44,13 +43,79 @@
   <dependencies>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>file-test-core</artifactId>
+      <artifactId>file-core</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
+<!--    <dependency>-->
+<!--      <groupId>org.opengroup.osdu</groupId>-->
+<!--      <artifactId>file-test-core</artifactId>-->
+<!--      <version>0.0.1-SNAPSHOT</version>-->
+<!--		</dependency>-->
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+      <version>3.9</version>
+		</dependency>
+
+    <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>4.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
+      <scope>test</scope>
+    </dependency>
+
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java8</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
+
+    <dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-guice</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>4.2.0</version>
+			<scope>test</scope>
+		</dependency>
+
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
       <version>1.108.0</version>
+    </dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>2.7.5</version>
     </dependency>
     <dependency>
       <groupId>com.google.auth</groupId>
@@ -66,22 +131,61 @@
   </dependencies>
 
   <build>
-    <defaultGoal>test</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.2</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit-jupiter.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <trimStackTrace>false</trimStackTrace>
-        </configuration>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <executions>
+          <execution>
+            <id>pre-integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <skipTests>${skipItTests}</skipTests>
+              <includes>
+                <include>org.opengroup.osdu.file.runner.PreIntegrationTestsRunner
+                </include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <skipTests>${skipItTests}</skipTests>
+              <excludes>
+                <exclude>none</exclude>
+              </excludes>
+              <includes>
+                <include>org.opengroup.osdu.file.runner.FileTestsRunner
+                </include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <configuration>
+              <skipTests>${skipItTests}</skipTests>
+              <includes>
+                <include>org.opengroup.osdu.file.runner.TearDownTestsRunner
+                </include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

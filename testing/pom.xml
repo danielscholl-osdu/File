@@ -38,14 +38,14 @@
 
   <modules>
     <module>file-test-core</module>
-    <module>file-test-gcp</module>
+<!--    <module>file-test-gcp</module>-->
 	<module>file-test-azure</module>
   </modules>
 
   <repositories>
     <repository>
-      <id>${repo.releases.id}</id>
-      <url>${repo.releases.url}</url>
+      <id>${gitlab-server}</id>
+      <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
     </repository>
   </repositories>
 

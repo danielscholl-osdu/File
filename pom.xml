@@ -40,7 +40,7 @@
     <module>file-core</module>
 <!--    <module>provider/file-aws</module> FIX: Missing dependencies  -->
     <module>provider/file-gcp</module>
-    <module>provider/file-ibm</module>
+<!--    <module>provider/file-ibm</module>-->
     <module>provider/file-gcp-datastore</module>
     <module>provider/file-azure</module>
   </modules>
@@ -271,21 +271,21 @@
   </build>
 
   <repositories>
-		<repository>
-			<id>${repo.releases.id}</id>
-			<url>${repo.releases.url}</url>
-		</repository>
-	</repositories>
+    <repository>
+      <id>${gitlab-server}</id>
+      <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
+    </repository>
+  </repositories>
 
-	<distributionManagement>
-		<repository>
-			<id>${publish.releases.id}</id>
-			<url>${publish.releases.url}</url>
-		</repository>
-		<snapshotRepository>
-			<id>${publish.snapshots.id}</id>
-			<url>${publish.snapshots.url}</url>
-		</snapshotRepository>
-	</distributionManagement>
+<!--	<distributionManagement>-->
+<!--		<repository>-->
+<!--			<id>${publish.releases.id}</id>-->
+<!--			<url>${publish.releases.url}</url>-->
+<!--		</repository>-->
+<!--		<snapshotRepository>-->
+<!--			<id>${publish.snapshots.id}</id>-->
+<!--			<url>${publish.snapshots.url}</url>-->
+<!--		</snapshotRepository>-->
+<!--	</distributionManagement>-->
 
 </project>

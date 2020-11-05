@@ -16,6 +16,8 @@
 
 package org.opengroup.osdu.file.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
@@ -27,6 +29,7 @@ import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.file.provider.interfaces.ILocationService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,6 +63,15 @@ public class FileLocationApi {
     FileLocationResponse fileLocationResponse = locationService.getFileLocation(request, headers);
     log.debug("File location result ready : {}", fileLocationResponse);
     return fileLocationResponse;
+  }
+
+  @GetMapping("/v1/files/uploadURL")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
+  public LocationResponse getLocationFile() throws JsonProcessingException {
+    LocationRequest req = (new ObjectMapper()).readValue("{}", LocationRequest.class);
+    LocationResponse locationResponse = locationService.getLocation(req, headers);
+    log.debug("Location result ready : {}", locationResponse);
+    return locationResponse;
   }
 
 }

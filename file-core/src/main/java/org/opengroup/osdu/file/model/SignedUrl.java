@@ -32,7 +32,9 @@ public class SignedUrl {
 
   URI uri;
   URL url;
+  String fileSource;
   String createdBy;
   Instant createdAt;
+  String connectionString;
 
 }
