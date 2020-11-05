@@ -44,8 +44,8 @@
 
   <repositories>
     <repository>
-      <id>${gitlab-server}</id>
-      <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
+      <id>${repo.releases.id}</id>
+      <url>${repo.releases.url}</url>
     </repository>
   </repositories>
 
@@ -60,3 +60,4 @@
     </snapshotRepository>
   </distributionManagement>
 </project>
+
