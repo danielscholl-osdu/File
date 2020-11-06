@@ -1,6 +1,7 @@
 package org.opengroup.osdu.file.api;
 
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
+import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.exception.NotFoundException;
@@ -25,7 +26,7 @@ public class FileMetadataApi {
   final FileMetadataService fileMetadataService;
 
   @PostMapping("/metadata")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public ResponseEntity<FileMetadataResponse> postFilesMetadata(@Validated(FileMetadataValidationSequence.class)
                                                                 @RequestBody FileMetadata fileMetadata)
       throws OsduBadRequestException, StorageException, ApplicationException {
@@ -34,7 +35,7 @@ public class FileMetadataApi {
   }
 
   @GetMapping("/{id}/metadata")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.VIEWER + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
   public ResponseEntity<RecordVersion> getFileMetadataById(@PathVariable("id") String id)
       throws OsduBadRequestException, ApplicationException, NotFoundException {
     return new ResponseEntity<>(fileMetadataService.getMetadataById(id), HttpStatus.OK);

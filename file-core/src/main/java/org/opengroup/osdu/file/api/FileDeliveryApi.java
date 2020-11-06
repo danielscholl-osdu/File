@@ -1,6 +1,7 @@
 package org.opengroup.osdu.file.api;
 
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
+import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.service.FileDeliveryService;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class FileDeliveryApi {
   final FileDeliveryService fileDeliveryService;
 
   // TODO: Create the permission for os-file and change pre authorize annotation
-  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.VIEWER + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
   @GetMapping("/v1/files/{id}/downloadURL")
   public ResponseEntity<DownloadUrlResponse> downloadURL(@PathVariable("id") String id) {
     DownloadUrlResponse signedUrl = fileDeliveryService.getSignedUrlsByRecordId(id);
