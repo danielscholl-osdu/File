@@ -37,20 +37,24 @@ public class FileDeliveryService {
     try {
       rec = dataLakeStorage.getRecord(id);
 
-    }catch(StorageException storageExc) {
+    } catch (StorageException storageExc) {
 
       HttpResponse response = storageExc.getHttpResponse();
-      throw new AppException(response.getResponseCode(), "Failed to find record for the given file id.",storageExc.getMessage());
+      throw new AppException(response.getResponseCode(),
+                             "Failed to find record for the given file id.",
+                             storageExc.getMessage());
     }
 
-    if(null == rec)
+    if (null == rec)
       throw new AppException(HttpStatus.SC_NOT_FOUND, "Not Found.", "File id not found.");
 
     JsonObject data = rec.getData();
     JsonElement filePathJE = data.get(FileMetadataConstant.FILE_SOURCE);
-    String absolutePath = storageUtilService.getPersistentLocation(filePathJE.getAsString(), headers.getPartitionId());
-    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(absolutePath, headers.getAuthorization());
-    return  DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
+    String absolutePath = storageUtilService.getPersistentLocation(filePathJE.getAsString(),
+                                                                   headers.getPartitionId());
+    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(absolutePath,
+                                                                     headers.getAuthorization());
+    return DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
   }
 
 }

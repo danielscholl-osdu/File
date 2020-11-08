@@ -32,12 +32,12 @@ public class GoogleCloudStorageOperationImpl implements ICloudStorageOperation {
 
 
   @Override
-  public String copyFile(String fromFile, String toFile) throws OsduBadRequestException {
+  public String copyFile(String sourceFilePath, String toFile) throws OsduBadRequestException {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
     Storage storage = storageFactory.get(tenantInfo);
 
-    String fromBucket = googleCloudStorageUtil.getBucketName(fromFile);
-    String fromPath = googleCloudStorageUtil.getDirectoryPath(fromFile);
+    String fromBucket = googleCloudStorageUtil.getBucketName(sourceFilePath);
+    String fromPath = googleCloudStorageUtil.getDirectoryPath(sourceFilePath);
     String destinationBucket = googleCloudStorageUtil.getBucketName(toFile);
     String destinationFilePath = googleCloudStorageUtil.getDirectoryPath(toFile);
 
@@ -51,7 +51,7 @@ public class GoogleCloudStorageOperationImpl implements ICloudStorageOperation {
     Blob sourceBlob = storage.get(fromBucket, fromPath);
     if (sourceBlob == null) {
       throwBadRequest(getErrorMessageFileNotPresent(fromPath),
-                      FileMetadataConstant.INVALID_SOURCE_EXCEPTION + fromFile);
+                      FileMetadataConstant.INVALID_SOURCE_EXCEPTION + sourceFilePath);
     }
     String fileContentType = sourceBlob.getContentType();
     BlobId sourceBlobId = sourceBlob.getBlobId();

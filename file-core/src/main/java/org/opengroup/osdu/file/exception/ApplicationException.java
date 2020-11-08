@@ -10,7 +10,6 @@ public class ApplicationException extends Exception {
 
     private final HttpStatus status;
     private final String errorMsg;
-    private static final long serialVersionUID = 5528317674234634627L;
 
     public ApplicationException(HttpStatus status, String errorMsg, Throwable throwable) {
         super(errorMsg, throwable);

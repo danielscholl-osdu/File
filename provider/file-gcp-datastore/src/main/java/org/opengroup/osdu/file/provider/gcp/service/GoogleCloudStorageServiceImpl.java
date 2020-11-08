@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -47,13 +46,7 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class GoogleCloudStorageServiceImpl implements IStorageService {
 
-  private final static String URI_EXCEPTION_REASON = "Exception creating signed url";
-
   private final static String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
-
-
-  private static final DateTimeFormatter DATE_TIME_FORMATTER
-      = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
 
   final FileLocationProperties fileLocationProperties;
   final IStorageRepository storageRepository;
@@ -130,10 +123,6 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
 
   private String getRelativeFileSource(String filepath) {
     return "/" + filepath;
-  }
-
-  private String getBucketName(String partitionID) {
-    return fileLocationProperties.getBucketName();
   }
 
   private String getUserDesID(String authorizationToken) {

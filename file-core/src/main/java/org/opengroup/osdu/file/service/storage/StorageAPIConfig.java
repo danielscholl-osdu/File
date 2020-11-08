@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class StorageAPIConfig {
 
-    String rootUrl;
+    String storageServiceBaseUrl;
     String apiKey;
 
     public static StorageAPIConfig Default() {

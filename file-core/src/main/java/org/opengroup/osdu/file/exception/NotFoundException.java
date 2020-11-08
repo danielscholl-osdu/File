@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 public class NotFoundException extends Exception {
 
-	private static final long serialVersionUID = 3415394375069766727L;
 	private final HttpStatus status;
 	private final String errorMsg;
 

@@ -36,7 +36,6 @@ public interface IStorageService {
   /**
    * Gets a signed url from an unsigned url
    *
-   * @param srn
    * @param unsignedUrl
    * @param authorizationToken
    * @return
@@ -44,17 +43,4 @@ public interface IStorageService {
   default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
     return null;
   }
-
-  /**
-   * Gets a signed url from an unsigned url
-   *
-   * @param unsignedUrl
-   * @param authorizationToken
-   * @return
-   */
-  default SignedUrl createSignedUrlFileLocation(String srn, String unsignedUrl, String authorizationToken) {
-    return createSignedUrlFileLocation(unsignedUrl, authorizationToken);
-  }
-
-
 }

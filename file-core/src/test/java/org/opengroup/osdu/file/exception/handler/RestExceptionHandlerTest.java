@@ -62,6 +62,7 @@ public class RestExceptionHandlerTest {
     assertNotNull(response);
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
+
   @Test
   public void testBadRequestException() {
     OsduBadRequestException ex = new OsduBadRequestException("Bad request");
@@ -69,6 +70,7 @@ public class RestExceptionHandlerTest {
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
+
   @Test
   public void testAuthorizationException() {
     OsduUnauthorizedException ex = new OsduUnauthorizedException("Unauthorized");
@@ -76,6 +78,7 @@ public class RestExceptionHandlerTest {
     assertNotNull(response);
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
   }
+
   @Test
   public void testApplicationException() {
     ApplicationException ex = new ApplicationException();
@@ -83,6 +86,7 @@ public class RestExceptionHandlerTest {
     assertNotNull(response);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
+
   @Test
   public void testRuntimeException() {
     RuntimeException ex = new RuntimeException();
@@ -94,7 +98,8 @@ public class RestExceptionHandlerTest {
   @Test
   public void testHandleStorageException() {
     HttpResponse httpResponse = new HttpResponse();
-    httpResponse.setBody("{\"code\":400,\"reason\":\"Invalid ACL\",\"message\":\"Acl not match with tenant or domain\"}");
+    httpResponse.setBody(
+        "{\"code\":400,\"reason\":\"Invalid ACL\",\"message\":\"Acl not match with tenant or domain\"}");
     httpResponse.setResponseCode(400);
     StorageException ex = new StorageException("message", httpResponse);
     ResponseEntity<Object> response = handler.handleStorageException(ex, mockRequest);
@@ -106,8 +111,10 @@ public class RestExceptionHandlerTest {
   public void testHandleHttpMessageNotReadableExceptionEnum() {
     EnumValidationException ex = new EnumValidationException("key", "inputValue");
     Mockito.when(mockHttpMsgException.getMostSpecificCause()).thenReturn(ex);
-    ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(mockHttpMsgException, headers,
-      status.BAD_REQUEST, mockRequest);
+    ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(mockHttpMsgException,
+                                                                           headers,
+                                                                           status.BAD_REQUEST,
+                                                                           mockRequest);
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
@@ -116,8 +123,10 @@ public class RestExceptionHandlerTest {
   public void testHandleHttpMessageNotReadableExceptionGeneral() {
     OsduBadRequestException ex = new OsduBadRequestException("error");
     Mockito.when(mockHttpMsgException.getMostSpecificCause()).thenReturn(ex);
-    ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(mockHttpMsgException, headers,
-      status.BAD_REQUEST, mockRequest);
+    ResponseEntity<Object> response = handler.handleHttpMessageNotReadable(mockHttpMsgException,
+                                                                           headers,
+                                                                           status.BAD_REQUEST,
+                                                                           mockRequest);
     assertNotNull(response);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }

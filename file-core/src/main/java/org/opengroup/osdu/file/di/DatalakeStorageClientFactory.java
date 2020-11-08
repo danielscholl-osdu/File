@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatalakeStorageClientFactory extends AbstractFactoryBean<DataLakeStorageFactory> {
-    @Value("${STORAGE_API}")
+    @Value("${storage.api}")
     private String api;
 
-    @Value("${AUTHORIZE_API_KEY}")
+    @Value("${authorize.api.key}")
     private String apiKey;
 
     @Override
     protected DataLakeStorageFactory createInstance() throws Exception {
 
-        return new DataLakeStorageFactory(StorageAPIConfig.builder().rootUrl(this.api).apiKey(this.apiKey).build());
+        return new DataLakeStorageFactory(StorageAPIConfig.builder().storageServiceBaseUrl(this.api).apiKey(this.apiKey).build());
     }
 
     @Override

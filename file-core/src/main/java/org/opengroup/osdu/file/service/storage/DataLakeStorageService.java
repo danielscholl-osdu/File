@@ -10,7 +10,7 @@ import org.opengroup.osdu.file.model.storage.UpsertRecords;
 import com.google.gson.JsonSyntaxException;
 
 public class DataLakeStorageService {
-    private final String rootUrl;
+    private final String storageServiceBaseUrl;
     private final IHttpClient httpClient;
     private final DpsHeaders headers;
 
@@ -18,7 +18,7 @@ public class DataLakeStorageService {
             StorageAPIConfig config,
             IHttpClient httpClient,
             DpsHeaders headers) {
-        this.rootUrl = config.getRootUrl();
+        this.storageServiceBaseUrl = config.getStorageServiceBaseUrl();
         this.httpClient = httpClient;
         this.headers = headers;
         if (config.getApiKey() != null) {
@@ -53,7 +53,7 @@ public class DataLakeStorageService {
     }
 
     private String createUrl(String pathAndQuery) {
-        return StringUtils.join(this.rootUrl, pathAndQuery);
+        return StringUtils.join(this.storageServiceBaseUrl, pathAndQuery);
     }
 
     private <T> T getResult(HttpResponse result, Class<T> type) throws StorageException {

@@ -8,21 +8,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileMetadataUtil {
 
-	String getUniqueId() {
-		return UUID.randomUUID().toString();
-	}
+  String getUniqueId() {
+    return UUID.randomUUID().toString();
+  }
 
-
-
-	public String generateRecordId(String dataPartitionId) {
-		String source = "file";
-		return new StringBuilder(dataPartitionId)
-				.append(FileMetadataConstant.KIND_SEPRATOR)
-				.append(source)
-				.append(FileMetadataConstant.KIND_SEPRATOR)
-				.append(getUniqueId())
-				.toString();
-	}
-
+  public String generateRecordId(String dataPartitionId) {
+    return new StringBuilder(dataPartitionId)
+        .append(FileMetadataConstant.KIND_SEPRATOR)
+        .append(FileMetadataConstant.FILE)
+        .append(FileMetadataConstant.KIND_SEPRATOR)
+        .append(getUniqueId())
+        .toString();
+  }
 
 }

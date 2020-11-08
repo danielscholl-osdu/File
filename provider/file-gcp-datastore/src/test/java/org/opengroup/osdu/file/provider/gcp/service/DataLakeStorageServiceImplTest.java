@@ -73,7 +73,7 @@ class DataLakeStorageServiceImplTest {
 
     // when
     SignedUrl signedUrl = storageService.createSignedUrlFileLocation(
-            TestUtils.PARTITION, TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
+            TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
 
     // then
     then(signedUrl).satisfies(url -> {
@@ -96,7 +96,7 @@ class DataLakeStorageServiceImplTest {
 
     // when
     SignedUrl signedUrl = storageService.createSignedUrlFileLocation(
-            TestUtils.PARTITION, TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
+            TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
 
     // then
     then(signedUrl).satisfies(url -> {
