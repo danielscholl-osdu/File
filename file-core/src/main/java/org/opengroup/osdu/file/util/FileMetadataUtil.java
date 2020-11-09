@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileMetadataUtil {
 
-  String getUniqueId() {
+  String generateUniqueId() {
     return UUID.randomUUID().toString();
   }
 
@@ -17,7 +17,7 @@ public class FileMetadataUtil {
         .append(FileMetadataConstant.KIND_SEPRATOR)
         .append(FileMetadataConstant.FILE)
         .append(FileMetadataConstant.KIND_SEPRATOR)
-        .append(getUniqueId())
+        .append(generateUniqueId())
         .toString();
   }
 

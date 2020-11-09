@@ -17,7 +17,7 @@ public class RelatedItems {
 
     private List<Integer> confidences = new ArrayList<>();
 
-    private List<String> ids = new LinkedList<>();
+    private List<String> ids = new ArrayList<>();
 
     private List<String> names = new ArrayList<>();
 

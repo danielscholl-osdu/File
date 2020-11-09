@@ -19,7 +19,7 @@ import java.util.List;
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME, visible = true)
 @JsonTypeName("error")
-public class Error {
+public class ErrorResponse {
 
     @JsonIgnore
     private HttpStatus status;
@@ -28,7 +28,7 @@ public class Error {
     private String message;
     private List<ErrorDetails> errors;
 
-    public Error(HttpStatus status) {
+    public ErrorResponse(HttpStatus status) {
         this.status = status;
     }
 

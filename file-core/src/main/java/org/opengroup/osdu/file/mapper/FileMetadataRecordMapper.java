@@ -6,10 +6,12 @@ import org.opengroup.osdu.file.model.filemetadata.RecordVersion;
 import org.opengroup.osdu.file.model.filemetadata.filedetails.FileData;
 import org.opengroup.osdu.file.model.storage.Record;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 @Component
 public class FileMetadataRecordMapper {
@@ -21,23 +23,27 @@ public class FileMetadataRecordMapper {
   }
 
   JsonObject asJsonObject(FileData fileData) throws ApplicationException {
+
+    String schemaString = null;
     try {
-      String schemaString = mapper.writeValueAsString(fileData);
+      schemaString = mapper.writeValueAsString(fileData);
       Gson gson = new GsonBuilder().create();
       return gson.fromJson(schemaString, JsonObject.class);
-    } catch (Exception e) {
+    } catch (JsonProcessingException | JsonSyntaxException e) {
       throw new ApplicationException("Error occurred in data payload parsing", e);
     }
+
   }
 
   FileData jsonObjectToFileData(JsonObject jsonObject) throws ApplicationException {
-    try {
+
       Gson gson = new GsonBuilder().create();
 
       String schemaString = gson.toJson(jsonObject);
 
+    try {
       return mapper.readValue(schemaString, FileData.class);
-    } catch (Exception e) {
+    } catch (JsonProcessingException e) {
       throw new ApplicationException("Error occurred in data payload parsing", e);
     }
   }

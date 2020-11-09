@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.file.errors.Error;
+import org.opengroup.osdu.file.errors.ErrorResponse;
 import org.opengroup.osdu.file.errors.model.*;
 import org.opengroup.osdu.file.exception.*;
 import org.opengroup.osdu.file.service.storage.StorageException;
@@ -57,44 +57,44 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({ HttpMessageConversionException.class})
   protected ResponseEntity<Object> handleEnumValidationException(HttpMessageConversionException ex, WebRequest request) {
     String errorMessage = ex.getMostSpecificCause().getLocalizedMessage();
-    Error error = new Error(HttpStatus.BAD_REQUEST);
-    error.setCode(400);
-    error.setMessage("Validation Error");
-    error.addErrors(new BadRequestError(errorMessage));
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
+    errorResponse.setCode(400);
+    errorResponse.setMessage("Validation Error");
+    errorResponse.addErrors(new BadRequestError(errorMessage));
 
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
   @ExceptionHandler(StorageException.class)
   protected ResponseEntity<Object> handleStorageException(StorageException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
-    Error error = new Error(HttpStatus.resolve(ex.getHttpResponse().getResponseCode()));
-    error.setMessage("Storage record error");
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.resolve(ex.getHttpResponse().getResponseCode()));
+    errorResponse.setMessage("Storage record error");
     StorageError storageError  = new StorageError();
     storageError.setErrorProperties(ex.getHttpResponse().getBody());
-    error.addErrors(storageError);
-    error.setCode(ex.getHttpResponse().getResponseCode());
+    errorResponse.addErrors(storageError);
+    errorResponse.setCode(ex.getHttpResponse().getResponseCode());
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
 
 
   @ExceptionHandler(ApplicationException.class)
   protected ResponseEntity<Object> handleApplicationException(ApplicationException ex, WebRequest request) {
     String errorMessage = ex.getErrorMsg();
-    Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR);
-    error.setCode(500);
-    error.setMessage(ex.getErrorMsg());
-    error.addErrors(new InternalServerError(errorMessage));
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+    errorResponse.setCode(500);
+    errorResponse.setMessage(ex.getErrorMsg());
+    errorResponse.addErrors(new InternalServerError(errorMessage));
 
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
   /*
    * Triggered when a runtime exception is thrown
@@ -102,57 +102,57 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(RuntimeException.class)
   protected ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
     String errorMessage = "Internal server error";
-    Error error = new Error(HttpStatus.INTERNAL_SERVER_ERROR);
-    error.setCode(500);
-    error.setMessage(errorMessage);
-    error.addErrors(new InternalServerError(errorMessage));
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+    errorResponse.setCode(500);
+    errorResponse.setMessage(errorMessage);
+    errorResponse.addErrors(new InternalServerError(errorMessage));
 
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
 
   @ExceptionHandler(OsduBadRequestException.class)
   protected ResponseEntity<Object> handleBadRequest(OsduBadRequestException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
-    Error error = new Error(HttpStatus.BAD_REQUEST);
-    error.setCode(400);
-    error.setMessage(ex.getMessage());
-    error.addErrors(new BadRequestError(errorMessage));
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
+    errorResponse.setCode(400);
+    errorResponse.setMessage(ex.getMessage());
+    errorResponse.addErrors(new BadRequestError(errorMessage));
 
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
 
   @ExceptionHandler(NotFoundException.class)
   protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
     String errorMessage = ex.getErrorMsg();
-    Error error = new Error(HttpStatus.NOT_FOUND);
-    error.setCode(404);
-    error.setMessage(errorMessage);
-    error.addErrors(new NotFoundError(errorMessage));
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND);
+    errorResponse.setCode(404);
+    errorResponse.setMessage(errorMessage);
+    errorResponse.addErrors(new NotFoundError(errorMessage));
 
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
 
   @ExceptionHandler(OsduUnauthorizedException.class)
   protected ResponseEntity<Object> handleAccessDeniedException(OsduUnauthorizedException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
-    Error error = new Error(HttpStatus.UNAUTHORIZED);
-    error.setCode(401);
-    error.setMessage(errorMessage);
-    error.addErrors(new AuthorizationError(errorMessage));
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED);
+    errorResponse.setCode(401);
+    errorResponse.setMessage(errorMessage);
+    errorResponse.addErrors(new AuthorizationError(errorMessage));
 
     errorMessage = getCorrelationId(request) + errorMessage;
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
 
   @Override
@@ -160,15 +160,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
       MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatus status, WebRequest request) {
     String errorMessage = "Parameter validation error :" + ex.getBindingResult().getFieldErrors().toString();
-    Error error = new Error(HttpStatus.BAD_REQUEST);
-    error.setCode(400);
-    error.setMessage("Validation Error");
-    error.addValidationErrors(ex.getBindingResult().getFieldErrors());
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
+    errorResponse.setCode(400);
+    errorResponse.setMessage("Validation Error");
+    errorResponse.addValidationErrors(ex.getBindingResult().getFieldErrors());
 
     errorMessage = errorMessage + getCorrelationId(request);
     log.error(errorMessage);
     log.warning(errorMessage, ex);
-    return buildResponseEntity(error);
+    return buildResponseEntity(errorResponse);
   }
 
   @ExceptionHandler({ JsonParseException.class, IllegalStateException.class,
@@ -241,8 +241,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
   }
 
-  protected ResponseEntity<Object> buildResponseEntity(Error error) {
-    return new ResponseEntity<>(error, error.getStatus());
+  protected ResponseEntity<Object> buildResponseEntity(ErrorResponse errorResponse) {
+    return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
   }
 
   protected String getCorrelationId(WebRequest request) {
