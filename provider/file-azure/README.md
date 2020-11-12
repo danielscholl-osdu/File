@@ -1,6 +1,6 @@
 # file-azure
 
-file-azure is a [Spring Boot](https://spring.io/projects/spring-boot) service that  provides internal and external API endpoints to let the application or user fetch any records from the system or request file location data.  
+file-azure is a [Spring Boot](https://spring.io/projects/spring-boot) service that  provides internal and external API endpoints to let the application or user fetch any records from the system or request file location data.
 For example, users can request generation of an individual signed URL per file. Using a signed URL, OSDU R2 users will be able to upload their files to the system.
 
 ## Running Locally
@@ -45,17 +45,18 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_CLIENT_ID` | `********` | Identity to run the service locally. This enables access to Azure resources. You only need this if running locally | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-username` |
 | `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | -- |
 | `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
-| `KEYVAULT_URI` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets | no | output of infrastructure deployment |
+| `KEYVAULT_URL` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets | no | output of infrastructure deployment |
 | `appinsights_key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
 | `cosmosdb_database` | ex `foo-db` | The name of the CosmosDB database | no | output of infrastructure deployment |
 | `cosmosdb_key` | `********` | Key for CosmosDB | yes | output of infrastructure deployments |
 | `cosmosdb_account` | ex `devintosdur2cosmosacct` | Cosmos account name | no | output of infrastructure deployment |
-| `SEARCH_HOST` | `https://search.azurewebsites.net/api/search/v2/query` | API endpoint for the search query endpoint | no | output of infrastructure deployment + path to the query endpoint |
 | `AZURE_AD_APP_RESOURCE_ID` | `********` | AAD client application ID | yes | output of infrastructure deployment |
-| `osdu_entitlements_url` | ex `https://foo-entitlements.azurewebsites.net` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `osdu_entitlements_app_key` | `********` | The API key clients will need to use when calling the entitlements | yes | -- |
+| `osdu_entitlements_url` | ex `https://foo-osdu.msft-osdu-test.org/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
+| `osdu_entitlements_app_key` | `OBSOLETE` | This is deprecated | no | -- |
 | `spring.application.name` | `file-azure` | Name of application. Needed by App Insights | no | -- |
 | `osdu_storage_url` | `https://storage.azurewebsites.net/api/storage/v2` | Storage API endpoint | no | -- |
+| `AZURE_STORAGE_ACCOUNT` | ex `foo-storage-account` | Storage account for storing documents | no | output of infrastructure deployment |
+| `server_port` | ex `8082` | Port the service will run on | no | -- |
 
 **Required to run integration tests**
 
@@ -69,9 +70,10 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_AD_APP_RESOURCE_ID` | `********` | AAD client application ID | yes | output of infrastructure deployment |
 | `NO_DATA_ACCESS_TESTER` | `********` | Service principal ID of a service principal without entitlements | yes | `aad-no-data-access-tester-client-id` secret from keyvault |
 | `NO_DATA_ACCESS_TESTER_SERVICEPRINCIPAL_SECRET` | `********` | Secret for `$NO_DATA_ACCESS_TESTER` | yes | `aad-no-data-access-tester-secret` secret from keyvault |
-| `azure.storage.account-name` | ex `foo-storage-account` | Storage account for storing documents | no | output of infrastructure deployment |
+| `AZURE_STORAGE_ACCOUNT` | ex `foo-storage-account` | Storage account for storing documents | no | output of infrastructure deployment |
 | `USER_ID` | osdu-user | User ID | no | - |
 | `EXIST_FILE_ID` | ex '****' | Existing file Id should be added  | no | - |
+| `TIME_ZONE` | `UTC+0` | Time zone required for tests to pass  | yes | - |
 
 
 
@@ -85,27 +87,6 @@ Maven home: /usr/share/maven
 Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b04/jre
 ...
 ```
-
-You may need to configure access to the remote maven repository that holds the OSDU dependencies. A default file should live within `~/.m2/settings.xml`:
-```bash
-$ cat ~/.m2/settings.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <servers>
-        <server>
-            <id>file-core</id>
-            <username>mvn-pat</username>
-            <!-- Treat this auth token like a password. Do not share it with anyone, including Microsoft support. -->
-            <!-- The generated token expires on or before 11/14/2019 -->
-            <password>$PERSONAL_ACCESS_TOKEN_GOES_HERE</password>
-        </server>
-    </servers>
-</settings>
-```
-
-_A settings file is also conveniently located in ./.mvn/community-maven.settings.xml which is also used for CI/CD processes._
 
 ### Build, Run and Test the application Locally
 
