@@ -58,7 +58,7 @@ spec:
             value: "80"
           - name: ACCEPT_HTTP  # TEMPORARY UNTIL HTTPS
             value: "true"
-          - name: KEYVAULT_URI
+          - name: KEYVAULT_URL
             valueFrom:
               configMapKeyRef:
                 name: osdu-svc-properties
@@ -66,43 +66,43 @@ spec:
           - name: AZURE_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                name: clientid
-                key: clientid
+                name: active-directory
+                key: principal-clientid
           - name: AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: clientpassword
-                key: clientpassword
+                name: active-directory
+                key: principal-clientpassword
           - name: AZURE_AD_APP_RESOURCE_ID
             valueFrom:
               secretKeyRef:
-                name: appid
-                key: appid
+                name: active-directory
+                key: application-appid
           - name: AZURE_TENANT_ID
             valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_TENANT_ID
+              secretKeyRef:
+                name: active-directory
+                key: tenantid
           - name: appinsights_key
             valueFrom:
               secretKeyRef:
-                name: appinsights
+                name: central-logging
                 key: appinsights
           - name: AZURE_STORAGE_ACCOUNT
             valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_STORAGE_ACCOUNT
+              secretKeyRef:
+                name: storage
+                key: storage-account
           - name: cosmosdb_account
             valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_COSMOSDB_HOST
+              secretKeyRef:
+                name: cosmos
+                key: cosmos-endpoint
           - name: cosmosdb_key
             valueFrom:
               secretKeyRef:
                 name: cosmos
-                key: cosmos
+                key: cosmos-primary-key
           - name: cosmosdb_database
             value: osdu-db
           - name: LOG_PREFIX
@@ -123,6 +123,3 @@ spec:
             value: opendes
           - name: osdu_storage_url
             value: http://storage/api/storage/v2
-          - name: keyvault_url
-            value: $(KEYVAULT_URI)
-          
