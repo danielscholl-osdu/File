@@ -196,7 +196,7 @@ public abstract class File extends TestBase {
         "POST",
         getHeaders(null, client.getAccessToken()),
         "{}");
-    assertEquals(HttpStatus.SC_UNAUTHORIZED, getLocationResponse.getStatus());
+    assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
   }
 
   @Test
