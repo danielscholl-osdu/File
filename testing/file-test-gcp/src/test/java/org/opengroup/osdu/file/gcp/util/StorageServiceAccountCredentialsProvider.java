@@ -19,20 +19,34 @@ package org.opengroup.osdu.file.gcp.util;
 
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
+import lombok.extern.java.Log;
+
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
+import static org.opengroup.osdu.file.gcp.util.GoogleServiceAccount.CREDENTIALS_CONTENT_ACCEPTANCE_TESTER;
+
+@Log
 public class StorageServiceAccountCredentialsProvider {
 
   private static GoogleCredentials credentials = null;
 
   public static Credentials getCredentials() {
-    try {
-      credentials = GoogleCredentials
-          .fromStream(new FileInputStream(GcpConfig.getStorageAccount()));
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (Objects.isNull(credentials)) {
+      log.info("Get GCP_DEPLOY_FILE credentials");
+      String serviceAccountValue = GcpConfig.getStorageAccount();
+      serviceAccountValue = new DecodedContentExtractor(serviceAccountValue, CREDENTIALS_CONTENT_ACCEPTANCE_TESTER).getContent();
+
+      try (InputStream inputStream = new ByteArrayInputStream(serviceAccountValue.getBytes())) {
+        credentials = GoogleCredentials.fromStream(inputStream);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+
     return credentials;
   }
 }

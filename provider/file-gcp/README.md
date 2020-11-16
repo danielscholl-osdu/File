@@ -57,15 +57,15 @@ developer's portal][application-default-credentials].
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
 | `FILE_SERVICE_HOST` | `http://localhost:8080` | File service url | no | - |
-| `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already| yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
-| `NO_DATA_ACCESS_TESTER` | `********` | Service account without data access | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+| `INTEGRATION_TESTER` | `********` | Service account for API calls, passed as a filename or JSON content. Note: this user must have entitlements configured already| yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+| `NO_DATA_ACCESS_TESTER` | `********` | Service account without data access, passed as a filename or JSON content. | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
 | `TARGET_AUDIENCE` | `********` | client application ID | yes | https://console.cloud.google.com/apis/credentials |
 | `DATA_PARTITION_ID` | `opendes` | environment data partition | no | - |
 | `USER_ID` | `common-user` | User id which used to define files location in bucket | no | [defined here](src/main/resources/application.properties) |
 | `TIME_ZONE` | `UTC+0` | Storage time-zone, for test requests based on time of file creation | no | - |
 | `FILE_BUCKET` | `osdu-cicd-epam-file` | Bucket name for files | no | [defined here](src/main/resources/application.properties) |
 | `GCLOUD_PROJECT` | ex `osdu-cicd-epam` | Google cloud project id | no | -- |
-| `GCP_DEPLOY_FILE` | ex `********` | Service account for test data tear down, must have cloud storage role configured| yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+| `GCP_DEPLOY_FILE` | ex `********` | Service account for test data tear down, passed as a filename or JSON content. Must have cloud storage role configured| yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
 
 **Entitlements configuration for integration accounts**
 
