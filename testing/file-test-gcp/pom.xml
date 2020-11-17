@@ -24,6 +24,7 @@
     <groupId>org.opengroup.osdu</groupId>
     <artifactId>os-file-test</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.opengroup.osdu</groupId>
@@ -64,6 +65,14 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.8</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

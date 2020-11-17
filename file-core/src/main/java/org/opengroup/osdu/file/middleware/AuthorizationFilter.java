@@ -44,6 +44,9 @@ public class AuthorizationFilter {
    *         otherwise false
    */
   public boolean hasPermission(String... requiredRoles) {
+    if(headers.getPartitionId() == null){
+      return false;
+    }
     AuthorizationResponse authResponse = authorizationService.authorizeAny(headers, requiredRoles);
     headers.put(DpsHeaders.USER_EMAIL, authResponse.getUser());
     return true;
