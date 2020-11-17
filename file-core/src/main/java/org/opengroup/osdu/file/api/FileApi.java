@@ -22,6 +22,7 @@ import org.opengroup.osdu.core.common.model.file.FileRequest;
 import org.opengroup.osdu.core.common.model.file.FileResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
+import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.opengroup.osdu.file.provider.interfaces.IFileService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -42,7 +43,7 @@ public class FileApi {
 
   // TODO: Create the permission for os-file and change pre authorize annotation
   @PostMapping("/getFile")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public FileResponse getFile(@RequestBody FileRequest request) {
     log.debug("Get file request received : {}", request);
     FileResponse fileResponse = fileService.getFile(request, headers);

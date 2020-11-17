@@ -29,4 +29,14 @@ public interface IStorageRepository {
    */
   SignedObject createSignedObject(String bucketName, String filepath);
 
+  /**
+   * Get signed object for blob in bucket by filepath.
+   *
+   * @param bucketName bucket name
+   * @param filepath file path
+   * @return info blob and signed URL
+   */
+  default SignedObject getSignedObject(String bucketName, String filepath){
+    return null;
+  }
 }

@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.entitlements.AuthorizationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
+import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
+import org.opengroup.osdu.file.provider.interfaces.IAuthenticationService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -32,6 +34,8 @@ public class AuthorizationFilter {
 
   final IAuthorizationService authorizationService;
 
+  final IAuthenticationService authenticationService;
+
   final DpsHeaders headers;
 
   /**
@@ -42,12 +46,9 @@ public class AuthorizationFilter {
    *         otherwise false
    */
   public boolean hasPermission(String... requiredRoles) {
-    if(headers.getPartitionId() == null){
-      return false;
-    }
+    authenticationService.checkAuthentication(headers.getAuthorization(),headers.getPartitionId());
     AuthorizationResponse authResponse = authorizationService.authorizeAny(headers, requiredRoles);
     headers.put(DpsHeaders.USER_EMAIL, authResponse.getUser());
     return true;
   }
-
 }

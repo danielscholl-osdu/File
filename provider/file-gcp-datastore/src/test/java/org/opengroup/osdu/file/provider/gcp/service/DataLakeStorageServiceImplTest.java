@@ -16,12 +16,12 @@
 
 package org.opengroup.osdu.file.provider.gcp.service;
 
-import static org.assertj.core.api.Assertions.catchThrowable;
+
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
+
 import static org.mockito.Mockito.verify;
 
 import java.net.URI;
@@ -37,7 +37,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
@@ -48,7 +47,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceCamelCase.class)
-class StorageServiceImplTest {
+class DataLakeStorageServiceImplTest {
 
   @Mock
   private IStorageRepository storageRepository;
@@ -62,46 +61,54 @@ class StorageServiceImplTest {
   void setUp() {
     FileLocationProperties fileLocationProperties
         = new FileLocationProperties(TestUtils.BUCKET_NAME, TestUtils.USER_DES_ID);
-    storageService = new StorageServiceImpl(fileLocationProperties, storageRepository);
+    storageService = new GoogleCloudStorageServiceImpl(fileLocationProperties, storageRepository);
   }
 
   @Test
-  void shouldCreateObjectSignedUrl() {
+  void shouldCreateObjectSignedUrl_FileLocation() {
     // given
     SignedObject signedObject = getSignedObject();
-    given(storageRepository.createSignedObject(eq(TestUtils.BUCKET_NAME), anyString())).willReturn(signedObject);
+
+    given(storageRepository.getSignedObject(eq(TestUtils.BUCKET_NAME), anyString())).willReturn(signedObject);
 
     // when
-    SignedUrl signedUrl = storageService.createSignedUrl(
-        TestUtils.FILE_ID, TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION);
+    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(
+            TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
 
     // then
     then(signedUrl).satisfies(url -> {
       then(url.getUrl().toString()).is(TestUtils.GCS_URL_CONDITION);
       then(url.getUri().toString()).matches(TestUtils.GCS_OBJECT_URI);
-      then(url.getCreatedAt()).isBefore(now());
-      then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
-    });
+      then(url.getCreatedAt()).isBeforeOrEqualTo(now());
 
-    verify(storageRepository).createSignedObject(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture());
-    then(filenameCaptor.getValue()).matches(TestUtils.USER_DES_ID + ".*?" + TestUtils.UUID_REGEX);
+    });
+    verify(storageRepository).getSignedObject(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture());
+
   }
+
 
   @Test
-  void shouldThrowExceptionWhenResultFilepathIsMoreThan1024Characters() {
+  void shouldCreateObjectSignedUrl() {
     // given
-    String fileId = RandomStringUtils.randomAlphanumeric(1024);
+    SignedObject signedObject = getSignedObject();
+
+    given(storageRepository.getSignedObject(eq(TestUtils.BUCKET_NAME), anyString())).willReturn(signedObject);
 
     // when
-    Throwable thrown = catchThrowable(() -> storageService.createSignedUrl(fileId,
-        TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
+    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(
+            TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
 
     // then
-    then(thrown)
-        .isInstanceOf(BadRequestException.class)
-        .hasMessageContaining("The maximum filepath length is 1024 characters");
-    verify(storageRepository, never()).createSignedObject(anyString(), anyString());
+    then(signedUrl).satisfies(url -> {
+      then(url.getUrl().toString()).is(TestUtils.GCS_URL_CONDITION);
+      then(url.getUri().toString()).matches(TestUtils.GCS_OBJECT_URI);
+      then(url.getCreatedAt()).isBeforeOrEqualTo(now());
+
+    });
+    verify(storageRepository).getSignedObject(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture());
+
   }
+
 
   private SignedObject getSignedObject() {
     String bucketName = RandomStringUtils.randomAlphanumeric(4);

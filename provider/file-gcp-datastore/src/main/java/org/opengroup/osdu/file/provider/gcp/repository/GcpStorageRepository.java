@@ -16,59 +16,61 @@
 
 package org.opengroup.osdu.file.provider.gcp.repository;
 
-import static java.lang.String.format;
-import static org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant.GCS_PROTOCOL;
-
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.HttpMethod;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.Storage.SignUrlOption;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
+
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.util.UriUtils;
+import com.google.cloud.storage.*;
+import com.google.cloud.storage.Storage.SignUrlOption;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import static java.lang.String.format;
+import static org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant.GCS_PROTOCOL;
 
 @Repository
 @Slf4j
 @RequiredArgsConstructor
 public class GcpStorageRepository implements IStorageRepository {
 
-  final Storage storage;
+  final private Storage storage;
+
+  @Override
+  public SignedObject getSignedObject(String bucketName, String filepath) {
+    return prepareSignedObject(bucketName, filepath, HttpMethod.GET);
+  }
 
   @Override
   public SignedObject createSignedObject(String bucketName, String filepath) {
+    return prepareSignedObject(bucketName, filepath, HttpMethod.PUT);
+  }
+
+  private SignedObject prepareSignedObject(
+      String bucketName, String filepath, HttpMethod httpMethod) {
     log.debug("Creating the signed blob in bucket {} for path {}", bucketName, filepath);
 
     BlobId blobId = BlobId.of(bucketName, filepath);
-    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+    BlobInfo blobInfo = BlobInfo
+        .newBuilder(blobId)
         .setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
         .build();
-    Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
-    URL signedUrl = storage.signUrl(blobInfo, 7L, TimeUnit.DAYS,
-        SignUrlOption.httpMethod(HttpMethod.PUT),
-        SignUrlOption.withV4Signature());
+    URL signedUrl = storage.signUrl(blobInfo,
+                                    7L,
+                                    TimeUnit.DAYS,
+                                    SignUrlOption.withV4Signature(),
+                                    SignUrlOption.httpMethod(httpMethod));
 
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
-        blob.getGeneratedId(), signedUrl);
-    return SignedObject.builder()
-        .uri(getObjectUri(blob))
-        .url(signedUrl)
-        .build();
+              blobId,
+              signedUrl);
+    return SignedObject.builder().uri(getObjectUri(bucketName, filepath)).url(signedUrl).build();
   }
 
-  private URI getObjectUri(Blob blob) {
-    String filepath = UriUtils.encodePath(blob.getName(), StandardCharsets.UTF_8);
-    return URI.create(format("%s%s/%s", GCS_PROTOCOL, blob.getBucket(), filepath));
+  private URI getObjectUri(String bucketName, String filePath) {
+    return URI.create(format("%s%s/%s", GCS_PROTOCOL, bucketName, filePath));
   }
 
 }

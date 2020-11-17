@@ -52,7 +52,7 @@ import org.opengroup.osdu.file.config.RequestConstraintMappingContributor;
 import org.opengroup.osdu.file.provider.interfaces.IValidationService;
 
 @DisplayNameGeneration(ReplaceCamelCase.class)
-class ValidationServiceImplTest {
+class ValidationServiceTest {
 
   private static final String FILE_ID_FIELD = "FileID";
   private static final String TIME_FROM_FIELD = "TimeFrom";

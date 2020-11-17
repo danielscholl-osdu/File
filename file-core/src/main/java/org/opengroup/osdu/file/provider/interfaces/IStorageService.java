@@ -32,4 +32,15 @@ public interface IStorageService {
    */
   SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID);
 
+  //stub Implementation
+  /**
+   * Gets a signed url from an unsigned url
+   *
+   * @param unsignedUrl
+   * @param authorizationToken
+   * @return
+   */
+  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+    return null;
+  }
 }

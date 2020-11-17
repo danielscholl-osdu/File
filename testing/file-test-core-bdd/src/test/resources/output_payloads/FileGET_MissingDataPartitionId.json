@@ -1,0 +1,5 @@
+{
+    "code": 401,
+    "reason": "Access denied",
+    "message": "The user is not authorized to perform this action"
+}
