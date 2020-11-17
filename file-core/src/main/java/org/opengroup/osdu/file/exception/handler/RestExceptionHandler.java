@@ -16,15 +16,13 @@
 
 package org.opengroup.osdu.file.exception.handler;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
@@ -46,6 +44,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -113,7 +114,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     return buildResponseEntity(errorResponse);
   }
 
-  @ExceptionHandler(OsduBadRequestException.class)
+  @ExceptionHandler({OsduBadRequestException.class,FileLocationNotFoundException.class})
   protected ResponseEntity<Object> handleBadRequest(OsduBadRequestException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
