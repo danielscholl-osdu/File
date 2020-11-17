@@ -14,7 +14,6 @@
 
 package org.opengroup.osdu.file.service;
 
-import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.http.HttpClient;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -23,16 +22,16 @@ import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.http.IHttpClient;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.exception.OsduException;
-import org.opengroup.osdu.file.provider.interfaces.IRecordService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.util.Map;
 
+import com.google.gson.JsonSyntaxException;
+
 @Component
-public class RecordServiceImpl implements IRecordService {
+public class RecordServiceImpl {
 
   private IHttpClient httpClient;
 

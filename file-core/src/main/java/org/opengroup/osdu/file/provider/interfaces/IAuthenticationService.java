@@ -18,7 +18,7 @@ package org.opengroup.osdu.file.provider.interfaces;
 
 import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
 
-public interface IAuthenticationService {
+public interface IAuthenticationService{
 
   /**
    * Check if authentication properties are valid. It throws Unauthorized exception if

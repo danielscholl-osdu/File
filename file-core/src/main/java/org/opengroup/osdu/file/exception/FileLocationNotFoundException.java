@@ -16,12 +16,11 @@
 
 package org.opengroup.osdu.file.exception;
 
-import org.opengroup.osdu.core.common.exception.CoreException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class FileLocationNotFoundException extends CoreException {
+public class FileLocationNotFoundException extends OsduBadRequestException {
 
   public FileLocationNotFoundException(String message) {
     super(message);

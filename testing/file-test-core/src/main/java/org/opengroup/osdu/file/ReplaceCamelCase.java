@@ -17,9 +17,9 @@
 package org.opengroup.osdu.file;
 
 import java.lang.reflect.Method;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayNameGenerator;
-
 /**
  * JUnit display name generator. It replaces a "camelCase" name by "Capitalized Whitespace
  * Separated" name.
@@ -47,7 +47,7 @@ public class ReplaceCamelCase extends DisplayNameGenerator.Standard {
 
   private String replaceCapitals(String name) {
     return StringUtils.capitalize(name.replaceAll("([A-Z])", " $1")
-        .replaceAll("([0-9].)", " $1"));
+                                      .replaceAll("([0-9].)", " $1"));
   }
 
 }
