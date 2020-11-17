@@ -1,0 +1,102 @@
+{
+  "id": "string",
+  "kind": "opendes:wks:file:1.0.0",
+  "acl": {
+    "viewers": [
+      "data.default.viewers@opendes.cloud.abc.com"
+    ],
+    "owners": [
+      "data.default.owners@opendes.cloud.abc.com"
+    ]
+  },
+  "legal": {
+    "legaltags": [
+      "opendes-public-abc-dataset-1"
+    ],
+    "otherRelevantDataCountries": [
+      "US"
+    ],
+    "status": "compliant"
+  },
+  "data": {
+    "SchemaFormatTypeID": "string",
+    "PreLoadFilePath": "string",
+    "FileSource": "/b40197d1-a0e8-49e3-96dd-gvubkjnonl/5vyug87gibun9hn0non",
+    "FileSize": 0,
+    "Name": "File",
+    "EncodingFormatTypeID": "string",
+    "Endian": "BIG",
+    "LossyCompressionIndicator": true,
+    "CompressionMethodTypeID": "string",
+    "CompressionLevel": 0,
+    "Checksum": "string",
+    "VectorHeaderMapping": [
+      {
+        "KeyName": "string",
+        "WordFormat": "string",
+        "WordWidth": 0,
+        "Position": 0,
+        "UoM": "string",
+        "ScalarIndicator": "STANDARD",
+        "ScalarOverride": 0
+      }
+    ],
+    "relationships": {
+      "parentEntity": {
+        "confidence": 1,
+        "id": "data_partition:namespace:entity_jhvib8u767uiiui",
+        "name": "Survey ST2016",
+        "version": 0
+      },
+      "relatedItems": {
+        "confidences": [
+          0
+        ],
+        "ids": [
+          "string"
+        ],
+        "names": [
+          "string"
+        ],
+        "versions": [
+          0
+        ]
+      }
+    },
+    "ExtensionProperties": {
+      "Classification": "Raw File",
+      "Description": "An text further describing this file example.",
+      "ExternalIds": [
+        "string"
+      ],
+      "FileDateCreated": {},
+      "FileDateModified": {},
+      "FileContentsDetails": {
+        "TargetKind": "os:abc:wellbore:1:*.*",
+        "FileType": "csv",
+        "FrameOfReference": [
+          {
+            "kind": "CRS",
+            "name": "[NAD27 * OGP-ABC Conus / North Dakota South [3202115851]ft]",
+            "persistableReference": "scaleOffset:scale:0.3048006096012192offset:0.0symbol:ftUSbaseMeasurement:ancestry:Lengthtype:UMtype:USO}",
+            "propertyNames": [
+              "elevationFromMsl",
+              "totalDepthMdDriller",
+              "wellHeadProjected"
+            ],
+            "propertyValues": [
+              "F",
+              "ftUS",
+              "deg"
+            ],
+            "uncertainty": 0
+          }
+        ],
+        "ExtensionProperties": {
+          "kind": "os:abc:csvFileExtDetails:1.0.0"
+        },
+        "ParentReference": "CSBE0417"
+      }
+    }
+  }
+}
