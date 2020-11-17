@@ -10,6 +10,7 @@ public class AuthUtil {
 			String serviceAccountFile = System.getProperty("INTEGRATION_TESTER", System.getenv("INTEGRATION_TESTER"));
 			String audience = System.getProperty("INTEGRATION_TEST_AUDIENCE",
 					System.getenv("INTEGRATION_TEST_AUDIENCE"));
+      token = new GoogleServiceAccount(serviceAccountFile).getAuthToken(audience);
 		} else if ("aws".equals(vendor)) {
 			System.out.println("Token generation code for aws comes here");
 		} else if ("azure".equals(vendor)) {
