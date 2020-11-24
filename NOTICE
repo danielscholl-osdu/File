@@ -14,6 +14,8 @@ Apache-2.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- AMQP 1.0 JMS Spring Boot AutoConfiguration (from https://repo1.maven.org/maven2/org/amqphub/spring/amqp-10-jms-spring-boot-autoconfigure)
+- AMQP 1.0 JMS Spring Boot Starter (from https://repo1.maven.org/maven2/org/amqphub/spring/amqp-10-jms-spring-boot-starter)
 - ASM Core (from )
 - ASM based accessors helper used by json-smart (from )
 - Adapter: RxJava (from )
@@ -24,8 +26,11 @@ The following software have components provided under the terms of this license:
 - Apache Commons FileUpload (from http://commons.apache.org/proper/commons-fileupload/)
 - Apache Commons Lang (from http://commons.apache.org/proper/commons-lang/)
 - Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
+- Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
 - Apache Commons Text (from http://commons.apache.org/proper/commons-text/)
 - Apache Commons Validator (from http://commons.apache.org/proper/commons-validator/)
+- Apache Geronimo JMS Spec 2.0 (from http://geronimo.apache.org/maven/${siteId}/${version})
+- Apache Groovy (from http://groovy-lang.org)
 - Apache Groovy (from http://groovy-lang.org)
 - Apache HttpAsyncClient (from http://hc.apache.org/httpcomponents-asyncclient)
 - Apache HttpClient (from http://hc.apache.org/httpcomponents-client)
@@ -48,6 +53,7 @@ The following software have components provided under the terms of this license:
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
 - Cloud Storage JSON API v1-rev58-1.21.0 (from )
 - Commons Digester (from http://commons.apache.org/digester/)
+- Commons IO (from http://commons.apache.org/io/)
 - Commons IO (from http://commons.apache.org/io/)
 - Commons IO (from http://commons.apache.org/io/)
 - Commons Lang (from http://commons.apache.org/lang/)
@@ -81,6 +87,10 @@ The following software have components provided under the terms of this license:
 - Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - HPPC Collections (from http://labs.carrotsearch.com)
 - Hibernate Validator Engine (from )
+- IBM COS Java SDK for Amazon S3 (from https://github.com/ibm/ibm-cos-sdk-java)
+- IBM COS Java SDK for COS KMS (from https://github.com/ibm/ibm-cos-sdk-java)
+- IBM COS SDK For Java (from https://github.com/ibm/ibm-cos-sdk-java)
+- IBM COS SDK for Java - Core (from https://github.com/ibm/ibm-cos-sdk-java)
 - Identity and Access Management (IAM) API v1-rev247-1.23.0 (from )
 - J2ObjC Annotations (from https://github.com/google/j2objc/)
 - J2ObjC Annotations (from https://github.com/google/j2objc/)
@@ -116,6 +126,7 @@ The following software have components provided under the terms of this license:
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Java UUID Generator (from http://wiki.fasterxml.com/JugHome)
 - Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
 - Joda-Time (from http://www.joda.org/joda-time/)
 - Json Path (from https://github.com/jayway/JsonPath)
 - Lucene Common Analyzers (from )
@@ -141,7 +152,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Application Insights Log4j 2 Appender (from https://github.com/Microsoft/ApplicationInsights-Java)
 - Microsoft Azure Netty HTTP Client Library (from https://github.com/Azure/azure-sdk-for-java)
 - Mockito (from http://mockito.org)
-- Mockito (from http://mockito.org)
 - Netty Reactive Streams Implementation (from )
 - Netty/Buffer (from http://netty.io/)
 - Netty/Buffer (from http://netty.io/)
@@ -164,6 +174,7 @@ The following software have components provided under the terms of this license:
 - Netty/Transport (from http://netty.io/)
 - Netty/Transport/Native/Unix/Common (from )
 - Nimbus JOSE+JWT (from https://bitbucket.org/connect2id/nimbus-jose-jwt)
+- Nimbus JOSE+JWT (from https://bitbucket.org/connect2id/nimbus-jose-jwt)
 - Nimbus LangTag (from https://bitbucket.org/connect2id/nimbus-language-tags)
 - Non-Blocking Reactive Foundation for the JVM (from https://github.com/reactor/reactor)
 - OAuth 2.0 SDK with OpenID Connect extensions (from https://bitbucket.org/connect2id/oauth-2.0-sdk-with-openid-connect-extensions)
@@ -182,6 +193,7 @@ The following software have components provided under the terms of this license:
 - OpenCensus (from https://github.com/census-instrumentation/opencensus-java)
 - PowerMock (from http://www.powermock.org)
 - Protocol Buffer extensions to the Google HTTP Client Library for Java. (from )
+- QpidJMS Client (from )
 - Reactive Object Pool (from https://github.com/reactor/reactor-pool)
 - Reactive Streams Netty driver (from https://github.com/reactor/reactor-netty)
 - Retrofit (from )
@@ -234,6 +246,8 @@ The following software have components provided under the terms of this license:
 - Spring Data Core (from )
 - Spring Expression Language (SpEL) (from https://github.com/spring-projects/spring-framework)
 - Spring Expression Language (SpEL) (from https://github.com/spring-projects/spring-framework)
+- Spring JMS (from https://github.com/spring-projects/spring-framework)
+- Spring Messaging (from https://github.com/spring-projects/spring-framework)
 - Spring TestContext Framework (from https://github.com/spring-projects/spring-framework)
 - Spring Transaction (from https://github.com/spring-projects/spring-framework)
 - Spring Web (from https://github.com/spring-projects/spring-framework)
@@ -271,8 +285,11 @@ The following software have components provided under the terms of this license:
 - io.grpc:grpc-protobuf (from https://github.com/grpc/grpc-java)
 - io.grpc:grpc-protobuf-lite (from https://github.com/grpc/grpc-java)
 - io.grpc:grpc-stub (from https://github.com/grpc/grpc-java)
+- ion-java (from https://github.com/amznlabs/ion-java/)
 - jackson-databind (from http://github.com/FasterXML/jackson)
 - jackson-databind (from http://github.com/FasterXML/jackson)
+- java-cloudant (from https://cloudant.com)
+- java-cloudant (from https://cloudant.com)
 - javax.inject (from http://code.google.com/p/atinject/)
 - jersey-core (from )
 - jsr311-api (from https://jsr311.dev.java.net)
@@ -288,10 +305,15 @@ The following software have components provided under the terms of this license:
 - parent-join (from https://github.com/elastic/elasticsearch)
 - parent-join (from https://github.com/elastic/elasticsearch)
 - perfmark:perfmark-api (from https://github.com/perfmark/perfmark)
+- powermock-api-support (from )
+- powermock-core (from http://www.powermock.org)
 - powermock-module-junit4 (from http://www.powermock.org)
+- powermock-module-junit4-common (from )
+- powermock-reflect (from )
 - proto-google-cloud-datastore-v1 (from https://github.com/googleapis/api-client-staging)
 - proto-google-cloud-firestore-admin-v1 (from https://repo1.maven.org/maven2/com/google/api/grpc/proto-google-cloud-firestore-admin-v1)
 - proto-google-cloud-firestore-v1 (from https://repo1.maven.org/maven2/com/google/api/grpc/proto-google-cloud-firestore-v1)
+- proton-j (from )
 - proton-j (from )
 - rank-eval (from https://github.com/elastic/elasticsearch)
 - rank-eval (from https://github.com/elastic/elasticsearch)
@@ -308,6 +330,9 @@ The following software have components provided under the terms of this license:
 - spring-security-config (from http://spring.io/spring-security)
 - spring-security-core (from http://spring.io/spring-security)
 - spring-security-crypto (from http://spring.io/spring-security)
+- spring-security-oauth2-core (from http://spring.io/spring-security)
+- spring-security-oauth2-jose (from http://spring.io/spring-security)
+- spring-security-oauth2-resource-server (from http://spring.io/spring-security)
 - spring-security-rsa (from http://github.com/spring-projects/spring-security-oauth)
 - spring-security-test (from http://spring.io/spring-security)
 - spring-security-web (from http://spring.io/spring-security)
@@ -433,7 +458,6 @@ The following software have components provided under the terms of this license:
 
 - AspectJ weaver (from http://www.aspectj.org)
 - JUnit (from http://junit.org)
-- JUnit (from http://junit.org)
 - JUnit Jupiter (Aggregator) (from https://junit.org/junit5/)
 - Logback Classic Module (from )
 - Logback Core Module (from )
@@ -519,6 +543,7 @@ The following software have components provided under the terms of this license:
 - Java Native Access (from https://github.com/java-native-access/jna)
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
 - Logback Classic Module (from )
 - Logback Core Module (from )
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
@@ -533,6 +558,7 @@ The following software have components provided under the terms of this license:
 
 - Java Native Access (from https://github.com/java-native-access/jna)
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
+- Javassist (from http://www.javassist.org/)
 - SnakeYAML (from http://www.snakeyaml.org)
 
 ========================================================================
@@ -589,7 +615,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Azure client library for KeyVault Secrets (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure common module for Storage (from https://github.com/Azure/azure-sdk-for-java)
 - Mockito (from http://mockito.org)
-- Mockito (from http://mockito.org)
 - Netty/Codec/HTTP (from )
 - Netty/Common (from )
 - Netty/Common (from )
@@ -609,12 +634,14 @@ MPL-1.1
 The following software have components provided under the terms of this license:
 
 - Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
 
 ========================================================================
 MPL-2.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
 - OkHttp (from )
 
@@ -655,6 +682,7 @@ public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Apache Groovy (from http://groovy-lang.org)
 - Asynchronous Http Client (from )
 - Bouncy Castle PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs (from http://www.bouncycastle.org/java.html)
 - Bouncy Castle Provider (from http://www.bouncycastle.org/java.html)

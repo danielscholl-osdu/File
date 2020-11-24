@@ -28,8 +28,8 @@
 
 	<properties>
 		<start-class>org.opengroup.osdu.file.provider.ibm.FileIBMApplication</start-class>
-		<os-core-lib-ibm.version>0.0.19-SNAPSHOT</os-core-lib-ibm.version>
-	</properties>
+		<os-core-lib-ibm.version>0.3.6-SNAPSHOT</os-core-lib-ibm.version>
+  </properties>
 
 	<dependencies>
 		<dependency>
@@ -79,6 +79,23 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+  <repositories>
+    <repository>
+      <id>${repo.releases.id}</id>
+      <url>${repo.releases.url}</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>${publish.releases.id}</id>
+      <url>${publish.releases.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${publish.snapshots.id}</id>
+      <url>${publish.snapshots.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 	<build>
 		<plugins>

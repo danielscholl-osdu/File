@@ -23,6 +23,8 @@ import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import lombok.extern.java.Log;
+import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +37,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class AzureTokenServiceImpl {
 
-  @Value("${azure_storage.account}")
+  @Autowired
+  private static AzureBootstrapConfig azureBootstrapConfig;
+
+  @Autowired
   private String storageAccount;
 
   private static String storageAccount_STATIC;

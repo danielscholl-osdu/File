@@ -48,15 +48,13 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `KEYVAULT_URL` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets | no | output of infrastructure deployment |
 | `appinsights_key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
 | `cosmosdb_database` | ex `foo-db` | The name of the CosmosDB database | no | output of infrastructure deployment |
-| `cosmosdb_key` | `********` | Key for CosmosDB | yes | output of infrastructure deployments |
-| `cosmosdb_account` | ex `devintosdur2cosmosacct` | Cosmos account name | no | output of infrastructure deployment |
 | `AZURE_AD_APP_RESOURCE_ID` | `********` | AAD client application ID | yes | output of infrastructure deployment |
 | `osdu_entitlements_url` | ex `https://foo-osdu.msft-osdu-test.org/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
 | `osdu_entitlements_app_key` | `OBSOLETE` | This is deprecated | no | -- |
 | `spring.application.name` | `file-azure` | Name of application. Needed by App Insights | no | -- |
 | `osdu_storage_url` | `https://storage.azurewebsites.net/api/storage/v2` | Storage API endpoint | no | -- |
-| `AZURE_STORAGE_ACCOUNT` | ex `foo-storage-account` | Storage account for storing documents | no | output of infrastructure deployment |
 | `server_port` | ex `8082` | Port the service will run on | no | -- |
+| `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
 
 **Required to run integration tests**
 

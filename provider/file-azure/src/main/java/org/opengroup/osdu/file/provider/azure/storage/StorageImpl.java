@@ -39,7 +39,9 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
+import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
 import org.opengroup.osdu.file.provider.azure.service.AzureTokenServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +68,10 @@ public class StorageImpl implements Storage {
   @Value("${azure.tenant.id}")
   private String tenantId;
 
-  @Value("${azure_storage.account}")
+  @Autowired
+  private AzureBootstrapConfig azureBootstrapConfig;
+
+  @Autowired
   private String storageAccount;
 
   @Inject
