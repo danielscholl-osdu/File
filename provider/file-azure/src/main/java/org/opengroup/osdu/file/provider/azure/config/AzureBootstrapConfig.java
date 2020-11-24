@@ -75,6 +75,16 @@ public class AzureBootstrapConfig {
     return getKeyVaultSecret(kv, "opendes-cosmos-primary-key");
   }
 
+  @Bean
+  @Named("AZURE_STORAGE_ACCOUNT")
+  public String storageAccount(SecretClient kv) {
+    String accountName = getKeyVaultSecret(kv, "opendes-storage");
+    // this needs to be set because there is  static method that needs this value
+    System.setProperty("azure_storage.account", accountName);
+    return getKeyVaultSecret(kv, "opendes-storage");
+  }
+
+
   String getKeyVaultSecret(SecretClient kv, String secretName) {
     KeyVaultSecret secret = kv.getSecret(secretName);
     if (secret == null) {

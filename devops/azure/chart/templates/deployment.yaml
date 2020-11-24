@@ -36,90 +36,77 @@ spec:
           volumeAttributes:
             secretProviderClass: azure-keyvault
       containers:
-        - name: {{ .Chart.Name }}
-          image: {{ .Values.image.repository }}/{{ .Chart.Name }}-{{ .Values.image.branch }}:{{ .Values.image.tag | default .Chart.AppVersion }}
-          imagePullPolicy: Always
-          ports:
-          - containerPort: {{ .Values.service.port }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.service.probe.path }}
-              port: {{ .Values.service.port }}
-          volumeMounts:
-          - name: azure-keyvault
-            mountPath: "/mnt/azure-keyvault"
-            readOnly: true
-          env:
-          - name: spring.application.name
-            value: file
-          - name: server.servlet.contextPath
-            value: /api/file/v2/
-          - name: server_port
-            value: "80"
-          - name: ACCEPT_HTTP  # TEMPORARY UNTIL HTTPS
-            value: "true"
-          - name: KEYVAULT_URL
-            valueFrom:
-              configMapKeyRef:
-                name: osdu-svc-properties
-                key: ENV_KEYVAULT
-          - name: AZURE_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: active-directory
-                key: principal-clientid
-          - name: AZURE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: active-directory
-                key: principal-clientpassword
-          - name: AZURE_AD_APP_RESOURCE_ID
-            valueFrom:
-              secretKeyRef:
-                name: active-directory
-                key: application-appid
-          - name: AZURE_TENANT_ID
-            valueFrom:
-              secretKeyRef:
-                name: active-directory
-                key: tenantid
-          - name: appinsights_key
-            valueFrom:
-              secretKeyRef:
-                name: central-logging
-                key: appinsights
-          - name: AZURE_STORAGE_ACCOUNT
-            valueFrom:
-              secretKeyRef:
-                name: storage
-                key: storage-account
-          - name: cosmosdb_account
-            valueFrom:
-              secretKeyRef:
-                name: cosmos
-                key: cosmos-endpoint
-          - name: cosmosdb_key
-            valueFrom:
-              secretKeyRef:
-                name: cosmos
-                key: cosmos-primary-key
-          - name: cosmosdb_database
-            value: osdu-db
-          - name: LOG_PREFIX
-            value: file
-          - name: osdu_entitlements_url
-            value: http://entitlements-azure/entitlements/v1
-          - name: osdu_entitlements_app_key
-            value: "OBSOLETE"
-          - name: APPLICATION_PORT
-            value: $(server_port)
-          - name: SEARCH_HOST
-            value: http://search-service/api/search/v2
-          - name: JAVA_HEAP_MEMORY
-            value: "4096"
-          - name: ENVIRONMENT
-            value: dev
-          - name: TENANT_NAME
-            value: opendes
-          - name: osdu_storage_url
-            value: http://storage/api/storage/v2
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.image.repository }}/{{ .Chart.Name }}-{{ .Values.image.branch }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /api/file/v2/readiness_check
+            port: 80
+        volumeMounts:
+        - name: azure-keyvault
+          mountPath: "/mnt/azure-keyvault"
+          readOnly: true
+        env:
+        - name: spring.application.name
+          value: file
+        - name: server.servlet.contextPath
+          value: /api/file/v2/
+        - name: server_port
+          value: "80"
+        - name: ACCEPT_HTTP  # TEMPORARY UNTIL HTTPS
+          value: "true"
+        - name: KEYVAULT_URL
+          valueFrom:
+            configMapKeyRef:
+              name: osdu-svc-properties
+              key: ENV_KEYVAULT
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: active-directory
+              key: principal-clientid
+        - name: AZURE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: active-directory
+              key: principal-clientpassword
+        - name: AZURE_AD_APP_RESOURCE_ID
+          valueFrom:
+            secretKeyRef:
+              name: active-directory
+              key: application-appid
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: active-directory
+              key: tenantid
+        - name: appinsights_key
+          valueFrom:
+            secretKeyRef:
+              name: central-logging
+              key: appinsights
+        - name: cosmosdb_database
+          value: osdu-db
+        - name: LOG_PREFIX
+          value: file
+        - name: osdu_entitlements_url
+          value: http://entitlements-azure/entitlements/v1
+        - name: osdu_entitlements_app_key
+          value: "OBSOLETE"
+        - name: APPLICATION_PORT
+          value: $(server_port)
+        - name: SEARCH_HOST
+          value: http://search-service/api/search/v2
+        - name: JAVA_HEAP_MEMORY
+          value: "4096"
+        - name: ENVIRONMENT
+          value: dev
+        - name: TENANT_NAME
+          value: opendes
+        - name: osdu_storage_url
+          value: http://storage/api/storage/v2
+        - name: azure_istioauth_enabled
+          value: "true"

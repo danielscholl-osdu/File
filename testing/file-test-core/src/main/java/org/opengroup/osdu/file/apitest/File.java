@@ -132,6 +132,11 @@ public abstract class File extends TestBase {
   @Test
   public void first_getLocation_then_shouldReturnFileList_sameFileId() throws Exception {
     LocalDateTime from = LocalDateTime.now(ZoneId.of(Config.getTimeZone()));
+
+    // sleeping because server clock can get out of sync by a fraction of a second
+    // which can cause this test to fail
+    Thread.sleep(5000);
+
     ClientResponse getLocationResponse = client.send(
         getLocation,
         "POST",
@@ -141,10 +146,10 @@ public abstract class File extends TestBase {
     LocationResponse locationResponse = mapper
         .readValue(getLocationResponse.getEntity(String.class), LocationResponse.class);
 
+    Thread.sleep(5000);
     LocalDateTime to = LocalDateTime.now(ZoneId.of(Config.getTimeZone()));
 
     String fileListRequestBody = FileUtils.generateFileListRequestBody(from, to, 0, (short) 1);
-
     ClientResponse fileListResponse = client.send(
         getFileList,
         "POST",

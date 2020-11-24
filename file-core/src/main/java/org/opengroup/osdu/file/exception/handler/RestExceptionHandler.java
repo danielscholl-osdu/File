@@ -25,6 +25,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.file.errors.ErrorResponse;
@@ -114,7 +115,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     return buildResponseEntity(errorResponse);
   }
 
-  @ExceptionHandler({OsduBadRequestException.class,FileLocationNotFoundException.class})
+  @ExceptionHandler({OsduBadRequestException.class, FileLocationNotFoundException.class,
+      LocationAlreadyExistsException.class, BadRequestException.class})
   protected ResponseEntity<Object> handleBadRequest(OsduBadRequestException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);

@@ -65,7 +65,7 @@ public class TestFile extends File {
         "POST",
         getHeaders(null, client.getAccessToken()),
         "{}");
-    assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
+    assertEquals(HttpStatus.SC_UNAUTHORIZED, getLocationResponse.getStatus());
   }
 
   @Test
@@ -165,7 +165,7 @@ public class TestFile extends File {
         "POST",
         getHeaders(null, client.getAccessToken()),
         "{}");
-    assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
+    assertEquals(HttpStatus.SC_UNAUTHORIZED, getLocationResponse.getStatus());
   }
 
   @Test
