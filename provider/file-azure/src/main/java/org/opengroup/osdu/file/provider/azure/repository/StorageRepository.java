@@ -27,11 +27,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.file.model.SignedObject;
+import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
 import org.opengroup.osdu.file.provider.azure.storage.Blob;
 import org.opengroup.osdu.file.provider.azure.storage.BlobId;
 import org.opengroup.osdu.file.provider.azure.storage.BlobInfo;
 import org.opengroup.osdu.file.provider.azure.storage.Storage;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriUtils;
@@ -45,7 +47,11 @@ public class StorageRepository implements IStorageRepository {
   @Inject
   private Storage storage;
 
-  private String storageAccount = getStorageAccount();
+  @Autowired
+  private AzureBootstrapConfig azureBootstrapConfig;
+
+  @Autowired
+  private String storageAccount;
 
   @Override
   public SignedObject createSignedObject(String containerName, String filepath) {
@@ -63,10 +69,6 @@ public class StorageRepository implements IStorageRepository {
         .uri(getObjectUri(blob))
         .url(signedUrl)
         .build();
-  }
-
-  public static String getStorageAccount() {
-    return System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
   }
 
   private URI getObjectUri(Blob blob) {

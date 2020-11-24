@@ -19,8 +19,3 @@ image:
   repository: community.opengroup.org:5555/osdu/platform/system/file
   branch: master
   tag: lastest
-service:
-  type: ClusterIP
-  port: 80
-  probe:
-    path: /api/file/v2/readiness_check
