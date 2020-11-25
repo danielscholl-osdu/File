@@ -45,10 +45,27 @@
     <azure.appservice.appname></azure.appservice.appname>
     <azure.appservice.subscription></azure.appservice.subscription>
     <springfox-version>2.7.0</springfox-version>
-    <reactor.netty.version>0.9.0.RELEASE</reactor.netty.version>
-    <reactor.core.version>3.3.0.RELEASE</reactor.core.version>
+    <osdu.corelibazure.version>0.0.42</osdu.corelibazure.version>
+    <osdu.oscorecommon.version>0.3.12</osdu.oscorecommon.version>
   </properties>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Inherit managed dependencies from core-lib-azure -->
+      <dependency>
+        <groupId>org.opengroup.osdu</groupId>
+        <artifactId>core-lib-azure</artifactId>
+        <version>${osdu.corelibazure.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>os-core-common</artifactId>
+      <version>${osdu.oscorecommon.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>file-core</artifactId>
@@ -65,43 +82,14 @@
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>com.azure</groupId>
-      <artifactId>azure-storage-blob</artifactId>
-      <version>12.6.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.azure</groupId>
-      <artifactId>azure-identity</artifactId>
-      <version>1.0.6</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>com.microsoft.azure</groupId>
       <artifactId>azure-active-directory-spring-boot-starter</artifactId>
-      <version>2.1.7</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>25.1-jre</version>
-    </dependency>
-
-    <!--
- Override the spring-boot version of these dependencies to the ones
- required by the azure-core library. This needs to be done for each
- app that depends on this library
- -->
-    <dependency>
-      <groupId>io.projectreactor.netty</groupId>
-      <artifactId>reactor-netty</artifactId>
-      <version>${reactor.netty.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.projectreactor</groupId>
-      <artifactId>reactor-core</artifactId>
-      <version>${reactor.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -116,7 +104,7 @@
           <artifactId>log4j-slf4j-impl</artifactId>
         </exclusion>
       </exclusions>
-      <version>0.0.17</version>
+      <version>${osdu.corelibazure.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.data</groupId>

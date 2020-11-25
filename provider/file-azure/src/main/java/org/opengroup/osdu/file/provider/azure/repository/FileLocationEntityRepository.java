@@ -21,10 +21,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import com.azure.cosmos.SqlParameter;
-import com.azure.cosmos.SqlParameterList;
-import com.azure.cosmos.SqlQuerySpec;
-import org.opengroup.osdu.azure.CosmosStore;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+import com.azure.cosmos.models.SqlParameter;
+import com.azure.cosmos.models.SqlQuerySpec;
+import org.opengroup.osdu.azure.cosmosdb.CosmosStore;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 import org.opengroup.osdu.file.provider.azure.model.entity.FileLocationEntity;
@@ -68,25 +68,32 @@ public class FileLocationEntityRepository {
       }
       // Internal set of id
       entity.setId(entity.getFileID());
-      cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, fileLocationContainer, entity);
+      cosmosStore.upsertItem(headers.getPartitionId(), cosmosDBName, fileLocationContainer, entity.getId(), entity);
       return entity;
   }
 
-  //@Query("SELECT * FROM `file-locations`"
-  //   + " WHERE CreatedAt >= @time_from AND CreatedAt <= @time_to AND CreatedBy = @user_id")
   Page<FileLocationEntity> findFileList(@Param("time_from") Date from, @Param("time_to") Date to,
                                         @Param("user_id") String userID, Pageable pageable) {
     Timestamp fromTimestamp = new Timestamp(from.getTime());
     Timestamp toTimestamp = new Timestamp(to.getTime());
-    SqlQuerySpec query = new SqlQuerySpec("SELECT * FROM FileLocationEntity f WHERE f.createdAt >= @time_from AND f.createdAt <= @time_to AND f.createdBy = @user_id");
-    SqlParameterList pars = query.getParameters();
+
+    int pageSize = pageable.getPageSize();
+    int pageNum = pageable.getPageNumber();
+    int offset = pageNum * pageSize;
+
+    SqlQuerySpec query = new SqlQuerySpec("SELECT * FROM FileLocationEntity f WHERE f.createdAt >= @time_from AND f.createdAt <= @time_to AND f.createdBy = @user_id ORDER BY f.createdAt OFFSET @offset LIMIT @limit");
+    List<SqlParameter> pars = query.getParameters();
     pars.add(new SqlParameter("@time_from", fromTimestamp));
     pars.add(new SqlParameter("@time_to", toTimestamp));
     pars.add(new SqlParameter("@user_id", userID));
-    List<FileLocationEntity> fileList = cosmosStore.queryItemsAsync(headers.getPartitionId(), cosmosDBName, fileLocationContainer, query,
-        FileLocationEntity.class,(short)pageable.getPageSize(), pageable.getPageNumber());
-    Page<FileLocationEntity> page = new PageImpl(fileList,  pageable, fileList.size());
-    return page;
+    pars.add(new SqlParameter("@offset", offset));
+    pars.add(new SqlParameter("@limit", pageSize));
+    CosmosQueryRequestOptions cosmosQueryRequestOptions = new CosmosQueryRequestOptions();
+
+    List<FileLocationEntity> fileLocationEntityList = cosmosStore.queryItems(headers.getPartitionId(), cosmosDBName, fileLocationContainer, query,
+        cosmosQueryRequestOptions, FileLocationEntity.class);
+
+    return new PageImpl(fileLocationEntityList,  pageable, fileLocationEntityList.size());
   }
 
 }

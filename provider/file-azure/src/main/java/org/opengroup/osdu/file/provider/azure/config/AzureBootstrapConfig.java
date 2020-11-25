@@ -14,9 +14,8 @@
 
 package org.opengroup.osdu.file.provider.azure.config;
 
-import com.azure.cosmos.ConnectionMode;
-import com.azure.cosmos.ConnectionPolicy;
-import com.azure.cosmos.internal.AsyncDocumentClient;
+import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosClientBuilder;
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
 import org.springframework.beans.factory.annotation.Value;
@@ -101,15 +100,9 @@ public class AzureBootstrapConfig {
   }
 
   @Bean
-  public AsyncDocumentClient asyncDocumentClient(final @Named("COSMOS_ENDPOINT") String endpoint, final @Named("COSMOS_KEY") String key) {
-
-    ConnectionPolicy connectionPolicy = new ConnectionPolicy();
-    connectionPolicy.setConnectionMode(ConnectionMode.DIRECT);
-
-    return new AsyncDocumentClient.Builder()
-        .withServiceEndpoint(endpoint)
-        .withMasterKeyOrResourceToken(key)
-        .withConnectionPolicy(connectionPolicy)
-        .build();
+  public CosmosClient buildCosmosClient(SecretClient kv) {
+    String cosmosEndpoint = getKeyVaultSecret(kv, "opendes-cosmos-endpoint");
+    String cosmosPrimaryKey = getKeyVaultSecret(kv, "opendes-cosmos-primary-key");
+    return new CosmosClientBuilder().endpoint(cosmosEndpoint).key(cosmosPrimaryKey).buildClient();
   }
 }
