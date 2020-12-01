@@ -16,11 +16,23 @@
 
 package org.opengroup.osdu.file.provider.azure.service;
 
+import com.azure.cosmos.implementation.InternalServerErrorException;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.common.Strings;
+import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.core.common.exception.BadRequestException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.exception.ApplicationException;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
@@ -29,23 +41,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotBlank;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class StorageServiceImpl implements IStorageService {
+  @Autowired
+  BlobStore blobStore;
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER
       = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
 
+  @Autowired
+  DpsHeaders dpsHeaders;
+
+  @Autowired
   final FileLocationProperties fileLocationProperties;
+  @Autowired
   final IStorageRepository storageRepository;
+
+  @Autowired
+  final BlobStoreConfig blobStoreConfig;
+
+  @Autowired
+  ServiceHelper serviceHelper;
 
   @Override
   public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
@@ -77,7 +109,7 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   private String getContainerName(String partitionID) {
-    return partitionID;
+    return blobStoreConfig.getStagingContainer();
   }
 
   private String getUserDesID(String authorizationToken) {
@@ -93,4 +125,37 @@ public class StorageServiceImpl implements IStorageService {
     return format("%s/%s/%s", userDesID, folderName, filename);
   }
 
+  @SneakyThrows
+  @Override
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+    if(StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
+      throw new IllegalArgumentException(
+          String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
+              authorizationToken, unsignedUrl));
+    }
+
+    String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(unsignedUrl);
+    String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(unsignedUrl);
+    BlobSasPermission permission = new BlobSasPermission();
+    permission.setReadPermission(true);
+    OffsetDateTime expiryTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(7);
+
+    String signedUrlString = blobStore.generatePreSignedURL(
+        dpsHeaders.getPartitionId(),
+        filePath.toString(),
+        containerName,
+        expiryTime,
+        permission);
+
+    if(StringUtils.isBlank(signedUrlString)) {
+      throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
+    }
+
+    return SignedUrl.builder()
+          .url(new URL(signedUrlString))
+          .uri(URI.create(unsignedUrl))
+          .createdBy(getUserDesID(authorizationToken))
+          .createdAt(Instant.now(Clock.systemUTC()))
+          .build();
+  }
 }

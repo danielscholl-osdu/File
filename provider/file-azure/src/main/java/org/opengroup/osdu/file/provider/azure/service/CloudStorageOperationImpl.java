@@ -16,21 +16,67 @@
 
 package org.opengroup.osdu.file.provider.azure.service;
 
+import com.azure.storage.blob.models.BlobStorageException;
+import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
+import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import com.azure.storage.blob.models.BlobCopyInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.io.File;
 
 @Service
 public class CloudStorageOperationImpl implements ICloudStorageOperation {
+  @Autowired
+  BlobStore blobStore;
+
+  @Autowired
+  JaxRsDpsLog logger;
+
+  @Autowired
+  DpsHeaders dpsHeaders;
+
+  @Autowired
+  ServiceHelper serviceHelper;
+
+  private String loggerName = CloudStorageOperationImpl.class.getName();
 
   @Override
   public String copyFile(String sourceFilePath, String destinationFilePath) throws OsduBadRequestException {
-    throw new NotImplementedException();
+    if(Strings.isBlank(sourceFilePath) || Strings.isBlank(destinationFilePath)) {
+      throw new OsduBadRequestException(
+          String.format("Illegal argument for source { %s } or destination { %s } file path",
+              sourceFilePath,destinationFilePath));
+    }
+
+    String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(destinationFilePath);
+    String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(destinationFilePath);
+
+    try {
+      BlobCopyInfo copyInfo = blobStore.copyFile(dpsHeaders.getPartitionId(), filePath, containerName, sourceFilePath);
+      logger.info(loggerName, copyInfo.getCopyStatus().toString());
+      return copyInfo.getCopyId();
+    }
+    catch (BlobStorageException ex) {
+      String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH +  filePath;
+      throw new OsduBadRequestException(message, ex);
+    }
   }
 
   @Override
   public Boolean deleteFile(String location) {
-    throw new NotImplementedException();
+    if(Strings.isBlank(location)) {
+      throw new IllegalArgumentException(String.format("invalid location received %s",location));
+    }
+
+    String filepath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(location);
+    String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(location);
+    return blobStore.deleteFromStorageContainer(dpsHeaders.getPartitionId(), filepath, containerName);
   }
 }

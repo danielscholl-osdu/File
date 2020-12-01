@@ -81,7 +81,6 @@ public class FileStepDef_GET implements En {
 
 			HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);
 			this.context.setHttpResponse(response);
-			setNewFileSourceValue();
 			setUploadSignedUrl();
 
 			assertEquals("200", String.valueOf(response.getCode()));
@@ -125,6 +124,11 @@ public class FileStepDef_GET implements En {
 		Then("service should respond back with error {string} and {string}", (String errorCode, String errorMsg) -> {
 			verifyFailedResponse(errorCode, errorMsg);
 		});
+
+		Then("service should respond back with error {string} or {string} and {string}", (String errorCode, String alternateErrorCode, String errorMsg) -> {
+      validateResponseCode(errorCode, alternateErrorCode);
+    });
+
 		Then("service should respond back with error code {string}", (String errorCode) -> {
 			assertEquals(errorCode, this.context.getResponseCode());
 		});
@@ -217,7 +221,6 @@ public class FileStepDef_GET implements En {
 
 		assertNotNull(signedURLResp);
 		assertNotNull(signedURLResp.getLocation().get("SignedURL"));
-		assertNotNull(signedURLResp.getLocation().get("FileSource"));
 
 		int code = 0;
 		try {
@@ -226,7 +229,8 @@ public class FileStepDef_GET implements En {
 			fail("Fail to call signed URL because of message=" + e.getMessage());
 		}
 
-		assertEquals(200, code);
+		// Both 200 and 201 response codes indicate success in PUT calls.
+		assertTrue(code == 200 || code == 201);
 
 	}
 
@@ -234,6 +238,14 @@ public class FileStepDef_GET implements En {
 		int respCode = this.context.getHttpResponse().getCode();
 		assertEquals(responseCode, String.valueOf(respCode));
 	}
+
+  private void validateResponseCode(String responseCode, String alternateResponseCode) {
+    HttpResponse response = this.context.getHttpResponse();
+    if (response != null) {
+      assertTrue(responseCode.equals(String.valueOf(response.getCode()))
+          || alternateResponseCode.equals(String.valueOf(response.getCode())));
+    }
+  }
 
 	private void setNewFileSourceValue() throws IOException {
 		String response = this.context.getHttpResponse().getBody();
@@ -257,7 +269,9 @@ public class FileStepDef_GET implements En {
 		MediaType mediaType = MediaType.parse("text/csv");
 		RequestBody body = RequestBody.create(mediaType, fileContent);
 
-		Request request = new Request.Builder().url(endPoint).method("PUT", body).addHeader("Content-Type", "text/csv")
+		Request request = new Request.Builder().url(endPoint).method("PUT", body)
+        .addHeader("Content-Type", "text/csv")
+        .addHeader("x-ms-blob-type", "BlockBlob")
 				.build();
 		Response response = client.newCall(request).execute();
 

@@ -110,3 +110,10 @@ spec:
           value: http://storage/api/storage/v2
         - name: azure_istioauth_enabled
           value: "true"
+        - name: storage_account
+          valueFrom:
+            secretKeyRef:
+              name: airflow
+              key: azurestorageaccountname
+
+

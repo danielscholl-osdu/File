@@ -24,7 +24,7 @@ public enum ScalarIndicator {
         return value;
     }
 
-    @JsonCreator
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static ScalarIndicator create(String value) throws EnumValidationException {
         if(value == null) {
             throw new EnumValidationException(value, "ScalarIndicator");

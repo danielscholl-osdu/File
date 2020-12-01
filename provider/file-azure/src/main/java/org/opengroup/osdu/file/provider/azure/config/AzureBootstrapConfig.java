@@ -18,13 +18,19 @@ import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
 import com.azure.security.keyvault.secrets.SecretClient;
 import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.common.StorageSharedKeyCredential;
+import lombok.Getter;
+import org.opengroup.osdu.azure.KeyVaultFacade;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import javax.inject.Named;
+import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.*;
 
 @Configuration
+@Getter
 public class AzureBootstrapConfig {
   @Value("${azure.keyvault.url}")
   private String keyVaultURL;
@@ -104,5 +110,20 @@ public class AzureBootstrapConfig {
     String cosmosEndpoint = getKeyVaultSecret(kv, "opendes-cosmos-endpoint");
     String cosmosPrimaryKey = getKeyVaultSecret(kv, "opendes-cosmos-primary-key");
     return new CosmosClientBuilder().endpoint(cosmosEndpoint).key(cosmosPrimaryKey).buildClient();
+  }
+
+  @Bean
+  public BlobServiceClient blobServiceClient(SecretClient kv) {
+    final String accountName = KeyVaultFacade.getSecretWithValidation(kv, "opendes-storage");
+    final String accountKey = KeyVaultFacade.getSecretWithValidation(kv, "opendes-storage-key");
+    StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
+    String endpoint = String.format(BLOB_STORAGE_ACCOUNT_BASE_URI_REGEX, AZURE_PROTOCOL ,accountName);
+
+    BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+        .endpoint(endpoint)
+        .credential(storageSharedKeyCredential)
+        .buildClient();
+
+    return blobServiceClient;
   }
 }
