@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestFile extends File {
   protected static final DummyRecordsHelper RECORDS_HELPER = new DummyRecordsHelper();
-  private static String containerName = System.getProperty("DATA_PARTITION_ID", System.getenv("DATA_PARTITION_ID"));
+  private static String containerName = System.getProperty("STAGING_CONTAINER_NAME", System.getenv("STAGING_CONTAINER_NAME"));
   @BeforeAll
   public static void setUp() throws IOException {
     client = new HttpClientAzure();
@@ -224,9 +224,10 @@ public class TestFile extends File {
             .readValue(getFileLocationResponse.getEntity(String.class), FileLocationResponse.class);
         if(fileLocationResponse!=null && StringUtils.isNotBlank(fileLocationResponse.getLocation())) {
           String fileLoc[] = fileLocationResponse.getLocation().split(containerName);
-          String fileName = fileLoc[1];
-          cloudStorageUtil.deleteCloudFile(containerName, fileName);
-
+          if (fileLoc.length >= 2) {
+            String fileName = fileLoc[1];
+            cloudStorageUtil.deleteCloudFile(containerName, fileName);
+          }
         }
       }
     }

@@ -33,6 +33,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
     <google.oauth.version>0.21.1</google.oauth.version>
+    <os-core-lib-azure.version>0.0.42</os-core-lib-azure.version>
   </properties>
 
   <dependencies>
@@ -117,7 +118,27 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>core-lib-azure</artifactId>
+      <version>${os-core-lib-azure.version}</version>
+    </dependency>
   </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Inherit managed dependencies from core-lib-azure -->
+      <dependency>
+        <groupId>org.opengroup.osdu</groupId>
+        <artifactId>core-lib-azure</artifactId>
+        <version>${os-core-lib-azure.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 
   <build>
     <plugins>

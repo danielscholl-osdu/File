@@ -45,7 +45,8 @@ public class FileStepDef_POST implements En {
 					tenant = CommonUtil.selectTenant(tenant);
 					String body = this.context.getFileUtils().read(inputPayload);
 					body = updatePlaceholdersInInputPayload(body);
-					JsonElement jsonBody = new Gson().fromJson(body, JsonElement.class);
+
+          JsonElement jsonBody = new Gson().fromJson(body, JsonElement.class);
 					String filepath = this.context.getFileSource();
 					updateFilePath(jsonBody, filepath);
 					HttpResponse response = postRequest(jsonBody, tenant);
@@ -81,7 +82,7 @@ public class FileStepDef_POST implements En {
 					JsonObject responseMsg = gsn.fromJson(response.getBody().toString(), JsonObject.class);
 					assertEquals(expectedData.toString(), responseMsg.toString());
 				});
-		
+
 		Then("I update ancestry value with {string} and data-partition-id as {string}",
 				(String inputPayload, String tenant) -> {
 					tenant = CommonUtil.selectTenant(tenant);
@@ -111,7 +112,7 @@ public class FileStepDef_POST implements En {
 				parentsVal.remove(0);
 				parentsVal.add(ancestryVal);
 		return jsonBody;
-				
+
 	}
 
 
@@ -126,7 +127,7 @@ public class FileStepDef_POST implements En {
 				.replaceAll(TestConstants.ACL_OWNERS_GROUP, TestConstants.ACL_OWNERS_GROUP_VALUE)
 				.replaceAll(TestConstants.CLOUD_DOMAIN, TestConstants.CLOUD_DOMAIN_VALUE)
 				.replaceAll(TestConstants.LEGAL_TAGS, TestConstants.LEGAL_TAGS_VALUE);
-		return body;
+    return body;
 	}
 
 	private HttpResponse postRequest(JsonElement jsonBody, String tenant) {
@@ -136,7 +137,7 @@ public class FileStepDef_POST implements En {
 		HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);
 		return response;
 	}
-	
+
 	private HttpResponse getStorageRequest(String id) {
 		HttpRequest httpRequest = HttpRequest.builder().url(TestConstants.STORAGE_HOST + id)
 				.httpMethod(HttpRequest.GET).requestHeaders(this.context.getAuthHeaders())
@@ -164,7 +165,7 @@ public class FileStepDef_POST implements En {
 		jsonBody.getAsJsonObject().getAsJsonObject("data").remove("FileSource");
 		jsonBody.getAsJsonObject().getAsJsonObject("data").addProperty("FileSource", filePath);
 	}
-	
+
 	private JsonElement removeAncestry(JsonElement jsonBody) {
 		jsonBody.getAsJsonObject().remove("ancestry");
 		return jsonBody;
@@ -177,7 +178,7 @@ public class FileStepDef_POST implements En {
 		JsonObject root = gsn.fromJson(response, JsonObject.class);
 		this.context.setId(root.get("id").getAsString());
 	}
-	
+
 	private void setVersion() throws IOException {
 		String response = this.context.getHttpResponse().getBody();
 		gsn = new Gson();

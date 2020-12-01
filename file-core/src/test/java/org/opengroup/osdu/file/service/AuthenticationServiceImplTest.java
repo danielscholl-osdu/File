@@ -58,6 +58,7 @@ class AuthenticationServiceImplTest {
 
   @Test
   void shouldThrowWhenOnlyTokenIsSpecified() {
+    // Check for null value
     // when
     Throwable thrown = catchThrowable(() -> authenticationService.checkAuthentication(
         AUTHORIZATION_TOKEN, null));
@@ -66,16 +67,37 @@ class AuthenticationServiceImplTest {
     assertThat(thrown)
         .isInstanceOf(OsduUnauthorizedException.class)
         .hasMessage("Missing partitionID");
+
+    // Check for white-spaces
+    // when
+    Throwable thrown1 = catchThrowable(() -> authenticationService.checkAuthentication(
+        AUTHORIZATION_TOKEN, ""));
+
+    // then
+    assertThat(thrown1)
+        .isInstanceOf(OsduUnauthorizedException.class)
+        .hasMessage("Missing partitionID");
   }
 
   @Test
   void shouldThrowWhenOnlyPartitionIsSpecified() {
+    // Check for null value
     // when
     Throwable thrown = catchThrowable(() -> authenticationService.checkAuthentication(
         null, PARTITION));
 
     // then
     assertThat(thrown)
+        .isInstanceOf(OsduUnauthorizedException.class)
+        .hasMessage("Missing authorization token");
+
+    // Check for white-spaces
+    // when
+    Throwable thrown1 = catchThrowable(() -> authenticationService.checkAuthentication(
+        "", PARTITION));
+
+    // then
+    assertThat(thrown1)
         .isInstanceOf(OsduUnauthorizedException.class)
         .hasMessage("Missing authorization token");
   }

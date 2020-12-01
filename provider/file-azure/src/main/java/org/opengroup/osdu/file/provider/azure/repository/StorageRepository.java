@@ -18,16 +18,20 @@ package org.opengroup.osdu.file.provider.azure.repository;
 
 import static java.lang.String.format;
 import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.*;
+
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
+import java.time.OffsetDateTime;
 
-import lombok.AllArgsConstructor;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
-import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
+import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.storage.Blob;
 import org.opengroup.osdu.file.provider.azure.storage.BlobId;
 import org.opengroup.osdu.file.provider.azure.storage.BlobInfo;
@@ -48,12 +52,16 @@ public class StorageRepository implements IStorageRepository {
   private Storage storage;
 
   @Autowired
-  private AzureBootstrapConfig azureBootstrapConfig;
+  BlobStore blobStore;
 
   @Autowired
-  private String storageAccount;
+  BlobStoreConfig blobStoreConfig;
+
+  @Autowired
+  DpsHeaders dpsHeaders;
 
   @Override
+  @SneakyThrows
   public SignedObject createSignedObject(String containerName, String filepath) {
     log.debug("Creating the signed blob in container {} for path {}", containerName, filepath);
     BlobId blobId = BlobId.of(containerName, filepath);
@@ -62,7 +70,15 @@ public class StorageRepository implements IStorageRepository {
         .build();
     Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
     log.debug("Created the blob in container {} for path {}", containerName, filepath);
-    URL signedUrl = storage.signUrl(blobInfo, 7L, TimeUnit.DAYS);
+
+    int expiryDays = 7;
+    OffsetDateTime expiryTime = OffsetDateTime.now().plusDays(expiryDays);
+    BlobSasPermission permissions = (new BlobSasPermission())
+        .setWritePermission(true)
+        .setCreatePermission(true);
+    String signedUrlStr =  blobStore.generatePreSignedURL(dpsHeaders.getPartitionId(), filepath, containerName, expiryTime, permissions);
+
+    URL signedUrl = new URL(signedUrlStr);
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
         blob.getGeneratedId(), signedUrl);
     return SignedObject.builder()
@@ -71,8 +87,16 @@ public class StorageRepository implements IStorageRepository {
         .build();
   }
 
-  private URI getObjectUri(Blob blob) {
+  private String getStorageAccountEndpoint(Blob blob) {
     String filepath = UriUtils.encodePath(blob.getName(), StandardCharsets.UTF_8);
-    return URI.create(format("%s%s.blob.core.windows.net/%s/%s", AZURE_PROTOCOL, storageAccount, blob.getContainer(), filepath));
+    return format(BLOB_RESOURCE_BASE_URI_REGEX, AZURE_PROTOCOL, getStorageAccount(), blob.getContainer(), filepath);
+  }
+
+  private URI getObjectUri(Blob blob) {
+    return URI.create(getStorageAccountEndpoint(blob));
+  }
+
+  private String getStorageAccount() {
+    return blobStoreConfig.getStorageAccount();
   }
 }

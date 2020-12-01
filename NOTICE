@@ -47,6 +47,7 @@ The following software have components provided under the terms of this license:
 - Apache Log4j API (from )
 - Apache Log4j Core (from )
 - Apache Log4j JUL Adapter (from )
+- Apache Log4j SLF4J Binding (from )
 - Apache Log4j to SLF4J Adapter (from )
 - AssertJ fluent assertions (from )
 - Asynchronous Http Client (from )
