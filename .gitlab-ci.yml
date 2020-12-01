@@ -23,7 +23,7 @@ variables:
   FILE_SERVICE_HOST: https://os-file-attcrcktoa-uc.a.run.app
   TARGET_AUDIENCE: $OSDU_GCP_INTEGRATION_TEST_AUDIENCE
   DATA_PARTITION_ID: $OSDU_GCP_TENANT_NAME
-  USER_ID: common-user 
+  USER_ID: common-user
   TIME_ZONE: UTC+0
   FILE_BUCKET: nice-etching-277309-file
 
@@ -31,6 +31,8 @@ variables:
   AZURE_SERVICE: file
   AZURE_BUILD_SUBDIR: provider/file-azure
   AZURE_TEST_SUBDIR: testing/file-test-azure
+  STAGING_CONTAINER_NAME: file-staging-area
+  PERSISTENCE_CONTAINER_NAME: file-persistent-area
 
 include:
   - project: 'osdu/platform/ci-cd-pipelines'

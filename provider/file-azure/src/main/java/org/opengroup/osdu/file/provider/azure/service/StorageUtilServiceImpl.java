@@ -18,22 +18,68 @@ package org.opengroup.osdu.file.provider.azure.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
+
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class StorageUtilServiceImpl implements IStorageUtilService  {
+  private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
+
+  @Autowired
+  final BlobStoreConfig blobStoreConfig;
 
   @Override
   public String getPersistentLocation(String relativePath, String partitionId) {
-    throw new NotImplementedException();
+    return String.format(
+        absolutePathFormat,
+        blobStoreConfig.getStorageAccount(),
+        blobStoreConfig.getPersistentContainer(),
+        normalizeFilePath(relativePath)
+    );
   }
 
   @Override
   public String getStagingLocation(String relativePath, String partitionId) {
-    throw new NotImplementedException();
+    return String.format(
+        absolutePathFormat,
+        blobStoreConfig.getStorageAccount(),
+        blobStoreConfig.getStagingContainer(),
+        normalizeFilePath(relativePath)
+    );
+  }
+
+  public String normalizeFilePath (String filePath) throws IllegalArgumentException {
+    // if string is null, empty or all whitespaces then throw
+    if(StringUtils.isBlank(filePath)) {
+      throw new IllegalArgumentException(String.format("Relative file path received %s", filePath));
+    }
+
+    StringBuilder sb = new StringBuilder(filePath);
+    // remove consecutive duplicate slashes
+    int i=0;
+    while(i<sb.length()-1) {
+      while (sb.charAt(i)=='/' && i+1<sb.length() && sb.charAt(i+1)=='/') {
+          sb.deleteCharAt(i);
+      }
+      i++;
+    }
+
+    // remove leading and trailing slashes
+    if(sb.charAt(0)=='/') {
+      sb.deleteCharAt(0);
+    }
+    if(sb.charAt(sb.length()-1)=='/') {
+      sb.deleteCharAt(sb.length()-1);
+    }
+
+    return sb.toString();
   }
 }

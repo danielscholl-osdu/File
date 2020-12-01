@@ -24,7 +24,7 @@ public enum Endian {
     return value;
   }
 
-  @JsonCreator
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   public static Endian create(@JsonProperty("Endian") String value) throws EnumValidationException {
     if (value == null) {
       throw new EnumValidationException(value, "Endian");

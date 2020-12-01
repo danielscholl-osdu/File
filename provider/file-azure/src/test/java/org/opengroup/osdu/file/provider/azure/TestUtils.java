@@ -34,9 +34,12 @@ public final class TestUtils {
   public static final String AUTHORIZATION_TOKEN = "authToken";
   public static final String PARTITION = "partition";
   public static final String USER_DES_ID = "osdu-user";
-  public static final String CONTAINER_NAME = "partition";
+  public static final String STAGING_CONTAINER_NAME = "file-staging-area";
+  public static final String PERSISTENT_CONTAINER_NAME = "file-persistent-area";
   public static final String STORAGE_NAME = "adotestfqofqosn0o4sa";
-
+  public static final String RELATIVE_FILE_PATH = "osdu/file1";
+  public static final String ABSOLUTE_FILE_PATH = "https://" + TestUtils.STORAGE_NAME +
+      ".blob.core.windows.net/" + TestUtils.STAGING_CONTAINER_NAME + "/" + TestUtils.RELATIVE_FILE_PATH;
   public static final String UUID_REGEX = "(.{8})(.{4})(.{4})(.{4})(.{12})";
   public static final Pattern AZURE_OBJECT_URI
       = Pattern.compile("^https://[\\w,\\s-]+/[\\w,\\s-]+/[\\w,\\s-]+/[\\w,\\s-]+/?.*$");
