@@ -41,7 +41,6 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
 | `LOG_PREFIX` | `file` | Logging prefix | no | - |
-| `server.servlet.contextPath` | `/api/file/v2/` | Servlet context path | no | - |
 | `AZURE_CLIENT_ID` | `********` | Identity to run the service locally. This enables access to Azure resources. You only need this if running locally | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-username` |
 | `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | -- |
 | `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
@@ -54,7 +53,9 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `spring.application.name` | `file-azure` | Name of application. Needed by App Insights | no | -- |
 | `osdu_storage_url` | `https://storage.azurewebsites.net/api/storage/v2` | Storage API endpoint | no | -- |
 | `server_port` | ex `8082` | Port the service will run on | no | -- |
-| `azure_istioauth_enabled` | `true` | Flag to Disable AAD auth | no | -- |
+| `AZURE_STORAGE_ACCOUNT` | ex `foo-storage-account` | Storage account for storing documents | no | output of infrastructure deployment |
+| `storage_account` | ex `foo-storage-account` | Storage account for storing documents | no | output of infrastructure deployment |
+| `azure_istioauth_enabled` | `true` (depends on if service is running in Kubernetes environment with Istio installed) | Configuring use of Istio | no | Set to true when deploying the service into a Kubernetes cluster with Istio configured. Set to false and uncomment the three lines [here](https://community.opengroup.org/osdu/platform/system/file/-/blob/master/provider/file-azure/src/main/resources/application.properties) defining `azure.activedirectory.client-id`, `azure.activedirectory.AppIdUri`, and `azure.activedirectory.session-stateless=true` if running locally |
 
 **Required to run integration tests**
 
@@ -72,8 +73,11 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `USER_ID` | osdu-user | User ID | no | - |
 | `EXIST_FILE_ID` | ex '****' | Existing file Id should be added  | no | - |
 | `TIME_ZONE` | `UTC+0` | Time zone required for tests to pass  | yes | - |
+| `STAGING_CONTAINER_NAME` | `file_staging_area` | Name of staging container for file service | no | created by Terraform |
 
 
+
+## Running Locally
 
 ### Configure Maven
 
@@ -86,138 +90,41 @@ Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b0
 ...
 ```
 
-### Build, Run and Test the application Locally
+### Build and run the application
 
-After configuring your environment as specified above, you can follow these steps to build and run the application
+After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the repository root.
 
 ```bash
-# execute build + unit tests
-$ mvn clean package
-...
-[INFO] BUILD SUCCESS
+# build + test + install core service code from repository root
+$ (cd file-core && mvn clean install)
 
-# run service locally **REQUIRES SPECIFIC ENVIRONMENT VARIABLES SET**
-$ java -jar $(find ./target/ -name '*.jar')
+# build + test + package azure service code
+$ (cd provider/file-azure/ && mvn clean package)
 
-# Test the application  **REQUIRES SPECIFIC ENVIRONMENT VARIABLES SET**
-$ mvn clean test -f integration-tests/pom.xml
+# run service from repository root
+#
+# Note: this assumes that the environment variables for running the service as outlined above are already exported in your environment.
+$ java -jar $(find provider/file-azure/target/ -name '*-spring-boot.jar')
+
 ```
 
-_After the service has started it should be accessible via a web browser by visiting [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). If the request does not fail, you can then run the integration tests._
+### Test the Application
+
+_After the service has started it should be accessible via a web browser by visiting [http://localhost:8080/api/file/v2/swagger](http://localhost:8080/api/file/v2/swagger). If the request does not fail, you can then run the integration tests._
+
+```bash
+# build + install integration test core
+$ (cd testing/file-test-core/ && mvn clean install)
+
+# build + run Azure integration tests.
+#
+# Note: this assumes that the environment variables for integration tests as outlined above are already exported in your environment.
+$ (cd testing/file-test-azure/ && mvn clean test)
+```
 
 ## Debugging
 
 Jet Brains - the authors of Intellij IDEA, have written an [excellent guide](https://www.jetbrains.com/help/idea/debugging-your-first-java-application.html) on how to debug java programs.
-
-
-## Deploying the Service
-
-Service deployments into Azure are standardized to make the process the same for all services if using ADO and are closely related to the infrastructure deployed. The steps to deploy into Azure can be [found here](https://github.com/azure/osdu-infrastructure)
-
-The default ADO pipeline is /devops/azure-pipelines.yml
-
-### Manual Deployment Steps
-
-__Environment Settings__
-
-The following environment variables are necessary to properly deploy a service to an Azure OSDU Environment.
-
-```bash
-# Group Level Variables
-export AZURE_TENANT_ID=""
-export AZURE_SUBSCRIPTION_ID=""
-export AZURE_SUBSCRIPTION_NAME=""
-export AZURE_PRINCIPAL_ID=""
-export AZURE_PRINCIPAL_SECRET=""
-export AZURE_APP_ID=""
-export AZURE_NO_ACCESS_ID=""
-export AZURE_NO_ACCESS_SECRET=""
-export AZURE_OTHER_APP_ID=""
-export AZURE_BASENAME_21=""
-export AZURE_BASENAME=""
-export AZURE_BASE=""
-export AZURE_INVALID_JWT=""
-
-# Pipeline Level Variable
-export AZURE_SERVICE="file"
-export AZURE_BUILD_SUBDIR="."
-export AZURE_TEST_SUBDIR="integration-tests"
-export AZURE_OSDU_TENANT="opendes"
-export AZURE_COMPANY_DOMAIN="contoso.com"
-export AZURE_VALID_GROUPNAME="integ.test.data.creator"
-export AZURE_INVALID_GROUPNAME="InvalidTestAdmin"
-
-# Required for Azure Deployment
-export AZURE_CLIENT_ID="${AZURE_PRINCIPAL_ID}"
-export AZURE_CLIENT_SECRET="${AZURE_PRINCIPAL_SECRET}"
-export AZURE_RESOURCE_GROUP="${AZURE_BASENAME}-osdu-r2-app-rg"
-export AZURE_APPSERVICE_PLAN="${AZURE_BASENAME}-osdu-r2-sp"
-export AZURE_APPSERVICE_NAME="${AZURE_BASENAME_21}-au-${AZURE_SERVICE}"
-
-# Required for Testing
-export ENTITLEMENT_URL="https://${AZURE_BASENAME_21}-au-file.azurewebsites.net/"
-export AZURE_AD_TENANT_ID="${AZURE_TENANT_ID}"
-export INTEGRATION_TESTER="${AZURE_PRINCIPAL_ID}"
-export ENTITLEMENT_MEMBER_NAME_VALID="${AZURE_PRINCIPAL_ID}"
-export AZURE_TESTER_SERVICEPRINCIPAL_SECRET="${AZURE_PRINCIPAL_SECRET}"
-export AZURE_AD_APP_RESOURCE_ID="${AZURE_APP_ID}"
-export AZURE_AD_OTHER_APP_RESOURCE_ID="${AZURE_OTHER_APP_ID}"
-export EXPIRED_TOKEN="${AZURE_INVALID_JWT}"
-export DOMAIN="${AZURE_COMPANY_DOMAIN}"
-export MY_TENANT="${AZURE_OSDU_TENANT}"
-export ENTITLEMENT_GROUP_NAME_VALID="${AZURE_VALID_GROUPNAME}"
-export ENTITLEMENT_MEMBER_NAME_INVALID="${AZURE_INVALID_GROUPNAME}"
-export AZURE_AD_USER_EMAIL="${AZURE_AD_USER_EMAIL}"
-export AZURE_AD_USER_OID="${AZURE_AD_USER_OID}"
-export AZURE_AD_GUEST_EMAIL="${AZURE_AD_GUEST_EMAIL}"
-export AZURE_AD_GUEST_OID="${AZURE_AD_GUEST_OID}"
-export AZURE_AD_OTHER_APP_RESOURCE_ID="${AZURE_AD_OTHER_APP_RESOURCE_ID}"
-export AZURE_AD_OTHER_APP_RESOURCE_OID="${AZURE_AD_OTHER_APP_RESOURCE_OID}"
-export AZURE_INVALID_EMAIL="invalid.test@email.com"
-export AZURE_INVALID_APP_ID="03015fad-093c-424a-a7c4-42ed9993f9e3"
-export AZURE_INVALID_ID="03012fadBADX424a-a7c4-42ed9993f9e3"
-```
-
-__Azure Service Deployment__
-
-
-1. Deploy the service using the Maven Plugin  _(azure_deploy)_
-
-```bash
-cd $AZURE_BUILD_SUBDIR
-mvn azure-webapp:deploy \
-  -DAZURE_DEPLOY_TENANT=$AZURE_TENANT_ID \
-  -Dazure.appservice.subscription=$AZURE_SUBSCRIPTION_ID \
-  -DAZURE_DEPLOY_CLIENT_ID=$AZURE_CLIENT_ID \
-  -DAZURE_DEPLOY_CLIENT_SECRET=$AZURE_CLIENT_SECRET \
-  -Dazure.appservice.resourcegroup=$AZURE_RESOURCE_GROUP \
-  -Dazure.appservice.plan=$AZURE_APPSERVICE_PLAN \
-  -Dazure.appservice.appname=$AZURE_APPSERVICE_NAME
-```
-
-2. Configure the Web App to start the SpringBoot Application _(azure_config)_
-
-
-```bash
-az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-
-# Set the JAR FILE as required
-TARGET=$(find ./target/ -name '*.jar')
-JAR_FILE=${TARGET##*/}
-
-JAVA_COMMAND="java -jar /home/site/wwwroot/${JAR_FILE}"
-JSON_TEMPLATE='{"appCommandLine":"%s"}'
-JSON_FILE="config.json"
-echo $(printf "$JSON_TEMPLATE" "$JAVA_COMMAND") > $JSON_FILE
-
-az webapp config set --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_APPSERVICE_NAME --generic-configurations @$JSON_FILE
-```
-
-3. Execute the Integration Tests against the Service Deployment _(azure_test)_
-
-
-```bash
-mvn clean test -f $AZURE_TEST_SUBDIR/pom.xml
 
 
 ## License
