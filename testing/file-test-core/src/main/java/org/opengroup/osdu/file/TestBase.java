@@ -35,7 +35,9 @@ public abstract class TestBase {
 
   public static Map<String, String> getHeaders(String dataPartition, String token) {
     Map<String, String> headers = new HashMap<>();
+    System.out.println("Building headers here...");
     if (dataPartition != null && !dataPartition.isEmpty()) {
+      System.out.println("Using Data partition: " + dataPartition);
       headers.put("Data-Partition-Id", dataPartition);
     }
     if (token != null && !token.isEmpty()) {
