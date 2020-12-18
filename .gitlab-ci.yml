@@ -34,6 +34,14 @@ variables:
   STAGING_CONTAINER_NAME: file-staging-area
   PERSISTENCE_CONTAINER_NAME: file-persistent-area
 
+  #AWS
+  AWS_BUILD_SUBDIR: provider/file-aws/build-aws
+  AWS_TEST_SUBDIR: testing/file-test-aws
+  AWS_SERVICE: file
+  AWS_ENVIRONMENT: dev
+  AWS_SKIP_DEPLOY: 'true'
+  AWS_SKIP_TESTS: 'true'
+
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
@@ -66,3 +74,6 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
     file: 'cloud-providers/azure.yml'
+
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/aws.yml'
