@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2020 Google LLC
+  ~ Copyright © 2020 Amazon Web Services
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -40,6 +41,7 @@
     <module>file-test-core</module>
     <module>file-test-gcp</module>
     <module>file-test-azure</module>
+    <module>file-test-aws</module>
   </modules>
 
   <repositories>
@@ -80,4 +82,3 @@
   </profiles>
 
 </project>
-
