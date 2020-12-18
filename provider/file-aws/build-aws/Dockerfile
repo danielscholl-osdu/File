@@ -15,7 +15,7 @@
 # https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html
 FROM amazoncorretto:8
 
-ARG JAR_FILE=provider/file-aws/target/*spring-boot.jar
+ARG JAR_FILE=provider/file-aws/target/file-aws*.jar
 WORKDIR /
 COPY ${JAR_FILE} app.jar
 EXPOSE 8080
