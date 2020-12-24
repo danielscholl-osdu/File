@@ -29,6 +29,7 @@
 	<properties>
 		<start-class>org.opengroup.osdu.file.provider.ibm.FileIBMApplication</start-class>
 		<os-core-lib-ibm.version>0.3.6-SNAPSHOT</os-core-lib-ibm.version>
+		<aws.version>1.11.637</aws.version>
   </properties>
 
 	<dependencies>
@@ -42,6 +43,12 @@
 			<groupId>org.opengroup.osdu</groupId>
 			<artifactId>os-core-lib-ibm</artifactId>
 			<version>${os-core-lib-ibm.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>${aws.version}</version>
 		</dependency>
 
 		<!-- Test Dependencies -->
