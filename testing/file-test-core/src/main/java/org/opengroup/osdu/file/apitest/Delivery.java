@@ -21,6 +21,7 @@ package org.opengroup.osdu.file.apitest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -115,6 +116,8 @@ public abstract class Delivery extends TestBase {
 
     generateTenantMapping();
 
+    createLegalTag();    
+
     List<DeliverySetup> inputList = DeliverySetupConf.getDeliverySetup();
     for (DeliverySetup input : inputList) {
       DeliveryTestIndex testIndex = getTextIndex();
@@ -130,6 +133,23 @@ public abstract class Delivery extends TestBase {
       testIndex.setupSchema();
     }
   }
+
+  private void createLegalTag() throws IOException, Exception {
+
+    String payLoad = getLegalTagBody("US", Config.getLegalTag(), null, "Public Domain Data", "Public Domain Data Legal Tag");
+
+    ClientResponse clientResponse = client.sendExt(Config.getLegalBaseURL() + "legaltags", HttpMethod.POST, getDeliveryHeaders(), payLoad);
+    // assertEquals(payLoad, "asdf");
+    assertTrue(clientResponse.getStatus() == 201 || clientResponse.getStatus() == 409,String.format("Legaltag create response: %s", clientResponse.getStatus()));
+  }
+
+  private static String getLegalTagBody(String countryOfOrigin, String name, String expDate, String dataType, String description) {
+    description = description == null ? "" : "\"description\" : \"" + description + "\",";
+    expDate = ((expDate == null) || (expDate.length() == 0))  ? "" : "\"expirationDate\" : \"" + expDate + "\",";
+
+    return "{\"name\": \"" + name + "\"," + description +
+            "\"properties\": {\"countryOfOrigin\": [\"" + countryOfOrigin + "\"], \"contractId\":\"A1234\"," + expDate + "\"dataType\":\"" + dataType + "\", \"originator\":\" MyCompany\", \"securityClassification\":\"Public\", \"exportClassification\":\"EAR99\", \"personalData\":\"No Personal Data\"} }";
+}
 
   private void ingest_records_with_the_for_a_given(String record, String dataGroup, String kind) {
     String actualKind = generateActualName(kind, timeStamp);
@@ -160,7 +180,7 @@ public abstract class Delivery extends TestBase {
           }
           String payLoad = new Gson().toJson(records);
           
-          ClientResponse clientResponse = client.sendExt(Config.getStorageBaseURL() + "records", HttpMethod.PUT, getDeliveryHeaders(), payLoad);          
+          ClientResponse clientResponse = client.sendExt(Config.getStorageBaseURL() + "records", HttpMethod.PUT, getDeliveryHeaders(), payLoad);
         assertEquals(201, clientResponse.getStatus());
     } catch (Exception ex) {
         throw new AssertionError(ex.getMessage());

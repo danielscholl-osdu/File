@@ -34,6 +34,7 @@ public class Config {
   //Delivery API Properties
   private static final String DEFAULT_SEARCH_HOST = "";
   private static final String DEFAULT_STORAGE_HOST = "";
+  private static final String DEFAULT_LEGAL_HOST = "";
   private static final String DEFAULT_DATA_PARTITION_ID_TENANT1 = "";
   private static final String DEFAULT_DATA_PARTITION_ID_TENANT2 = "";
   private static final String DEFAULT_SEARCH_INTEGRATION_TESTER = "";
@@ -122,6 +123,10 @@ public class Config {
   public static String getStorageBaseURL() {
       return getEnvironmentVariableOrDefaultValue("STORAGE_HOST", DEFAULT_STORAGE_HOST);
   }
+
+  public static String getLegalBaseURL() {
+    return getEnvironmentVariableOrDefaultValue("LEGAL_HOST", DEFAULT_LEGAL_HOST);
+}
 
   public static String getEntitlementsDomain() {
   return getEnvironmentVariableOrDefaultValue("ENTITLEMENTS_DOMAIN", DEFAULT_ENTITLEMENTS_DOMAIN);
