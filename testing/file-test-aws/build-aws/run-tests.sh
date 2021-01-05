@@ -54,11 +54,11 @@ export SEARCH_HOST=$SEARCH_URL
 export STORAGE_HOST=$STORAGE_URL
 export LEGAL_HOST=$LEGAL_URL
 export DELIVERY_INT_TEST_BUCKET_NAME="${RESOURCE_PREFIX}-osdu-delivery-integration-test-bucket"
-export AWS_S3_REGION=us-east-1
+export AWS_S3_REGION=$AWS_REGION
 
 #### RUN INTEGRATION TEST #########################################################################
 
-mvn test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
+mvn  -ntp test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
 TEST_EXIT_CODE=$?
 
 #### COPY TEST REPORTS #########################################################################

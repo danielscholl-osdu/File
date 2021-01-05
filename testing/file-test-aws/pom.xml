@@ -23,7 +23,7 @@
         <artifactId>os-file-test</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>    
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opengroup.osdu.file</groupId>
@@ -39,7 +39,7 @@
     </properties>
 
     <dependencies>
-        
+
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>file-test-core</artifactId>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.opengroup.osdu.core.aws</groupId>
             <artifactId>os-core-lib-aws</artifactId>
-            <version>0.3.11</version>
+            <version>0.3.16</version>
         </dependency>
 
         <dependency>
