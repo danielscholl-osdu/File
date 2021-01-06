@@ -346,8 +346,7 @@ paths:
       security:
         - bearer: []
         - appkey: []
-  
-  
+
   /getFileLocation:
     post:
       tags:
@@ -380,6 +379,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FileLocationResponse'
+        400:
+          description: Bad user input. Mandatory fields missing or unacceptable value
+            passed to API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+        401:
+          description: Invalid/Expired Credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+  
+  /delivery/getFileSignedUrl:
+    post:
+      tags:
+      - Delivery API
+      description: |
+        Returns delivery instructions for File(s) using SRNs
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: Specifies the data partition to use. This should either be the partition name or crm account ID associated with the partition.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: opendes
+      security:
+        - bearer: []
+        - appkey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deliveryGetFileSignedURLRequest'
+      responses:
+        '200':
+          description: |
+            File location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deliveryGetFileSignedURLResponse'
         400:
           description: Bad user input. Mandatory fields missing or unacceptable value
             passed to API
@@ -447,8 +498,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationError'     
-  
+                $ref: '#/components/schemas/ApplicationError'
+
 components:
   schemas:
     LocationRequest:
@@ -662,7 +713,7 @@ components:
       properties:
         Id:
           type: string
-    GetFileSignedURLSRequest:
+    deliveryGetFileSignedURLRequest:
       type: object
       properties:
         srn:
@@ -674,7 +725,7 @@ components:
         srns:
           - srn:some-valid-srn
           - srn:some-invalid-srn
-    GetFileSignedURLSResponse:
+    deliveryGetFileSignedURLResponse:
       type: object
       properties:
         unprocessed:
