@@ -18,7 +18,9 @@ package org.opengroup.osdu.file.provider.gcp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
+@ConfigurationPropertiesScan(basePackages = "org.opengroup")
 @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
 public class FileGcpDatastoreApplication {
 
