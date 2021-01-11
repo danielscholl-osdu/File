@@ -4,13 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class GoogleCloudStorageUtilTest {
+
+    @Mock
+    PropertiesConfiguration propertiesConfiguration;
 
     @InjectMocks
     GoogleCloudStorageUtil googleCloudStorageUtil;
@@ -18,10 +23,12 @@ public class GoogleCloudStorageUtilTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        googleCloudStorageUtil = new GoogleCloudStorageUtil();
+        when(propertiesConfiguration.getPersistentArea()).thenReturn("persistent-area");
+        when(propertiesConfiguration.getStagingArea()).thenReturn("persistent-area");
+        googleCloudStorageUtil = new GoogleCloudStorageUtil(propertiesConfiguration);
     }
 
-    @Test
+  @Test
     public void getAcls() {
         assertEquals(1, googleCloudStorageUtil.getAcls("test-service-account").size());
     }
