@@ -1,3 +1,6 @@
+/* Licensed Materials - Property of IBM              */
+/* (c) Copyright IBM Corp. 2020. All Rights Reserved.*/
+
 package org.opengroup.osdu.file.provider.ibm.service;
 
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -16,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.ibm.objectstorage.CloudObjectStorageFactory;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 //import org.mockito.internal.util.reflection.Whitebox;
@@ -43,6 +47,9 @@ public class IBMStorageServiceImplTest {
 	
 	@Mock
 	  private DpsHeaders header;
+	
+	@Mock
+	private TenantInfo tenant;
 
 	
 	@Mock
@@ -59,7 +66,7 @@ public class IBMStorageServiceImplTest {
   @Mock
   private IBMFileRepositoryImpl queryHelper;
 
-  private static final String dataPartitionId = "testPartitionId";
+  private static final String dataPartitionId = "opendes";
   private static final  String BUCKET_NAME_PREFIX = "rs-local-dev";
   private static final String BUCKET = "file-locations";
   @Mock
@@ -103,6 +110,8 @@ public class IBMStorageServiceImplTest {
     URL url = new URL(testUrl);
 
     Mockito.when(header.getPartitionIdWithFallbackToAccountId()).thenReturn(dataPartitionId);
+    Mockito.when(tenant.getName()).thenReturn(dataPartitionId);
+    
     Mockito.when(expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays)).thenReturn(expiration);
     Mockito.when(header.getUserEmail()).thenReturn(userEmaildID);
 

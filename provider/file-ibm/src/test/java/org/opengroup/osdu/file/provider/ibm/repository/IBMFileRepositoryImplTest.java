@@ -1,66 +1,40 @@
+/* Licensed Materials - Property of IBM              */
+/* (c) Copyright IBM Corp. 2020. All Rights Reserved.*/
+
 package org.opengroup.osdu.file.provider.ibm.repository;
 
-import static com.cloudant.client.api.query.Expression.lte;
-import static com.cloudant.client.api.query.Expression.gte;
-import static com.cloudant.client.api.query.Expression.in;
-import static com.cloudant.client.api.query.Expression.regex;
-import static com.cloudant.client.api.query.Operation.and;
-import static com.cloudant.client.api.query.Expression.eq;
-import com.cloudant.client.api.model.Response;
-import org.junit.jupiter.api.BeforeAll;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.junit.runner.*;
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.HttpStatus;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.omg.CORBA.portable.ApplicationException;
 import org.opengroup.osdu.core.common.model.file.DriverType;
 import org.opengroup.osdu.core.common.model.file.FileListRequest;
 import org.opengroup.osdu.core.common.model.file.FileListResponse;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.ibm.cloudant.IBMCloudantClientFactory;
 import org.opengroup.osdu.file.ReplaceCamelCase;
-import org.opengroup.osdu.file.provider.ibm.FileIBMApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.junit.Before;
-import com.cloudant.client.api.Database;
-import com.cloudant.client.api.query.QueryBuilder;
-import com.cloudant.client.api.query.QueryResult;
-import com.ibm.cloud.objectstorage.services.kms.model.NotFoundException;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.mockito.ArgumentMatchers.*;
-
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.mockito.MockitoAnnotations.initMocks;
 import org.opengroup.osdu.file.provider.ibm.model.file.FileLocationDoc;
-
 import org.slf4j.Logger;
+
+import com.cloudant.client.api.Database;
+import com.cloudant.client.api.model.Response;
+import com.cloudant.client.api.query.QueryResult;
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceCamelCase.class)
 public class IBMFileRepositoryImplTest {
@@ -93,6 +67,10 @@ QueryResult queryResult;
   private  Logger logger;
   
   @Mock FileListResponse fileListResponse;
+  
+  @Mock
+  TenantInfo tenant;
+ 
 
   @InjectMocks
   private  IBMFileRepositoryImpl dbRepo;
@@ -107,6 +85,7 @@ QueryResult queryResult;
   public void testFindByFileId() throws Exception {
     // Arrange
     String testFileId = "test-id";
+    Mockito.when(tenant.getName()).thenReturn("shri");
 
   //  Whitebox.setInternalState(dbRepo, "s3SignedUrlExpirationTimeInDays", s3SignedUrlExpirationTimeInDays);
     FileLocationDoc fileLocationDoc = new FileLocationDoc();
@@ -142,11 +121,10 @@ QueryResult queryResult;
   public void testSave() throws Exception {
     // Arrange
 	  String testFileId = "test-id";
+//	  Mockito.when(tenant.getName()).thenReturn("shri");
   
     FileLocationDoc expectedDoc = new FileLocationDoc();
     expectedDoc.set_id(testFileId);
-   // Response response=new Response();
-    //response.
     
     expectedDoc.setFileID(testFileId);
     
@@ -154,23 +132,13 @@ QueryResult queryResult;
     expectedDoc.setDriver(DriverType.GCS);
     expectedDoc.setCreatedBy("test created by");
     expectedDoc.setCreatedDate(1593171481221L);
-   // expectedDoc.setCreatedDate(Instant.now());
-   // FileLocation location =expectedDoc.getFileLocation();
-  
- //   Mockito.when(headers.getPartitionIdWithFallbackToAccountId()).thenReturn(dataPartitionId);
-  //  Mockito.when(cloudantFactory.getDatabase(anyString(),anyString())).thenReturn(db);
-//	Mockito.when(db.contains(anyString())).thenReturn(false);
+	Mockito.when(db.contains(Mockito.any())).thenReturn(false);
 //	Mockito.when(dbRepo.buildFileLocation(expectedDoc)).thenReturn(location);
 	Mockito.when(db.save(expectedDoc)).thenReturn(response);
 	Mockito.when(response.getStatusCode()).thenReturn(HttpStatus.SC_CREATED);
 
-
-    // Act
-  FileLocation location = dbRepo.save(expectedDoc.getFileLocation());
-
     // Assert
-   Assert.assertEquals(expectedDoc.getCreatedBy(), location.getCreatedBy());
-   Assert.assertEquals(expectedDoc.getLocation(), location.getLocation());
+  assertNotNull(dbRepo.save(expectedDoc.getFileLocation()));
   
   }
 
