@@ -1,15 +1,20 @@
 package org.opengroup.osdu.file.provider.gcp.util;
 
 import com.google.cloud.storage.Acl;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
+import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class GoogleCloudStorageUtil {
+
+    private final PropertiesConfiguration propertiesConfiguration;
 
     public List<Acl> getAcls(String serviceAccount) {
         List<Acl> acls = new ArrayList<>();
@@ -27,11 +32,11 @@ public class GoogleCloudStorageUtil {
 
 
     public String getPersistentBucket(String tenantProject) {
-        return tenantProject + "-" + FileMetadataConstant.PERSISTENT_AREA_EXT;
+        return tenantProject + "-" + propertiesConfiguration.getPersistentArea();
     }
 
     public String getStagingBucket(String tenantProject) {
-        return tenantProject + "-" + FileMetadataConstant.STAGING_AREA_EXT;
+        return tenantProject + "-" + propertiesConfiguration.getStagingArea();
     }
 
 
