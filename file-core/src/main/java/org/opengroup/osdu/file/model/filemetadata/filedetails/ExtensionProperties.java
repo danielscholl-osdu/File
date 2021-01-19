@@ -1,6 +1,7 @@
 package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public class ExtensionProperties {
     private Object fileDateModified;
 
     @JsonProperty("FileContentsDetails")
-    private FileContentsDetails fileContentDetails;
+    private Map<String,Object> fileContentDetails;
 
 
 }
