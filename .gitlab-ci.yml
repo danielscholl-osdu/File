@@ -1,6 +1,6 @@
 variables:
   IBM_BUILD_SUBDIR: provider/file-ibm
-  #IBM_INT_TEST_SUBDIR: testing/file-test-ibm
+  IBM_INT_TEST_SUBDIR: testing/file-test-ibm
 
   OSDU_GCP_BUILD_SUBDIR: provider/file-gcp-datastore
   # OSDU_GCP_INT_TEST_SUBDIR: testing/file-test-core
