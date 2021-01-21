@@ -115,5 +115,7 @@ spec:
             secretKeyRef:
               name: airflow
               key: azurestorageaccountname
-
-
+        - name: BATCH_SIZE
+          value: "100"
+        - name: SEARCH_QUERY_LIMIT
+          value: "1000"
