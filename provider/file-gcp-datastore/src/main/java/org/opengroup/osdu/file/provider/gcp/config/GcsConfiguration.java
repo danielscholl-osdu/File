@@ -19,12 +19,15 @@ package org.opengroup.osdu.file.provider.gcp.config;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import org.opengroup.osdu.file.provider.gcp.GcpPackageMarker;
+import org.opengroup.osdu.file.provider.gcp.config.properties.GcpConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.gcp.data.datastore.repository.config.EnableDatastoreRepositories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableDatastoreRepositories(basePackageClasses = GcpPackageMarker.class)
+@EnableConfigurationProperties(GcpConfigurationProperties.class)
 public class GcsConfiguration {
 
   @Bean
