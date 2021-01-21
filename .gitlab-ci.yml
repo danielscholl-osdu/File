@@ -39,8 +39,6 @@ variables:
   AWS_TEST_SUBDIR: testing/file-test-aws
   AWS_SERVICE: file
   AWS_ENVIRONMENT: dev
-  AWS_SKIP_DEPLOY: 'true'
-  AWS_SKIP_TESTS: 'true'
 
 include:
   - project: 'osdu/platform/ci-cd-pipelines'

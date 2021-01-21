@@ -1,6 +1,7 @@
 /*
  * Copyright 2020 Google LLC
  * Copyright 2020 EPAM Systems, Inc
+ * Copyright © 2020 Amazon Web Services
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +20,20 @@ package org.opengroup.osdu.file.util;
 
 public abstract class CloudStorageUtil {
 
-  public void deleteCloudFile(String bucketName, String fileName) {
+
+  public void createBucket(){
+
   }
 
+  public void deleteBucket(){
+
+  }
+
+  public String createCloudFile(String fileName){
+      return null;
+  }
+
+  public void deleteCloudFile(String bucketName, String fileName) {
+  }
 }
+

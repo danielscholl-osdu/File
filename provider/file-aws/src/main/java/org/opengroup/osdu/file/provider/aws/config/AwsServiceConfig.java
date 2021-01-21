@@ -63,6 +63,10 @@ public class AwsServiceConfig {
         Exception r = e;
       }
     }
+
+    if (s3SignedUrlExpirationTimeInDays == 0) {
+      s3SignedUrlExpirationTimeInDays = 1; //default to 1 if unset
+    }
   }
 
 }

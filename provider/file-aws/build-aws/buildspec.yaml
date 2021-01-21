@@ -56,7 +56,7 @@ phases:
       - printenv
 
       - echo "Building primary service assemblies..."
-      - mvn -B test install -pl file-core,provider/file-aws -Ddeployment.environment=prod
+      - mvn clean package -ntp -B  -pl file-core,provider/file-aws -Ddeployment.environment=prod
 
       - echo "Building integration testing assemblies and gathering artifacts..."
       - ./testing/file-test-aws/build-aws/prepare-dist.sh
