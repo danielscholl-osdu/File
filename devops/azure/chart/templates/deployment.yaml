@@ -115,5 +115,6 @@ spec:
             secretKeyRef:
               name: airflow
               key: azurestorageaccountname
-
+        - name: BATCH_SIZE
+          value: "100"
 
