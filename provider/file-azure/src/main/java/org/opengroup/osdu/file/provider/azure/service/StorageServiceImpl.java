@@ -103,9 +103,14 @@ public class StorageServiceImpl implements IStorageService {
     return SignedUrl.builder()
         .url(signedObject.getUrl())
         .uri(signedObject.getUri())
+        .fileSource(getRelativeFileSource(filepath))
         .createdBy(userDesID)
         .createdAt(now)
         .build();
+  }
+
+  private String getRelativeFileSource(String filePath) {
+    return "/" + filePath;
   }
 
   private String getContainerName(String partitionID) {
