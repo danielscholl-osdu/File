@@ -40,6 +40,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
 import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
+import org.opengroup.osdu.file.provider.azure.config.PartitionService;
 import org.opengroup.osdu.file.provider.azure.service.AzureTokenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,7 @@ public class StorageImpl implements Storage {
   private AzureBootstrapConfig azureBootstrapConfig;
 
   @Autowired
-  private String storageAccount;
+  private PartitionService partitionService;
 
   @Inject
   AzureTokenServiceImpl token;
@@ -86,7 +87,7 @@ public class StorageImpl implements Storage {
 
   @SneakyThrows
   private Blob internalCreate(BlobInfo info, final byte[] content) {
-    String blobPath = generateBlobPath(storageAccount, info.getContainer(), info.getName());
+    String blobPath = generateBlobPath(partitionService.getStorageAccount(), info.getContainer(), info.getName());
     BlobUrlParts parts = BlobUrlParts.parse(blobPath);
     BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
     if (!blobContainerClient.exists()) {
@@ -110,7 +111,7 @@ public class StorageImpl implements Storage {
   public URL signUrl(BlobInfo blobInfo, long duration, TimeUnit timeUnit) {
     try {
       log.debug("Signing the blob in container {} for path {}", blobInfo.getContainer(), blobInfo.getName());
-      String blobURL = generateBlobPath(storageAccount, blobInfo.getContainer(), blobInfo.getName());
+      String blobURL = generateBlobPath(partitionService.getStorageAccount(), blobInfo.getContainer(), blobInfo.getName());
       log.debug("Signing the blob {}", blobURL);
       String signedUrl = token.sign(blobURL, duration, timeUnit);
       return new URL(signedUrl);
@@ -130,7 +131,7 @@ public class StorageImpl implements Storage {
 
   public void createContainer(String containerName)
   {
-    String containerPath = generateContainerPath(storageAccount, containerName);
+    String containerPath = generateContainerPath(partitionService.getStorageAccount(), containerName);
     BlobUrlParts parts = BlobUrlParts.parse(containerPath);
     BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
     if(!blobContainerClient.exists()){

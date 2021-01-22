@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 
+import org.opengroup.osdu.file.provider.azure.config.PartitionService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,11 +37,14 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
   @Autowired
   final BlobStoreConfig blobStoreConfig;
 
+  @Autowired
+  final PartitionService partitionService;
+
   @Override
   public String getPersistentLocation(String relativePath, String partitionId) {
     return String.format(
         absolutePathFormat,
-        blobStoreConfig.getStorageAccount(),
+        partitionService.getStorageAccount(),
         blobStoreConfig.getPersistentContainer(),
         normalizeFilePath(relativePath)
     );
@@ -50,7 +54,7 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
   public String getStagingLocation(String relativePath, String partitionId) {
     return String.format(
         absolutePathFormat,
-        blobStoreConfig.getStorageAccount(),
+        partitionService.getStorageAccount(),
         blobStoreConfig.getStagingContainer(),
         normalizeFilePath(relativePath)
     );
