@@ -20,12 +20,9 @@ import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import lombok.extern.java.Log;
-import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
+import org.opengroup.osdu.file.provider.azure.config.PartitionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -38,29 +35,13 @@ import java.util.concurrent.TimeUnit;
 public class AzureTokenServiceImpl {
 
   @Autowired
-  private static AzureBootstrapConfig azureBootstrapConfig;
+  private PartitionService partitionService;
 
-  @Autowired
-  private String storageAccount;
+  private static final DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
 
-  private static String storageAccount_STATIC;
-
-  private Supplier<UserDelegationKey> memoizedSupplier = null;
-
-  @Value("${azure_storage.account}")
-  public void setStorageAccountStatic(String accountName){
-    storageAccount_STATIC = accountName;
-  }
-
-  public AzureTokenServiceImpl() {
-    memoizedSupplier = Suppliers.memoizeWithExpiration(
-        AzureTokenServiceImpl::getUserDelegationKey, 1, TimeUnit.DAYS);
-  }
-
-  private static DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
-
-  private static UserDelegationKey getUserDelegationKey() {
-    String endpoint = calcBlobAccountUrl(storageAccount_STATIC);
+  private UserDelegationKey getUserDelegationKey() {
+    String storageAccount = this.partitionService.getStorageAccount();
+    String endpoint = calcBlobAccountUrl(storageAccount);
     BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
         .endpoint(endpoint)
         .credential(defaultCredential)
@@ -70,7 +51,7 @@ public class AzureTokenServiceImpl {
   }
 
   public String sign(String blobUrl, long duration, TimeUnit timeUnit) {
-    UserDelegationKey key = memoizedSupplier.get();
+    UserDelegationKey key = getUserDelegationKey();
     BlobClient tokenSource = new BlobClientBuilder()
         .credential(defaultCredential)
         .endpoint(blobUrl)

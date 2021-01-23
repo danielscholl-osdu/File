@@ -102,18 +102,13 @@ spec:
           value: http://search-service/api/search/v2
         - name: JAVA_HEAP_MEMORY
           value: "4096"
-        - name: ENVIRONMENT
-          value: dev
-        - name: TENANT_NAME
-          value: opendes
         - name: osdu_storage_url
           value: http://storage/api/storage/v2
+        - name: partition_service_endpoint
+          value: http://partition/api/partition/v1
         - name: azure_istioauth_enabled
           value: "true"
-        - name: storage_account
-          valueFrom:
-            secretKeyRef:
-              name: airflow
-              key: azurestorageaccountname
-
-
+        - name: BATCH_SIZE
+          value: "100"
+        - name: SEARCH_QUERY_LIMIT
+          value: "1000"

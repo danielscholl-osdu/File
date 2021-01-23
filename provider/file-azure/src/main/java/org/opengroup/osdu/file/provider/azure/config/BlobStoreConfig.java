@@ -21,9 +21,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 public class BlobStoreConfig {
-  @Value("${azure.storage.account-name}")
-  private String storageAccount;
-
   @Value("${azure.storage.persistent-area}")
   private String persistentContainer;
 

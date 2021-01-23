@@ -14,20 +14,11 @@
 
 package org.opengroup.osdu.file.provider.azure.config;
 
-import com.azure.cosmos.CosmosClient;
-import com.azure.cosmos.CosmosClientBuilder;
-import com.azure.security.keyvault.secrets.SecretClient;
-import com.azure.security.keyvault.secrets.models.KeyVaultSecret;
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.azure.storage.common.StorageSharedKeyCredential;
 import lombok.Getter;
-import org.opengroup.osdu.azure.KeyVaultFacade;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import javax.inject.Named;
-import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.*;
 
 @Configuration
 @Getter
@@ -66,64 +57,5 @@ public class AzureBootstrapConfig {
   @Named("KEY_VAULT_URL")
   public String keyVaultURL() {
     return keyVaultURL;
-  }
-
-  @Bean
-  @Named("COSMOS_ENDPOINT")
-  public String cosmosEndpoint(SecretClient kv) {
-    return getKeyVaultSecret(kv, "opendes-cosmos-endpoint");
-  }
-
-  @Bean
-  @Named("COSMOS_KEY")
-  public String cosmosKey(SecretClient kv) {
-    return getKeyVaultSecret(kv, "opendes-cosmos-primary-key");
-  }
-
-  @Bean
-  @Named("AZURE_STORAGE_ACCOUNT")
-  public String storageAccount(SecretClient kv) {
-    String accountName = getKeyVaultSecret(kv, "opendes-storage");
-    // this needs to be set because there is  static method that needs this value
-    System.setProperty("azure_storage.account", accountName);
-    return getKeyVaultSecret(kv, "opendes-storage");
-  }
-
-
-  String getKeyVaultSecret(SecretClient kv, String secretName) {
-    KeyVaultSecret secret = kv.getSecret(secretName);
-    if (secret == null) {
-      throw new IllegalStateException(String.format("No secret found with name %s", secretName));
-    }
-
-    String secretValue = secret.getValue();
-    if (secretValue == null) {
-      throw new IllegalStateException(String.format(
-          "Secret unexpectedly missing from KeyVault response for secret with name %s", secretName));
-    }
-
-    return secretValue;
-  }
-
-  @Bean
-  public CosmosClient buildCosmosClient(SecretClient kv) {
-    String cosmosEndpoint = getKeyVaultSecret(kv, "opendes-cosmos-endpoint");
-    String cosmosPrimaryKey = getKeyVaultSecret(kv, "opendes-cosmos-primary-key");
-    return new CosmosClientBuilder().endpoint(cosmosEndpoint).key(cosmosPrimaryKey).buildClient();
-  }
-
-  @Bean
-  public BlobServiceClient blobServiceClient(SecretClient kv) {
-    final String accountName = KeyVaultFacade.getSecretWithValidation(kv, "opendes-storage");
-    final String accountKey = KeyVaultFacade.getSecretWithValidation(kv, "opendes-storage-key");
-    StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
-    String endpoint = String.format(BLOB_STORAGE_ACCOUNT_BASE_URI_REGEX, AZURE_PROTOCOL ,accountName);
-
-    BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-        .endpoint(endpoint)
-        .credential(storageSharedKeyCredential)
-        .buildClient();
-
-    return blobServiceClient;
   }
 }

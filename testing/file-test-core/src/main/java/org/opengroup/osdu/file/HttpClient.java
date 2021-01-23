@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -58,6 +59,33 @@ public abstract class HttpClient {
     }
 
     WebResource webResource = client.resource(mergedURL);
+
+    WebResource.Builder builder = webResource.accept(MediaType.APPLICATION_JSON)
+        .type(MediaType.APPLICATION_JSON);
+    headers.forEach(builder::header);
+
+    return builder.method(httpMethod, ClientResponse.class, requestBody);
+  }
+
+  public ClientResponse sendExt(String url, String httpMethod, Map<String, String> headers,
+      String requestBody)
+      throws Exception {
+
+    Client client = this.getClient();
+
+    client.setReadTimeout(180000);
+    client.setConnectTimeout(10000);
+
+    System.out.println(String.format("calling %s API:%s", httpMethod, url));
+    System.out.println(String.format("request body:%s", requestBody));
+
+    if (requestBody != null) {
+      headers.put("Content-Length", Long.toString(requestBody.length()));
+    } else {
+      headers.put("Content-Length", "0");
+    }
+
+    WebResource webResource = client.resource(url);
 
     WebResource.Builder builder = webResource.accept(MediaType.APPLICATION_JSON)
         .type(MediaType.APPLICATION_JSON);

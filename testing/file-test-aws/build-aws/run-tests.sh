@@ -40,9 +40,21 @@ export AWS_COGNITO_AUTH_PARAMS_USER=$ADMIN_USER
 export AWS_COGNITO_AUTH_PARAMS_USER_NO_ACCESS=$USER_NO_ACCESS
 export AWS_COGNITO_CLIENT_ID=$AWS_COGNITO_CLIENT_ID
 export DOMAIN=testing.com
-export FILE_SERVICE_HOST=${FILE_BASE_URL}/api/file/v2
+export FILE_SERVICE_HOST=${FILE_URL}
 export DATA_PARTITION_ID=int-test-file
 export ENVIRONMENT=$RESOURCE_PREFIX
+
+#Delivery
+export DEFAULT_DATA_PARTITION_ID_TENANT1=opendes
+export DEFAULT_DATA_PARTITION_ID_TENANT2=common
+export ENTITLEMENTS_DOMAIN=testing.com
+export LEGAL_TAG=opendes-public-usa-dataset-1
+export OTHER_RELEVANT_DATA_COUNTRIES=US
+export SEARCH_HOST=$SEARCH_URL
+export STORAGE_HOST=$STORAGE_URL
+export LEGAL_HOST=$LEGAL_URL
+export DELIVERY_INT_TEST_BUCKET_NAME="${RESOURCE_PREFIX}-osdu-delivery-integration-test-bucket"
+export AWS_S3_REGION=us-east-1
 
 #### RUN INTEGRATION TEST #########################################################################
 
