@@ -28,8 +28,8 @@ phases:
       java: corretto8
     commands:
       - if [ $(echo $CODEBUILD_SOURCE_VERSION | grep -c  ^refs/heads.*) -eq 1 ]; then echo "Branch name found"; else echo "This build only supports branch builds" && exit 1; fi
-      - apt-get update -y
-      - apt-get install -y maven
+      - apt-get update -y -qq > /dev/null
+      - apt-get install -y -qq maven > /dev/null
       - java -version
       - mvn -version
       - mkdir -p /root/.m2
@@ -56,7 +56,7 @@ phases:
       - printenv
 
       - echo "Building primary service assemblies..."
-      - mvn clean package -ntp -B  -pl file-core,provider/file-aws -Ddeployment.environment=prod
+      - mvn -ntp clean package -B -pl file-core,provider/file-aws -Ddeployment.environment=prod
 
       - echo "Building integration testing assemblies and gathering artifacts..."
       - ./testing/file-test-aws/build-aws/prepare-dist.sh
