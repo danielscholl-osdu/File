@@ -53,6 +53,8 @@ public class CloudStorageUtilAws extends CloudStorageUtil {
         for (S3ObjectSummary summary: result.getObjectSummaries()) {
             deleteCloudFile(testBucketName, summary.getKey());
         }
+
+        s3.deleteBucket(testBucketName);
     }
 
     @Override
