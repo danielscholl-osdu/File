@@ -51,8 +51,7 @@ It's enough to grant the **Service Account Token Creator** role to the developme
 
 Obtaining user credentials for Application Default Credentials isn't suitable in this case because
 signing a blob is only available with the service account credentials. Remember to set the
-`GOOGLE_APPLICATION_CREDENTIALS` environment variable. Follow the [instructions on the Google
-developer's portal][application-default-credentials].
+`GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
 **Required to run integration tests**
 
