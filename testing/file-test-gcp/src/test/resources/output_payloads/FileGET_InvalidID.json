@@ -1,0 +1,13 @@
+{
+    "error": {
+        "code": 404,
+        "message": "Record Not Found",
+        "errors": [
+            {
+                "domain": "global",
+                "reason": "notFound",
+                "message": "Record Not Found"
+            }
+        ]
+    }
+}
