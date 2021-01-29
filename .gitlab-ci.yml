@@ -3,7 +3,7 @@ variables:
   IBM_INT_TEST_SUBDIR: testing/file-test-ibm
 
   OSDU_GCP_BUILD_SUBDIR: provider/file-gcp-datastore
-  # OSDU_GCP_INT_TEST_SUBDIR: testing/file-test-core
+  OSDU_GCP_INT_TEST_SUBDIR: testing/file-test-core
   OSDU_GCP_SERVICE: file
   OSDU_GCP_BUCKET: nice-etching-277309-file
   OSDU_GCP_NAMESPACE: osdu-namespace
