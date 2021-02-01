@@ -17,7 +17,6 @@
 
 package org.opengroup.osdu.file.provider.gcp.service.downscoped;
 
-import com.google.auth.oauth2.ServiceAccountCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +24,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DownScopedCredentialsService {
     public DownScopedCredentials getDownScopedCredentials(
-            ServiceAccountCredentials sourceCredentials,
             DownScopedOptions downScopedOptions) {
-        log.debug("getDownScopedCredentials invoked for {}", sourceCredentials);
         log.debug("getDownScopedCredentials invoked with {}", downScopedOptions);
-        return new DownScopedCredentials(sourceCredentials, downScopedOptions);
+        return new DownScopedCredentials(downScopedOptions);
     }
 }

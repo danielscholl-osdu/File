@@ -61,7 +61,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(SpringExtension.class)
-// @ExtendWith(MockitoExtension.class)
 @EnableConfigurationProperties({GcpConfigurationProperties.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
 public class DeliveryStorageServiceImplTest {
@@ -107,7 +106,7 @@ public class DeliveryStorageServiceImplTest {
     public void before() throws IOException {
         lenient().when(storageOptions.getCredentials()).thenReturn(serviceAccountCredentials);
         lenient().when(storage.getOptions()).thenReturn(storageOptions);
-        lenient().when(downScopedCredentialsService.getDownScopedCredentials(eq(serviceAccountCredentials), any(DownScopedOptions.class))).thenReturn(downScopedCredentials);
+        lenient().when(downScopedCredentialsService.getDownScopedCredentials(any(DownScopedOptions.class))).thenReturn(downScopedCredentials);
         lenient().when(downScopedCredentials.refreshAccessToken()).thenReturn(downScopedToken);
         lenient().when(downScopedToken.getTokenValue()).thenReturn(downScopedTokenValue);
 
