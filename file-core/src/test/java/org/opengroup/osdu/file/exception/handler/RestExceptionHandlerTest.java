@@ -10,10 +10,7 @@ import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.file.exception.*;
 import org.opengroup.osdu.file.service.storage.StorageException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,7 +27,6 @@ public class RestExceptionHandlerTest {
   @Mock
   private WebRequest mockRequest;
 
-  @Mock
   HttpHeaders headers;
 
   HttpStatus status;
@@ -49,8 +45,9 @@ public class RestExceptionHandlerTest {
 
   @BeforeEach
   void setUp() {
+    headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
     mockRequest = Mockito.mock(WebRequest.class);
-
     Mockito.when(mockRequest.getHeader("correlation-id")).thenReturn("sample-id");
 
   }
