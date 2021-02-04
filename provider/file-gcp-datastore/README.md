@@ -51,35 +51,29 @@ It's enough to grant the **Service Account Token Creator** role to the developme
 
 Obtaining user credentials for Application Default Credentials isn't suitable in this case because
 signing a blob is only available with the service account credentials. Remember to set the
-`GOOGLE_APPLICATION_CREDENTIALS` environment variable. Follow the [instructions on the Google
-developer's portal][application-default-credentials].
+`GOOGLE_APPLICATION_CREDENTIALS` environment variable.
 
 **Required to run integration tests**
 
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
 | `FILE_SERVICE_HOST` | `http://localhost:8080` | File service url | no | - |
-| `INTEGRATION_TESTER` | `********` | Service account for API calls. Note: this user must have entitlements configured already| yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
-| `NO_DATA_ACCESS_TESTER` | `********` | Service account without data access | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
-| `TARGET_AUDIENCE` | `********` | client application ID | yes | https://console.cloud.google.com/apis/credentials |
-| `DATA_PARTITION_ID` | `opendes` | environment data partition | no | - |
-| `USER_ID` | `common-user` | User id which used to define files location in bucket | no | [defined here](src/main/resources/application.properties) |
-| `TIME_ZONE` | `UTC+0` | Storage time-zone, for test requests based on time of file creation | no | - |
-| `FILE_BUCKET` | `osdu-cicd-epam-file` | Bucket name for files | no | [defined here](src/main/resources/application.properties) |
-| `GCLOUD_PROJECT` | ex `osdu-cicd-epam` | Google cloud project id | no | -- |
-| `GCP_DEPLOY_FILE` | ex `********` | Service account for test data tear down, must have cloud storage role configured| yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+| `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
+| `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
+| `DOMAIN` | `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
+| `TENANT_NAME` | `opendes` | Tenant name | no | - |
+| `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
+| `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
+| `PRIVATE_TENANT2` | `opendes` | Private tenant id | no | - |
+| `INTEGRATION_TEST_AUDIENCE` | `*.apps.googleusercontent.com` | Client Id for `$INTEGRATION_TESTER` | no | - |
+| `INTEGRATION_TESTER` | `ewogICJ***` | Service account for API calls as Base64 encoded string| yes | - |
+| `LEGAL_TAG` | `opendes-storage-tag` | Valid legal tag name| - | - |
 
 **Entitlements configuration for integration accounts**
 
-| INTEGRATION_TESTER | NO_DATA_ACCESS_TESTER |
-| ---  | ---   |
-| users<br/>service.entitlements.user<br/>service.storage.creator | users<br/>service.entitlements.user |
-
-**Cloud roles configuration for integration accounts**
-
-| GCP_DEPLOY_FILE|
+| INTEGRATION_TESTER |
 | ---  |
-| storage.objects.delete access to the Google Cloud Storage |
+| users<br/>service.file.editors<br/>service.file.viewers |
 
 ### Configure Maven
 
