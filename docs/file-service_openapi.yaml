@@ -536,26 +536,36 @@ components:
     files:
       title: File Metadata
       required:
-        - FileSource
+        - Name
+        - DatasetProperties
+        - Endian
       type: object
       properties:
-        SchemaFormatTypeID:
+      
+        Name:
           type: string
-          description: Schema Format Type ID
-          pattern: ^srn:<namespace>:reference-data\\/SchemaFormatType:[^:]+:[0-9]*$          
-        PreLoadFilePath: 
-          description: File system path to the data file as it existed before loading to the data platform
+          description: An optional name of the dataset, e.g. a user friendly file or file collection name.
+        
+        Description:
           type: string
-        FileSource: 
-          description: Relative file path for the data in the file
+          description: An optional, textual description of the dataset.
+          
+        TotalSize:
           type: string
-        FileSize: 
-          description: Length of file in bytes
-          type: integer
+          description: Total size of the dataset in bytes; for files it is the same as declared in FileSourceInfo.FileSize or the sum of all individual files. Implemented as string. The value must be convertible to a long integer (sizes can become very large).
+          pattern: ^[0-9]+$
+
         EncodingFormatTypeID: 
           type: string
           description: Encoding Format Type ID
           pattern: ^srn:<namespace>:reference-data\\/EncodingFormatType:[^:]+:[0-9]*$
+      
+        SchemaFormatTypeID:
+          type: string
+          description: Schema Format Type ID
+          pattern: ^srn:<namespace>:reference-data\\/SchemaFormatType:[^:]+:[0-9]*$      
+          
+          
         Endian: 
           description: Endianness of binary value. Enumeration- \BIG\ \LITTLE\.  If absent applications will need to interpret from context indicators.
           type: string
@@ -563,61 +573,61 @@ components:
               BIG
               LITTLE
             ]
-        LossyCompressionIndicator: 
-          description: Boolean that warns that an imperfect compression algorithm has been applied to the bulk binary data.  Details of the compression method need to be discovered from the format properties and file access methods.
-          type: boolean
-        CompressionMethodTypeID: 
-          type: string
-          description: Name of a compression algorithm applied to the data as stored.
-          pattern: ^srn:<namespace>:reference-data\\/CompressionMethodType:[^:]+:[0-9]*$
-        CompressionLevel: 
-          description: Number indicating degree of fidelity present in bulk data resulting from compression.  Meaning of number depends on algorithm.
-          type: number
+            
         Checksum: 
           description: MD5 checksum of file bytes - a 32 byte hexadecimal number
           type: string
           pattern: ^[0-9a-fA-F]32}$
-        VectorHeaderMapping: 
-          description: Array of objects which define the meaning and format of a tabular structure used in a binary file as a header.  The initial use case is the trace headers of a SEG-Y file.  Note that some of this information may be repeated in the SEG-Y EBCDIC header.
-          type: array
-          items: 
-            type: object
-            properties: 
-                KeyName: 
-                  description: SRN of a reference value for a name of a property header such as INLINE CDPX.
+            
+        DatasetProperties:
+          type: object
+          required:
+          - FileSourceInfo
+          properties:
+            
+            FileSourceInfo:
+              type: object
+              required:
+                - FileSource
+              properties:
+              
+                Name:
                   type: string
-                  pattern: ^srn:<namespace>:reference-data\\/HeaderKeyName:[^:]+:[0-9]*$
-                
-                WordFormat: 
-                  description: SRN of a reference value for binary data types such as INT UINT FLOAT IBM_FLOAT ASCII EBCDIC.
+                  description: user-friendly file name.
+            
+                PreLoadFilePath: 
                   type: string
-                  pattern: ^srn:<namespace>:reference-data\\/WordFormatType:[^:]+:[0-9]*$
-                
-                WordWidth: 
-                  description: Size of the word in bytes.
-                  type: integer
-                
-                Position: 
-                  description: Beginning byte position of header value 1 indexed.
-                  type: integer
-                
-                UoM: 
-                  description: SRN to units of measure reference if header standard is not followed.
+                  description: File system path to the data file as it existed before loading to the data platform
+                  
+                FileSource: 
                   type: string
-                  pattern: ^srn:<namespace>:reference-data\\/UnitOfMeasure:[^:]+:[0-9]*$
-                
-                ScalarIndicator: 
-                  description: Enumerated string indicating whether to use the normal scalar field for scaling this field (STANDARD) no scaling (NOSCALE) or override scalar (OVERRIDE).  Default is current STANDARD (such as SEG-Y rev2).
+                  description: Relative file path for the data in the file
+                  
+                PreloadFileCreateUser:
                   type: string
-                  enum: [
-                    STANDARD
-                    NOSCALE
-                    OVERRIDE
-                  ]
+                  description: Optional user name or reference, who created the file prior to up-loading to the platform.
                 
-                ScalarOverride: 
-                  description: Scalar value (as defined by standard) when a value present in the header needs to be overwritten for this value.
-                  type: number
+                PreloadFileCreateDate:
+                  type: string
+                  description: Optional create date and time of the file prior to uploading to the platform.
+                  
+                PreloadFileModifyUser:
+                  type: string
+                  description: Optional user name or reference, who last modified the file prior to up-loading to the platform.
+
+                PreloadFileModifyDate:
+                  type: string
+                  description: Optional last modified date and time of the file prior to up-loading to the platform.
+                
+                FileSize:
+                  type: string
+                  description: Length of file in bytes. Implemented as string. The value must be convertible to a long integer (sizes can become very large).
+
+                EncodingFormatTypeID: 
+                  type: string
+                  description: Encoding Format Type ID
+                  pattern: ^srn:<namespace>:reference-data\\/EncodingFormatType:[^:]+:[0-9]*$
+        
         ExtensionProperties: 
           title: File DMS Extension Properties
           type: object
@@ -804,7 +814,7 @@ components:
           description: Unique identifier generated by the system for the file metadata record. 
         kind:
           type: string
-          example: osdu:wks:file:1.0.0
+          example: osdu:wks:dataset--File.Generic:1.0.0
           description: Kind of data being ingested. Must follow the naming
             convention:data-Partition-Id}:dataset-name}:record-type}:version}.
         acl:
@@ -825,7 +835,7 @@ components:
           description: Unique identifier generated by the system for the file metadata record. 
         kind:
           type: string
-          example: osdu:wks:file:1.0.0
+          example: osdu:wks:dataset--File.Generic:1.0.0
           description: Kind of data being ingested. Must follow the naming
             convention:data-Partition-Id}:dataset-name}:record-type}:version}.
         acl:

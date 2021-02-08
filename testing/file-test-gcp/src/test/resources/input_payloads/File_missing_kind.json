@@ -18,6 +18,12 @@
 		"status": "compliant"
 	},
 	"data": {
+		"DatasetProperties": {
+            "FileSourceInfo": {
+                "FileSource": "string",
+                "Name": "File"
+            }
+        },
 		"SchemaFormatTypeID": "string",
 		"PreLoadFilePath": "string",
 		"FileSource": "string",
