@@ -116,8 +116,8 @@ public class FileStepDef_POST implements En {
 
 
   private void getVersionValue(JsonElement jsonBody, String filePath) {
-    jsonBody.getAsJsonObject().getAsJsonObject("data").remove("FileSource");
-    jsonBody.getAsJsonObject().getAsJsonObject("data").addProperty("FileSource", filePath);
+    jsonBody.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("DatasetProperties").getAsJsonObject("FileSourceInfo").remove("FileSource");    
+		jsonBody.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("DatasetProperties").getAsJsonObject("FileSourceInfo").addProperty("FileSource", filePath);
   }
 
   private String updatePlaceholdersInInputPayload(String body) {
@@ -161,8 +161,8 @@ public class FileStepDef_POST implements En {
   }
 
   private void updateFilePath(JsonElement jsonBody, String filePath) {
-    jsonBody.getAsJsonObject().getAsJsonObject("data").remove("FileSource");
-    jsonBody.getAsJsonObject().getAsJsonObject("data").addProperty("FileSource", filePath);
+    jsonBody.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("DatasetProperties").getAsJsonObject("FileSourceInfo").remove("FileSource");    
+    jsonBody.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("DatasetProperties").getAsJsonObject("FileSourceInfo").addProperty("FileSource", filePath);
   }
 
   private JsonElement removeAncestry(JsonElement jsonBody) {

@@ -16,7 +16,15 @@
 FROM amazoncorretto:8
 
 ARG JAR_FILE=provider/file-aws/target/file-aws*.jar
+
+#Default to using self signed generated TLS cert
+ENV USE_SELF_SIGNED_SSL_CERT true
+
 WORKDIR /
 COPY ${JAR_FILE} app.jar
+COPY /provider/file-aws/build-aws/ssl.sh /ssl.sh
+COPY /provider/file-aws/build-aws/entrypoint.sh /entrypoint.sh
 EXPOSE 8080
-ENTRYPOINT java $JAVA_OPTS -jar /app.jar
+
+ENTRYPOINT ["/bin/sh", "-c", ". /entrypoint.sh"]
+

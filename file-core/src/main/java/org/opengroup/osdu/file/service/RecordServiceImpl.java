@@ -1,4 +1,5 @@
 // Copyright 2017-2019, Schlumberger
+// Copyright © 2021 Amazon Web Services
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +21,8 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.http.HttpRequest;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.http.IHttpClient;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonSyntaxException;
 
 @Component
@@ -42,6 +46,9 @@ public class RecordServiceImpl {
 
   @Value("${RECORDS_ROOT_URL}")
   String rootUrl;
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
+	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
   public Map<String, Object> createOrUpdateRecord(Record record, DpsHeaders headers) {
     Record[] records = new Record[1];
@@ -62,13 +69,13 @@ public class RecordServiceImpl {
 
   private <T> T getResult(HttpResponse result, Class<T> type) throws OsduException {
     if (result.isSuccessCode()) {
-      try {
-        return result.parseBody(type);
-      } catch (JsonSyntaxException e) {
-        throw new OsduException("Problem parsing response from storage service", e);
-      }
+        try {
+            return bodyMapper.parseBody(result, type);
+        } catch (HttpResponseBodyParsingException e) {
+            throw new OsduException("Problem parsing response from storage service", e);
+        }
     } else {
-      throw this.generateException(result);
+        throw this.generateException(result);
     }
   }
 }

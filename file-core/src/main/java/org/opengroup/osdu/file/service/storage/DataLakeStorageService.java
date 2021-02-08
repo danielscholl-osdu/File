@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.http.HttpRequest;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.http.IHttpClient;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
@@ -13,14 +15,17 @@ public class DataLakeStorageService {
     private final String storageServiceBaseUrl;
     private final IHttpClient httpClient;
     private final DpsHeaders headers;
+    private final HttpResponseBodyMapper bodyMapper;
 
     DataLakeStorageService(
             StorageAPIConfig config,
             IHttpClient httpClient,
-            DpsHeaders headers) {
+            DpsHeaders headers,
+            HttpResponseBodyMapper bodyMapper) {
         this.storageServiceBaseUrl = config.getStorageServiceBaseUrl();
         this.httpClient = httpClient;
         this.headers = headers;
+        this.bodyMapper = bodyMapper;
         if (config.getApiKey() != null) {
             headers.put("AppKey", config.getApiKey());
         }
@@ -59,10 +64,10 @@ public class DataLakeStorageService {
     private <T> T getResult(HttpResponse result, Class<T> type) throws StorageException {
         if (result.isSuccessCode()) {
             try {
-                return result.parseBody(type);
-            } catch (JsonSyntaxException e) {
+                return bodyMapper.parseBody(result, type);
+            } catch (HttpResponseBodyParsingException e) {
                 throw new StorageException("Error parsing response. Check the inner HttpResponse for more info.",
-                                           result);
+                        result);
             }
         } else {
             throw this.generateException(result);
