@@ -1,6 +1,6 @@
 {
 	"id": "string",
-	"kind": "<tenant_name>:wks:file:1.0.0",
+	"kind": "<tenant_name>:wks:dataset--File.Generic:1.0.0",
 	"acl": {
 		"viewers": [
 			"<acl_viewers>@<tenant_name>.<cloud_domain>"
@@ -19,6 +19,11 @@
 		"status": "compliant"
 	},
 "data": {
+		"DatasetProperties": {
+			"FileSourceInfo": {				
+				"Name": "File"
+			}
+		},
 		"SchemaFormatTypeID": "string",
 		"PreLoadFilePath": "string",
 		"FileSize": 0,
