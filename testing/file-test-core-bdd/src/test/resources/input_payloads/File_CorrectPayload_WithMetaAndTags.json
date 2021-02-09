@@ -1,6 +1,21 @@
 {
 	"id": "string",
 	"kind": "<tenant_name>:wks:dataset--File.Generic:1.0.0",
+	"meta": [
+		{
+			"tags": {
+				"items": [
+					{
+						"dataflowId": "12587932"
+					}
+				]
+			}
+		}
+	],
+	"tags": {
+		"dataflowId": "dataflowId",
+		"dataflowId-2": "dataflowId2"
+	},
 	"acl": {
 		"viewers": [
 			"<acl_viewers>@<tenant_name>.<cloud_domain>"

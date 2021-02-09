@@ -12,10 +12,10 @@ public class FileMetadataUtil {
     return UUID.randomUUID().toString();
   }
 
-  public String generateRecordId(String dataPartitionId) {
+  public String generateRecordId(String dataPartitionId, String fileEntity) {
     return new StringBuilder(dataPartitionId)
         .append(FileMetadataConstant.KIND_SEPRATOR)
-        .append(FileMetadataConstant.FILE)
+        .append(fileEntity)
         .append(FileMetadataConstant.KIND_SEPRATOR)
         .append(generateUniqueId())
         .toString();

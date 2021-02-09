@@ -13,9 +13,9 @@ import org.opengroup.osdu.file.constants.TestConstants;
 import org.opengroup.osdu.file.stepdefs.model.FileScope;
 import org.opengroup.osdu.file.stepdefs.model.HttpRequest;
 import org.opengroup.osdu.file.stepdefs.model.HttpResponse;
-import org.opengroup.osdu.file.util.CommonUtil;
-import org.opengroup.osdu.file.util.HttpClientFactory;
-import org.opengroup.osdu.file.util.JsonUtils;
+import org.opengroup.osdu.file.util.test.CommonUtil;
+import org.opengroup.osdu.file.util.test.HttpClientFactory;
+import org.opengroup.osdu.file.util.test.JsonUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
