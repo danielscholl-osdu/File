@@ -1,5 +1,8 @@
 package org.opengroup.osdu.file.model.filemetadata;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -45,5 +48,10 @@ public class RecordVersion {
     private Ancestry ancestry;
 
     private Long version;
+    
+    private List<Map<String, Object>> meta;
+    
+    private Map<String, String> tags;
+
 
 }

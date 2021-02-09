@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.util;
+package org.opengroup.osdu.file.util.test;
 
 import com.google.common.base.Strings;
 import org.opengroup.osdu.azure.util.AzureServicePrincipal;
