@@ -2,7 +2,7 @@ package org.opengroup.osdu.file.stepdefs.model;
 
 import java.util.Map;
 
-import org.opengroup.osdu.file.util.FileUtils;
+import org.opengroup.osdu.file.util.test.FileUtils;
 
 import com.google.inject.Inject;
 

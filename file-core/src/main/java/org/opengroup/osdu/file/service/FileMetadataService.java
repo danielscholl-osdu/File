@@ -19,6 +19,7 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.ApplicationException;
+import org.opengroup.osdu.file.exception.KindValidationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.exception.NotFoundException;
 import org.opengroup.osdu.file.mapper.FileMetadataRecordMapper;
@@ -52,10 +53,12 @@ public class FileMetadataService {
 			throws OsduBadRequestException, StorageException, ApplicationException {
 
 		log.info(FileMetadataConstant.METADATA_SAVE_STARTED);
+		
+		validateKind(fileMetadata.getKind());
 
 		DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
 		String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
-		fileMetadata.setId(fileMetadataUtil.generateRecordId(dpsHeaders.getPartitionId()));
+		fileMetadata.setId(fileMetadataUtil.generateRecordId(dpsHeaders.getPartitionId(), fetchEntityFromKind(fileMetadata.getKind())));
 
 		String stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
 		String persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
@@ -106,5 +109,25 @@ public class FileMetadataService {
 		}
 
 		return fileMetadataRecordMapper.recordToRecordVersion(rec);
+	}
+	
+	private void validateKind(String kind) {
+		String[] kindArr = kind.split(FileMetadataConstant.KIND_SEPRATOR);
+		
+		if(kindArr.length != 4) {
+			throw new KindValidationException("Invalid kind");
+		}
+		else if(!kindArr[1].equalsIgnoreCase(FileMetadataConstant.FILE_KIND_SOURCE)) {
+			throw new KindValidationException("Invalid source in kind");
+		}
+		else if(!kindArr[2].equalsIgnoreCase(FileMetadataConstant.FILE_KIND_ENTITY)) {
+			throw new KindValidationException("Invalid entity in kind");
+		}
+	}
+
+	private String fetchEntityFromKind(String kind) {
+		String[] kindArr = kind.split(FileMetadataConstant.KIND_SEPRATOR);
+		
+		return kindArr[2];
 	}
 }

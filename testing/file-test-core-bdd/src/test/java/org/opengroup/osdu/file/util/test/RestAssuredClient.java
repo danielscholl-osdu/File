@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.util;
+package org.opengroup.osdu.file.util.test;
 
 import static io.restassured.RestAssured.given;
 
@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.opengroup.osdu.file.constants.HttpConnection;
 import org.opengroup.osdu.file.stepdefs.model.HttpRequest;
 import org.opengroup.osdu.file.stepdefs.model.HttpResponse;
+import org.opengroup.osdu.file.util.test.JsonUtils;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;

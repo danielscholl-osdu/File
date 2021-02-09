@@ -20,6 +20,7 @@ public class Record {
     private Ancestry ancestry = new Ancestry();
     private JsonObject data = new JsonObject();
     private List<JsonObject> meta = new ArrayList<>();
+    private JsonObject tags = new JsonObject();
 
     public Record() {
     }

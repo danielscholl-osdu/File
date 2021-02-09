@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.util;
+package org.opengroup.osdu.file.util.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

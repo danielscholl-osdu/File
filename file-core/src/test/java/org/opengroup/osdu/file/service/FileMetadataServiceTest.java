@@ -25,6 +25,7 @@ import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.exception.ApplicationException;
+import org.opengroup.osdu.file.exception.KindValidationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.exception.NotFoundException;
 import org.opengroup.osdu.file.mapper.FileMetadataRecordMapper;
@@ -46,12 +47,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class FileMetadataServiceTest {
 
-  public static final String RECORD_ID = "tenant1:file:1b9dd1a8-d317-11ea-87d0-0242ac130003";
+  public static final String RECORD_ID = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003";
+  public static final String FILE_METADATA_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
+  
   @InjectMocks
   FileMetadataService fileMetadataService;
 
@@ -89,7 +93,7 @@ public class FileMetadataServiceTest {
     DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
     FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
-    fileMetadata = FileMetadata.builder().data(fileData).build();
+    fileMetadata = FileMetadata.builder().data(fileData).kind(FILE_METADATA_KIND).build();
 
     String dataPartitionId = "tenant";
     Record record = new Record(dataPartitionId);
@@ -101,7 +105,7 @@ public class FileMetadataServiceTest {
 
     when(headers.getPartitionId()).thenReturn(dataPartitionId);
     when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(fileMetadataUtil1.generateRecordId(dataPartitionId)).thenReturn(RECORD_ID);
+    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
     when(storageUtilService.getStagingLocation(any(), any())).thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
     when(storageUtilService.getPersistentLocation(any(), any())).thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
     when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
@@ -121,7 +125,7 @@ public class FileMetadataServiceTest {
     DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
     FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
-    fileMetadata = FileMetadata.builder().data(fileData).build();
+    fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
 
     String dataPartitionId = "tenant";
     Record record = new Record(dataPartitionId);
@@ -133,7 +137,7 @@ public class FileMetadataServiceTest {
 
     when(headers.getPartitionId()).thenReturn(dataPartitionId);
     when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(fileMetadataUtil1.generateRecordId(dataPartitionId)).thenReturn(RECORD_ID);
+    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
     when(storageUtilService.getStagingLocation(any(), any())).thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
     when(storageUtilService.getPersistentLocation(any(), any())).thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
     when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
@@ -148,6 +152,33 @@ public class FileMetadataServiceTest {
 
 
   }
+  
+  @Test
+  public void saveMetadata_InvalidKind() throws OsduBadRequestException, StorageException, ApplicationException {
+    fileMetadata = FileMetadata.builder().kind("invalidKind").build();
+
+    KindValidationException exceptionResponse = assertThrows(KindValidationException.class,()->{
+      fileMetadataService.saveMetadata(fileMetadata);
+    });
+    
+    assertEquals("Invalid kind", exceptionResponse.getMessage());
+    
+    fileMetadata = FileMetadata.builder().kind("osdu:invalidSource:dataset--File.Generic:1.0.0").build();
+
+    exceptionResponse = assertThrows(KindValidationException.class,()->{
+      fileMetadataService.saveMetadata(fileMetadata);
+    });
+    
+    assertEquals("Invalid source in kind", exceptionResponse.getMessage());
+    
+    fileMetadata = FileMetadata.builder().kind("osdu:wks:invalidEntity:1.0.0").build();
+
+    exceptionResponse = assertThrows(KindValidationException.class,()->{
+      fileMetadataService.saveMetadata(fileMetadata);
+    });
+    
+    assertEquals("Invalid entity in kind", exceptionResponse.getMessage());
+  }
 
   @Test
   public void saveMetadata_StorageFail() throws OsduBadRequestException, StorageException, ApplicationException {
@@ -156,7 +187,7 @@ public class FileMetadataServiceTest {
     DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
     FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
-    fileMetadata = FileMetadata.builder().data(fileData).build();
+    fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
     
 
     String dataPartitionId = "tenant";
@@ -169,7 +200,7 @@ public class FileMetadataServiceTest {
 
     when(headers.getPartitionId()).thenReturn(dataPartitionId);
     when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(fileMetadataUtil1.generateRecordId(dataPartitionId)).thenReturn(RECORD_ID);
+    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
     when(storageUtilService.getStagingLocation(any(), any())).thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
     when(storageUtilService.getPersistentLocation(any(), any())).thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
     when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
