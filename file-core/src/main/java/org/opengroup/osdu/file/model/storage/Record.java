@@ -1,29 +1,32 @@
 package org.opengroup.osdu.file.model.storage;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.legal.Legal;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Record {
 
-    private String id = null;
-    private Long version = -1L;
-    private String kind = "";
-    private Acl acl = new Acl();
-    private Legal legal = new Legal();
-    private Ancestry ancestry = new Ancestry();
-    private JsonObject data = new JsonObject();
-    private List<JsonObject> meta = new ArrayList<>();
-    private JsonObject tags = new JsonObject();
-
-    public Record() {
-    }
+    private String id;
+    private Long version;
+    private String kind;
+    private Acl acl;
+    private Legal legal;
+    private Ancestry ancestry;
+    private Map<String, Object> data;
+    private List<Map<String, Object>> meta;
+    private Map<String, String> tags;
 
     public Record(String kind) {
         this(kind, null);
@@ -56,12 +59,6 @@ public class Record {
 
     public Record addParent(String recordId, String version) {
         this.ancestry.getParents().add(String.format("%s:%s", recordId, version));
-        return this;
-    }
-
-    public <T> Record setDataObject(T object) {
-        Gson gson = new Gson();
-        this.data = gson.toJsonTree(object).getAsJsonObject();
         return this;
     }
 }

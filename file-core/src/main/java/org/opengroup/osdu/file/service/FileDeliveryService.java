@@ -11,16 +11,17 @@ import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
-import org.opengroup.osdu.file.service.storage.StorageException;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
+import org.opengroup.osdu.file.service.storage.StorageException;
 import org.springframework.stereotype.Service;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.restassured.path.json.JsonPath;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class FileDeliveryService {
 
@@ -48,13 +49,25 @@ public class FileDeliveryService {
     if (null == rec)
       throw new AppException(HttpStatus.SC_NOT_FOUND, "Not Found.", "File id not found.");
 
-    JsonObject data = rec.getData();
-    JsonElement filePathJE = data.get(FileMetadataConstant.FILE_SOURCE);
-    String absolutePath = storageUtilService.getPersistentLocation(filePathJE.getAsString(),
+    String fileSource = extractFileSource(rec);
+    String absolutePath = storageUtilService.getPersistentLocation(fileSource,
                                                                    headers.getPartitionId());
     SignedUrl signedUrl = storageService.createSignedUrlFileLocation(absolutePath,
                                                                      headers.getAuthorization());
     return DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
   }
+  
+	private String extractFileSource(Object obj) {
+		ObjectMapper mapper = new ObjectMapper();
+
+		String jsonStr;
+		try {
+			jsonStr = mapper.writeValueAsString(obj);
+		} catch (JsonProcessingException e) {
+			throw new AppException(HttpStatus.SC_NOT_FOUND, "Not Found.", "Unable to parse fileSource in data.DatasetProperties.FileSourceInfo.FileSource");
+		}
+		JsonPath jsonPath = JsonPath.with(jsonStr);
+		return jsonPath.get(FileMetadataConstant.FILE_SOURCE_PATH);
+	}
 
 }
