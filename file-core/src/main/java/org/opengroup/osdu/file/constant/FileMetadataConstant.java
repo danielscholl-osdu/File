@@ -12,5 +12,7 @@ public class FileMetadataConstant {
 	public static final String FILE_KIND_SOURCE = "wks";
 	public static final String KIND_SEPRATOR = ":";
 	public static final String FILE_SOURCE = "FileSource";
+	public static final String DATASET_PROPERTIES = "DatasetProperties";
+	public static final String FILE_SOURCE_PATH= "data.DatasetProperties.FileSourceInfo.FileSource";
 
 }
