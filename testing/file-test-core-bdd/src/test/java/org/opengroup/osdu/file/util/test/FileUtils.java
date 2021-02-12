@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.util;
+package org.opengroup.osdu.file.util.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;

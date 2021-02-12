@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Google LLC
+ * Copyright © 2021 Amazon Web Services
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +18,13 @@
 package org.opengroup.osdu.file.di;
 
 import lombok.RequiredArgsConstructor;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.opengroup.osdu.core.common.entitlements.EntitlementsAPIConfig;
 import org.opengroup.osdu.core.common.entitlements.EntitlementsFactory;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.file.model.property.EntitlementProperties;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
@@ -30,12 +35,16 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 
   final EntitlementProperties entitlementProperties;
 
+  private final ObjectMapper objectMapper = new ObjectMapper();
+	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+
   @Override
   protected IEntitlementsFactory createInstance() {
     return new EntitlementsFactory(EntitlementsAPIConfig.builder()
         .rootUrl(entitlementProperties.getUrl())
         .apiKey(entitlementProperties.getAppKey())
-        .build());
+        .build(),
+        bodyMapper);
   }
 
   @Override

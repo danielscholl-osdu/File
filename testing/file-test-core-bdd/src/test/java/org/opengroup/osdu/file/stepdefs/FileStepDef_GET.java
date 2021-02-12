@@ -17,11 +17,14 @@ import org.opengroup.osdu.file.model.filemetadata.RecordVersion;
 import org.opengroup.osdu.file.stepdefs.model.FileScope;
 import org.opengroup.osdu.file.stepdefs.model.HttpRequest;
 import org.opengroup.osdu.file.stepdefs.model.HttpResponse;
-import org.opengroup.osdu.file.util.AuthUtil;
-import org.opengroup.osdu.file.util.CommonUtil;
-import org.opengroup.osdu.file.util.HttpClientFactory;
-import org.opengroup.osdu.file.util.JsonUtils;
+import org.opengroup.osdu.file.util.test.AuthUtil;
+import org.opengroup.osdu.file.util.test.CommonUtil;
+import org.opengroup.osdu.file.util.test.HttpClientFactory;
+import org.opengroup.osdu.file.util.test.JsonUtils;
+
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.squareup.okhttp.*;
@@ -119,6 +122,21 @@ public class FileStepDef_GET implements En {
 			validateResponseCode(respCode);
 			String response = this.context.getHttpResponse().getBody();
 			RecordVersion metadataResp = JsonUtils.getPojoFromJSONString(RecordVersion.class, response);
+		});
+		
+		Then("metadata service should respond back with a valid {string} and {string}", (String respCode, String metablock) -> {
+			validateResponseCode(respCode);
+			String response = this.context.getHttpResponse().getBody();
+			RecordVersion metadataResp = JsonUtils.getPojoFromJSONString(RecordVersion.class, response);
+			
+			JsonElement responseBody = new Gson().fromJson(response, JsonElement.class);
+			JsonArray metaResponseArray = responseBody.getAsJsonObject().getAsJsonArray("meta");
+			
+			String expectedMetaBody = this.context.getFileUtils().read(metablock);
+			JsonElement expectedJsonBody = new Gson().fromJson(expectedMetaBody, JsonElement.class);
+			JsonArray metaExpectedArray = expectedJsonBody.getAsJsonObject().getAsJsonArray("meta");
+			assertTrue(metaResponseArray.toString().contentEquals(metaExpectedArray.toString()));
+			
 		});
 
 		Then("service should respond back with error {string} and {string}", (String errorCode, String errorMsg) -> {
@@ -221,6 +239,7 @@ public class FileStepDef_GET implements En {
 
 		assertNotNull(signedURLResp);
 		assertNotNull(signedURLResp.getLocation().get("SignedURL"));
+		setNewFileSourceValue();
 
 		int code = 0;
 		try {

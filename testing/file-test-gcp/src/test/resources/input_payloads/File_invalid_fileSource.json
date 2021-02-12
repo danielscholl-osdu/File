@@ -1,6 +1,6 @@
 {
 	"id": "string",
-	"kind": "<tenant_name>:wks:file:1.0.0",
+	"kind": "<tenant_name>:wks:dataset--File.Generic:1.0.0",
 	"acl": {
 		"viewers": [
 			"<acl_viewers>@<tenant_name>.<cloud_domain>"
@@ -19,11 +19,16 @@
 		"status": "compliant"
 	},
 	"data": {
-		"SchemaFormatTypeID": "string",
-		"PreLoadFilePath": "string",
-		"FileSource": "/3f538327-85c8-459d-896c-198173436358neha/test.csv",
-		"FileSize": 0,
+		"DatasetProperties": {
+            "FileSourceInfo": {
+                "FileSource": "/3f538327-85c8-459d-896c-198173436358neha/test.csv",
+                "Name": "File"
+            }
+		},
 		"Name": "File",
+		"SchemaFormatTypeID": "string",
+		"PreLoadFilePath": "string",		
+		"FileSize": 0,		
 		"EncodingFormatTypeID": "string",
 		"Endian": "BIG",
 		"LossyCompressionIndicator": true,

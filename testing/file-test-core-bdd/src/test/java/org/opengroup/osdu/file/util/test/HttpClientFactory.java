@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.util;
+package org.opengroup.osdu.file.util.test;
 
 public class HttpClientFactory {
     private static HttpClient httpClient = null;
