@@ -16,6 +16,7 @@
 
 package org.opengroup.osdu.file.api;
 
+import java.util.Collections;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
 import org.opengroup.osdu.core.common.model.file.FileLocationResponse;
 import org.opengroup.osdu.core.common.model.file.LocationRequest;
@@ -23,6 +24,7 @@ import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.file.constant.FileServiceRole;
+import org.opengroup.osdu.file.logging.AuditLogger;
 import org.opengroup.osdu.file.provider.interfaces.ILocationService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -45,6 +47,7 @@ public class FileLocationApi {
 
   final DpsHeaders headers;
   final ILocationService locationService;
+  private final AuditLogger auditLogger;
 
   // TODO: Create the permission for os-file and change pre authorize annotation
   @PostMapping("/getLocation")
@@ -53,6 +56,7 @@ public class FileLocationApi {
     log.debug("Location request received : {}", request);
     LocationResponse locationResponse = locationService.getLocation(request, headers);
     log.debug("Location result ready : {}", locationResponse);
+    this.auditLogger.createLocationSuccess(Collections.singletonList(locationResponse.toString()));
     return locationResponse;
   }
 
@@ -63,6 +67,7 @@ public class FileLocationApi {
     log.debug("File location request received : {}", request);
     FileLocationResponse fileLocationResponse = locationService.getFileLocation(request, headers);
     log.debug("File location result ready : {}", fileLocationResponse);
+    this.auditLogger.readFileLocationSuccess(Collections.singletonList(fileLocationResponse.toString()));
     return fileLocationResponse;
   }
 
