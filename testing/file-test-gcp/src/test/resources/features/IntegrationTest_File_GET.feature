@@ -42,7 +42,7 @@ Feature: File service API integration test
       | "200"             | "/sample_upload_files/test.csv" |
 
   #Negative scenario for FILE service
-  @File_ToBeFixed
+  @FailingForGCP
   Scenario Outline: Verify error message for invalid id input
     Given I hit File service GET metadata signed API with an <InvalidId>
     Then service should respond back with error <ReponseStatusCode> and <ResponseMessage>
