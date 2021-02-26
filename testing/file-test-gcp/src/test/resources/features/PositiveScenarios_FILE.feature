@@ -4,7 +4,7 @@ Feature: File Service API integration test
     Given I generate user token and set request headers with "PRIVATE_TENANT1"
 
   #Positive scenario for FILE service
-  @File_ToBeFixed
+  @File
   Scenario Outline: Verify that file is uploaded to landing zone and downloaded from persistent zone successfully and content is verified
     Given I hit File service GET uploadURL API
     Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>
@@ -21,7 +21,7 @@ Feature: File Service API integration test
       | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/TestDownloadUrl.txt" | "/sample_downloaded_files/TestDownloadUrl_downloaded.txt" | "/src/test/resources/sample_downloaded_files/TestDownloadUrl_downloaded.txt" |
 
   #Positive scenario for FILE service
-  @File_ToBeFixed
+  @File
   Scenario Outline: Verify that metadata can be retrieved and is same as the time of posting
     Given I hit File service GET uploadURL API
     Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>
