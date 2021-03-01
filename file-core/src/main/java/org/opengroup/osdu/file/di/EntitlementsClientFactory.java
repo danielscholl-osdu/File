@@ -19,8 +19,6 @@ package org.opengroup.osdu.file.di;
 
 import lombok.RequiredArgsConstructor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.opengroup.osdu.core.common.entitlements.EntitlementsAPIConfig;
 import org.opengroup.osdu.core.common.entitlements.EntitlementsFactory;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
@@ -35,8 +33,7 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 
   final EntitlementProperties entitlementProperties;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+	private final HttpResponseBodyMapper bodyMapper;
 
   @Override
   protected IEntitlementsFactory createInstance() {
