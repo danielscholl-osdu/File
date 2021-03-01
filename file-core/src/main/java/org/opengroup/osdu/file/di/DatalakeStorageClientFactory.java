@@ -14,8 +14,7 @@
 
 package org.opengroup.osdu.file.di;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.StorageAPIConfig;
@@ -24,15 +23,16 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class DatalakeStorageClientFactory extends AbstractFactoryBean<DataLakeStorageFactory> {
+
     @Value("${storage.api}")
     private String api;
 
     @Value("${authorize.api.key}")
     private String apiKey;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+	  private final HttpResponseBodyMapper bodyMapper ;
 
     @Override
     protected DataLakeStorageFactory createInstance() throws Exception {
