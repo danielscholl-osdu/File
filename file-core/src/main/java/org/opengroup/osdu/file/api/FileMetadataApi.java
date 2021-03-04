@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/v1/files")
+@RequestMapping(value = "/v2/files")
 @RequiredArgsConstructor
 public class FileMetadataApi {
 

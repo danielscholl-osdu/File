@@ -50,7 +50,7 @@ public class FileLocationApi {
   private final AuditLogger auditLogger;
 
   // TODO: Create the permission for os-file and change pre authorize annotation
-  @PostMapping("/getLocation")
+  @PostMapping("/v2/getLocation")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public LocationResponse getLocation(@RequestBody LocationRequest request) {
     log.debug("Location request received : {}", request);
@@ -61,7 +61,7 @@ public class FileLocationApi {
   }
 
   // TODO: Create the permission for os-file and change pre authorize annotation
-  @PostMapping("/getFileLocation")
+  @PostMapping("/v2/getFileLocation")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public FileLocationResponse getFileLocation(@RequestBody FileLocationRequest request) {
     log.debug("File location request received : {}", request);
@@ -71,7 +71,7 @@ public class FileLocationApi {
     return fileLocationResponse;
   }
 
-  @GetMapping("/v1/files/uploadURL")
+  @GetMapping("/v2/files/uploadURL")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS+ "')")
   public LocationResponse getLocationFile() throws JsonProcessingException {
     LocationRequest req = (new ObjectMapper()).readValue("{}", LocationRequest.class);
