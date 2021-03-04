@@ -24,7 +24,7 @@ public class FileDeliveryApi {
 
   // TODO: Create the permission for os-file and change pre authorize annotation
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
-  @GetMapping("/v1/files/{id}/downloadURL")
+  @GetMapping("/v2/files/{id}/downloadURL")
   public ResponseEntity<DownloadUrlResponse> downloadURL(@PathVariable("id") String id) {
     DownloadUrlResponse signedUrl = fileDeliveryService.getSignedUrlsByRecordId(id);
     return new ResponseEntity<>(signedUrl, HttpStatus.OK);
