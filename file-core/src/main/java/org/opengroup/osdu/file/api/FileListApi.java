@@ -45,7 +45,7 @@ public class FileListApi {
   private final AuditLogger auditLogger;
 
   // TODO: Create the permission for os-file and change pre authorize annotation
-  @PostMapping("/getFileList")
+  @PostMapping("/v2/getFileList")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public FileListResponse getFileList(@RequestBody FileListRequest request) {
     log.debug("File list request received : {}", request);

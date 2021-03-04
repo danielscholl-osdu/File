@@ -53,7 +53,7 @@ spec:
         - name: spring.application.name
           value: file
         - name: server.servlet.contextPath
-          value: /api/file/v2/
+          value: /api/file/
         - name: server_port
           value: "80"
         - name: ACCEPT_HTTP  # TEMPORARY UNTIL HTTPS

@@ -28,13 +28,13 @@ import org.springframework.web.context.annotation.RequestScope;
 public class HealthCheckApi {
 
   @PermitAll
-  @GetMapping("/liveness_check")
+  @GetMapping("/v2/liveness_check")
   public ResponseEntity<String> livenessCheck() {
     return new ResponseEntity<>("Ingest service is alive", HttpStatus.OK);
   }
 
   @PermitAll
-  @GetMapping("/readiness_check")
+  @GetMapping("/v2/readiness_check")
   public ResponseEntity<String> readinessCheck() {
     return new ResponseEntity<>("Ingest service is ready", HttpStatus.OK);
   }
