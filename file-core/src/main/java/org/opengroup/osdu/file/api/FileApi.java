@@ -42,7 +42,7 @@ public class FileApi {
   final IFileService fileService;
 
   // TODO: Create the permission for os-file and change pre authorize annotation
-  @PostMapping("/getFile")
+  @PostMapping("/v2/getFile")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public FileResponse getFile(@RequestBody FileRequest request) {
     log.debug("Get file request received : {}", request);

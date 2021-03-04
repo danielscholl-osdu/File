@@ -34,7 +34,7 @@ import javax.inject.Inject;
 @RestController
 @RequestScope
 @Validated
-@RequestMapping(value = "/delivery")
+@RequestMapping(value = "/v2/delivery")
 public class DeliveryApi {
 
     @Inject
