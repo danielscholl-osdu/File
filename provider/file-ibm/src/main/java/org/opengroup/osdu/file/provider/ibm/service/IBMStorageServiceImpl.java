@@ -99,8 +99,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Override
 	public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
-		log.info("Creating the signed blob for fileID : {}. Authorization : {}, partitionID : {}", fileID,
-				authorizationToken, partitionID);
+		log.info("Creating the signed blob for fileID : {}.  partitionID : {}", fileID,	partitionID);
 		try {
 		tenant.getName();
 		} catch (Exception e) {
@@ -116,6 +115,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 			url.setUrl(s3SignedUrl);
 			url.setCreatedAt(Instant.now());
 			url.setCreatedBy(getUserFromToken());
+			url.setFileSource(fileID);
 		} catch (Exception e) { // TODO verify exception
 			throw new OsduException(URI_EXCEPTION_REASON, e);
 		}

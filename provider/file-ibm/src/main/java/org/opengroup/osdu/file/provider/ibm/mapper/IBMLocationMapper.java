@@ -15,11 +15,13 @@ import org.springframework.stereotype.Component;
 public class IBMLocationMapper implements ILocationMapper {
 
   private static final String SIGNED_URL_KEY = "SignedURL";
+  private static final String FILE_SOURCE_KEY = "FileSource";
 
   @Override
   public LocationResponse buildLocationResponse(SignedUrl signedUrl, FileLocation fileLocation) {
     Map<String, String> location = new HashMap<>();
     location.put(SIGNED_URL_KEY, signedUrl.getUrl().toString());
+    location.put(FILE_SOURCE_KEY, signedUrl.getFileSource());
     return LocationResponse.builder()
         .fileID(fileLocation.getFileID())
         .location(location)
