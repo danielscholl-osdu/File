@@ -1,6 +1,5 @@
 package org.opengroup.osdu.file.provider.aws.service;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.springframework.stereotype.Service;
@@ -13,12 +12,15 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
 
     @Override
     public String copyFile(String sourceFilePath, String toFile) throws OsduBadRequestException {
-        throw new NotImplementedException("Copy File Not Yet Implemented...");
+        
+        //we are not currently copying files, but providing access from the upload location
+        return null;
     }
 
     @Override
     public Boolean deleteFile(String location) {
-        throw new NotImplementedException("Delete File Not Yet Implemented...");
+        //we are not currently deleting files as we dont differentiate between staging/persistent
+        return false;
     }
     
 }

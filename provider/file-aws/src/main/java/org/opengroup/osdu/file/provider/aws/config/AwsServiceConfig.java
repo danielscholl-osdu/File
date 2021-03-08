@@ -45,8 +45,8 @@ public class AwsServiceConfig {
   @Value("${aws.s3.datafiles.persistent-bucket}")
   public String s3DataFilesPersistentBucket;
 
-  @Value("${aws.sts-role-arn}")
-  public String stsRoleArn;
+  // @Value("${aws.sts-role-arn}")
+  // public String stsRoleArn;
 
   @Value("${aws.ssm}")
   public Boolean ssmEnabled;
@@ -56,9 +56,9 @@ public class AwsServiceConfig {
     if (ssmEnabled) {
       SSMConfig ssmConfig = new SSMConfig();
       ParameterStorePropertySource ssm = ssmConfig.amazonSSM();
-      String parameter = "/osdu/" + environment + "/file/iam/arn";
+      // String parameter = "/osdu/" + environment + "/file/iam/arn";
       try {
-        stsRoleArn = ssm.getProperty(parameter).toString();
+        // stsRoleArn = ssm.getProperty(parameter).toString();
       } catch (Exception e) {
         Exception r = e;
       }
