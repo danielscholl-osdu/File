@@ -47,7 +47,7 @@ public class TestConstants {
 	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("DOMAIN", System.getenv("DOMAIN"));
 	public static final String LEGAL_TAGS_VALUE = System.getProperty("LEGAL_TAG", System.getenv("LEGAL_TAG"));
 
-	public static final String GET_LOCATION = "/getLocation";
-	public static final String GET_FILE_LOCATION = "/getFileLocation";
-	public static final String GET_FILE_LIST = "/getFileList";
+	public static final String GET_LOCATION = "/v2/getLocation";
+	public static final String GET_FILE_LOCATION = "/v2/getFileLocation";
+	public static final String GET_FILE_LIST = "/v2/getFileList";
 }
