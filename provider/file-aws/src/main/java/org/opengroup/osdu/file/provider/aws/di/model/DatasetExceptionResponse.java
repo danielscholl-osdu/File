@@ -14,9 +14,12 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetExceptionResponse {
 
     private Integer code;

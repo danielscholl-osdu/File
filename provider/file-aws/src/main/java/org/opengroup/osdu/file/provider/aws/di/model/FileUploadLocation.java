@@ -14,23 +14,10 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
-import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+/**
+ * Provider specific properties for where/how to upload a File
+ */
+public interface FileUploadLocation {
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class GetDatasetStorageInstructionsResponse {
-    
-    private FileUploadLocationAWSImpl storageLocation;
-
-    private String providerKey;   
 }

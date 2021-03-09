@@ -14,7 +14,8 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
-import java.util.Map;
+import java.net.URI;
+import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -28,9 +29,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GetDatasetStorageInstructionsResponse {
-    
-    private FileUploadLocationAWSImpl storageLocation;
+public class FileUploadLocationAWSImpl implements FileUploadLocation {
 
-    private String providerKey;   
+    private String unsignedUrl;    
+
+    private URI signedUrl;
+
+    private String signedUploadFileName;
+
+    private Instant createdAt;    
+
+    private String connectionString;
+
+    private TemporaryCredentials credentials;
+
+    private String region;
+
+
 }

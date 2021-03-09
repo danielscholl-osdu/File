@@ -18,9 +18,8 @@ import org.opengroup.osdu.file.provider.aws.di.DatasetException;
 import org.opengroup.osdu.file.provider.aws.di.IDatasetFactory;
 import org.opengroup.osdu.file.provider.aws.di.IDatasetService;
 import org.opengroup.osdu.file.provider.aws.di.model.DatasetExceptionResponse;
-import org.opengroup.osdu.file.provider.aws.di.model.DatasetRetrievalDeliveryItem;
-import org.opengroup.osdu.file.provider.aws.di.model.FileDeliveryItemAWSImpl;
-import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetRetrievalInstructionsResponse;
+import org.opengroup.osdu.file.provider.aws.di.model.FileUploadLocationAWSImpl;
+import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetStorageInstructionsResponse;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,9 @@ public class StorageServiceImpl implements IStorageService {
     @Inject
     DpsHeaders headers;
 
-    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+    private final ObjectMapper objectMapper = new ObjectMapper()
+                                                    .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+                                                    .findAndRegisterModules();
     private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper); 
 
 
@@ -48,10 +49,10 @@ public class StorageServiceImpl implements IStorageService {
         
         IDatasetService datasetService = datasetFactory.create(headers);
 
-        GetDatasetRetrievalInstructionsResponse response;
+        GetDatasetStorageInstructionsResponse response;
 
         try {
-            response = datasetService.getRetrievalInstructions(fileID);
+            response = datasetService.getStorageInstructions("dataset--File.Generic");
         } catch (DatasetException e) {
             try {
                 DatasetExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), DatasetExceptionResponse.class);
@@ -63,18 +64,16 @@ public class StorageServiceImpl implements IStorageService {
             }
         }
 
-        DatasetRetrievalDeliveryItem deliveryItem = response.getDelivery().get(0);        
-
-        FileDeliveryItemAWSImpl fileRetrievalProperties = deliveryItem.getRetrievalProperties();
+        FileUploadLocationAWSImpl fileUploadProperties = response.getStorageLocation();        
 
         try {
             return SignedUrl.builder()
-                            .uri(fileRetrievalProperties.getSignedUrl())
-                            .url(fileRetrievalProperties.getSignedUrl().toURL())
-                            .fileSource(fileRetrievalProperties.getUnsignedUrl())
-                            .connectionString(fileRetrievalProperties.getConnectionString())
+                            .uri(fileUploadProperties.getSignedUrl())
+                            .url(fileUploadProperties.getSignedUrl().toURL())
+                            .fileSource(fileUploadProperties.getUnsignedUrl() + fileUploadProperties.getSignedUploadFileName())
+                            .connectionString(fileUploadProperties.getConnectionString())
                             .createdBy(headers.getUserEmail())
-                            .createdAt(fileRetrievalProperties.getCreatedAt())
+                            .createdAt(fileUploadProperties.getCreatedAt())
                             .build();
         } catch (MalformedURLException e) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),

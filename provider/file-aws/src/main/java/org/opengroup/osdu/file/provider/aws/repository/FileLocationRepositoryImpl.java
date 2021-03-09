@@ -69,10 +69,12 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
   @Override
   public FileLocation findByFileID(String fileID) {
 
-    return FileLocation.builder()
-                        .fileID(fileID)
-                        .location("test")
-                        .build();
+    return null;
+
+    // return FileLocation.builder()
+    //                     .fileID(fileID)
+    //                     .location("test")
+    //                     .build();
 
     // if (true)
     //   throw new AppException(HttpStatus.NOT_IMPLEMENTED.value(), HttpStatus.NOT_IMPLEMENTED.getReasonPhrase(), "NOT IMPLEMENTED");

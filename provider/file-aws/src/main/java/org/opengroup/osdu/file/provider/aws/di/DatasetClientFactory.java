@@ -25,7 +25,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatasetClientFactory extends AbstractFactoryBean<IDatasetFactory> {
 
-	private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+	private final ObjectMapper objectMapper = new ObjectMapper()
+					.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+					.findAndRegisterModules();
 	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
 	@Value("${dataset.api}")

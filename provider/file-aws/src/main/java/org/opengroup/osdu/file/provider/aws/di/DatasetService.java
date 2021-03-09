@@ -100,11 +100,13 @@ public class DatasetService implements IDatasetService {
     public GetDatasetStorageInstructionsResponse getStorageInstructions(String kindSubType) throws DatasetException {
         
         String url = this.createUrl("/getStorageInstructions");
-        HashMap<String, String> queryParams = new HashMap<>();
-        queryParams.put("kindSubType", kindSubType);
+        // HashMap<String, String> queryParams = new HashMap<>();
+        // queryParams.put("kindSubType", kindSubType);
+
+        String urlWithQuery = String.format("%s?kindSubType=%s", url, kindSubType);
 
         HttpResponse result = this.httpClient
-                .send(HttpRequest.get().url(url).headers(this.headers.getHeaders()).queryParams(queryParams).build());
+                .send(HttpRequest.get().url(urlWithQuery).headers(this.headers.getHeaders()).build());
         
         return this.getResult(result, GetDatasetStorageInstructionsResponse.class);
     }
