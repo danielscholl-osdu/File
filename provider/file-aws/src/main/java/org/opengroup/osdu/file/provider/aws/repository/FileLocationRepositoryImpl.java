@@ -28,6 +28,7 @@ import org.opengroup.osdu.core.common.model.file.FileListRequest;
 import org.opengroup.osdu.core.common.model.file.FileListResponse;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -45,139 +48,107 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FileLocationRepositoryImpl implements IFileLocationRepository {
 
-  // @Value("${aws.dynamodb.table.prefix}")
-  // String tablePrefix;
+  @Value("${aws.dynamodb.table.prefix}")
+  String tablePrefix;
 
-  // @Value("${aws.dynamodb.region}")
-  // String dynamoDbRegion;
+  @Value("${aws.dynamodb.region}")
+  String dynamoDbRegion;
 
-  // @Value("${aws.dynamodb.endpoint}")
-  // String dynamoDbEndpoint;
+  @Value("${aws.dynamodb.endpoint}")
+  String dynamoDbEndpoint;
 
-  // @Value("${aws.dynamodb.filelocationtable")
-  // String filelocationTableName;
+  @Inject
+  DpsHeaders headers;
 
-  // private static final String FIND_ALL_FILTER_EXPRESSION = "createdAt BETWEEN :startDate and :endDate AND createdBy = :user";
+  private static final String FIND_ALL_FILTER_EXPRESSION = "dataPartitionId = :partitionId AND createdAt BETWEEN :startDate and :endDate AND createdBy = :user";
 
-  // private DynamoDBQueryHelper queryHelper;
+  private DynamoDBQueryHelper queryHelper;
 
   @PostConstruct
   public void init() {
-    // this.queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
+    this.queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
   }
 
   @Override
   public FileLocation findByFileID(String fileID) {
 
-    return null;
+      if (fileID == null) { //new file being generated
+        return null;
+      }
 
-    // return FileLocation.builder()
-    //                     .fileID(fileID)
-    //                     .location("test")
-    //                     .build();
+      try {
+          String dataPartitionId = headers.getPartitionIdWithFallbackToAccountId();
 
-    // if (true)
-    //   throw new AppException(HttpStatus.NOT_IMPLEMENTED.value(), HttpStatus.NOT_IMPLEMENTED.getReasonPhrase(), "NOT IMPLEMENTED");
-    
-    //   try {
-    //       FileLocationDoc doc = queryHelper.loadByPrimaryKey(FileLocationDoc.class, fileID);
+          FileLocationDoc doc = queryHelper.loadByPrimaryKey(FileLocationDoc.class, fileID, dataPartitionId);
 
-    //       FileLocation fileLocation = null;
-    //       if (doc != null){
-    //         fileLocation = createFileLocationFromDoc(doc);
-    //       }
+          FileLocation fileLocation = null;
+          if (doc != null){
+            fileLocation = doc.createFileLocationFromDoc();
+          }
       
-    //       return fileLocation;
-    //   }
-    //   catch (ResourceNotFoundException e) {
-    //     throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), e.getErrorMessage());
-    //   }
+          return fileLocation;
+      }
+      catch (ResourceNotFoundException e) {
+        throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), e.getErrorMessage());
+      }
   }
 
   @Override
   public FileLocation save(FileLocation fileLocation) {
 
+    String dataPartitionId = headers.getPartitionIdWithFallbackToAccountId();
+
+    FileLocationDoc doc = FileLocationDoc.createFileLocationDoc(fileLocation, dataPartitionId);
+
+    queryHelper.save(doc);
+
     return fileLocation;
-
-    // if (true)
-    //   throw new AppException(HttpStatus.NOT_IMPLEMENTED.value(), HttpStatus.NOT_IMPLEMENTED.getReasonPhrase(), "NOT IMPLEMENTED");
-
-    // FileLocationDoc doc = new FileLocationDoc();
-    // doc.setFileId(fileLocation.getFileID());
-    // doc.setDriver(fileLocation.getDriver().name());
-    // doc.setCreatedAt(fileLocation.getCreatedAt());
-    // doc.setCreatedBy(fileLocation.getCreatedBy());
-    // doc.setLocation(fileLocation.getLocation());
-
-    // queryHelper.save(doc);
-
-    // return fileLocation;
   }
 
 
   @Override
   public FileListResponse findAll(FileListRequest request) {
 
-    return FileListResponse.builder().build();
+      FileListResponse response = new FileListResponse();
 
-    //   if (true)
-    //     throw new AppException(HttpStatus.NOT_IMPLEMENTED.value(), HttpStatus.NOT_IMPLEMENTED.getReasonPhrase(), "NOT IMPLEMENTED");
+      AttributeValue dataPartitionIdAV = new AttributeValue(headers.getPartitionIdWithFallbackToAccountId());
+      AttributeValue timeFromAV = new AttributeValue(request.getTimeFrom().toString());
+      AttributeValue timeToAV = new AttributeValue(request.getTimeTo().toString());
+      AttributeValue userAV = new AttributeValue(request.getUserID());
 
-    //   FileListResponse response = new FileListResponse();
+      Map<String, AttributeValue> eav = new HashMap<>();
+      eav.put(":partitionId", dataPartitionIdAV);
+      eav.put(":startDate", timeFromAV);
+      eav.put(":endDate", timeToAV);
+      eav.put(":user", userAV);
+      
 
-    //   AttributeValue timeFromAV = new AttributeValue(request.getTimeFrom().toString());
-    //   AttributeValue timeToAV = new AttributeValue(request.getTimeTo().toString());
-    //   AttributeValue userAV = new AttributeValue(request.getUserID());
+      int pageSize = request.getItems();
+      int pageNum = request.getPageNum();
+      String pageNumStr = String.valueOf(pageNum);
+      if (pageNum <= 0)
+        pageNumStr = null;
+      QueryPageResult<FileLocationDoc> docs = null;      
+      try {
+        docs = queryHelper.scanPage(FileLocationDoc.class, pageSize, pageNumStr, FIND_ALL_FILTER_EXPRESSION, eav);
+      } catch (UnsupportedEncodingException e){
+        throw new OsduException(e.getMessage(), e);
+      }
 
-    //   Map<String, AttributeValue> eav = new HashMap<>();
-    //   eav.put(":startDate", timeFromAV);
-    //   eav.put(":endDate", timeToAV);
-    //   eav.put(":user", userAV);
+      if (docs != null){
+        List<FileLocation> locations = new ArrayList<>();
+        for(FileLocationDoc doc : docs.results){
+          locations.add(doc.createFileLocationFromDoc());
+      }
 
-    //   int pageSize = request.getItems();
-    //   int pageNum = request.getPageNum();
-    //   String pageNumStr = String.valueOf(pageNum);
-    //   if (pageNum <= 0)
-    //     pageNumStr = null;
-    //   QueryPageResult<FileLocationDoc> docs = null;
-    //   // String cursor = setCursorToNullIfEmpty(request.getCursor());
-    //   try {
-    //     docs = queryHelper.scanPage(FileLocationDoc.class, pageSize, pageNumStr, FIND_ALL_FILTER_EXPRESSION, eav);
-    //   } catch (UnsupportedEncodingException e){
-    //     throw new OsduException(e.getMessage(), e);
-    //   }
+      response =  FileListResponse.builder()
+        .content(locations)
+        .size(pageSize)
+        .number(pageNum)
+        .numberOfElements(locations.size()).build();
+    }
 
-    //   if (docs != null){
-    //     List<FileLocation> locations = new ArrayList<>();
-    //     for(FileLocationDoc doc : docs.results){
-    //       locations.add(createFileLocationFromDoc(doc));
-    //   }
-
-    //   response =  FileListResponse.builder()
-    //     .content(locations)
-    //     .size(pageSize)
-    //     .number(pageNum)
-    //     .numberOfElements(locations.size()).build();
-    // }
-
-    // return response;
+    return response;
   }
-
-  // private String setCursorToNullIfEmpty(String cursor){
-  //   if (cursor == ""){
-  //     cursor = null;
-  //   }
-  //   return cursor;
-  // }
-
-  // private FileLocation createFileLocationFromDoc(FileLocationDoc doc){
-  //   FileLocation fileLocation = new FileLocation();
-  //   fileLocation.setFileID(doc.getFileId());
-  //   fileLocation.setCreatedAt(doc.getCreatedAt());
-  //   fileLocation.setCreatedBy(doc.getCreatedBy());
-  //   fileLocation.setDriver(DriverType.valueOf(doc.getDriver()));
-  //   fileLocation.setLocation(doc.getLocation());
-  //   return fileLocation;
-  // }
 
 }
