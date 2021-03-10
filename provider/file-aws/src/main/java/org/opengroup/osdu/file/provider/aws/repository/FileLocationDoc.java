@@ -26,6 +26,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Data
@@ -48,6 +51,7 @@ public class FileLocationDoc {
   private String location;
 
   @DynamoDBAttribute(attributeName = "createdAt")
+  @DynamoDBTypeConverted(converter = DateToEpochTypeConverter.class)
   private Date createdAt;
 
   @DynamoDBAttribute(attributeName = "createdBy")

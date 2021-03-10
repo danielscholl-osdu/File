@@ -44,6 +44,10 @@ export FILE_SERVICE_HOST=${FILE_URL}
 export DATA_PARTITION_ID=int-test-file
 export ENVIRONMENT=$RESOURCE_PREFIX
 
+#File
+export USER_ID=$ADMIN_USER
+export TIME_ZONE=UTC
+
 #Delivery
 export DEFAULT_DATA_PARTITION_ID_TENANT1=opendes
 export DEFAULT_DATA_PARTITION_ID_TENANT2=common
@@ -59,6 +63,7 @@ export AWS_S3_REGION=$AWS_REGION
 #### RUN INTEGRATION TEST #########################################################################
 
 mvn  -ntp test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
+# mvn -Dmaven.surefire.debug test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
 TEST_EXIT_CODE=$?
 
 #### COPY TEST REPORTS #########################################################################

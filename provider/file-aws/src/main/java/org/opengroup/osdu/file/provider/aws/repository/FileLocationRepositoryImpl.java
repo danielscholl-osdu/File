@@ -41,6 +41,9 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Repository
@@ -112,8 +115,8 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
       FileListResponse response = new FileListResponse();
 
       AttributeValue dataPartitionIdAV = new AttributeValue(headers.getPartitionIdWithFallbackToAccountId());
-      AttributeValue timeFromAV = new AttributeValue(request.getTimeFrom().toString());
-      AttributeValue timeToAV = new AttributeValue(request.getTimeTo().toString());
+      AttributeValue timeFromAV = new AttributeValue().withN(dateToEpoch(request.getTimeFrom()).toString());
+      AttributeValue timeToAV = new AttributeValue().withN(dateToEpoch(request.getTimeTo()).toString());
       AttributeValue userAV = new AttributeValue(request.getUserID());
 
       Map<String, AttributeValue> eav = new HashMap<>();
@@ -149,6 +152,10 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
     }
 
     return response;
+  }
+
+  private Long dateToEpoch(LocalDateTime dateTime) {
+    return dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();    
   }
 
 }
