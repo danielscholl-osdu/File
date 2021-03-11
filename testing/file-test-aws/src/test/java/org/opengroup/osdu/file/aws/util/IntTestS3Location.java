@@ -36,6 +36,8 @@ public class IntTestS3Location {
   public boolean isValid = false;
 
   private static final String UNSIGNED_URL_PREFIX = "s3://";
+  private static final String SIGNED_URL_PREFIX = "https://";
+  private static final String SIGNED_URL_DOMAIN = ".s3.amazonaws.com";
 
   public IntTestS3Location(String uri) {
     if (uri != null && uri.startsWith(UNSIGNED_URL_PREFIX)) {
@@ -43,6 +45,24 @@ public class IntTestS3Location {
       if (bucketAndKey.length == 2) {
         bucket = bucketAndKey[0];
         key = bucketAndKey[1];
+        isValid = true;
+      }
+    }
+    else if (uri != null && uri.startsWith(SIGNED_URL_PREFIX)) {
+      String[] bucketAndKey = uri.substring(SIGNED_URL_PREFIX.length()).replaceFirst(SIGNED_URL_DOMAIN, "").split("/", 2);
+      if (bucketAndKey.length == 2) {
+        bucket = bucketAndKey[0];
+        
+        int keyFinishIndex = bucketAndKey[1].indexOf("?");
+
+        if (keyFinishIndex > 0) {
+          key = bucketAndKey[1].substring(0,keyFinishIndex);
+        }
+        else {
+          key = bucketAndKey[1];
+        }
+        
+        
         isValid = true;
       }
     }
