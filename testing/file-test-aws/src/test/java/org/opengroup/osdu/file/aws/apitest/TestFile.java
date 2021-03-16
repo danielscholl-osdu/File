@@ -13,6 +13,7 @@ import org.junit.platform.commons.util.StringUtils;
 import org.opengroup.osdu.core.common.model.file.FileLocationResponse;
 import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.file.apitest.File;
+import org.opengroup.osdu.file.aws.util.AwsConfig;
 import org.opengroup.osdu.file.aws.util.CloudStorageUtilAws;
 import org.opengroup.osdu.file.aws.util.HttpClientAws;
 import org.opengroup.osdu.file.aws.util.IntTestS3Location;
@@ -45,7 +46,7 @@ public class TestFile extends File {
                     .readValue(getFileLocationResponse.getEntity(String.class), FileLocationResponse.class);
                 if(fileLocationResponse!=null && StringUtils.isNotBlank(fileLocationResponse.getLocation())) {                    
                     
-                        IntTestS3Location s3Location = new IntTestS3Location(fileLocationResponse.getLocation());                                                
+                        IntTestS3Location s3Location = new IntTestS3Location(fileLocationResponse.getLocation(), AwsConfig.getCloudStorageRegion());                                                
                         cloudStorageUtil.deleteCloudFile(s3Location.bucket, s3Location.key);
                     
                 }

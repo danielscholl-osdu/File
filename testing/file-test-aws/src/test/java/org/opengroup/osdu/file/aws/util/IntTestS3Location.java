@@ -37,9 +37,14 @@ public class IntTestS3Location {
 
   private static final String UNSIGNED_URL_PREFIX = "s3://";
   private static final String SIGNED_URL_PREFIX = "https://";
-  private static final String SIGNED_URL_DOMAIN = ".s3.amazonaws.com";
+  private static final String SIGNED_URL_DOMAIN_NO_REGION = ".s3.amazonaws.com";
+  private static final String SIGNED_URL_DOMAIN_FORMAT_WITH_REGION = ".s3.%s.amazonaws.com";
 
   public IntTestS3Location(String uri) {
+    this(uri, "");
+  }
+
+  public IntTestS3Location(String uri, String s3Region) {
     if (uri != null && uri.startsWith(UNSIGNED_URL_PREFIX)) {
       String[] bucketAndKey = uri.substring(UNSIGNED_URL_PREFIX.length()).split("/", 2);
       if (bucketAndKey.length == 2) {
@@ -49,7 +54,10 @@ public class IntTestS3Location {
       }
     }
     else if (uri != null && uri.startsWith(SIGNED_URL_PREFIX)) {
-      String[] bucketAndKey = uri.substring(SIGNED_URL_PREFIX.length()).replaceFirst(SIGNED_URL_DOMAIN, "").split("/", 2);
+      String[] bucketAndKey = uri.substring(SIGNED_URL_PREFIX.length())
+                              .replaceFirst(String.format(SIGNED_URL_DOMAIN_FORMAT_WITH_REGION, s3Region), "")
+                              .replaceFirst(SIGNED_URL_DOMAIN_NO_REGION, "")
+                              .split("/", 2);
       if (bucketAndKey.length == 2) {
         bucket = bucketAndKey[0];
         
