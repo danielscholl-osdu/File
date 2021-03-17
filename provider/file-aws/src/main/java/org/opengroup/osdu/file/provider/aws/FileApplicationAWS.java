@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
 
 package org.opengroup.osdu.file.provider.aws;
 
+import org.opengroup.osdu.file.service.FileDeliveryService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
+// @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file", exclude = { FileDeliveryService.class})
 public class FileApplicationAWS {
 
   public static void main(String[] args) {

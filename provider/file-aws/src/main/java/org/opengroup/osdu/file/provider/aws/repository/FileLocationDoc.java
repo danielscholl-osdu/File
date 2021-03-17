@@ -17,20 +17,32 @@
 package org.opengroup.osdu.file.provider.aws.repository;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
+
+import org.opengroup.osdu.core.common.model.file.DriverType;
+import org.opengroup.osdu.core.common.model.file.FileLocation;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@DynamoDBTable(tableName = "FileLocation") // DynamoDB table name (without environment prefix)
+@DynamoDBTable(tableName = "FileLocationRepository") // DynamoDB table name (without environment prefix)
 public class FileLocationDoc {
 
   @DynamoDBHashKey(attributeName = "fileId")
   private String fileId;
+
+  @DynamoDBRangeKey(attributeName = "dataPartitionId")
+  private String dataPartitionId;
 
   @DynamoDBAttribute(attributeName = "driver")
   private String driver;
@@ -38,12 +50,33 @@ public class FileLocationDoc {
   @DynamoDBAttribute(attributeName = "location")
   private String location;
 
-  @DynamoDBAttribute(attributeName = "unsignedLocation")
-  private String unsignedLocation;
-
   @DynamoDBAttribute(attributeName = "createdAt")
+  @DynamoDBTypeConverted(converter = DateToEpochTypeConverter.class)
   private Date createdAt;
 
   @DynamoDBAttribute(attributeName = "createdBy")
   private String createdBy;
+
+  public FileLocation createFileLocationFromDoc(){
+    FileLocation fileLocation = FileLocation.builder()
+                                .fileID(fileId)
+                                .driver(DriverType.valueOf(driver))
+                                .location(location)
+                                .createdAt(createdAt)
+                                .createdBy(createdBy)
+                                .build();
+    
+    return fileLocation;
+  }
+
+  public static FileLocationDoc createFileLocationDoc(FileLocation fileLocation, String dataPartitionId) {
+      return FileLocationDoc.builder()
+          .fileId(fileLocation.getFileID())
+          .dataPartitionId(dataPartitionId)
+          .driver(fileLocation.getDriver().name())
+          .location(fileLocation.getLocation())
+          .createdAt(fileLocation.getCreatedAt())
+          .createdBy(fileLocation.getCreatedBy())
+          .build();
+  }
 }
