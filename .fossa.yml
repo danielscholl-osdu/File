@@ -12,13 +12,13 @@ analyze:
     type: mvn
     target: pom.xml
     path: .
-  - name: file-test-core
-    type: mvn
-    target: testing/file-test-core/pom.xml
-    path: .
   - name: file-core
     type: mvn
     target: file-core/pom.xml
+    path: .
+  - name: file-aws
+    type: mvn
+    target: provider/file-aws/pom.xml
     path: .
   - name: file-gcp
     type: mvn
