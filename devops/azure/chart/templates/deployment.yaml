@@ -93,7 +93,7 @@ spec:
         - name: LOG_PREFIX
           value: file
         - name: osdu_entitlements_url
-          value: http://entitlements-azure/entitlements/v1
+          value: http://entitlements/api/entitlements/v2
         - name: osdu_entitlements_app_key
           value: "OBSOLETE"
         - name: APPLICATION_PORT
