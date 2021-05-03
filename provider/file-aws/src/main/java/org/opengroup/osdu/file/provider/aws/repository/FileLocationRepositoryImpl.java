@@ -21,9 +21,7 @@ import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
 import org.opengroup.osdu.core.aws.dynamodb.QueryPageResult;
-import org.opengroup.osdu.core.common.model.file.DriverType;
 import org.opengroup.osdu.core.common.model.file.FileListRequest;
 import org.opengroup.osdu.core.common.model.file.FileListResponse;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
@@ -34,14 +32,12 @@ import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -51,25 +47,19 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FileLocationRepositoryImpl implements IFileLocationRepository {
 
-  @Value("${aws.dynamodb.table.prefix}")
-  String tablePrefix;
 
-  @Value("${aws.dynamodb.region}")
-  String dynamoDbRegion;
-
-  @Value("${aws.dynamodb.endpoint}")
-  String dynamoDbEndpoint;
-
+  @Value("${aws.dynamodb.fileLocationRepositoryTable.ssm.relativePath}")
+  String fileLocationTableParameterRelativePath;
   @Inject
   DpsHeaders headers;
 
   private static final String FIND_ALL_FILTER_EXPRESSION = "dataPartitionId = :partitionId AND createdAt BETWEEN :startDate and :endDate AND createdBy = :user";
 
-  private DynamoDBQueryHelper queryHelper;
+  @Inject
+  private DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory;
 
-  @PostConstruct
-  public void init() {
-    this.queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
+  private DynamoDBQueryHelperV2 getFileLocationQueryHelper() {
+    return dynamoDBQueryHelperFactory.getQueryHelperForPartition(headers, fileLocationTableParameterRelativePath);
   }
 
   @Override
@@ -80,6 +70,7 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
       }
 
       try {
+          DynamoDBQueryHelperV2 queryHelper = getFileLocationQueryHelper();
           String dataPartitionId = headers.getPartitionIdWithFallbackToAccountId();
 
           FileLocationDoc doc = queryHelper.loadByPrimaryKey(FileLocationDoc.class, fileID, dataPartitionId);
@@ -88,7 +79,7 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
           if (doc != null){
             fileLocation = doc.createFileLocationFromDoc();
           }
-      
+
           return fileLocation;
       }
       catch (ResourceNotFoundException e) {
@@ -98,7 +89,7 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
 
   @Override
   public FileLocation save(FileLocation fileLocation) {
-
+    DynamoDBQueryHelperV2 queryHelper = getFileLocationQueryHelper();
     String dataPartitionId = headers.getPartitionIdWithFallbackToAccountId();
 
     FileLocationDoc doc = FileLocationDoc.createFileLocationDoc(fileLocation, dataPartitionId);
@@ -124,15 +115,16 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
       eav.put(":startDate", timeFromAV);
       eav.put(":endDate", timeToAV);
       eav.put(":user", userAV);
-      
+
 
       int pageSize = request.getItems();
       int pageNum = request.getPageNum();
       String pageNumStr = String.valueOf(pageNum);
       if (pageNum <= 0)
         pageNumStr = null;
-      QueryPageResult<FileLocationDoc> docs = null;      
+      QueryPageResult<FileLocationDoc> docs ;
       try {
+        DynamoDBQueryHelperV2 queryHelper = getFileLocationQueryHelper();
         docs = queryHelper.scanPage(FileLocationDoc.class, pageSize, pageNumStr, FIND_ALL_FILTER_EXPRESSION, eav);
       } catch (UnsupportedEncodingException e){
         throw new OsduException(e.getMessage(), e);
@@ -155,7 +147,7 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
   }
 
   private Long dateToEpoch(LocalDateTime dateTime) {
-    return dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();    
+    return dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
   }
 
 }
