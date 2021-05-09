@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/v1/files")
+@RequestMapping(value = "/v2/files")
 @RequiredArgsConstructor
 public class FileMetadataApi {
 
@@ -37,7 +37,7 @@ public class FileMetadataApi {
   @GetMapping("/{id}/metadata")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
   public ResponseEntity<RecordVersion> getFileMetadataById(@PathVariable("id") String id)
-      throws OsduBadRequestException, ApplicationException, NotFoundException {
+      throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
     return new ResponseEntity<>(fileMetadataService.getMetadataById(id), HttpStatus.OK);
   }
 }

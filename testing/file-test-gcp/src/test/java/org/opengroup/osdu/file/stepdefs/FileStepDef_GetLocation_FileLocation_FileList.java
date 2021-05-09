@@ -108,6 +108,19 @@ public class FileStepDef_GetLocation_FileLocation_FileList implements En {
                   + actualResponseMessage,
               expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
         });
+    
+    Then("service should respond back with {string} and error message {string}",
+            (String expectedReponseStatusCode, String expectedReponseMessage) -> {
+              String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
+              assertTrue("Expected status - " + expectedReponseStatusCode + " ; Actual status code - "
+                  + actualStatusCode, expectedReponseStatusCode.equalsIgnoreCase(actualStatusCode));
+              String actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
+                  .get("error.message");
+              assertTrue(
+                  "Expected message - " + expectedReponseMessage + " ; Actual message - "
+                      + actualResponseMessage,
+                  expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
+            });
 
     Given("I hit File service GetLocation API with {string}", (String BodyContent) -> {
       JsonElement jsonBody = null;

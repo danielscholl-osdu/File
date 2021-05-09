@@ -1,18 +1,7 @@
 # OSDU R2 Prototype File service
 
 ## Contents
-
-* [Introduction](#introduction)
-* [System interactions](#system-interactions)
-* [Validations](#validations)
-* [File API](#file-api)
-    * [POST /getLocation](#post-getlocation)
-    * [POST /getFileLocation](#post-getfilelocation)
-    * [POST /getFileList](#post-getfilelist)
-* [Service Provider Interfaces](#service-provider-interfaces)
-* [GCP implementation](#gcp-implementation)
-* [Datastore](#datastore)
-* [Firestore](#firestore-collections)
+[[_TOC_]]
 
 ## Introduction
 
@@ -34,7 +23,7 @@ The File service defines the following workflows:
 
 ### File upload
 
-The file upload workflow is defined for the `/getLocation` API endpoint. The following diagram
+The file upload workflow is defined for the `/v2/getLocation` API endpoint. The following diagram
 illustrates the workflow.
 
 ![OSDU R2 File Service getLocation](img/76421952-233e5100-63ad-11ea-8893-3ad5b6950b4c.png)
@@ -63,7 +52,7 @@ file ID as the key and object as the value. For more information on the record, 
 
 ### File location
 
-The file location workflow is defined for the `/getFileLocation` API endpoint. The
+The file location workflow is defined for the `/v2/getFileLocation` API endpoint. The
 following diagram demonstrates the workflow.
 
 ![OSDU R2 File Service getFileLocation](img/76414998-11ef4780-63a1-11ea-8a38-cb4dc4522d83.png)
@@ -80,7 +69,7 @@ Upon request from an OSDU R2 service:
 
 ### File list
 
-The file list workflow is defined for the `/getFileList` API endpoint.
+The file list workflow is defined for the `/v2/getFileList` API endpoint.
 
 Upon request from another OSDU R2 service:
 
@@ -111,9 +100,9 @@ implementations, the File service will be able to check if file uploads did happ
 
 The File service's API includes the following three methods in the OSDU R2 Prototype:
 
-* `/getLocation`, external
-* `/getFileLocation`, internal
-* `/getFileList`, internal
+* `/v2/getLocation`, external
+* `/v2/getFileLocation`, internal
+* `/v2/getFileList`, internal
 
 General considerations related to querying the File API:
 
@@ -123,9 +112,9 @@ General considerations related to querying the File API:
 `"Data-Partition-Id": "default-partition"`
 * The request and response Content Type is **application/json**
 
-### POST /getLocation
+### POST /v2/getLocation
 
-The `/getLocation` API endpoint creates a new location in the landing zone, such as a GCS bucket,
+The `/v2/getLocation` API endpoint creates a new location in the landing zone, such as a GCS bucket,
 and returns it to the user so they upload a file for ingestion by that location.
 
 #### Request body
@@ -143,7 +132,7 @@ and returns it to the user so they upload a file for ingestion by that location.
 Request example:
 
 ```sh
-curl --location --request POST 'https://{path}/getLocation' \
+curl --location --request POST 'https://{path}/v2/getLocation' \
     --header 'Authorization: Bearer {token}' \
     --header 'Content-Type: application/json' \
     --header 'Data-Partition-Id: {Data-Partition ID}' \
@@ -177,13 +166,13 @@ Response example:
 }
 ```
 
-### POST /getFileLocation
+### POST /v2/getFileLocation
 
-The `/getFileLocation` API endpoint works similarly to `/getLocation`, but is internal and returns
+The `/v2/getFileLocation` API endpoint works similarly to `/v2/getLocation`, but is internal and returns
 the landing zone &mdash; `Location` and `Driver` &mdash; of a particular file instead of a signed
 URL.
 
-Once the OSDU security model is formulated and approved, the `/getFileLocation` API endpoint will
+Once the OSDU security model is formulated and approved, the `/v2/getFileLocation` API endpoint will
 not be returning files that belong to other users.
 
 #### Request body
@@ -195,7 +184,7 @@ not be returning files that belong to other users.
 Request example:
 
 ```sh
-curl --location --request POST 'https://{path}/getFileLocation' \
+curl --location --request POST 'https://{path}/v2/getFileLocation' \
     --header 'Authorization: Bearer {token}' \
     --header 'Content-Type: application/json' \
     --header 'Data-Partition-Id: {assigned partition ID}' \
@@ -211,13 +200,13 @@ curl --location --request POST 'https://{path}/getFileLocation' \
 | Driver   | `String` | Description of the storage where the file is stored |
 | Location | `String` | Direct URI to the file in storage                   |
 
-### POST /getFileList
+### POST /v2/getFileList
 
-The `/getFileList` API endpoint allows auditing the attempted file uploads. The method is
+The `/v2/getFileList` API endpoint allows auditing the attempted file uploads. The method is
 unavailable for third-party applications.
 
 The ingestion process depends on whether the client application uploaded a file or not. The
-`/getFileList` endpoint is designed to let other OSDU services to inspect which user uploaded a
+`/v2/getFileList` endpoint is designed to let other OSDU services to inspect which user uploaded a
 file, whether the file was uploaded to the landing zone, and whether the user started ingestion
 after the file upload.
 
@@ -236,7 +225,7 @@ after the file upload.
 Request example:
 
 ```sh
-curl --location --request POST 'https://{path}/getFileList' \
+curl --location --request POST 'https://{path}/v2/getFileList' \
     --header 'Authorization: Bearer {token}' \
     --header 'Data-Partition-Id: {assigned partition ID}' \
     --header 'Content-Type: application/json' \

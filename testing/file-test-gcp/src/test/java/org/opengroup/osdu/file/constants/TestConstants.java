@@ -6,9 +6,9 @@ public class TestConstants {
 	public static final String STORAGE_HOST = System.getProperty("STORAGE_HOST",
 			System.getenv("STORAGE_HOST"));
 	public static final String STORAGE_GET_ENDPOINT = "/records/";
-	public static final String POST_ENDPOINT = "/v1/files/metadata";
-	public static final String GET_SIGNEDURL_UPLOAD_ENDPOINT = "/v1/files/uploadURL";
-	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 = "/v1/files/";
+	public static final String POST_ENDPOINT = "/v2/files/metadata";
+	public static final String GET_SIGNEDURL_UPLOAD_ENDPOINT = "/v2/files/uploadURL";
+	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 = "/v2/files/";
 	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT2 = "/downloadURL";
 	public static final String GET_METADATA_ENDPOINT2 = "/metadata";
 	public static final String GET_ENDPOINT = "";
@@ -47,7 +47,7 @@ public class TestConstants {
 	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("DOMAIN", System.getenv("DOMAIN"));
 	public static final String LEGAL_TAGS_VALUE = System.getProperty("LEGAL_TAG", System.getenv("LEGAL_TAG"));
 
-	public static final String GET_LOCATION = "/getLocation";
-	public static final String GET_FILE_LOCATION = "/getFileLocation";
-	public static final String GET_FILE_LIST = "/getFileList";
+	public static final String GET_LOCATION = "/v2/getLocation";
+	public static final String GET_FILE_LOCATION = "/v2/getFileLocation";
+	public static final String GET_FILE_LIST = "/v2/getFileList";
 }

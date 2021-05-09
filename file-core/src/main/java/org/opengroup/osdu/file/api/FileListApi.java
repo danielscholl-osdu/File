@@ -16,6 +16,7 @@
 
 package org.opengroup.osdu.file.api;
 
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.file.FileListRequest;
@@ -23,6 +24,7 @@ import org.opengroup.osdu.core.common.model.file.FileListResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.file.constant.FileServiceRole;
+import org.opengroup.osdu.file.logging.AuditLogger;
 import org.opengroup.osdu.file.provider.interfaces.IFileListService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -40,14 +42,16 @@ public class FileListApi {
 
   final DpsHeaders headers;
   final IFileListService fileListService;
+  private final AuditLogger auditLogger;
 
   // TODO: Create the permission for os-file and change pre authorize annotation
-  @PostMapping("/getFileList")
+  @PostMapping("/v2/getFileList")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public FileListResponse getFileList(@RequestBody FileListRequest request) {
     log.debug("File list request received : {}", request);
     FileListResponse fileListResponse = fileListService.getFileList(request, headers);
     log.debug("File list result ready : {}", fileListResponse);
+    this.auditLogger.readFileListSuccess(Collections.singletonList(fileListResponse.toString()));
     return fileListResponse;
   }
 

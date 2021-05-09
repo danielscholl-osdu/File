@@ -4,6 +4,7 @@ import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.service.FileDeliveryService;
+import org.opengroup.osdu.file.service.storage.StorageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +25,8 @@ public class FileDeliveryApi {
 
   // TODO: Create the permission for os-file and change pre authorize annotation
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
-  @GetMapping("/v1/files/{id}/downloadURL")
-  public ResponseEntity<DownloadUrlResponse> downloadURL(@PathVariable("id") String id) {
+  @GetMapping("/v2/files/{id}/downloadURL")
+  public ResponseEntity<DownloadUrlResponse> downloadURL(@PathVariable("id") String id) throws StorageException {
     DownloadUrlResponse signedUrl = fileDeliveryService.getSignedUrlsByRecordId(id);
     return new ResponseEntity<>(signedUrl, HttpStatus.OK);
   }

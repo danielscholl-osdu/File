@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import javax.inject.Inject;
 @RestController
 @RequestScope
 @Validated
-@RequestMapping(value = "/delivery")
+@RequestMapping(value = "/v2/delivery")
 public class DeliveryApi {
 
     @Inject

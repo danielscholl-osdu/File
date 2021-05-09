@@ -1,4 +1,4 @@
-// Copyright © Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ public class AwsServiceConfig {
   @Value("${aws.s3.datafiles.persistent-bucket}")
   public String s3DataFilesPersistentBucket;
 
-  @Value("${aws.sts-role-arn}")
-  public String stsRoleArn;
+  // @Value("${aws.sts-role-arn}")
+  // public String stsRoleArn;
 
   @Value("${aws.ssm}")
   public Boolean ssmEnabled;
@@ -56,9 +56,9 @@ public class AwsServiceConfig {
     if (ssmEnabled) {
       SSMConfig ssmConfig = new SSMConfig();
       ParameterStorePropertySource ssm = ssmConfig.amazonSSM();
-      String parameter = "/osdu/" + environment + "/file/iam/arn";
+      // String parameter = "/osdu/" + environment + "/file/iam/arn";
       try {
-        stsRoleArn = ssm.getProperty(parameter).toString();
+        // stsRoleArn = ssm.getProperty(parameter).toString();
       } catch (Exception e) {
         Exception r = e;
       }

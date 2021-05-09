@@ -1,5 +1,5 @@
 // Copyright 2017-2019, Schlumberger
-// Copyright © 2021 Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 
 package org.opengroup.osdu.file.service;
 
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.http.HttpClient;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.http.HttpRequest;
@@ -31,10 +32,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonSyntaxException;
+
 
 @Component
+@RequiredArgsConstructor
 public class RecordServiceImpl {
 
   private IHttpClient httpClient;
@@ -47,8 +48,7 @@ public class RecordServiceImpl {
   @Value("${RECORDS_ROOT_URL}")
   String rootUrl;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+	private final HttpResponseBodyMapper bodyMapper;
 
   public Map<String, Object> createOrUpdateRecord(Record record, DpsHeaders headers) {
     Record[] records = new Record[1];

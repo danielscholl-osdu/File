@@ -53,11 +53,13 @@ spec:
         - name: spring.application.name
           value: file
         - name: server.servlet.contextPath
-          value: /api/file/v2/
+          value: /api/file/
         - name: server_port
           value: "80"
         - name: ACCEPT_HTTP  # TEMPORARY UNTIL HTTPS
           value: "true"
+        - name: file_spring_logging_level
+          value: info
         - name: KEYVAULT_URL
           valueFrom:
             configMapKeyRef:
@@ -93,7 +95,7 @@ spec:
         - name: LOG_PREFIX
           value: file
         - name: osdu_entitlements_url
-          value: http://entitlements-azure/entitlements/v1
+          value: http://entitlements/api/entitlements/v2
         - name: osdu_entitlements_app_key
           value: "OBSOLETE"
         - name: APPLICATION_PORT

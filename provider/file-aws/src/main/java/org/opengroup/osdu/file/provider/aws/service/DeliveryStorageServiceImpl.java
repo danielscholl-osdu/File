@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,80 +47,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class DeliveryStorageServiceImpl implements IDeliveryStorageService {
+public class DeliveryStorageServiceImpl implements IDeliveryStorageService {  
 
-  @Inject
-  private DpsHeaders headers;
-
-  @Inject
-  private AwsServiceConfig awsServiceConfig;
-
-  @Inject
-  private S3Helper s3Helper;
-
-  @Inject
-  private STSHelper stsHelper;
-
-  @Inject
-  private ExpirationDateHelper expirationDateHelper;
-
-  @Inject InstantHelper instantHelper;
-
-  private String roleArn;
-
-  private Duration expirationDuration;
-
-  private final static String AWS_SDK_EXCEPTION_MSG = "There was an error communicating with the Amazon SDK for signing.";
-  private final static String URI_EXCEPTION_REASON = "Exception creating signed url";
-  private final static String STS_EXCEPTION_REASON = "Exception creating credentials";
-  private final static String INVALID_S3_PATH_REASON = "Unsigned url invalid, needs to be full S3 path";
-
-  @PostConstruct
-  public void init() {
-    roleArn = awsServiceConfig.stsRoleArn;
-    expirationDuration = Duration.ofDays(awsServiceConfig.s3SignedUrlExpirationTimeInDays);
-  }
 
   @Override
   public SignedUrl createSignedUrl(String srn, String unsignedUrl, String authorizationToken) {
-    SignedUrl url = new SignedUrl();
-    URL s3SignedUrl;
-    TemporaryCredentials credentials;
-
-    S3Location fileLocation = new S3Location(unsignedUrl);
-
-    if (!fileLocation.isValid){
-      throw new AppException(HttpStatus.SC_BAD_REQUEST, "Malformed URL", INVALID_S3_PATH_REASON);
-    }
-
-    Instant now = instantHelper.now();
-
-    Date expiration = expirationDateHelper.getExpiration(now, expirationDuration);
-
-    try {
-      s3SignedUrl = s3Helper.generatePresignedUrl(fileLocation, HttpMethod.GET, expiration);
-    } catch (SdkClientException e) {
-      throw new AppException(HttpStatus.SC_SERVICE_UNAVAILABLE, "S3 Error", URI_EXCEPTION_REASON, e);
-    }
-    try {
-      credentials = stsHelper.getGetCredentials(srn, fileLocation, roleArn, this.headers.getUserEmail(), expiration);
-    } catch (SdkClientException e) {
-      log.error("STS Exception " + e.getMessage());
-      credentials = TemporaryCredentials.builder().accessKeyId("").secretAccessKey("").expiration(new Date()).sessionToken("").build();
-      // throw new AppException(HttpStatus.SC_SERVICE_UNAVAILABLE, "STS Error", STS_EXCEPTION_REASON, e);
-    }
-
-    try {
-
-      url.setUri(new URI(s3SignedUrl.toString()));
-      url.setUrl(s3SignedUrl);
-      url.setCreatedAt(instantHelper.now());
-      url.setConnectionString(credentials.toConnectionString());
-    } catch(URISyntaxException e) {
-      log.error("There was an error generating the URI.",e);
-      throw new AppException(HttpStatus.SC_BAD_REQUEST, "Malformed URL", URI_EXCEPTION_REASON, e);
-    }
-    return url;
+    throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unsupported Operation Exception", "Unsupported Operation Exception");
   }
 
   @Override

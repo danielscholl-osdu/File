@@ -1,4 +1,4 @@
-// Copyright © 2021 Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class FileMetadataServiceTest {
 
   public static final String RECORD_ID = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003";
   public static final String FILE_METADATA_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
-  
+
   @InjectMocks
   FileMetadataService fileMetadataService;
 
@@ -89,7 +89,7 @@ public class FileMetadataServiceTest {
   @Test
   public void saveMetadata_Success() throws OsduBadRequestException, StorageException, ApplicationException {
 
-    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();        
+    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
     DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
     FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
@@ -121,7 +121,7 @@ public class FileMetadataServiceTest {
   @Test
   public void saveMetadata_StorageException() throws OsduBadRequestException, StorageException, ApplicationException {
 
-    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();        
+    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
     DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
     FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
@@ -152,7 +152,7 @@ public class FileMetadataServiceTest {
 
 
   }
-  
+
   @Test
   public void saveMetadata_InvalidKind() throws OsduBadRequestException, StorageException, ApplicationException {
     fileMetadata = FileMetadata.builder().kind("invalidKind").build();
@@ -160,35 +160,35 @@ public class FileMetadataServiceTest {
     KindValidationException exceptionResponse = assertThrows(KindValidationException.class,()->{
       fileMetadataService.saveMetadata(fileMetadata);
     });
-    
+
     assertEquals("Invalid kind", exceptionResponse.getMessage());
-    
+
     fileMetadata = FileMetadata.builder().kind("osdu:invalidSource:dataset--File.Generic:1.0.0").build();
 
     exceptionResponse = assertThrows(KindValidationException.class,()->{
       fileMetadataService.saveMetadata(fileMetadata);
     });
-    
+
     assertEquals("Invalid source in kind", exceptionResponse.getMessage());
-    
+
     fileMetadata = FileMetadata.builder().kind("osdu:wks:invalidEntity:1.0.0").build();
 
     exceptionResponse = assertThrows(KindValidationException.class,()->{
       fileMetadataService.saveMetadata(fileMetadata);
     });
-    
+
     assertEquals("Invalid entity in kind", exceptionResponse.getMessage());
   }
 
   @Test
   public void saveMetadata_StorageFail() throws OsduBadRequestException, StorageException, ApplicationException {
 
-    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();        
+    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
     DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
     FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
     fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
-    
+
 
     String dataPartitionId = "tenant";
     Record record = new Record(dataPartitionId);
@@ -241,7 +241,7 @@ public class FileMetadataServiceTest {
     httpResp.setResponseCode(500);
     when(dataLakeStorageService.getRecord(RECORD_ID)).thenThrow(new StorageException("Failed to find record for the given file id", httpResp));
 
-    assertThrows(ApplicationException.class,()->fileMetadataService.getMetadataById(RECORD_ID));
+    assertThrows(StorageException.class,()->fileMetadataService.getMetadataById(RECORD_ID));
   }
 
   @Test
@@ -252,7 +252,7 @@ public class FileMetadataServiceTest {
     httpResp.setResponseCode(400);
     when(dataLakeStorageService.getRecord(RECORD_ID)).thenThrow(new StorageException("Invalid file id", httpResp));
 
-    assertThrows(OsduBadRequestException.class, ()->fileMetadataService.getMetadataById(RECORD_ID));
+    assertThrows(StorageException.class, ()->fileMetadataService.getMetadataById(RECORD_ID));
   }
 
   @Test

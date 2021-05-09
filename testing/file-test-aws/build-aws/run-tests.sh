@@ -1,4 +1,4 @@
-# Copyright © 2020 Amazon Web Services
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,10 @@ export FILE_SERVICE_HOST=${FILE_URL}
 export DATA_PARTITION_ID=int-test-file
 export ENVIRONMENT=$RESOURCE_PREFIX
 
+#File
+export USER_ID=$ADMIN_USER
+export TIME_ZONE=UTC
+
 #Delivery
 export DEFAULT_DATA_PARTITION_ID_TENANT1=opendes
 export DEFAULT_DATA_PARTITION_ID_TENANT2=common
@@ -59,6 +63,7 @@ export AWS_S3_REGION=$AWS_REGION
 #### RUN INTEGRATION TEST #########################################################################
 
 mvn  -ntp test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
+# mvn -Dmaven.surefire.debug test -f "$SCRIPT_SOURCE_DIR"/../pom.xml
 TEST_EXIT_CODE=$?
 
 #### COPY TEST REPORTS #########################################################################
