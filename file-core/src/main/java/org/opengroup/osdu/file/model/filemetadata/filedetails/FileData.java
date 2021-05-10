@@ -32,10 +32,9 @@ import lombok.*;
 public class FileData {
 
     @JsonProperty("Name")
-    @NotEmpty(message = "Name can not be empty")
     private String name;
 
-    @JsonProperty("Description")    
+    @JsonProperty("Description")
     private String description;
 
     @JsonProperty("TotalSize")
@@ -69,14 +68,12 @@ public class FileData {
     @NotNull(message = "DatasetProperties cannot be empty")
     @Valid
     private DatasetProperties datasetProperties;
-    
+
     @JsonProperty("ExistenceKind")
     private String existenceKind;
 
     @JsonProperty("Endian")
-    @Valid
-    @NotNull
-    private Endian endian; 
+    private Endian endian;
 
     @JsonProperty("Checksum")
     private String checksum;
