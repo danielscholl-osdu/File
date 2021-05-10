@@ -41,6 +41,9 @@ public class FileSourceInfo {
     @JsonProperty("PreloadFileCreateUser")
     private String preloadFileCreateUser;
 
+    @JsonProperty("PreloadFileCreateDate")
+    private String preloadFileCreateDate;
+
     @JsonProperty("PreloadFileModifyUser")
     private String preloadFileModifyUser;
 
@@ -48,7 +51,6 @@ public class FileSourceInfo {
     private String preloadFileModifyDate;
 
     @JsonProperty("Name")
-    @NotEmpty(message = "Name can not be empty")
     private String name;
 
     @JsonProperty("FileSize")
@@ -57,5 +59,9 @@ public class FileSourceInfo {
     @JsonProperty("EncodingFormatTypeID")
     private String encodingFormatTypeID;
 
-    
+    @JsonProperty("Checksum")
+    private String checksum;
+
+    @JsonProperty("ChecksumAlgorithm")
+    private String checksumAlgorithm;
 }
