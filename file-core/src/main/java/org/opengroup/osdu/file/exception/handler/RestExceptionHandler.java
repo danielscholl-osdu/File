@@ -177,16 +177,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({ JsonParseException.class, IllegalStateException.class,
       MismatchedInputException.class, IllegalArgumentException.class })
   protected ResponseEntity<Object> handleInvalidBody(RuntimeException ex,
-      WebRequest request) {
+                                                     WebRequest request) {
     log.error("Exception during REST request: " + request.getDescription(false), ex);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     ApiError apiError = ApiError.builder()
-        .status(HttpStatus.BAD_REQUEST)
-        .message(ExceptionUtils.getRootCauseMessage(ex))
-        .build();
+                                .status(HttpStatus.BAD_REQUEST)
+                                .message(ExceptionUtils.getRootCauseMessage(ex))
+                                .build();
     return handleExceptionInternal(ex, apiError, headers,
-        HttpStatus.BAD_REQUEST, request);
+                                   HttpStatus.BAD_REQUEST, request);
   }
 
   @ExceptionHandler({ ConstraintViolationException.class })
@@ -201,10 +201,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     ApiError apiError = ApiError.builder()
-        .status(HttpStatus.BAD_REQUEST)
-        .message(ExceptionUtils.getRootCauseMessage(ex))
-        .errors(errors)
-        .build();
+                                .status(HttpStatus.BAD_REQUEST)
+                                .message(ExceptionUtils.getRootCauseMessage(ex))
+                                .errors(errors)
+                                .build();
     return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
   }
 
@@ -216,11 +216,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                 HttpHeaders headers, HttpStatus status, WebRequest request) {
-    ApiError apiError = ApiError.builder()
-                                .status(status)
-                                .message("Invalid Json Input")
-                                .build();
-    return handleExceptionInternal(ex, apiError, headers, status, request);
+
+    if(ex.getMostSpecificCause() instanceof EnumValidationException){
+      String errorMessage = ex.getMostSpecificCause().getMessage();
+      ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
+      errorResponse.setCode(400);
+      errorResponse.setMessage(errorMessage);
+      errorResponse.addErrors(new BadRequestError(errorMessage));
+
+      errorMessage = errorMessage + getCorrelationId(request);
+      log.error(errorMessage);
+      log.warning(errorMessage, ex);
+      return buildResponseEntity(errorResponse);
+    }
+    else {
+      ApiError apiError = ApiError.builder().status(status).message("Invalid Json Input").build();
+      return handleExceptionInternal(ex, apiError, headers, status, request);
+    }
   }
 
   private ResponseEntity<Object> getErrorResponse(AppException e) {
