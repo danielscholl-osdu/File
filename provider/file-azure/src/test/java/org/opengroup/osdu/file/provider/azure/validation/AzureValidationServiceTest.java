@@ -29,9 +29,6 @@ import javax.validation.ValidatorFactory;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.cfg.context.DefaultConstraintMapping;
-import org.hibernate.validator.internal.engine.DefaultPropertyNodeNameProvider;
-import org.hibernate.validator.internal.properties.DefaultGetterPropertySelectionStrategy;
-import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -67,8 +64,7 @@ class AzureValidationServiceTest {
     RequestConstraintMappingContributor requestConstraintMappingContributor
         = new RequestConstraintMappingContributor();
     requestConstraintMappingContributor.createConstraintMappings(() -> {
-    final JavaBeanHelper javaBeanHelper = new JavaBeanHelper(new DefaultGetterPropertySelectionStrategy(), new DefaultPropertyNodeNameProvider());
-    DefaultConstraintMapping mapping = new DefaultConstraintMapping(javaBeanHelper);
+    DefaultConstraintMapping mapping = new DefaultConstraintMapping();
     configuration.addMapping(mapping);
     return mapping;
     });

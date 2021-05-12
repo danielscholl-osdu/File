@@ -13,13 +13,11 @@
 // limitations under the License.
 package util;
 
-
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.ClientResponse;
 import org.apache.commons.lang3.RandomStringUtils;
-
+import org.opengroup.osdu.file.errors.ErrorResponse;
 
 public class DummyRecordsHelper {
   public static String buildInvalidFileLocationPayload(String fileId){
@@ -29,22 +27,22 @@ public class DummyRecordsHelper {
     return new Gson().toJson(item);
   }
 
-  public JsonObject getRecordsErrorResponse(ClientResponse response) {
+  public BadRequestMock getRecordsMockFromBadRequestResponse(ClientResponse response) {
     String json = response.getEntity(String.class);
     Gson gson = new Gson();
-    return gson.fromJson(json,JsonObject.class);
+    return gson.fromJson(json, BadRequestMock.class);
   }
-    public BadRequestMock getRecordsMockFromBadRequestResponse(ClientResponse response) {
-        String json = response.getEntity(String.class);
-        Gson gson = new Gson();
-        return gson.fromJson(json, BadRequestMock.class);
-    }
-    public class BadRequestMock {
-        public String status;
-        public String message;
-        public String[] errors;
+  public ErrorResponse getRecordsErrorResponse(ClientResponse response) {
+    String json = response.getEntity(String.class);
+    Gson gson = new Gson();
+    return gson.fromJson(json,ErrorResponse.class);
+  }
+  public class BadRequestMock {
+    public String status;
+    public String message;
+    public String[] errors;
 
-    }
+  }
   public static String generateUniqueFileID() {
     return  RandomStringUtils.randomAlphanumeric(1025).toLowerCase();
   }

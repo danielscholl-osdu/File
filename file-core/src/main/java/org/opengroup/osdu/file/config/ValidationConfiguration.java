@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.cfg.context.DefaultConstraintMapping;
-import org.hibernate.validator.internal.engine.DefaultPropertyNodeNameProvider;
-import org.hibernate.validator.internal.properties.DefaultGetterPropertySelectionStrategy;
-import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import org.hibernate.validator.spi.cfg.ConstraintMappingContributor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,8 +53,7 @@ public class ValidationConfiguration {
       if (cfg instanceof HibernateValidatorConfiguration) {
         HibernateValidatorConfiguration configuration = (HibernateValidatorConfiguration) cfg;
         this.contributors.forEach(contributor -> contributor.createConstraintMappings(() -> {
-        final JavaBeanHelper javaBeanHelper = new JavaBeanHelper(new DefaultGetterPropertySelectionStrategy(), new DefaultPropertyNodeNameProvider());
-        DefaultConstraintMapping mapping = new DefaultConstraintMapping(javaBeanHelper);
+        DefaultConstraintMapping mapping = new DefaultConstraintMapping();
         configuration.addMapping(mapping);
         return mapping;
         }));
