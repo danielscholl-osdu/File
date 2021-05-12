@@ -61,5 +61,17 @@ public class TestFile extends File {
             }
         }
     }
+
+    @Test
+    @Override
+    public void shouldReturnUnauthorized_whenGivenInvalidPartitionId() throws Exception {
+      ClientResponse getLocationResponse = client.send(
+          getLocation,
+          "POST",
+          getHeaders("invalid_partition", client.getAccessToken()),
+          "{}");
+      assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
+    }
+  
     
 }
