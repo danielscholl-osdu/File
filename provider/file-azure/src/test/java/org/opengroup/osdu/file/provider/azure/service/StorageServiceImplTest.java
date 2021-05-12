@@ -105,10 +105,10 @@ class StorageServiceImplTest {
 
     // then
     then(signedUrl).satisfies(url -> {
-      then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
-      then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
-      then(url.getCreatedAt()).isBefore(now());
-      then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
+    then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
+    then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
+    then(url.getCreatedAt()).isBefore(now());
+    then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
     });
 
     verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), filenameCaptor.capture());
@@ -121,10 +121,10 @@ class StorageServiceImplTest {
     String fileId = RandomStringUtils.randomAlphanumeric(1024);
     // when
     Throwable thrown = catchThrowable(() -> storageService.createSignedUrl(fileId,
-        TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
+                                                                           TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
     // then
     then(thrown)
-        .isInstanceOf(BadRequestException.class)
+        .isInstanceOf(OsduBadRequestException.class)
         .hasMessageContaining("The maximum filepath length is 1024 characters");
     verify(storageRepository, never()).createSignedObject(anyString(), anyString());
   }
@@ -141,7 +141,7 @@ class StorageServiceImplTest {
       then(thrown)
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining(String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
-                  TestUtils.AUTHORIZATION_TOKEN, unsignedURl));
+                                              TestUtils.AUTHORIZATION_TOKEN, unsignedURl));
       verify(blobStore, never()).generatePreSignedURL(
           anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
     }
@@ -156,7 +156,7 @@ class StorageServiceImplTest {
       then(thrown)
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining(String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
-              authToken, TestUtils.ABSOLUTE_FILE_PATH));
+                                              authToken, TestUtils.ABSOLUTE_FILE_PATH));
       verify(blobStore, never()).generatePreSignedURL(
           anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
     }
@@ -166,11 +166,11 @@ class StorageServiceImplTest {
   void createSignedUrlFileLocation_shouldThrow_whenSignedURLGeneratedIsNull() {
     // setup
     Mockito.when(serviceHelper
-        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+                     .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+           .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     Mockito.when(serviceHelper
-        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-        .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+                     .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+           .thenReturn(TestUtils.RELATIVE_FILE_PATH);
     Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     Mockito.doReturn(null).when(blobStore).generatePreSignedURL(
         anyString(),anyString(),anyString(),any(OffsetDateTime.class),any(BlobSasPermission.class));
@@ -188,11 +188,11 @@ class StorageServiceImplTest {
   void createSignedUrlFileLocation_ShouldCallGeneratePreSignedURL() {
     Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     Mockito.when(serviceHelper
-        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+                     .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+           .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     Mockito.when(serviceHelper
-        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-        .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+                     .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+           .thenReturn(TestUtils.RELATIVE_FILE_PATH);
     String signedUrlString = getSignedObject().getUrl().toString();
     doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
         anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
@@ -211,9 +211,9 @@ class StorageServiceImplTest {
     URL url = TestUtils.getAzureObjectUrl(containerName, folderName, filename);
 
     return SignedObject.builder()
-        .uri(uri)
-        .url(url)
-        .build();
+                       .uri(uri)
+                       .url(url)
+                       .build();
   }
 
   private Instant now() {

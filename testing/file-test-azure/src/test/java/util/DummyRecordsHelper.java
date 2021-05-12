@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.ClientResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.opengroup.osdu.file.errors.ErrorResponse;
 
 public class DummyRecordsHelper {
   public static String buildInvalidFileLocationPayload(String fileId){
@@ -26,6 +27,11 @@ public class DummyRecordsHelper {
     return new Gson().toJson(item);
   }
 
+    public ErrorResponse getRecordsErrorResponse(ClientResponse response) {
+      String json = response.getEntity(String.class);
+      Gson gson = new Gson();
+      return gson.fromJson(json,ErrorResponse.class);
+    }
     public BadRequestMock getRecordsMockFromBadRequestResponse(ClientResponse response) {
         String json = response.getEntity(String.class);
         Gson gson = new Gson();

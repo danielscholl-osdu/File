@@ -23,6 +23,7 @@ import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
@@ -63,7 +64,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
   @Override
   public SignedUrl createSignedUrl(String fileName, String authorizationToken, String partitionID) {
     log.debug("Creating the signed blob for fileName : {}. Authorization : {}, partitionID : {}",
-        fileName, authorizationToken, partitionID);
+              fileName, authorizationToken, partitionID);
 
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionID);
     Instant now = Instant.now(Clock.systemUTC());
@@ -72,10 +73,10 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
     String bucketName = googleCloudStorageUtil.getStagingBucket(tenantInfo.getProjectId());
     String userDesID = getUserDesID(authorizationToken);
     log.debug("Create storage object for fileName {} in bucket {} with filepath {}",
-        fileName, bucketName, filepath);
+              fileName, bucketName, filepath);
 
     if (filepath.length() > StorageConstant.GCS_MAX_FILEPATH) {
-      throw new BadRequestException(format(
+      throw new OsduBadRequestException(format(
           "The maximum filepath length is %s characters, but got a name with %s characters",
           StorageConstant.GCS_MAX_FILEPATH, filepath.length()));
     }
@@ -83,12 +84,12 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
     SignedObject signedObject = storageRepository.createSignedObject(bucketName, filepath);
 
     return SignedUrl.builder()
-        .url(signedObject.getUrl())
-        .uri(signedObject.getUri())
-        .fileSource(getRelativeFileSource(filepath))
-        .createdBy(userDesID)
-        .createdAt(now)
-        .build();
+                    .url(signedObject.getUrl())
+                    .uri(signedObject.getUri())
+                    .fileSource(getRelativeFileSource(filepath))
+                    .createdBy(userDesID)
+                    .createdAt(now)
+                    .build();
   }
 
 
@@ -114,10 +115,10 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
 
 
     return SignedUrl.builder()
-      .url(signedObject.getUrl())
-      .uri(signedObject.getUri())
-      .createdAt(now)
-      .build();
+                    .url(signedObject.getUrl())
+                    .uri(signedObject.getUri())
+                    .createdAt(now)
+                    .build();
 
   }
 

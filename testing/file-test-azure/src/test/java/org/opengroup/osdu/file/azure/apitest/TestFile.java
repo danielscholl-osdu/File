@@ -13,6 +13,7 @@ import org.opengroup.osdu.file.apitest.Config;
 import org.opengroup.osdu.file.apitest.File;
 import org.opengroup.osdu.file.azure.HttpClientAzure;
 
+import org.opengroup.osdu.file.errors.ErrorResponse;
 import org.opengroup.osdu.file.util.FileUtils;
 import util.DummyRecordsHelper;
 import util.FileUtilsAzure;
@@ -87,7 +88,7 @@ public class TestFile extends File {
         "POST",
         getCommonHeader(),
         FileUtils.generateFileRequestBody(fileID)
-    );
+                                         );
     assertNotNull(response);
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
 
@@ -102,12 +103,12 @@ public class TestFile extends File {
         "POST",
         getCommonHeader(),
         FileUtils.generateFileRequestBody(fileID)
-    );
+                                         );
     assertNotNull(response);
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
-    DummyRecordsHelper.BadRequestMock responseObject = RECORDS_HELPER.getRecordsMockFromBadRequestResponse(response);
+    ErrorResponse responseObject = RECORDS_HELPER.getRecordsErrorResponse(response);
     String resp = "The maximum filepath length is 1024 characters";
-    assertThat(responseObject.message, containsString(resp));
+    assertThat(responseObject.getMessage(), containsString(resp));
   }
 
   @Test
@@ -190,7 +191,7 @@ public class TestFile extends File {
         "POST",
         getCommonHeader(),
         fileListRequestBody
-    );
+                                                 );
     assertNotNull(fileListResponse);
     assertEquals(HttpStatus.SC_BAD_REQUEST, fileListResponse.getStatus());
   }
@@ -204,9 +205,9 @@ public class TestFile extends File {
         "{}");
     assertNotNull(getFileLocationResponse);
     assertEquals(HttpStatus.SC_BAD_REQUEST, getFileLocationResponse.getStatus());
-    DummyRecordsHelper.BadRequestMock responseObject = RECORDS_HELPER.getRecordsMockFromBadRequestResponse(getFileLocationResponse);
+    ErrorResponse responseObject = RECORDS_HELPER.getRecordsErrorResponse(getFileLocationResponse);
     String resp = "ConstraintViolationException: Invalid FileListRequest";
-    assertThat(responseObject.message, containsString(resp));
+    assertThat(responseObject.getMessage(), containsString(resp));
   }
 
 
