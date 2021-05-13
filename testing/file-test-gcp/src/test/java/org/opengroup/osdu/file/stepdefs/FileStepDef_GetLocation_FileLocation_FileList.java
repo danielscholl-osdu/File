@@ -97,43 +97,47 @@ public class FileStepDef_GetLocation_FileLocation_FileList implements En {
     });
 
     Then("service should respond back with {string} and {string}",
-         (String expectedReponseStatusCode, String expectedReponseMessage) -> {
-         String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
-         assertTrue("Expected status - " + expectedReponseStatusCode + " ; Actual status code - "
-                        + actualStatusCode, expectedReponseStatusCode.equalsIgnoreCase(actualStatusCode));
-         String actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
-             .get("message");
-         assertTrue(
-             "Expected message - " + expectedReponseMessage + " ; Actual message - "
-                 + actualResponseMessage,
-             expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
-         });
+        (String expectedReponseStatusCode, String expectedReponseMessage) -> {
+          String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
+          assertTrue("Expected status - " + expectedReponseStatusCode + " ; Actual status code - "
+              + actualStatusCode, expectedReponseStatusCode.equalsIgnoreCase(actualStatusCode));
+          String actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
+              .get("error.message");
+          if(actualResponseMessage==null){
+            actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
+                .get("message");
+          }
+          assertTrue(
+              "Expected message - " + expectedReponseMessage + " ; Actual message - "
+                  + actualResponseMessage,
+              expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
+        });
 
     Then("service should respond back with {string} and error message {string}",
-         (String expectedReponseStatusCode, String expectedReponseMessage) -> {
-         String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
-         assertTrue("Expected status - " + expectedReponseStatusCode + " ; Actual status code - "
-                        + actualStatusCode, expectedReponseStatusCode.equalsIgnoreCase(actualStatusCode));
-         String actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
-             .get("error.error.message");
-         assertTrue(
-             "Expected message - " + expectedReponseMessage + " ; Actual message - "
-                 + actualResponseMessage,
-             expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
-         });
+            (String expectedReponseStatusCode, String expectedReponseMessage) -> {
+              String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
+              assertTrue("Expected status - " + expectedReponseStatusCode + " ; Actual status code - "
+                  + actualStatusCode, expectedReponseStatusCode.equalsIgnoreCase(actualStatusCode));
+              String actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
+                  .get("error.message");
+              assertTrue(
+                  "Expected message - " + expectedReponseMessage + " ; Actual message - "
+                      + actualResponseMessage,
+                  expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
+            });
 
     Given("I hit File service GetLocation API with {string}", (String BodyContent) -> {
-    JsonElement jsonBody = null;
-    if (BodyContent.equalsIgnoreCase("invalid file location")) {
-      jsonBody = new Gson().fromJson(getBodyString("/" + CommonUtility.generateUniqueFileID()),
-                                     JsonElement.class);
-    } else if (BodyContent.equalsIgnoreCase("fileId legth exceeding limit")) {
-      jsonBody = new Gson().fromJson(getBodyString(CommonUtility.generateFileIDExceedingLegthLimit()),
-                                     JsonElement.class);
-    }
-    HttpResponse response = postRequest(TestConstants.GET_LOCATION,
-                                        CommonUtility.getHeaderWithVaidAuthorizationForPartiton(TestConstants.PRIVATE_TENANT1), jsonBody);
-    this.context.setHttpResponse(response);
+      JsonElement jsonBody = null;
+      if (BodyContent.equalsIgnoreCase("invalid file location")) {
+        jsonBody = new Gson().fromJson(getBodyString("/" + CommonUtility.generateUniqueFileID()),
+            JsonElement.class);
+      } else if (BodyContent.equalsIgnoreCase("fileId length exceeding limit")) {
+        jsonBody = new Gson().fromJson(getBodyString(CommonUtility.generateFileIDExceedingLegthLimit()),
+            JsonElement.class);
+      }
+      HttpResponse response = postRequest(TestConstants.GET_LOCATION,
+          CommonUtility.getHeaderWithVaidAuthorizationForPartiton(TestConstants.PRIVATE_TENANT1), jsonBody);
+      this.context.setHttpResponse(response);
     });
 
     Given("I hit File service GetLocation API with existing file id", () -> {

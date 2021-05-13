@@ -221,7 +221,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
       String errorMessage = ex.getMostSpecificCause().getMessage();
       ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
       errorResponse.setCode(400);
-      errorResponse.setMessage(errorMessage);
+      errorResponse.setMessage("Validation Error");
       errorResponse.addErrors(new BadRequestError(errorMessage));
 
       errorMessage = errorMessage + getCorrelationId(request);
