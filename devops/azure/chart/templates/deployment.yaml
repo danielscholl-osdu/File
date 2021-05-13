@@ -58,6 +58,8 @@ spec:
           value: "80"
         - name: ACCEPT_HTTP  # TEMPORARY UNTIL HTTPS
           value: "true"
+        - name: file_spring_logging_level
+          value: info
         - name: KEYVAULT_URL
           valueFrom:
             configMapKeyRef:
