@@ -22,5 +22,4 @@ Feature: File service API integration test
       | "/input_payloads/File_invalid_fileSource.json"      | "400"             | "/output_payloads/File_invalid_fileSource_msg.json"      | "PRIVATE_TENANT1" |
       | "/input_payloads/File_invalid_Endian.json"          | "400"             | "/output_payloads/File_invalid_Endian_msg.json"          | "PRIVATE_TENANT1" |
 #      | "/input_payloads/File_invalid_ScalarIndicator.json" | "400"             | "/output_payloads/File_invalid_ScalarIndicator_msg.json" | "PRIVATE_TENANT1" |
-      | "/input_payloads/File_missing_name.json"            | "400"             | "/output_payloads/File_missing_name_msg.json"            | "PRIVATE_TENANT1" |
       #| "/input_payloads/File_Datatype_Mismatch.json"       | "400"             | "/output_payloads/File_Datatype_Mismatch_msg.json"       | "PRIVATE_TENANT1" |

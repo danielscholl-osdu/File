@@ -2,6 +2,7 @@ package org.opengroup.osdu.file.service;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.http.HttpResponse;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
@@ -26,11 +27,12 @@ import lombok.RequiredArgsConstructor;
 public class FileDeliveryService {
 
   final DpsHeaders headers;
+  final JaxRsDpsLog log;
   final IStorageService storageService;
   final DataLakeStorageFactory storageFactory;
   final IStorageUtilService storageUtilService;
 
-  public DownloadUrlResponse getSignedUrlsByRecordId(String id) {
+  public DownloadUrlResponse getSignedUrlsByRecordId(String id) throws StorageException {
 
     DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
     Record rec;
@@ -40,10 +42,8 @@ public class FileDeliveryService {
 
     } catch (StorageException storageExc) {
 
-      HttpResponse response = storageExc.getHttpResponse();
-      throw new AppException(response.getResponseCode(),
-                             "Failed to find record for the given file id.",
-                             storageExc.getMessage());
+      log.error("Failed to find record for the given file id.");
+      throw storageExc;
     }
 
     if (null == rec)
@@ -56,7 +56,7 @@ public class FileDeliveryService {
                                                                      headers.getAuthorization());
     return DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
   }
-  
+
 	private String extractFileSource(Object obj) {
 		ObjectMapper mapper = new ObjectMapper();
 
