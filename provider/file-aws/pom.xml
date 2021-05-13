@@ -31,7 +31,7 @@
     <description>File service on AWS</description>
 
     <properties>
-        <aws.version>1.11.637</aws.version>
+        <aws.version>1.11.1018</aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
