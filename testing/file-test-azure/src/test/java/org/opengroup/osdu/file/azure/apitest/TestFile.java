@@ -15,6 +15,7 @@ import org.opengroup.osdu.file.azure.HttpClientAzure;
 
 import org.opengroup.osdu.file.errors.ErrorResponse;
 import org.opengroup.osdu.file.util.FileUtils;
+import org.opengroup.osdu.file.util.FileUtils;
 import util.DummyRecordsHelper;
 import util.FileUtilsAzure;
 import util.StorageUtilAzure;
@@ -88,7 +89,7 @@ public class TestFile extends File {
         "POST",
         getCommonHeader(),
         FileUtils.generateFileRequestBody(fileID)
-                                         );
+    );
     assertNotNull(response);
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
 
@@ -103,8 +104,7 @@ public class TestFile extends File {
         "POST",
         getCommonHeader(),
         FileUtils.generateFileRequestBody(fileID)
-                                         );
-    assertNotNull(response);
+    );
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
     ErrorResponse responseObject = RECORDS_HELPER.getRecordsErrorResponse(response);
     String resp = "The maximum filepath length is 1024 characters";
@@ -191,7 +191,7 @@ public class TestFile extends File {
         "POST",
         getCommonHeader(),
         fileListRequestBody
-                                                 );
+    );
     assertNotNull(fileListResponse);
     assertEquals(HttpStatus.SC_BAD_REQUEST, fileListResponse.getStatus());
   }
@@ -234,4 +234,3 @@ public class TestFile extends File {
     }
   }
 }
-
