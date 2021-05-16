@@ -74,14 +74,14 @@ class ValidationServiceTest {
   @BeforeAll
   static void initAll() {
     HibernateValidatorConfiguration configuration = (HibernateValidatorConfiguration) Validation.byDefaultProvider()
-                                                                                                .configure();
+        .configure();
 
     RequestConstraintMappingContributor requestConstraintMappingContributor
         = new RequestConstraintMappingContributor();
     requestConstraintMappingContributor.createConstraintMappings(() -> {
-    DefaultConstraintMapping mapping = new DefaultConstraintMapping();
-    configuration.addMapping(mapping);
-    return mapping;
+      DefaultConstraintMapping mapping = new DefaultConstraintMapping();
+      configuration.addMapping(mapping);
+      return mapping;
     });
 
     ValidatorFactory factory = configuration
@@ -102,7 +102,7 @@ class ValidationServiceTest {
     void shouldSuccessfullyValidateEmptyRequest() {
       // given
       LocationRequest request = LocationRequest.builder()
-                                               .build();
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateLocationRequest(request));
@@ -115,8 +115,8 @@ class ValidationServiceTest {
     void shouldSuccessfullyValidateRequestWithFileId() {
       // given
       LocationRequest request = LocationRequest.builder()
-                                               .fileID(FILE_ID)
-                                               .build();
+          .fileID(FILE_ID)
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateLocationRequest(request));
@@ -129,8 +129,8 @@ class ValidationServiceTest {
     void shouldFailValidationWhenRequestHasBlankFileId() {
       // given
       LocationRequest request = LocationRequest.builder()
-                                               .fileID("")
-                                               .build();
+          .fileID("")
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateLocationRequest(request));
@@ -150,8 +150,8 @@ class ValidationServiceTest {
     void shouldFailValidationWhenRequestHasInvalidFileId() {
       // given
       LocationRequest request = LocationRequest.builder()
-                                               .fileID("..ddd.com")
-                                               .build();
+          .fileID("..ddd.com")
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateLocationRequest(request));
@@ -176,8 +176,8 @@ class ValidationServiceTest {
     void shouldSuccessfullyValidateWhenRequestHasValidFileId() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .fileID(FILE_ID)
-                                                       .build();
+          .fileID(FILE_ID)
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
@@ -190,8 +190,8 @@ class ValidationServiceTest {
     void shouldFailValidationWhenRequestHasBlankFileId() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .fileID(" ")
-                                                       .build();
+          .fileID(" ")
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
@@ -211,7 +211,7 @@ class ValidationServiceTest {
     void shouldFailValidationWhenRequestHasNullFileId() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .build();
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
@@ -231,8 +231,8 @@ class ValidationServiceTest {
     void shouldFailValidationWhenRequestHasInvalidFileId() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .fileID("temp-file.")
-                                                       .build();
+          .fileID("temp-file.")
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
@@ -258,12 +258,12 @@ class ValidationServiceTest {
       // given
       LocalDateTime now = LocalDateTime.now();
       FileListRequest request = FileListRequest.builder()
-                                               .timeFrom(now.minusHours(3))
-                                               .timeTo(now)
-                                               .pageNum(0)
-                                               .items((short) 1)
-                                               .userID("temp-user")
-                                               .build();
+          .timeFrom(now.minusHours(3))
+          .timeTo(now)
+          .pageNum(0)
+          .items((short) 1)
+          .userID("temp-user")
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileListRequest(request));
@@ -298,46 +298,46 @@ class ValidationServiceTest {
   static Stream<Arguments> fileListRequestProvider() {
     LocalDateTime now = LocalDateTime.now();
     FileListRequest request1 = FileListRequest.builder()
-                                              .timeTo(now)
-                                              .pageNum(0)
-                                              .items((short) 1)
-                                              .userID("temp-user")
-                                              .build();
+        .timeTo(now)
+        .pageNum(0)
+        .items((short) 1)
+        .userID("temp-user")
+        .build();
     FileListRequest request2 = FileListRequest.builder()
-                                              .timeFrom(now.minusHours(3))
-                                              .pageNum(0)
-                                              .items((short) 1)
-                                              .userID("temp-user")
-                                              .build();
+        .timeFrom(now.minusHours(3))
+        .pageNum(0)
+        .items((short) 1)
+        .userID("temp-user")
+        .build();
     FileListRequest request3 = FileListRequest.builder()
-                                              .timeFrom(now.minusHours(3))
-                                              .timeTo(now)
-                                              .pageNum(-2)
-                                              .items((short) 1)
-                                              .userID("temp-user")
-                                              .build();
+        .timeFrom(now.minusHours(3))
+        .timeTo(now)
+        .pageNum(-2)
+        .items((short) 1)
+        .userID("temp-user")
+        .build();
     FileListRequest request4 = FileListRequest.builder()
-                                              .timeFrom(now.minusHours(3))
-                                              .timeTo(now)
-                                              .pageNum(0)
-                                              .items((short) -1)
-                                              .userID("temp-user")
-                                              .build();
+        .timeFrom(now.minusHours(3))
+        .timeTo(now)
+        .pageNum(0)
+        .items((short) -1)
+        .userID("temp-user")
+        .build();
     FileListRequest request5 = FileListRequest.builder()
-                                              .timeFrom(now.minusHours(3))
-                                              .timeTo(now)
-                                              .pageNum(0)
-                                              .items((short) 1)
-                                              .build();
+        .timeFrom(now.minusHours(3))
+        .timeTo(now)
+        .pageNum(0)
+        .items((short) 1)
+        .build();
     FileListRequest request6 = FileListRequest.builder()
-                                              .timeFrom(now)
-                                              .timeTo(now.minusHours(3))
-                                              .pageNum(0)
-                                              .items((short) 1)
-                                              .userID("temp-user")
-                                              .build();
+        .timeFrom(now)
+        .timeTo(now.minusHours(3))
+        .pageNum(0)
+        .items((short) 1)
+        .userID("temp-user")
+        .build();
     FileListRequest request7 = FileListRequest.builder()
-                                              .build();
+        .build();
 
     return Stream.of(
         arguments("request has null TimeFrom", request1, singletonList(tuple(TIME_FROM_FIELD, NOT_NULL_MESSAGE))),
@@ -351,8 +351,8 @@ class ValidationServiceTest {
             tuple(TIME_TO_FIELD, NOT_NULL_MESSAGE),
             tuple(ITEMS_FIELD, POSITIVE_MESSAGE),
             tuple(USER_ID_FIELD, NOT_BLANK_MESSAGE)
-                                                             ))
-                    );
+        ))
+    );
   }
 
   static class TestConstraintValidatorFactory implements ConstraintValidatorFactory {
