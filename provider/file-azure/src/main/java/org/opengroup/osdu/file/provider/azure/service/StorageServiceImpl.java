@@ -82,7 +82,7 @@ public class StorageServiceImpl implements IStorageService {
   @Override
   public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
     log.debug("Creating the signed blob for fileID : {}. Authorization : {}, partitionID : {}",
-              fileID, authorizationToken, partitionID);
+        fileID, authorizationToken, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
 
     String containerName = getContainerName(partitionID);
@@ -90,7 +90,7 @@ public class StorageServiceImpl implements IStorageService {
     String userDesID = getUserDesID(authorizationToken);
     String filepath = getFileLocationPrefix(now, fileID, userDesID);
     log.debug("Create storage object for fileID {} in container {} with filepath {}",
-              fileID, containerName, filepath);
+        fileID, containerName, filepath);
 
     if (filepath.length() > StorageConstant.AZURE_MAX_FILEPATH) {
       throw new OsduBadRequestException(format(
@@ -101,12 +101,12 @@ public class StorageServiceImpl implements IStorageService {
     SignedObject signedObject = storageRepository.createSignedObject(containerName, filepath);
 
     return SignedUrl.builder()
-                    .url(signedObject.getUrl())
-                    .uri(signedObject.getUri())
-                    .fileSource(getRelativeFileSource(filepath))
-                    .createdBy(userDesID)
-                    .createdAt(now)
-                    .build();
+        .url(signedObject.getUrl())
+        .uri(signedObject.getUri())
+        .fileSource(getRelativeFileSource(filepath))
+        .createdBy(userDesID)
+        .createdAt(now)
+        .build();
   }
 
   private String getRelativeFileSource(String filePath) {
@@ -136,7 +136,7 @@ public class StorageServiceImpl implements IStorageService {
     if(StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
           String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
-                        authorizationToken, unsignedUrl));
+              authorizationToken, unsignedUrl));
     }
 
     String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(unsignedUrl);
@@ -157,10 +157,10 @@ public class StorageServiceImpl implements IStorageService {
     }
 
     return SignedUrl.builder()
-                    .url(new URL(signedUrlString))
-                    .uri(URI.create(unsignedUrl))
-                    .createdBy(getUserDesID(authorizationToken))
-                    .createdAt(Instant.now(Clock.systemUTC()))
-                    .build();
+          .url(new URL(signedUrlString))
+          .uri(URI.create(unsignedUrl))
+          .createdBy(getUserDesID(authorizationToken))
+          .createdAt(Instant.now(Clock.systemUTC()))
+          .build();
   }
 }
