@@ -23,6 +23,7 @@ import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
@@ -75,7 +76,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
         fileName, bucketName, filepath);
 
     if (filepath.length() > StorageConstant.GCS_MAX_FILEPATH) {
-      throw new BadRequestException(format(
+      throw new OsduBadRequestException(format(
           "The maximum filepath length is %s characters, but got a name with %s characters",
           StorageConstant.GCS_MAX_FILEPATH, filepath.length()));
     }
