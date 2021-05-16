@@ -53,9 +53,9 @@ public class ValidationConfiguration {
       if (cfg instanceof HibernateValidatorConfiguration) {
         HibernateValidatorConfiguration configuration = (HibernateValidatorConfiguration) cfg;
         this.contributors.forEach(contributor -> contributor.createConstraintMappings(() -> {
-        DefaultConstraintMapping mapping = new DefaultConstraintMapping();
-        configuration.addMapping(mapping);
-        return mapping;
+          DefaultConstraintMapping mapping = new DefaultConstraintMapping();
+          configuration.addMapping(mapping);
+          return mapping;
         }));
       }
     }
