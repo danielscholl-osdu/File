@@ -16,124 +16,109 @@
 
 package org.opengroup.osdu.file.provider.gcp.service;
 
-import com.google.cloud.storage.Storage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.opengroup.osdu.core.common.exception.BadRequestException;
-import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
-import org.opengroup.osdu.file.exception.OsduBadRequestException;
-import org.opengroup.osdu.file.model.SignedObject;
-import org.opengroup.osdu.file.model.SignedUrl;
-import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
-import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
-import org.opengroup.osdu.file.provider.gcp.util.GoogleCloudStorageUtil;
-import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
-import org.opengroup.osdu.file.provider.interfaces.IStorageService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
+import java.net.URI;
+import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.UUID;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.core.common.exception.BadRequestException;
+import org.opengroup.osdu.file.ReplaceCamelCase;
+import org.opengroup.osdu.file.model.SignedObject;
+import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.provider.gcp.TestUtils;
+import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
+import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
+import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 
-import static java.lang.String.format;
+@ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(ReplaceCamelCase.class)
+class StorageServiceImplTest {
 
-@Service
-@Slf4j
-@RequiredArgsConstructor
-public class GoogleCloudStorageServiceImpl implements IStorageService {
+  @Mock
+  private IStorageRepository storageRepository;
 
-  private final static String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
+  @Captor
+  ArgumentCaptor<String> filenameCaptor;
 
-  final FileLocationProperties fileLocationProperties;
-  final IStorageRepository storageRepository;
+  private IStorageService storageService;
 
-  @Autowired
-  GoogleCloudStorageUtil googleCloudStorageUtil;
+  @BeforeEach
+  void setUp() {
+    FileLocationProperties fileLocationProperties
+        = new FileLocationProperties(TestUtils.BUCKET_NAME, TestUtils.USER_DES_ID);
+    storageService = new StorageServiceImpl(fileLocationProperties, storageRepository);
+  }
 
-  @Autowired
-  TenantFactory tenantFactory;
+  @Test
+  void shouldCreateObjectSignedUrl() {
+    // given
+    SignedObject signedObject = getSignedObject();
+    given(storageRepository.createSignedObject(eq(TestUtils.BUCKET_NAME), anyString())).willReturn(signedObject);
 
-  @Autowired
-  Storage storage;
+    // when
+    SignedUrl signedUrl = storageService.createSignedUrl(
+        TestUtils.FILE_ID, TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION);
 
-  @Override
-  public SignedUrl createSignedUrl(String fileName, String authorizationToken, String partitionID) {
-    log.debug("Creating the signed blob for fileName : {}. Authorization : {}, partitionID : {}",
-        fileName, authorizationToken, partitionID);
+    // then
+    then(signedUrl).satisfies(url -> {
+      then(url.getUrl().toString()).is(TestUtils.GCS_URL_CONDITION);
+      then(url.getUri().toString()).matches(TestUtils.GCS_OBJECT_URI);
+      then(url.getCreatedAt()).isBefore(now());
+      then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
+    });
 
-    TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionID);
-    Instant now = Instant.now(Clock.systemUTC());
+    verify(storageRepository).createSignedObject(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture());
+    then(filenameCaptor.getValue()).matches(TestUtils.USER_DES_ID + ".*?" + TestUtils.UUID_REGEX);
+  }
 
-    String filepath = getRelativePath(fileName);
-    String bucketName = googleCloudStorageUtil.getStagingBucket(tenantInfo.getProjectId());
-    String userDesID = getUserDesID(authorizationToken);
-    log.debug("Create storage object for fileName {} in bucket {} with filepath {}",
-        fileName, bucketName, filepath);
+  @Test
+  void shouldThrowExceptionWhenResultFilepathIsMoreThan1024Characters() {
+    // given
+    String fileId = RandomStringUtils.randomAlphanumeric(1024);
 
-    if (filepath.length() > StorageConstant.GCS_MAX_FILEPATH) {
-      throw new OsduBadRequestException(format(
-          "The maximum filepath length is %s characters, but got a name with %s characters",
-          StorageConstant.GCS_MAX_FILEPATH, filepath.length()));
-    }
+    // when
+    Throwable thrown = catchThrowable(() -> storageService.createSignedUrl(fileId,
+        TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
 
-    SignedObject signedObject = storageRepository.createSignedObject(bucketName, filepath);
+    // then
+    then(thrown)
+        .isInstanceOf(BadRequestException.class)
+        .hasMessageContaining("The maximum filepath length is 1024 characters");
+    verify(storageRepository, never()).createSignedObject(anyString(), anyString());
+  }
 
-    return SignedUrl.builder()
-        .url(signedObject.getUrl())
-        .uri(signedObject.getUri())
-        .fileSource(getRelativeFileSource(filepath))
-        .createdBy(userDesID)
-        .createdAt(now)
+  private SignedObject getSignedObject() {
+    String bucketName = RandomStringUtils.randomAlphanumeric(4);
+    String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);
+    String filename = TestUtils.getUuidString();
+
+    URI uri = TestUtils.getGcsObjectUri(bucketName, folderName, filename);
+    URL url = TestUtils.getGcsObjectUrl(bucketName, folderName, filename);
+
+    return SignedObject.builder()
+        .uri(uri)
+        .url(url)
         .build();
   }
 
-
-  @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
-    Instant now = Instant.now(Clock.systemUTC());
-
-    String[] gsPathParts = unsignedUrl.split("gs://");
-
-    if (gsPathParts.length < 2) {
-      throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed URL", INVALID_GS_PATH_REASON);
-    }
-
-    String[] gsObjectKeyParts = gsPathParts[1].split("/");
-    if (gsObjectKeyParts.length < 1) {
-      throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed URL", INVALID_GS_PATH_REASON);
-    }
-
-    String bucketName = gsObjectKeyParts[0];
-    String filePath = String.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
-
-    SignedObject signedObject = storageRepository.getSignedObject(bucketName, filePath);
-
-
-    return SignedUrl.builder()
-      .url(signedObject.getUrl())
-      .uri(signedObject.getUri())
-      .createdAt(now)
-      .build();
-
-  }
-
-  private String getRelativeFileSource(String filepath) {
-    return "/" + filepath;
-  }
-
-  private String getUserDesID(String authorizationToken) {
-    return fileLocationProperties.getUserId();
-  }
-
-  private String getRelativePath(String filename) {
-    String folderName = UUID.randomUUID().toString();
-
-    return format("%s/%s", folderName, filename);
+  private Instant now() {
+    return Instant.now(Clock.systemUTC());
   }
 
 }
