@@ -59,14 +59,14 @@ class AzureValidationServiceTest {
   @BeforeAll
   static void initAll() {
     HibernateValidatorConfiguration configuration = (HibernateValidatorConfiguration) Validation.byDefaultProvider()
-                                                                                                .configure();
+        .configure();
 
     RequestConstraintMappingContributor requestConstraintMappingContributor
         = new RequestConstraintMappingContributor();
     requestConstraintMappingContributor.createConstraintMappings(() -> {
-    DefaultConstraintMapping mapping = new DefaultConstraintMapping();
-    configuration.addMapping(mapping);
-    return mapping;
+      DefaultConstraintMapping mapping = new DefaultConstraintMapping();
+      configuration.addMapping(mapping);
+      return mapping;
     });
 
     ValidatorFactory factory = configuration
@@ -87,8 +87,8 @@ class AzureValidationServiceTest {
     void shouldSuccessfullyValidateWhenRequestHasValidFileId() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .fileID(FILE_ID)
-                                                       .build();
+          .fileID(FILE_ID)
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
@@ -101,8 +101,8 @@ class AzureValidationServiceTest {
     void shouldNotExecuteGcpSpecificValidationWhenCommonValidationIsFailed() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .fileID(" ")
-                                                       .build();
+          .fileID(" ")
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
@@ -122,8 +122,8 @@ class AzureValidationServiceTest {
     void shouldFailValidationWhenRequestHasToLargeFileId() {
       // given
       FileLocationRequest request = FileLocationRequest.builder()
-                                                       .fileID(RandomStringUtils.randomAlphanumeric(1050))
-                                                       .build();
+          .fileID(RandomStringUtils.randomAlphanumeric(1050))
+          .build();
 
       // when
       Throwable thrown = catchThrowable(() -> validationService.validateFileLocationRequest(request));
