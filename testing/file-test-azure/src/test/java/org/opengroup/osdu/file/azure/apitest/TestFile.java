@@ -1,5 +1,6 @@
 package org.opengroup.osdu.file.azure.apitest;
 
+import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.ClientResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
@@ -105,10 +106,11 @@ public class TestFile extends File {
         getCommonHeader(),
         FileUtils.generateFileRequestBody(fileID)
     );
+    assertNotNull(response);
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
-    ErrorResponse responseObject = RECORDS_HELPER.getRecordsErrorResponse(response);
+    JsonObject responseObject = RECORDS_HELPER.getRecordsErrorResponse(response);
     String resp = "The maximum filepath length is 1024 characters";
-    assertThat(responseObject.getMessage(), containsString(resp));
+    assertThat(responseObject.toString(), containsString(resp));
   }
 
   @Test
@@ -205,9 +207,9 @@ public class TestFile extends File {
         "{}");
     assertNotNull(getFileLocationResponse);
     assertEquals(HttpStatus.SC_BAD_REQUEST, getFileLocationResponse.getStatus());
-    ErrorResponse responseObject = RECORDS_HELPER.getRecordsErrorResponse(getFileLocationResponse);
+    JsonObject responseObject = RECORDS_HELPER.getRecordsErrorResponse(getFileLocationResponse);
     String resp = "ConstraintViolationException: Invalid FileListRequest";
-    assertThat(responseObject.getMessage(), containsString(resp));
+    assertThat(responseObject.toString(), containsString(resp));
   }
 
 

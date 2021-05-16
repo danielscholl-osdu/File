@@ -32,11 +32,11 @@ public class DummyRecordsHelper {
     Gson gson = new Gson();
     return gson.fromJson(json, BadRequestMock.class);
   }
-  public ErrorResponse getRecordsErrorResponse(ClientResponse response) {
-    String json = response.getEntity(String.class);
-    Gson gson = new Gson();
-    return gson.fromJson(json,ErrorResponse.class);
-  }
+  public JsonObject getRecordsErrorResponse(ClientResponse response) {
+        String json = response.getEntity(String.class);
+        Gson gson = new Gson();
+        return gson.fromJson(json,JsonObject.class);
+    }
   public class BadRequestMock {
     public String status;
     public String message;
