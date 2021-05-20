@@ -31,7 +31,7 @@
     <description>File service on AWS</description>
 
     <properties>
-        <aws.version>1.11.637</aws.version>
+        <aws.version>1.11.1018</aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
@@ -71,7 +71,7 @@
         <dependency>
         <groupId>org.opengroup.osdu.core.aws</groupId>
         <artifactId>os-core-lib-aws</artifactId>
-        <version>0.3.11</version>
+        <version>0.9.1-SNAPSHOT</version>
     </dependency>
     <!-- AWS managed packages -->
     <dependency>
