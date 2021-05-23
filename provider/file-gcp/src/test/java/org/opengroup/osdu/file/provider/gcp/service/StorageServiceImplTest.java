@@ -98,7 +98,7 @@ class StorageServiceImplTest {
 
     // then
     then(thrown)
-        .isInstanceOf(BadRequestException.class)
+        .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("The maximum filepath length is 1024 characters");
     verify(storageRepository, never()).createSignedObject(anyString(), anyString());
   }
