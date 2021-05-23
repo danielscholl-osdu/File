@@ -74,12 +74,6 @@
         <artifactId>core-lib-azure</artifactId>
         <version>0.9.0-rc3</version>
         <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-core-http-netty</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
         <!-- Tests -->
