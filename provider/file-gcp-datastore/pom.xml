@@ -46,14 +46,17 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-gcp-starter-data-datastore</artifactId>
+      <version>1.2.8.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
+      <version>1.113.16</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-nio</artifactId>
+      <version>0.122.3</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>

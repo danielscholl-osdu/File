@@ -102,17 +102,13 @@ public class FileStepDef_GetLocation_FileLocation_FileList implements En {
           assertTrue("Expected status - " + expectedReponseStatusCode + " ; Actual status code - "
               + actualStatusCode, expectedReponseStatusCode.equalsIgnoreCase(actualStatusCode));
           String actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
-                .get("error.message");
-            if(actualResponseMessage==null){
-              actualResponseMessage = new JsonPath(this.context.getHttpResponse().getBody())
-                  .get("message");
-            }
+              .get("message");
           assertTrue(
               "Expected message - " + expectedReponseMessage + " ; Actual message - "
                   + actualResponseMessage,
               expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
         });
-
+    
     Then("service should respond back with {string} and error message {string}",
             (String expectedReponseStatusCode, String expectedReponseMessage) -> {
               String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
@@ -131,7 +127,7 @@ public class FileStepDef_GetLocation_FileLocation_FileList implements En {
       if (BodyContent.equalsIgnoreCase("invalid file location")) {
         jsonBody = new Gson().fromJson(getBodyString("/" + CommonUtility.generateUniqueFileID()),
             JsonElement.class);
-      } else if (BodyContent.equalsIgnoreCase("fileId length exceeding limit")) {
+      } else if (BodyContent.equalsIgnoreCase("fileId legth exceeding limit")) {
         jsonBody = new Gson().fromJson(getBodyString(CommonUtility.generateFileIDExceedingLegthLimit()),
             JsonElement.class);
       }

@@ -216,7 +216,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                 HttpHeaders headers, HttpStatus status, WebRequest request) {
-    if(ex.getMostSpecificCause() instanceof EnumValidationException){
+    if(ex.getMostSpecificCause() instanceof EnumValidationException) {
       String errorMessage = ex.getMostSpecificCause().getMessage();
       ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
       errorResponse.setCode(400);
@@ -229,8 +229,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
       return buildResponseEntity(errorResponse);
     }
     else {
-      ApiError apiError = ApiError.builder().status(status).message("Invalid Json Input").build();
-      return handleExceptionInternal(ex, apiError, headers, status, request);
+     ApiError apiError = ApiError.builder().status(status).message("Invalid Json Input").build();
+     return handleExceptionInternal(ex, apiError, headers, status, request);
     }
   }
 

@@ -92,7 +92,7 @@ Feature: File service Get Location API integration test
 
     Examples: 
       | BodyContent                    | ReponseStatusCode | ReponseMessage                                                                        |
-      | "fileId length exceeding limit" | "400"             | "The maximum filepath length is 1024 characters, but got a name with 1062 characters" |
+      | "fileId legth exceeding limit" | "400"             | "The maximum filepath length is 1024 characters, but got a name with 1062 characters" |
 
   ## Negative scenario for GET /getLocation
   @File

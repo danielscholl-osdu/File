@@ -57,7 +57,7 @@ public class StorageServiceImpl implements IStorageService {
         fileID, bucketName, filepath);
 
     if (filepath.length() > StorageConstant.GCS_MAX_FILEPATH) {
-      throw new BadRequestException(format(
+      throw new IllegalArgumentException(format(
           "The maximum filepath length is %s characters, but got a name with %s characters",
           StorageConstant.GCS_MAX_FILEPATH, filepath.length()));
     }

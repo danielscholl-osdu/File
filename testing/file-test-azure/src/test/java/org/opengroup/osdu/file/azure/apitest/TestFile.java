@@ -1,6 +1,5 @@
 package org.opengroup.osdu.file.azure.apitest;
 
-import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.ClientResponse;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
@@ -14,8 +13,6 @@ import org.opengroup.osdu.file.apitest.Config;
 import org.opengroup.osdu.file.apitest.File;
 import org.opengroup.osdu.file.azure.HttpClientAzure;
 
-import org.opengroup.osdu.file.errors.ErrorResponse;
-import org.opengroup.osdu.file.util.FileUtils;
 import org.opengroup.osdu.file.util.FileUtils;
 import util.DummyRecordsHelper;
 import util.FileUtilsAzure;
@@ -108,9 +105,9 @@ public class TestFile extends File {
     );
     assertNotNull(response);
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
-    JsonObject responseObject = RECORDS_HELPER.getRecordsErrorResponse(response);
+    DummyRecordsHelper.BadRequestMock responseObject = RECORDS_HELPER.getRecordsMockFromBadRequestResponse(response);
     String resp = "The maximum filepath length is 1024 characters";
-    assertThat(responseObject.toString(), containsString(resp));
+    assertThat(responseObject.message, containsString(resp));
   }
 
   @Test
@@ -207,9 +204,9 @@ public class TestFile extends File {
         "{}");
     assertNotNull(getFileLocationResponse);
     assertEquals(HttpStatus.SC_BAD_REQUEST, getFileLocationResponse.getStatus());
-    JsonObject responseObject = RECORDS_HELPER.getRecordsErrorResponse(getFileLocationResponse);
+    DummyRecordsHelper.BadRequestMock responseObject = RECORDS_HELPER.getRecordsMockFromBadRequestResponse(getFileLocationResponse);
     String resp = "ConstraintViolationException: Invalid FileListRequest";
-    assertThat(responseObject.toString(), containsString(resp));
+    assertThat(responseObject.message, containsString(resp));
   }
 
 

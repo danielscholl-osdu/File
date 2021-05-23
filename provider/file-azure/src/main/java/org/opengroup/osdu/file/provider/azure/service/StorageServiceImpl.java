@@ -93,7 +93,7 @@ public class StorageServiceImpl implements IStorageService {
         fileID, containerName, filepath);
 
     if (filepath.length() > StorageConstant.AZURE_MAX_FILEPATH) {
-      throw new OsduBadRequestException(format(
+      throw new IllegalArgumentException(format(
           "The maximum filepath length is %s characters, but got a name with %s characters",
           StorageConstant.AZURE_MAX_FILEPATH, filepath.length()));
     }

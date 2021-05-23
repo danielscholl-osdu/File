@@ -124,7 +124,7 @@ class StorageServiceImplTest {
         TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
     // then
     then(thrown)
-        .isInstanceOf(OsduBadRequestException.class)
+        .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("The maximum filepath length is 1024 characters");
     verify(storageRepository, never()).createSignedObject(anyString(), anyString());
   }

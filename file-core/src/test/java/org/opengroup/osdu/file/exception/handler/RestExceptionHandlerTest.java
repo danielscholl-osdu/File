@@ -27,6 +27,7 @@ public class RestExceptionHandlerTest {
   @Mock
   private WebRequest mockRequest;
 
+  @Mock
   HttpHeaders headers;
 
   HttpStatus status;
