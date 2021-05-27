@@ -37,6 +37,8 @@ In order to run the service locally, you will need to have the following environ
 | `RECORDS_ROOT_URL` | ex `https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2` / Storage API endpoint | no | output of infrastructure deployment |
 | `GCP_STORAGE_STAGING_AREA` | ex `staging-area` | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`) |no | output of infrastructure deployment |
 | `GCP_STORAGE_PERSISTENT_AREA` | ex `persistent-area` | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area` | no | output of infrastructure deployment |
+| `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
+
 
 **Cloud roles configuration for accounts**
 
