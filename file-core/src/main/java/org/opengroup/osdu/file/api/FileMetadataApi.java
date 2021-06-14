@@ -40,4 +40,11 @@ public class FileMetadataApi {
       throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
     return new ResponseEntity<>(fileMetadataService.getMetadataById(id), HttpStatus.OK);
   }
+  @DeleteMapping("/{id}/metadata")
+ //@PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
+  public ResponseEntity<Void> deleteFileMetadataById(@PathVariable("id") String id)
+      throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
+      fileMetadataService.deleteMetadataRecord(id);
+      return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+  }
 }

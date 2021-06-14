@@ -50,6 +50,12 @@ public class DataLakeStorageService {
         return result.IsNotFoundCode() ? null : this.getResult(result, Record.class);
     }
 
+    public HttpResponse deleteRecord(String id) {
+        String url = this.createUrl(String.format("/records/%s:delete", id));
+        HttpResponse result = this.httpClient.send(
+                HttpRequest.post().url(url).headers(this.headers.getHeaders()).build());
+        return result;
+    }
 
     private StorageException generateException(HttpResponse result) {
         return new StorageException(

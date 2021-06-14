@@ -12,6 +12,7 @@ import org.opengroup.osdu.file.service.FileMetadataService;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -42,6 +43,12 @@ public class FileMetadataApiTest {
     RecordVersion recordVersion = new RecordVersion();
     when(metadataService.getMetadataById("1234")).thenReturn(recordVersion);
     assertEquals(HttpStatus.OK, fileMetadataApi.getFileMetadataById("1234").getStatusCode());
+  }
+ 
+  @Test
+  public void deleteMetadata() throws Exception {
+      doNothing().when(metadataService).deleteMetadataRecord("123");
+      assertEquals(HttpStatus.NO_CONTENT, fileMetadataApi.deleteFileMetadataById("1234").getStatusCode());
   }
 
   private DownloadUrlResponse getMockSignedDownloadUrlResponse() {

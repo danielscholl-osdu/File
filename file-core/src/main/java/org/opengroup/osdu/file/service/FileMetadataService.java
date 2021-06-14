@@ -132,4 +132,29 @@ public class FileMetadataService {
 
 		return kindArr[2];
 	}
+    
+	public void deleteMetadataRecord(String recordId) throws OsduBadRequestException, StorageException, NotFoundException, ApplicationException {
+        log.info(FileMetadataConstant.METADATA_DELETE_STARTED);
+        RecordVersion metaRecord = this.getMetadataById(recordId);
+        deleteFileFromPersistentLocation(metaRecord);
+        deleteMetadataRecordFromStorage(recordId);
+    }
+    
+    private void deleteFileFromPersistentLocation(RecordVersion metaRecord) {
+        String filePath = metaRecord.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
+        String persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
+        boolean result = cloudStorageOperation.deleteFile(persistentLocation);
+        log.info("Result of delete file from persistent location: " + result);       
+    }
+    
+    private void deleteMetadataRecordFromStorage(String recordId) throws StorageException {
+        DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
+        HttpResponse response = dataLakeStorage.deleteRecord(recordId);
+        log.info("Http response code of deleting metadata from storage: " + response.getResponseCode());
+        if (FileMetadataConstant.HTTP_CODE_204 != response.getResponseCode()) {
+           log.error("Unable to delete metadata record from storage"+ response.getBody());
+           throw new StorageException("Unable to delete metadata record from storage. Check the inner HttpResponse for more info.", response);
+        }        
+    }
+
 }

@@ -21,9 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.KindValidationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
@@ -265,4 +267,54 @@ public class FileMetadataServiceTest {
 
     assertThrows(NotFoundException.class,()->fileMetadataService.getMetadataById(RECORD_ID));
   }
+  
+  @Test
+  public void deleteMetadataRecord_Success() throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+    Record mockRecord = new Record("tenant1");
+    mockRecord.setId(RECORD_ID);
+    HttpResponse result = new HttpResponse();
+    result.setResponseCode(204);
+    FileMetadataService spyFileMetadataService = Mockito.spy(fileMetadataService);
+    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+    Mockito.doReturn(getRecordVersionObj()).when(spyFileMetadataService).getMetadataById(RECORD_ID); 
+    when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+    when(dataLakeStorageService.deleteRecord(RECORD_ID)).thenReturn(result);
+    
+    spyFileMetadataService.deleteMetadataRecord(RECORD_ID);
+
+    assertEquals(FileMetadataConstant.HTTP_CODE_204, result.getResponseCode());
+  }
+  
+  @Test
+  public void deleteMetadataRecord_Exception() throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+
+      Record mockRecord = new Record("tenant1");
+      mockRecord.setId(RECORD_ID);
+      
+      FileMetadataService spyFileMetadataService = Mockito.spy(fileMetadataService);
+      when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+      Mockito.doReturn(getRecordVersionObj()).when(spyFileMetadataService).getMetadataById(RECORD_ID); 
+      when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+      HttpResponse httpResp = new HttpResponse();
+      httpResp.setResponseCode(500);
+
+      when(dataLakeStorageService.deleteRecord(RECORD_ID)).thenReturn(httpResp);
+
+      assertThrows(StorageException.class,()->spyFileMetadataService.deleteMetadataRecord(RECORD_ID));
+  }
+  
+
+  private RecordVersion getRecordVersionObj() {
+      RecordVersion mockRecordVersion = new RecordVersion();
+      FileData fileData =new FileData();
+      DatasetProperties datasetProperties = new DatasetProperties();
+      FileSourceInfo fileSourceInfo = new FileSourceInfo();
+      fileSourceInfo.setFileSource("/xyz");
+      datasetProperties.setFileSourceInfo(fileSourceInfo);
+      fileData.setDatasetProperties(datasetProperties);
+      mockRecordVersion.setData(fileData);
+      mockRecordVersion.setId(RECORD_ID);
+      return mockRecordVersion;      
+  }
+
 }
