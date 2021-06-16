@@ -41,7 +41,7 @@ public class FileMetadataApi {
     }
 
     @DeleteMapping("/{id}/metadata")
-    @PreAuthorize("@authorizationFilter.hasRole('" + FileServiceRole.EDITORS + "', '" + FileServiceRole.ADMIN + "')")
+    @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "', '" + FileServiceRole.ADMIN + "')")
     public ResponseEntity<Void> deleteFileMetadataById(@PathVariable("id") String id)
             throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
         fileMetadataService.deleteMetadataRecord(id);
