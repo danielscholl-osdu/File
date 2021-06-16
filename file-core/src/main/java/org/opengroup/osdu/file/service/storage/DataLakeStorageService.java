@@ -16,10 +16,7 @@ public class DataLakeStorageService {
     private final DpsHeaders headers;
     private final HttpResponseBodyMapper bodyMapper;
 
-    DataLakeStorageService(
-            StorageAPIConfig config,
-            IHttpClient httpClient,
-            DpsHeaders headers,
+    DataLakeStorageService(StorageAPIConfig config, IHttpClient httpClient, DpsHeaders headers,
             HttpResponseBodyMapper bodyMapper) {
         this.storageServiceBaseUrl = config.getStorageServiceBaseUrl();
         this.httpClient = httpClient;
@@ -38,22 +35,22 @@ public class DataLakeStorageService {
 
     public UpsertRecords upsertRecord(Record[] records) throws StorageException {
         String url = this.createUrl("/records");
-        HttpResponse result = this.httpClient.send(
-                HttpRequest.put(records).url(url).headers(this.headers.getHeaders()).build());
+        HttpResponse result = this.httpClient
+                .send(HttpRequest.put(records).url(url).headers(this.headers.getHeaders()).build());
         return this.getResult(result, UpsertRecords.class);
     }
 
     public Record getRecord(String id) throws StorageException {
         String url = this.createUrl(String.format("/records/%s", id));
-        HttpResponse result = this.httpClient.send(
-                HttpRequest.get().url(url).headers(this.headers.getHeaders()).build());
+        HttpResponse result = this.httpClient
+                .send(HttpRequest.get().url(url).headers(this.headers.getHeaders()).build());
         return result.IsNotFoundCode() ? null : this.getResult(result, Record.class);
     }
 
     public HttpResponse deleteRecord(String id) {
         String url = this.createUrl(String.format("/records/%s:delete", id));
-        HttpResponse result = this.httpClient.send(
-                HttpRequest.post().url(url).headers(this.headers.getHeaders()).build());
+        HttpResponse result = this.httpClient
+                .send(HttpRequest.post().url(url).headers(this.headers.getHeaders()).build());
         return result;
     }
 
@@ -63,7 +60,7 @@ public class DataLakeStorageService {
     }
 
     private String createUrl(String pathAndQuery) {
-      return UrlNormalizationUtil.normalizeStringUrl(this.storageServiceBaseUrl,pathAndQuery);
+        return UrlNormalizationUtil.normalizeStringUrl(this.storageServiceBaseUrl, pathAndQuery);
     }
 
     private <T> T getResult(HttpResponse result, Class<T> type) throws StorageException {
