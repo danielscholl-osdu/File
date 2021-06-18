@@ -136,8 +136,8 @@ public class FileMetadataService {
             throws OsduBadRequestException, StorageException, NotFoundException, ApplicationException {
         log.info(FileMetadataConstant.METADATA_DELETE_STARTED);
         RecordVersion metaRecord = this.getMetadataById(recordId);
-        deleteFileFromPersistentLocation(metaRecord);
         deleteMetadataRecordFromStorage(recordId);
+        deleteFileFromPersistentLocation(metaRecord);
     }
 
     private void deleteFileFromPersistentLocation(RecordVersion metaRecord) {
