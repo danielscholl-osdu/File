@@ -21,9 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.KindValidationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
@@ -53,216 +55,271 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 public class FileMetadataServiceTest {
 
-  public static final String RECORD_ID = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003";
-  public static final String FILE_METADATA_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
+    public static final String RECORD_ID = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003";
+    public static final String FILE_METADATA_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
 
-  @InjectMocks
-  FileMetadataService fileMetadataService;
+    @InjectMocks
+    FileMetadataService fileMetadataService;
 
-  @Mock
-  DataLakeStorageFactory dataLakeStorageFactory;
+    @Mock
+    DataLakeStorageFactory dataLakeStorageFactory;
 
-  @Mock
-  DataLakeStorageService dataLakeStorageService;
+    @Mock
+    DataLakeStorageService dataLakeStorageService;
 
-  @Mock
-  DpsHeaders headers;
+    @Mock
+    DpsHeaders headers;
 
-  @Mock
-  JaxRsDpsLog log;
+    @Mock
+    JaxRsDpsLog log;
 
-  @Mock
-  ICloudStorageOperation cloudStorageOperation;
+    @Mock
+    ICloudStorageOperation cloudStorageOperation;
 
-  @Mock
-  FileMetadataUtil fileMetadataUtil1;
+    @Mock
+    FileMetadataUtil fileMetadataUtil1;
 
-  @Mock
-  FileMetadataRecordMapper iFileMetadataRecordMapper;
+    @Mock
+    FileMetadataRecordMapper iFileMetadataRecordMapper;
 
-  @Mock
-  IStorageUtilService storageUtilService;
+    @Mock
+    IStorageUtilService storageUtilService;
 
+    FileMetadata fileMetadata;
 
-  FileMetadata fileMetadata;
+    @Test
+    public void saveMetadata_Success() throws OsduBadRequestException, StorageException, ApplicationException {
 
-  @Test
-  public void saveMetadata_Success() throws OsduBadRequestException, StorageException, ApplicationException {
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
+        DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
+        FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
-    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
-    DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
-    FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
+        fileMetadata = FileMetadata.builder().data(fileData).kind(FILE_METADATA_KIND).build();
 
-    fileMetadata = FileMetadata.builder().data(fileData).kind(FILE_METADATA_KIND).build();
+        String dataPartitionId = "tenant";
+        Record record = new Record(dataPartitionId);
+        UpsertRecords upsertRecords = new UpsertRecords();
+        List<String> recordIds = new ArrayList<>();
+        recordIds.add(RECORD_ID);
+        upsertRecords.setRecordIds(recordIds);
 
-    String dataPartitionId = "tenant";
-    Record record = new Record(dataPartitionId);
-    UpsertRecords upsertRecords = new UpsertRecords();
-    List<String> recordIds = new ArrayList<>();
-    recordIds.add(RECORD_ID);
-    upsertRecords.setRecordIds(recordIds);
+        when(headers.getPartitionId()).thenReturn(dataPartitionId);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
+        when(storageUtilService.getStagingLocation(any(), any()))
+                .thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+        when(storageUtilService.getPersistentLocation(any(), any()))
+                .thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+        when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
+        when(dataLakeStorageService.upsertRecord(record)).thenReturn(upsertRecords);
+        when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
+        when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
 
+        FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
+        assertEquals(RECORD_ID, fileMetadataResponse.getId());
 
-    when(headers.getPartitionId()).thenReturn(dataPartitionId);
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
-    when(storageUtilService.getStagingLocation(any(), any())).thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
-    when(storageUtilService.getPersistentLocation(any(), any())).thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
-    when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
-    when(dataLakeStorageService.upsertRecord(record)).thenReturn(upsertRecords);
-    when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
-    when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+    }
 
-    FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
-    assertEquals(RECORD_ID, fileMetadataResponse.getId());
+    @Test
+    public void saveMetadata_StorageException() throws OsduBadRequestException, StorageException, ApplicationException {
 
-  }
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
+        DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
+        FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
-  @Test
-  public void saveMetadata_StorageException() throws OsduBadRequestException, StorageException, ApplicationException {
+        fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
 
-    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
-    DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
-    FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
+        String dataPartitionId = "tenant";
+        Record record = new Record(dataPartitionId);
+        UpsertRecords upsertRecords = new UpsertRecords();
+        List<String> recordIds = new ArrayList<>();
+        recordIds.add(RECORD_ID);
+        upsertRecords.setRecordIds(recordIds);
 
-    fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
+        when(headers.getPartitionId()).thenReturn(dataPartitionId);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
+        when(storageUtilService.getStagingLocation(any(), any()))
+                .thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+        when(storageUtilService.getPersistentLocation(any(), any()))
+                .thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+        when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
+        when(dataLakeStorageService.upsertRecord(record)).thenThrow(StorageException.class);
+        when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
+        when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
 
-    String dataPartitionId = "tenant";
-    Record record = new Record(dataPartitionId);
-    UpsertRecords upsertRecords = new UpsertRecords();
-    List<String> recordIds = new ArrayList<>();
-    recordIds.add(RECORD_ID);
-    upsertRecords.setRecordIds(recordIds);
+        assertThrows(StorageException.class, () -> {
+            FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
+            assertEquals(RECORD_ID, fileMetadataResponse.getId());
+        });
 
+    }
 
-    when(headers.getPartitionId()).thenReturn(dataPartitionId);
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
-    when(storageUtilService.getStagingLocation(any(), any())).thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
-    when(storageUtilService.getPersistentLocation(any(), any())).thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
-    when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
-    when(dataLakeStorageService.upsertRecord(record)).thenThrow(StorageException.class);
-    when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
-    when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+    @Test
+    public void saveMetadata_InvalidKind() throws OsduBadRequestException, StorageException, ApplicationException {
+        fileMetadata = FileMetadata.builder().kind("invalidKind").build();
 
-    assertThrows(StorageException.class,()->{
-      FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
-      assertEquals(RECORD_ID, fileMetadataResponse.getId());
-    });
+        KindValidationException exceptionResponse = assertThrows(KindValidationException.class, () -> {
+            fileMetadataService.saveMetadata(fileMetadata);
+        });
 
+        assertEquals("Invalid kind", exceptionResponse.getMessage());
 
-  }
+        fileMetadata = FileMetadata.builder().kind("osdu:invalidSource:dataset--File.Generic:1.0.0").build();
 
-  @Test
-  public void saveMetadata_InvalidKind() throws OsduBadRequestException, StorageException, ApplicationException {
-    fileMetadata = FileMetadata.builder().kind("invalidKind").build();
+        exceptionResponse = assertThrows(KindValidationException.class, () -> {
+            fileMetadataService.saveMetadata(fileMetadata);
+        });
 
-    KindValidationException exceptionResponse = assertThrows(KindValidationException.class,()->{
-      fileMetadataService.saveMetadata(fileMetadata);
-    });
+        assertEquals("Invalid source in kind", exceptionResponse.getMessage());
 
-    assertEquals("Invalid kind", exceptionResponse.getMessage());
+        fileMetadata = FileMetadata.builder().kind("osdu:wks:invalidEntity:1.0.0").build();
 
-    fileMetadata = FileMetadata.builder().kind("osdu:invalidSource:dataset--File.Generic:1.0.0").build();
+        exceptionResponse = assertThrows(KindValidationException.class, () -> {
+            fileMetadataService.saveMetadata(fileMetadata);
+        });
 
-    exceptionResponse = assertThrows(KindValidationException.class,()->{
-      fileMetadataService.saveMetadata(fileMetadata);
-    });
+        assertEquals("Invalid entity in kind", exceptionResponse.getMessage());
+    }
 
-    assertEquals("Invalid source in kind", exceptionResponse.getMessage());
+    @Test
+    public void saveMetadata_StorageFail() throws OsduBadRequestException, StorageException, ApplicationException {
 
-    fileMetadata = FileMetadata.builder().kind("osdu:wks:invalidEntity:1.0.0").build();
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
+        DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
+        FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
-    exceptionResponse = assertThrows(KindValidationException.class,()->{
-      fileMetadataService.saveMetadata(fileMetadata);
-    });
+        fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
 
-    assertEquals("Invalid entity in kind", exceptionResponse.getMessage());
-  }
+        String dataPartitionId = "tenant";
+        Record record = new Record(dataPartitionId);
+        UpsertRecords upsertRecords = new UpsertRecords();
+        List<String> recordIds = new ArrayList<>();
+        recordIds.add(RECORD_ID);
+        upsertRecords.setRecordIds(recordIds);
 
-  @Test
-  public void saveMetadata_StorageFail() throws OsduBadRequestException, StorageException, ApplicationException {
+        when(headers.getPartitionId()).thenReturn(dataPartitionId);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
+        when(storageUtilService.getStagingLocation(any(), any()))
+                .thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+        when(storageUtilService.getPersistentLocation(any(), any()))
+                .thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+        when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
+        when(dataLakeStorageService.upsertRecord(record)).thenThrow(NullPointerException.class);
+        when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
+        when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
 
-    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
-    DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
-    FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
+        assertThrows(ApplicationException.class, () -> {
+            FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
+            assertEquals(RECORD_ID, fileMetadataResponse.getId());
+        });
+    }
 
-    fileMetadata = FileMetadata.builder().kind(FILE_METADATA_KIND).data(fileData).build();
+    @Test
+    public void getMetadataById_Success()
+            throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+        String id = "tenant1:file:efa0d783-5b67-4bda-b172-7ce426a58d90";
+        Record mockRecord = new Record("tenant1");
+        mockRecord.setId(RECORD_ID);
 
+        RecordVersion mockRecordVersion = new RecordVersion();
+        mockRecordVersion.setId(RECORD_ID);
 
-    String dataPartitionId = "tenant";
-    Record record = new Record(dataPartitionId);
-    UpsertRecords upsertRecords = new UpsertRecords();
-    List<String> recordIds = new ArrayList<>();
-    recordIds.add(RECORD_ID);
-    upsertRecords.setRecordIds(recordIds);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        when(dataLakeStorageService.getRecord(id)).thenReturn(mockRecord);
+        when(iFileMetadataRecordMapper.recordToRecordVersion(any())).thenReturn(mockRecordVersion);
 
+        RecordVersion recordVersion = fileMetadataService.getMetadataById(id);
 
-    when(headers.getPartitionId()).thenReturn(dataPartitionId);
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
-    when(storageUtilService.getStagingLocation(any(), any())).thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
-    when(storageUtilService.getPersistentLocation(any(), any())).thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
-    when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
-    when(dataLakeStorageService.upsertRecord(record)).thenThrow(NullPointerException.class);
-    when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
-    when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+        assertEquals(RECORD_ID, recordVersion.getId());
+    }
 
-    assertThrows(ApplicationException.class,()->{
-      FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
-      assertEquals(RECORD_ID, fileMetadataResponse.getId());
-    });
-  }
+    @Test
+    public void getMetadataById_StorageException()
+            throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
 
-  @Test
-  public void getMetadataById_Success() throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
-    String id = "tenant1:file:efa0d783-5b67-4bda-b172-7ce426a58d90";
-    Record mockRecord = new Record("tenant1");
-    mockRecord.setId(RECORD_ID);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        HttpResponse httpResp = new HttpResponse();
+        httpResp.setResponseCode(500);
+        when(dataLakeStorageService.getRecord(RECORD_ID))
+                .thenThrow(new StorageException("Failed to find record for the given file id", httpResp));
 
-    RecordVersion mockRecordVersion = new RecordVersion();
-    mockRecordVersion.setId(RECORD_ID);
+        assertThrows(StorageException.class, () -> fileMetadataService.getMetadataById(RECORD_ID));
+    }
 
+    @Test
+    public void getMetadataById_BadRequestException()
+            throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
 
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    when(dataLakeStorageService.getRecord(id)).thenReturn(mockRecord);
-    when(iFileMetadataRecordMapper.recordToRecordVersion(any())).thenReturn(mockRecordVersion);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        HttpResponse httpResp = new HttpResponse();
+        httpResp.setResponseCode(400);
+        when(dataLakeStorageService.getRecord(RECORD_ID)).thenThrow(new StorageException("Invalid file id", httpResp));
 
-    RecordVersion recordVersion = fileMetadataService.getMetadataById(id);
+        assertThrows(StorageException.class, () -> fileMetadataService.getMetadataById(RECORD_ID));
+    }
 
-    assertEquals(RECORD_ID, recordVersion.getId());
-  }
+    @Test
+    public void getMetadataById_NotFoundException()
+            throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
 
-  @Test
-  public void getMetadataById_StorageException() throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        HttpResponse httpResp = new HttpResponse();
+        httpResp.setResponseCode(400);
+        when(dataLakeStorageService.getRecord(RECORD_ID)).thenReturn(null);
 
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    HttpResponse httpResp = new HttpResponse();
-    httpResp.setResponseCode(500);
-    when(dataLakeStorageService.getRecord(RECORD_ID)).thenThrow(new StorageException("Failed to find record for the given file id", httpResp));
+        assertThrows(NotFoundException.class, () -> fileMetadataService.getMetadataById(RECORD_ID));
+    }
 
-    assertThrows(StorageException.class,()->fileMetadataService.getMetadataById(RECORD_ID));
-  }
+    @Test
+    public void deleteMetadataRecord_Success()
+            throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+        Record mockRecord = new Record("tenant1");
+        mockRecord.setId(RECORD_ID);
+        HttpResponse result = new HttpResponse();
+        result.setResponseCode(204);
+        FileMetadataService spyFileMetadataService = Mockito.spy(fileMetadataService);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        Mockito.doReturn(getRecordVersionObj()).when(spyFileMetadataService).getMetadataById(RECORD_ID);
+        when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+        when(dataLakeStorageService.deleteRecord(RECORD_ID)).thenReturn(result);
 
-  @Test
-  public void getMetadataById_BadRequestException() throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+        spyFileMetadataService.deleteMetadataRecord(RECORD_ID);
 
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    HttpResponse httpResp = new HttpResponse();
-    httpResp.setResponseCode(400);
-    when(dataLakeStorageService.getRecord(RECORD_ID)).thenThrow(new StorageException("Invalid file id", httpResp));
+        assertEquals(FileMetadataConstant.HTTP_CODE_204, result.getResponseCode());
+    }
 
-    assertThrows(StorageException.class, ()->fileMetadataService.getMetadataById(RECORD_ID));
-  }
+    @Test
+    public void deleteMetadataRecord_Exception()
+            throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
 
-  @Test
-  public void getMetadataById_NotFoundException() throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
+        Record mockRecord = new Record("tenant1");
+        mockRecord.setId(RECORD_ID);
 
-    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
-    HttpResponse httpResp = new HttpResponse();
-    httpResp.setResponseCode(400);
-    when(dataLakeStorageService.getRecord(RECORD_ID)).thenReturn(null);
+        FileMetadataService spyFileMetadataService = Mockito.spy(fileMetadataService);
+        when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+        Mockito.doReturn(getRecordVersionObj()).when(spyFileMetadataService).getMetadataById(RECORD_ID);
+        when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+        HttpResponse httpResp = new HttpResponse();
+        httpResp.setResponseCode(500);
 
-    assertThrows(NotFoundException.class,()->fileMetadataService.getMetadataById(RECORD_ID));
-  }
+        when(dataLakeStorageService.deleteRecord(RECORD_ID)).thenReturn(httpResp);
+
+        assertThrows(StorageException.class, () -> spyFileMetadataService.deleteMetadataRecord(RECORD_ID));
+    }
+
+    private RecordVersion getRecordVersionObj() {
+        RecordVersion mockRecordVersion = new RecordVersion();
+        FileData fileData = new FileData();
+        DatasetProperties datasetProperties = new DatasetProperties();
+        FileSourceInfo fileSourceInfo = new FileSourceInfo();
+        fileSourceInfo.setFileSource("/xyz");
+        datasetProperties.setFileSourceInfo(fileSourceInfo);
+        fileData.setDatasetProperties(datasetProperties);
+        mockRecordVersion.setData(fileData);
+        mockRecordVersion.setId(RECORD_ID);
+        return mockRecordVersion;
+    }
+
 }

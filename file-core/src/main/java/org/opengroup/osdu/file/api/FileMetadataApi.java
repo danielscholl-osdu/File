@@ -1,6 +1,5 @@
 package org.opengroup.osdu.file.api;
 
-import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
@@ -23,21 +22,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileMetadataApi {
 
-  final FileMetadataService fileMetadataService;
+    final FileMetadataService fileMetadataService;
 
-  @PostMapping("/metadata")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
-  public ResponseEntity<FileMetadataResponse> postFilesMetadata(@Validated(FileMetadataValidationSequence.class)
-                                                                @RequestBody FileMetadata fileMetadata)
-      throws OsduBadRequestException, StorageException, ApplicationException {
-    FileMetadataResponse response = fileMetadataService.saveMetadata(fileMetadata);
-    return new ResponseEntity<>(response, HttpStatus.CREATED);
-  }
+    @PostMapping("/metadata")
+    @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
+    public ResponseEntity<FileMetadataResponse> postFilesMetadata(
+            @Validated(FileMetadataValidationSequence.class) @RequestBody FileMetadata fileMetadata)
+            throws OsduBadRequestException, StorageException, ApplicationException {
+        FileMetadataResponse response = fileMetadataService.saveMetadata(fileMetadata);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
-  @GetMapping("/{id}/metadata")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
-  public ResponseEntity<RecordVersion> getFileMetadataById(@PathVariable("id") String id)
-      throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
-    return new ResponseEntity<>(fileMetadataService.getMetadataById(id), HttpStatus.OK);
-  }
+    @GetMapping("/{id}/metadata")
+    @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
+    public ResponseEntity<RecordVersion> getFileMetadataById(@PathVariable("id") String id)
+            throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
+        return new ResponseEntity<>(fileMetadataService.getMetadataById(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/metadata")
+    @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "', '" + FileServiceRole.ADMIN + "')")
+    public ResponseEntity<Void> deleteFileMetadataById(@PathVariable("id") String id)
+            throws OsduBadRequestException, ApplicationException, NotFoundException, StorageException {
+        fileMetadataService.deleteMetadataRecord(id);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
 }
