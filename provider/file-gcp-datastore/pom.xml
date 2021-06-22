@@ -33,7 +33,7 @@
   <description>Google Cloud implementation of File service APIs for Datastore</description>
 
   <properties>
-    <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+    <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
   </properties>
 
   <dependencies>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
-      <version>1.104.0</version>
+      <version>1.108.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>

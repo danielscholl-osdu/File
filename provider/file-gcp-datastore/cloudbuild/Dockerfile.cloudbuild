@@ -7,7 +7,7 @@ ENV PROVIDER_NAME $PROVIDER_NAME
 ARG PORT
 ENV PORT $PORT
 # Copy the jar to the production image from the builder stage.
-COPY provider/file-${PROVIDER_NAME}/target/file-${PROVIDER_NAME}-*.jar file-${PROVIDER_NAME}.jar
+COPY provider/file-${PROVIDER_NAME}/target/file-${PROVIDER_NAME}-*-spring-boot.jar file-${PROVIDER_NAME}.jar
 # Run the web service on container startup.
 CMD java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -jar /app/file-${PROVIDER_NAME}.jar
 
