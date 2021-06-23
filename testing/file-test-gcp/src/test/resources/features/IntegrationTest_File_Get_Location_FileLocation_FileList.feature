@@ -6,7 +6,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetFileLocation API with non-existing file id
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | ReponseStatusCode |
       | "400"             |
 
@@ -16,7 +16,7 @@ Feature: File service Get Location API integration test
     Given I hit File service <API> with invalid partition id
     Then service should respond back with <ReponseStatusCode> or <AlternateResponseCode>
 
-    Examples: 
+    Examples:
       | API               | ReponseStatusCode | AlternateResponseCode |
       | "GetFileLocation" | "401"             | "403"                 |
       | "GetFileList"     | "401"             | "403"                 |
@@ -27,7 +27,7 @@ Feature: File service Get Location API integration test
     Given I hit File service <API> without partition id
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | API               | ReponseStatusCode |
       | "GetFileLocation" | "401"             |
       | "GetFileList"     | "401"             |
@@ -38,7 +38,7 @@ Feature: File service Get Location API integration test
     Given I hit File service <API> without auth token
     Then service should respond back with <ReponseStatusCode> or <AlternateResponseCode>
 
-    Examples: 
+    Examples:
       | API               | ReponseStatusCode | AlternateResponseCode |
       | "GetFileLocation" | "401"             | "403"                 |
       | "GetFileList"     | "401"             | "403"                 |
@@ -49,7 +49,7 @@ Feature: File service Get Location API integration test
     Given I hit File service <API> with invalid auth token
     Then service should respond back with <ReponseStatusCode> or <AlternateResponseCode>
 
-    Examples: 
+    Examples:
       | API               | ReponseStatusCode | AlternateResponseCode |
       | "GetFileLocation" | "401"             | "403"                 |
       | "GetFileList"     | "401"             | "403"                 |
@@ -60,7 +60,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetFileLocation API with <BodyContent>
     Then service should respond back with <ReponseStatusCode> and <ReponseMessage>
 
-    Examples: 
+    Examples:
       | BodyContent    | ReponseStatusCode | ReponseMessage                                              |
       | "emptyReqBody" | "400"             | "ConstraintViolationException: Invalid FileLocationRequest" |
 
@@ -70,7 +70,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetFileLocation API with <BodyContent>
     Then service should respond back with <ReponseStatusCode> and error message <ReponseMessage>
 
-    Examples: 
+    Examples:
       | BodyContent     | ReponseStatusCode | ReponseMessage                         |
       | "invalidFileId" | "400"             | "Not found location for fileID : test" |
 
@@ -80,7 +80,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetLocation API with <BodyContent>
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | BodyContent             | ReponseStatusCode |
       | "invalid file location" | "400"             |
 
@@ -90,9 +90,9 @@ Feature: File service Get Location API integration test
     Given I hit File service GetLocation API with <BodyContent>
     Then service should respond back with <ReponseStatusCode> and <ReponseMessage>
 
-    Examples: 
+    Examples:
       | BodyContent                    | ReponseStatusCode | ReponseMessage                                                                        |
-      | "fileId legth exceeding limit" | "400"             | "The maximum filepath length is 1024 characters, but got a name with 1062 characters" |
+      | "fileId legth exceeding limit" | "400"             | "IllegalArgumentException: The maximum filepath length is 1024 characters, but got a name with 1062 characters" |
 
   ## Negative scenario for GET /getLocation
   @File
@@ -100,7 +100,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetLocation API with existing file id
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | ReponseStatusCode |
       | "400"             |
 
@@ -110,7 +110,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetFileList API with <InputPayload>
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | InputPayload                                                                         | ReponseStatusCode |
       | "/input_payloads/GetLocation_FileList_FileLocation/File_GetList_InvalidPayload.json" | "400"             |
 
@@ -120,7 +120,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetFileList API with <InputPayload>
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | InputPayload                                                                          | ReponseStatusCode |
       | "/input_payloads/GetLocation_FileList_FileLocation/File_GetList_NoRecordPayload.json" | "400"             |
 
@@ -130,7 +130,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetFileList API with <InputPayload>
     Then service should respond back with <ReponseStatusCode>
 
-    Examples: 
+    Examples:
       | InputPayload                                                                       | ReponseStatusCode |
       | "/input_payloads/GetLocation_FileList_FileLocation/File_GetList_EmptyPayload.json" | "400"             |
 
@@ -140,7 +140,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetLocation API without File Id
     Then service should respond back with <ReponseStatusCode> , File Id and Signed URL
 
-    Examples: 
+    Examples:
       | ReponseStatusCode |
       | "200"             |
 
@@ -150,7 +150,7 @@ Feature: File service Get Location API integration test
     Given I hit File service GetLocation API with a File Id
     Then service should respond back with <ReponseStatusCode> , File Id and Signed URL
 
-    Examples: 
+    Examples:
       | ReponseStatusCode |
       | "200"             |
 
@@ -161,6 +161,6 @@ Feature: File service Get Location API integration test
     And I hit File service GetFileLocation API with same File Id
     Then service should respond back with <ReponseStatusCode> and UnSigned URL
 
-    Examples: 
+    Examples:
       | ReponseStatusCode |
       | "200"             |

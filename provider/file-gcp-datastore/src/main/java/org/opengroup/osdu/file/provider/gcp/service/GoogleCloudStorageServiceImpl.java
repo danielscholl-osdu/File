@@ -19,7 +19,6 @@ package org.opengroup.osdu.file.provider.gcp.service;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
@@ -75,7 +74,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
         fileName, bucketName, filepath);
 
     if (filepath.length() > StorageConstant.GCS_MAX_FILEPATH) {
-      throw new BadRequestException(format(
+      throw new IllegalArgumentException(format(
           "The maximum filepath length is %s characters, but got a name with %s characters",
           StorageConstant.GCS_MAX_FILEPATH, filepath.length()));
     }
