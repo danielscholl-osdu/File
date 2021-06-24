@@ -48,11 +48,13 @@ public class FileMetadataService {
     final DpsHeaders dpsHeaders;
     final FileMetadataUtil fileMetadataUtil;
     final FileMetadataRecordMapper fileMetadataRecordMapper;
+    final FileStatusProcess fileStatusProcess;
 
     public FileMetadataResponse saveMetadata(FileMetadata fileMetadata)
             throws OsduBadRequestException, StorageException, ApplicationException {
 
         log.info(FileMetadataConstant.METADATA_SAVE_STARTED);
+        fileStatusProcess.publishStartStatus();
 
         validateKind(fileMetadata.getKind());
 
@@ -74,13 +76,16 @@ public class FileMetadataService {
             log.info(upsertRecords.toString());
             fileMetadataResponse.setId(upsertRecords.getRecordIds().get(0));
             cloudStorageOperation.deleteFile(stagingLocation);
+            fileStatusProcess.publishSuccessStatus(upsertRecords.getRecordIds().get(0));
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record");
             cloudStorageOperation.deleteFile(persistentLocation);
+            fileStatusProcess.publishFailureStatus(record);
             throw e;
         } catch (Exception e) {
             log.error("Error occurred while creating file metadata ", e);
             cloudStorageOperation.deleteFile(persistentLocation);
+            fileStatusProcess.publishFailureStatus(record);
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;

@@ -84,6 +84,9 @@ public class FileMetadataServiceTest {
 
     @Mock
     IStorageUtilService storageUtilService;
+    
+    @Mock
+    FileStatusProcess fileStatusProcess;
 
     FileMetadata fileMetadata;
 
