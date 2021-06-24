@@ -1,0 +1,14 @@
+data:
+  log_level: ""
+  osdu_entitlements_url: ""
+  file_location_bucket_name: ""
+  partition_api: ""
+  audiences: ""
+  spring_cloud_gcp_datastore_namespace: ""
+  file_location_user_id: ""
+  storage_api: ""
+  gcp_records_url: ""
+
+conf:
+  configmap: "file-config"
+  app_name: "file"
