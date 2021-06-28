@@ -21,7 +21,7 @@ public class StatusEventPublisher implements IEventPublisher {
 		// TODO This method is not implemented yet so instead of publishing events it only does logging.
 		String correlationId = attributes.get(DpsHeaders.CORRELATION_ID);
 		String dataPartitionId = attributes.get(DpsHeaders.DATA_PARTITION_ID);
-		log.info(DpsHeaders.CORRELATION_ID + " " + correlationId + DpsHeaders.DATA_PARTITION_ID + " " + dataPartitionId
+		log.debug(DpsHeaders.CORRELATION_ID + " " + correlationId + DpsHeaders.DATA_PARTITION_ID + " " + dataPartitionId
 				+ " status msg: " + data);
 	}
 

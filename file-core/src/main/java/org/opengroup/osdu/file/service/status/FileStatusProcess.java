@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.service;
+package org.opengroup.osdu.file.service.status;
 
 import java.util.Map;
 

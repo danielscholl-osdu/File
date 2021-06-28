@@ -1,4 +1,4 @@
-package org.opengroup.osdu.file.provider.aws.status;
+package org.opengroup.osdu.file.provider.ibm.status;
 
 import java.util.Map;
 

@@ -40,7 +40,7 @@ public class StatusEventPublisher implements IEventPublisher {
 
         eventGridTopicStore.publishToEventGridTopic(attributesMap.get(DpsHeaders.DATA_PARTITION_ID),
                 eventGridConfig.getCustomTopicName(), eventsList);
-        log.info("Status event generated successfully");
+        log.debug("Status event generated successfully");
     }
 
     private List<EventGridEvent> createEventGridEventList(HashMap<String, Object> message) {
