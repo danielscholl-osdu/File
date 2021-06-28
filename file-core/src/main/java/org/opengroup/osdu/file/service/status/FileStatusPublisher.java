@@ -68,13 +68,4 @@ public class FileStatusPublisher {
             log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
         }
     }
-    
-    public void publishDatasetDetails() {
-    	Map<String, String> attributesMap = requestBuilder.createAttributesMap();
-    	String datasetDetailsStr = null;
-    	
-    	try {
-    		datasetDetailsStr = request
-    	}
-    }
 }

@@ -22,7 +22,7 @@ import org.opengroup.osdu.file.model.storage.Record;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @ExtendWith(MockitoExtension.class)
-class FileStatusProcessTest {
+class FileStatusPublisherTest {
 
     private static final String METADATA_STORE_STARTED = "Metadata store started";
     private static final String METADATA_STORE_COMPLETED_SUCCESSFULLY = "Metadata store completed successfully";
@@ -42,7 +42,7 @@ class FileStatusProcessTest {
     private IEventPublisher statusPublisher;
 
     @InjectMocks
-    private FileStatusProcess fileStatusProcess;
+    private FileStatusPublisher fileStatusPublisher;
 
     private Map<String, String> attributesMap;
 
@@ -59,7 +59,7 @@ class FileStatusProcessTest {
                 STAGE_DATASET_SYNC, ERROR_CODE_0)).thenReturn(STATUS_DETAILS_STR);
         when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusProcess.publishInProgressStatus();
+        fileStatusPublisher.publishInProgressStatus();
 
         verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_STARTED, null, Status.IN_PROGRESS,
                 STAGE_DATASET_SYNC, ERROR_CODE_0);
@@ -75,7 +75,7 @@ class FileStatusProcessTest {
                 STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
         when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusProcess.publishFailureStatus(record);
+        fileStatusPublisher.publishFailureStatus(record);
 
         verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, null,
                 Status.FAILED, STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
@@ -92,7 +92,7 @@ class FileStatusProcessTest {
                 STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
         when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusProcess.publishFailureStatus(record);
+        fileStatusPublisher.publishFailureStatus(record);
 
         verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, record.getId(),
                 Status.FAILED, STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
@@ -102,11 +102,13 @@ class FileStatusProcessTest {
 
     @Test
     void testPublishSuccessStatus() throws JsonProcessingException {
+        Record record = new Record();
+        record.setId(RECORD_ID);
         when(statusDetailsRequestBuilder.createStatusDetailsMessage(METADATA_STORE_COMPLETED_SUCCESSFULLY, RECORD_ID,
                 Status.SUCCESS, STAGE_DATASET_SYNC, ERROR_CODE_0)).thenReturn(STATUS_DETAILS_STR);
         when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusProcess.publishSuccessStatus(RECORD_ID);
+        fileStatusPublisher.publishSuccessStatus(record);
 
         verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_COMPLETED_SUCCESSFULLY, RECORD_ID,
                 Status.SUCCESS, STAGE_DATASET_SYNC, ERROR_CODE_0);

@@ -41,6 +41,7 @@ import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
+import org.opengroup.osdu.file.service.status.FileStatusPublisher;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
@@ -86,7 +87,7 @@ public class FileMetadataServiceTest {
     IStorageUtilService storageUtilService;
     
     @Mock
-    FileStatusProcess fileStatusProcess;
+    FileStatusPublisher fileStatusPublisher;
 
     FileMetadata fileMetadata;
 
