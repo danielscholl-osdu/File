@@ -20,8 +20,8 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.KindValidationException;
-import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.exception.NotFoundException;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.mapper.FileMetadataRecordMapper;
 import org.opengroup.osdu.file.model.filemetadata.FileMetadata;
 import org.opengroup.osdu.file.model.filemetadata.FileMetadataResponse;
@@ -30,11 +30,13 @@ import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
+import org.opengroup.osdu.file.service.status.FileStatusProcess;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
 import org.opengroup.osdu.file.util.FileMetadataUtil;
 import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
