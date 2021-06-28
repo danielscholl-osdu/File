@@ -3,12 +3,12 @@ package org.opengroup.osdu.file.service;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.status.Status;
+import org.opengroup.osdu.core.common.status.IEventPublisher;
 import org.opengroup.osdu.core.common.status.StatusDetailsRequestBuilder;
-import org.opengroup.osdu.file.exception.StatusPublishException;
 import org.opengroup.osdu.file.model.storage.Record;
-import org.opengroup.osdu.file.provider.interfaces.IStatusEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,7 +23,7 @@ public class FileStatusProcess {
     private static final String DATASET_SYNC = "DATASET_SYNC";
 
     private final StatusDetailsRequestBuilder requestBuilder;
-    private final IStatusEventPublisher statusEventPublisher;
+    private final IEventPublisher statusEventPublisher;
     private final JaxRsDpsLog log;
 
     public void publishStartStatus() {
@@ -33,7 +33,7 @@ public class FileStatusProcess {
             String statusDetailsMessage = requestBuilder.createStatusDetailsMessage("Metadata store started", null,
                     Status.IN_PROGRESS, DATASET_SYNC, 0);
             statusEventPublisher.publish(statusDetailsMessage, attributesMap);
-        } catch (StatusPublishException | JsonProcessingException e) {
+        } catch (CoreException | JsonProcessingException e) {
             log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
         }
     }
@@ -45,7 +45,7 @@ public class FileStatusProcess {
             String statusDetailsMessage = requestBuilder.createStatusDetailsMessage(
                     "Metadata store completed successfully", recordId, Status.SUCCESS, DATASET_SYNC, 0);
             statusEventPublisher.publish(statusDetailsMessage, attributesMap);
-        } catch (StatusPublishException | JsonProcessingException e) {
+        } catch (CoreException | JsonProcessingException e) {
             log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
         }
     }
@@ -64,7 +64,7 @@ public class FileStatusProcess {
                         Status.FAILED, DATASET_SYNC, HttpStatus.SC_INTERNAL_SERVER_ERROR);
             }
             statusEventPublisher.publish(statusDetailsMessage, attributesMap);
-        } catch (StatusPublishException | JsonProcessingException e) {
+        } catch (CoreException | JsonProcessingException e) {
             log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
         }
     }

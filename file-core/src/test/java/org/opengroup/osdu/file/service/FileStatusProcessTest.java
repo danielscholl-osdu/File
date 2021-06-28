@@ -15,9 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.model.status.Status;
+import org.opengroup.osdu.core.common.status.IEventPublisher;
 import org.opengroup.osdu.core.common.status.StatusDetailsRequestBuilder;
 import org.opengroup.osdu.file.model.storage.Record;
-import org.opengroup.osdu.file.provider.interfaces.IStatusEventPublisher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -39,7 +39,7 @@ class FileStatusProcessTest {
     private StatusDetailsRequestBuilder statusDetailsRequestBuilder;
 
     @Mock
-    private IStatusEventPublisher statusPublisher;
+    private IEventPublisher statusPublisher;
 
     @InjectMocks
     private FileStatusProcess fileStatusProcess;

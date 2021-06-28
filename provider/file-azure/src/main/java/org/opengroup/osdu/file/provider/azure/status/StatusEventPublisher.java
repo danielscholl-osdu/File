@@ -8,11 +8,11 @@ import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
+import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.file.exception.StatusPublishException;
+import org.opengroup.osdu.core.common.status.IEventPublisher;
 import org.opengroup.osdu.file.provider.azure.config.EventGridConfig;
-import org.opengroup.osdu.file.provider.interfaces.IStatusEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.microsoft.azure.eventgrid.models.EventGridEvent;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class StatusEventPublisher implements IStatusEventPublisher {
+public class StatusEventPublisher implements IEventPublisher {
 
     private static final String STATUS_CHANGED = "status-changed";
     private static final String EVENT_DATA_VERSION = "1.0";
@@ -31,7 +31,7 @@ public class StatusEventPublisher implements IStatusEventPublisher {
     private final JaxRsDpsLog log;
 
     @Override
-    public void publish(String msg, Map<String, String> attributesMap) throws StatusPublishException {
+    public void publish(String msg, Map<String, String> attributesMap) throws CoreException {
         validateEventGrid();
         validateInput(msg, attributesMap);
 
@@ -48,8 +48,7 @@ public class StatusEventPublisher implements IStatusEventPublisher {
         List<EventGridEvent> eventsList = new ArrayList<>();
         EventGridEvent eventGridEvent = new EventGridEvent(messageId, STATUS_CHANGED, message, STATUS_CHANGED,
                 DateTime.now(), EVENT_DATA_VERSION);
-        eventsList.add(eventGridEvent); // TODO check usage of events list
-        log.info("Status event created: " + messageId);
+        eventsList.add(eventGridEvent);
         return eventsList;
     }
 
@@ -63,30 +62,30 @@ public class StatusEventPublisher implements IStatusEventPublisher {
         return message;
     }
 
-    private void validateEventGrid() throws StatusPublishException {
+    private void validateEventGrid() throws CoreException {
         if (!eventGridConfig.isEventGridEnabled()) {
-            throw new StatusPublishException("Event grid is not enabled");
+            throw new CoreException("Event grid is not enabled");
         }
     }
 
-    private void validateInput(String msg, Map<String, String> attributesMap) throws StatusPublishException {
+    private void validateInput(String msg, Map<String, String> attributesMap) throws CoreException {
         validateMsg(msg);
         validateAttributesMap(attributesMap);
     }
 
-    private void validateMsg(String msg) throws StatusPublishException {
+    private void validateMsg(String msg) throws CoreException {
         if (msg == null || msg.isEmpty()) {
-            throw new StatusPublishException("Nothing in message to publish");
+            throw new CoreException("Nothing in message to publish");
         }
     }
 
-    private void validateAttributesMap(Map<String, String> attributesMap) throws StatusPublishException {
-        if (attributesMap.isEmpty()) {
-            throw new StatusPublishException("data-partition-id and correlation-id are required to publish status event");
+    private void validateAttributesMap(Map<String, String> attributesMap) throws CoreException {
+        if (attributesMap == null || attributesMap.isEmpty()) {
+            throw new CoreException("data-partition-id and correlation-id are required to publish status event");
         } else if (attributesMap.get(DpsHeaders.DATA_PARTITION_ID) == null) {
-            throw new StatusPublishException("data-partition-id is required to publish status event");
+            throw new CoreException("data-partition-id is required to publish status event");
         } else if (attributesMap.get(DpsHeaders.CORRELATION_ID) == null) {
-            throw new StatusPublishException("correlation-id is required to publish status event");
+            throw new CoreException("correlation-id is required to publish status event");
         }
     }
 
