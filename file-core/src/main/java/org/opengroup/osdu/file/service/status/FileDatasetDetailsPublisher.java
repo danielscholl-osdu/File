@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileDatasetDetailsPublisher {
     private final DatasetDetailsRequestBuilder requestBuilder;
-    private final IEventPublisher statusEventPublisher;
+    private final IEventPublisher datasetDetailsEventPublisher;
     private final JaxRsDpsLog log;
 
     private static final DatasetType DATASET_TYPE = DatasetType.FILE;
@@ -34,7 +34,7 @@ public class FileDatasetDetailsPublisher {
         try {
             datasetDetailsMessage = requestBuilder.createDatasetDetailsMessage(datasetId, DATASET_TYPE,
                     datasetVersionId, recordCount);
-            statusEventPublisher.publish(datasetDetailsMessage, attributesMap);
+            datasetDetailsEventPublisher.publish(datasetDetailsMessage, attributesMap);
         } catch (CoreException | JsonProcessingException e) {
             log.warning(FAILED_TO_PUBLISH_DATASET_DETAILS + e.getMessage());
         }

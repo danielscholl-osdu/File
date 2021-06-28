@@ -36,7 +36,7 @@ class FileStatusPublisherTest {
     private static final String CORRELATION_ID = "correlation-id";
 
     @Mock
-    private StatusDetailsRequestBuilder statusDetailsRequestBuilder;
+    private StatusDetailsRequestBuilder requestBuilder;
 
     @Mock
     private IEventPublisher statusPublisher;
@@ -55,15 +55,15 @@ class FileStatusPublisherTest {
 
     @Test
     void testPublishStartStatus() throws JsonProcessingException {
-        when(statusDetailsRequestBuilder.createStatusDetailsMessage(METADATA_STORE_STARTED, null, Status.IN_PROGRESS,
+        when(requestBuilder.createStatusDetailsMessage(METADATA_STORE_STARTED, null, Status.IN_PROGRESS,
                 STAGE_DATASET_SYNC, ERROR_CODE_0)).thenReturn(STATUS_DETAILS_STR);
-        when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
+        when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
         fileStatusPublisher.publishInProgressStatus();
 
-        verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_STARTED, null, Status.IN_PROGRESS,
+        verify(requestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_STARTED, null, Status.IN_PROGRESS,
                 STAGE_DATASET_SYNC, ERROR_CODE_0);
-        verify(statusDetailsRequestBuilder, times(1)).createAttributesMap();
+        verify(requestBuilder, times(1)).createAttributesMap();
         verify(statusPublisher).publish(STATUS_DETAILS_STR, attributesMap);
     }
 
@@ -71,15 +71,15 @@ class FileStatusPublisherTest {
     void testPublishFailureStatusWithNoRecordId() throws JsonProcessingException {
         Record record = new Record();
 
-        when(statusDetailsRequestBuilder.createStatusDetailsMessage(METADATA_STORE_FAILED, null, Status.FAILED,
-                STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
-        when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
+        when(requestBuilder.createStatusDetailsMessage(METADATA_STORE_FAILED, null, Status.FAILED, STAGE_DATASET_SYNC,
+                ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
+        when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
         fileStatusPublisher.publishFailureStatus(record);
 
-        verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, null,
-                Status.FAILED, STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
-        verify(statusDetailsRequestBuilder, times(1)).createAttributesMap();
+        verify(requestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, null, Status.FAILED,
+                STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
+        verify(requestBuilder, times(1)).createAttributesMap();
         verify(statusPublisher).publish(STATUS_DETAILS_STR, attributesMap);
     }
 
@@ -88,15 +88,15 @@ class FileStatusPublisherTest {
         Record record = new Record();
         record.setId(RECORD_ID);
 
-        when(statusDetailsRequestBuilder.createStatusDetailsMessage(METADATA_STORE_FAILED, record.getId(), Status.FAILED,
+        when(requestBuilder.createStatusDetailsMessage(METADATA_STORE_FAILED, record.getId(), Status.FAILED,
                 STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
-        when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
+        when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
         fileStatusPublisher.publishFailureStatus(record);
 
-        verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, record.getId(),
+        verify(requestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, record.getId(),
                 Status.FAILED, STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
-        verify(statusDetailsRequestBuilder, times(1)).createAttributesMap();
+        verify(requestBuilder, times(1)).createAttributesMap();
         verify(statusPublisher).publish(STATUS_DETAILS_STR, attributesMap);
     }
 
@@ -104,15 +104,15 @@ class FileStatusPublisherTest {
     void testPublishSuccessStatus() throws JsonProcessingException {
         Record record = new Record();
         record.setId(RECORD_ID);
-        when(statusDetailsRequestBuilder.createStatusDetailsMessage(METADATA_STORE_COMPLETED_SUCCESSFULLY, RECORD_ID,
-                Status.SUCCESS, STAGE_DATASET_SYNC, ERROR_CODE_0)).thenReturn(STATUS_DETAILS_STR);
-        when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
+        when(requestBuilder.createStatusDetailsMessage(METADATA_STORE_COMPLETED_SUCCESSFULLY, RECORD_ID, Status.SUCCESS,
+                STAGE_DATASET_SYNC, ERROR_CODE_0)).thenReturn(STATUS_DETAILS_STR);
+        when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
         fileStatusPublisher.publishSuccessStatus(record);
 
-        verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_COMPLETED_SUCCESSFULLY, RECORD_ID,
+        verify(requestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_COMPLETED_SUCCESSFULLY, RECORD_ID,
                 Status.SUCCESS, STAGE_DATASET_SYNC, ERROR_CODE_0);
-        verify(statusDetailsRequestBuilder, times(1)).createAttributesMap();
+        verify(requestBuilder, times(1)).createAttributesMap();
         verify(statusPublisher).publish(STATUS_DETAILS_STR, attributesMap);
     }
 
