@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class FileStatusProcess {
+public class FileStatusPublisher {
 
     private static final String FAILED_TO_PUBLISH_STATUS = "Failed to publish status ";
     private static final String DATASET_SYNC = "DATASET_SYNC";
@@ -26,7 +26,7 @@ public class FileStatusProcess {
     private final IEventPublisher statusEventPublisher;
     private final JaxRsDpsLog log;
 
-    public void publishStartStatus() {
+    public void publishInProgressStatus() {
         Map<String, String> attributesMap = requestBuilder.createAttributesMap();
 
         try {
@@ -38,12 +38,12 @@ public class FileStatusProcess {
         }
     }
 
-    public void publishSuccessStatus(String recordId) {
+    public void publishSuccessStatus(Record record) {
         Map<String, String> attributesMap = requestBuilder.createAttributesMap();
 
         try {
             String statusDetailsMessage = requestBuilder.createStatusDetailsMessage(
-                    "Metadata store completed successfully", recordId, Status.SUCCESS, DATASET_SYNC, 0);
+                    "Metadata store completed successfully", record.getId(), Status.SUCCESS, DATASET_SYNC, 0);
             statusEventPublisher.publish(statusDetailsMessage, attributesMap);
         } catch (CoreException | JsonProcessingException e) {
             log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
@@ -67,5 +67,14 @@ public class FileStatusProcess {
         } catch (CoreException | JsonProcessingException e) {
             log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
         }
+    }
+    
+    public void publishDatasetDetails() {
+    	Map<String, String> attributesMap = requestBuilder.createAttributesMap();
+    	String datasetDetailsStr = null;
+    	
+    	try {
+    		datasetDetailsStr = request
+    	}
     }
 }

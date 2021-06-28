@@ -59,7 +59,7 @@ class FileStatusProcessTest {
                 STAGE_DATASET_SYNC, ERROR_CODE_0)).thenReturn(STATUS_DETAILS_STR);
         when(statusDetailsRequestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusProcess.publishStartStatus();
+        fileStatusProcess.publishInProgressStatus();
 
         verify(statusDetailsRequestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_STARTED, null, Status.IN_PROGRESS,
                 STAGE_DATASET_SYNC, ERROR_CODE_0);

@@ -30,7 +30,8 @@ import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
-import org.opengroup.osdu.file.service.status.FileStatusProcess;
+import org.opengroup.osdu.file.service.status.FileDatasetDetailsPublisher;
+import org.opengroup.osdu.file.service.status.FileStatusPublisher;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
@@ -50,13 +51,14 @@ public class FileMetadataService {
     final DpsHeaders dpsHeaders;
     final FileMetadataUtil fileMetadataUtil;
     final FileMetadataRecordMapper fileMetadataRecordMapper;
-    final FileStatusProcess fileStatusProcess;
+    final FileStatusPublisher fileStatusPublisher;
+    final FileDatasetDetailsPublisher fileDatasetDetailsPublisher;
 
     public FileMetadataResponse saveMetadata(FileMetadata fileMetadata)
             throws OsduBadRequestException, StorageException, ApplicationException {
 
         log.info(FileMetadataConstant.METADATA_SAVE_STARTED);
-        fileStatusProcess.publishStartStatus();
+        fileStatusPublisher.publishInProgressStatus();
 
         validateKind(fileMetadata.getKind());
 
@@ -78,16 +80,17 @@ public class FileMetadataService {
             log.info(upsertRecords.toString());
             fileMetadataResponse.setId(upsertRecords.getRecordIds().get(0));
             cloudStorageOperation.deleteFile(stagingLocation);
-            fileStatusProcess.publishSuccessStatus(upsertRecords.getRecordIds().get(0));
+            fileStatusPublisher.publishSuccessStatus(record);
+            fileDatasetDetailsPublisher.publishDatasetDetails(record);
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record");
             cloudStorageOperation.deleteFile(persistentLocation);
-            fileStatusProcess.publishFailureStatus(record);
+            fileStatusPublisher.publishFailureStatus(record);
             throw e;
         } catch (Exception e) {
             log.error("Error occurred while creating file metadata ", e);
             cloudStorageOperation.deleteFile(persistentLocation);
-            fileStatusProcess.publishFailureStatus(record);
+            fileStatusPublisher.publishFailureStatus(record);
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;
