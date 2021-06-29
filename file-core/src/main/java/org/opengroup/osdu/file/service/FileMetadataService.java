@@ -85,12 +85,12 @@ public class FileMetadataService {
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record");
             cloudStorageOperation.deleteFile(persistentLocation);
-            fileStatusPublisher.publishFailureStatus(record);
+            fileStatusPublisher.publishFailureStatus(record, e.getMessage());
             throw e;
         } catch (Exception e) {
             log.error("Error occurred while creating file metadata ", e);
             cloudStorageOperation.deleteFile(persistentLocation);
-            fileStatusPublisher.publishFailureStatus(record);
+            fileStatusPublisher.publishFailureStatus(record, e.getMessage());
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;

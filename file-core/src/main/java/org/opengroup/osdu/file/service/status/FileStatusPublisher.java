@@ -50,18 +50,18 @@ public class FileStatusPublisher {
         }
     }
 
-    public void publishFailureStatus(Record record) {
+    public void publishFailureStatus(Record record, String message) {
         Map<String, String> attributesMap = requestBuilder.createAttributesMap();
         String statusDetailsMessage = null;
 
         try {
             if (record != null) {
-                statusDetailsMessage = requestBuilder.createStatusDetailsMessage("Metadata store failed",
-                        record.getId(), Status.FAILED, DATASET_SYNC, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                statusDetailsMessage = requestBuilder.createStatusDetailsMessage(message, record.getId(), Status.FAILED,
+                        DATASET_SYNC, HttpStatus.SC_INTERNAL_SERVER_ERROR);
 
             } else {
-                statusDetailsMessage = requestBuilder.createStatusDetailsMessage("Metadata store failed", null,
-                        Status.FAILED, DATASET_SYNC, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                statusDetailsMessage = requestBuilder.createStatusDetailsMessage(message, null, Status.FAILED,
+                        DATASET_SYNC, HttpStatus.SC_INTERNAL_SERVER_ERROR);
             }
             statusEventPublisher.publish(statusDetailsMessage, attributesMap);
         } catch (CoreException | JsonProcessingException e) {

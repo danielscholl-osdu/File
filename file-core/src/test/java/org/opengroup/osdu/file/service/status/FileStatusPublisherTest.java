@@ -75,7 +75,7 @@ class FileStatusPublisherTest {
                 ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
         when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusPublisher.publishFailureStatus(record);
+        fileStatusPublisher.publishFailureStatus(record, METADATA_STORE_FAILED);
 
         verify(requestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, null, Status.FAILED,
                 STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
@@ -92,7 +92,7 @@ class FileStatusPublisherTest {
                 STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR)).thenReturn(STATUS_DETAILS_STR);
         when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileStatusPublisher.publishFailureStatus(record);
+        fileStatusPublisher.publishFailureStatus(record, METADATA_STORE_FAILED);
 
         verify(requestBuilder, times(1)).createStatusDetailsMessage(METADATA_STORE_FAILED, record.getId(),
                 Status.FAILED, STAGE_DATASET_SYNC, ERROR_CODE_INTERNAL_SERVER_ERROR);
