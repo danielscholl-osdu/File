@@ -43,15 +43,17 @@ public class FileStepDef_DELETE implements En {
 	  
 	  Given("I hit File service Delete metadata endpoint with a valid Id", () -> {
 		  String id = this.context.getId();
+		  LOGGER.info("Id to be deleted : " + id);
 	      HttpRequest httpRequest = HttpRequest.builder()
 	          .url(TestConstants.HOST + TestConstants.GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 + id
 		              + TestConstants.GET_METADATA_ENDPOINT2).httpMethod(HttpRequest.DELETE)
 	          .requestHeaders(this.context.getAuthHeaders()).build();
-
+	      LOGGER.info("Delete httpRequest : - " + httpRequest);
 	      HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);
 	      this.context.setHttpResponse(response);
+	      LOGGER.log(Level.INFO, "Delete resp - " + response.toString());
 	      assertEquals("204", String.valueOf(response.getCode()));
-	      LOGGER.log(Level.INFO, "resp - " + response.toString());
+	      
 	    });
 	  
 	  Given("I hit File service Delete metadata endpoint with a invalid Id", () -> {
@@ -63,8 +65,9 @@ public class FileStepDef_DELETE implements En {
 
 	      HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);
 	      this.context.setHttpResponse(response);
-	      assertEquals("404", String.valueOf(response.getCode()));
 	      LOGGER.log(Level.INFO, "resp - " + response.toString());
+	      assertEquals("404", String.valueOf(response.getCode()));
+	      
 	    });
 	  
 	  
