@@ -915,6 +915,7 @@ CDDL-1.0
 The following software have components provided under the terms of this license:
 
 - Apache Log4j Core (from )
+- JavaBeans Activation Framework API jar (from )
 
 ========================================================================
 CDDL-1.1
@@ -923,6 +924,7 @@ The following software have components provided under the terms of this license:
 
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
 - Java Architecture For XML Binding (from )
+- JavaBeans Activation Framework (from )
 - JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
@@ -983,6 +985,7 @@ The following software have components provided under the terms of this license:
 
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
+- JavaBeans Activation Framework (from )
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
@@ -997,6 +1000,7 @@ The following software have components provided under the terms of this license:
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
 - Java Architecture For XML Binding (from )
+- JavaBeans Activation Framework (from )
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
