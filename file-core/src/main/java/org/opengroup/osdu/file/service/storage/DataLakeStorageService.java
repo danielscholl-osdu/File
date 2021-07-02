@@ -49,9 +49,8 @@ public class DataLakeStorageService {
 
     public HttpResponse deleteRecord(String id) {
         String url = this.createUrl(String.format("/records/%s:delete", id));
-        this.headers.put("content-length", "0");
         HttpResponse result = this.httpClient
-                .send(HttpRequest.post().url(url).headers(this.headers.getHeaders()).build());
+                .send(HttpRequest.post("{'anything':'anything'}").url(url).headers(this.headers.getHeaders()).build());
         return result;
     }
 
