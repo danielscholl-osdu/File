@@ -16,6 +16,7 @@
 
 package org.opengroup.osdu.file.provider.interfaces;
 
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.file.model.SignedUrl;
 
 public interface IStorageService {
@@ -31,6 +32,19 @@ public interface IStorageService {
    * @return info about object URI, signed URL and when and who created blob.
    */
   SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID);
+
+  // stub implementation
+
+  /**
+   * Generates Signed URL for File Upload Operations in DMS API Context.
+   * @param datasetId Dataset ID
+   * @param authorizationToken Authorization token
+   * @param partitionID partition ID
+   * @return info about object URI, signed URL etc.
+   */
+  default StorageInstructionsResponse createStorageInstructions(String datasetId, String authorizationToken, String partitionID) {
+    return null;
+  }
 
   //stub Implementation
   /**
