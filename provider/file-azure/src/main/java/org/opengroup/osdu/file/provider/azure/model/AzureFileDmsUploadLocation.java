@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AzureFileDmsLocation {
+public class AzureFileDmsUploadLocation {
   private String signedUrl;
   private String fileSource;
   private String datasetId;

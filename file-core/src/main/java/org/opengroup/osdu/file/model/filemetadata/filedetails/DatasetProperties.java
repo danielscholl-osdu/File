@@ -14,9 +14,7 @@
 
 package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
-import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,7 +27,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DatasetProperties {
-    
+
     @JsonProperty("FileSourceInfo")
     @NotNull(message = "FileSourceInfo cannot be null")
     @Valid

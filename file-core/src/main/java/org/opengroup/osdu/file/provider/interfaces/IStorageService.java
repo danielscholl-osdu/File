@@ -16,8 +16,12 @@
 
 package org.opengroup.osdu.file.provider.interfaces;
 
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.file.model.DmsRecord;
 import org.opengroup.osdu.file.model.SignedUrl;
+
+import java.util.List;
 
 public interface IStorageService {
 
@@ -34,13 +38,12 @@ public interface IStorageService {
   SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID);
 
   // stub implementation
-
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.
    * @param datasetId Dataset ID
    * @param authorizationToken Authorization token
    * @param partitionID partition ID
-   * @return info about object URI, signed URL etc.
+   * @return info about object URI, upload signed URL etc.
    */
   default StorageInstructionsResponse createStorageInstructions(String datasetId, String authorizationToken, String partitionID) {
     return null;
@@ -55,6 +58,18 @@ public interface IStorageService {
    * @return
    */
   default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+    return null;
+  }
+
+  // stub implementation
+  /**
+   * Generates Signed URL for File Upload Operations in DMS API Context.
+   * @param unsignedUrls List of Unsigned URLs for which Signed URL / Temporary credentials should be generated.
+   * @param authorizationToken Authorization token
+   * @return info about object URI, download signed URL etc.
+   */
+  default RetrievalInstructionsResponse createRetrievalInstructions(List<DmsRecord> dmsRecords,
+                                                                    String authorizationToken) {
     return null;
   }
 }

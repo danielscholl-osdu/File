@@ -6,9 +6,14 @@ import org.opengroup.osdu.core.common.http.IHttpClient;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
+import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.util.UrlNormalizationUtil;
 import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class DataLakeStorageService {
     private final String storageServiceBaseUrl;
@@ -54,6 +59,15 @@ public class DataLakeStorageService {
         return result;
     }
 
+    public MultiRecordInfo getRecords(Collection<String> ids) throws StorageException {
+        MultiRecordIds input = new MultiRecordIds();
+        input.setRecords(new ArrayList());
+        input.getRecords().addAll(ids);
+        String url = this.createUrl("/query/records");
+        HttpResponse result = this.httpClient.send(HttpRequest.post(input).url(url).headers(this.headers.getHeaders()).build());
+        return result.IsNotFoundCode() ? null : this.getResult(result, MultiRecordInfo.class);
+    }
+
     private StorageException generateException(HttpResponse result) {
         return new StorageException(
                 "Error making request to Storage service. Check the inner HttpResponse for more info.", result);
@@ -62,6 +76,7 @@ public class DataLakeStorageService {
     private String createUrl(String pathAndQuery) {
         return UrlNormalizationUtil.normalizeStringUrl(this.storageServiceBaseUrl, pathAndQuery);
     }
+
 
     private <T> T getResult(HttpResponse result, Class<T> type) throws StorageException {
         if (result.isSuccessCode()) {

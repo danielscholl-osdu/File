@@ -25,12 +25,16 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.model.DmsRecord;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
-import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsLocation;
+import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsDownloadLocation;
+import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsUploadLocation;
 import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
@@ -45,6 +49,8 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -107,10 +113,11 @@ public class StorageServiceImpl implements IStorageService {
         .build();
   }
 
+  @Override
   public StorageInstructionsResponse createStorageInstructions(String datasetId, String authorizationToken, String partitionID) {
     SignedUrl signedUrl = this.createSignedUrl(datasetId, authorizationToken, partitionID);
 
-    AzureFileDmsLocation dmsLocation = AzureFileDmsLocation.builder()
+    AzureFileDmsUploadLocation dmsLocation = AzureFileDmsUploadLocation.builder()
         .signedUrl(signedUrl.getUrl().toString())
         .createdBy(signedUrl.getCreatedBy())
         .datasetId(datasetId)
@@ -122,6 +129,35 @@ public class StorageServiceImpl implements IStorageService {
         .storageLocation(uploadLocation).build();
 
     return response;
+  }
+
+  @Override
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<DmsRecord> dmsRecords,
+                                                                   String authorizationToken) {
+
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(dmsRecords.size());
+
+    for(DmsRecord dmsRecord: dmsRecords) {
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(dmsRecord.getUnsignedUrl(), authorizationToken);
+
+      AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
+          .signedUrl(signedUrl.getUrl().toString())
+          .fileSource(signedUrl.getFileSource())
+          .createdBy(signedUrl.getCreatedBy()).build();
+
+      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
+          .retrievalProperties(downloadLocation)
+          .datasetRegistryId(dmsRecord.getRecordId())
+          .build();
+
+      datasetRetrievalProperties.add(datasetRetrievalProperty);
+    }
+
+    return RetrievalInstructionsResponse.builder()
+        .datasets(datasetRetrievalProperties)
+        .providerKey(PROVIDER_KEY)
+        .build();
   }
 
   private String getRelativeFileSource(String filePath) {

@@ -53,6 +53,6 @@ public class FileDmsApi {
   @PostMapping("/v2/files/retrieval")
   public RetrievalInstructionsResponse getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
-    return null;
+    return fileDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
   }
 }
