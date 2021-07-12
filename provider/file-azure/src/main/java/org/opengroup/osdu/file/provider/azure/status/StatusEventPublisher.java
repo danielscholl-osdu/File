@@ -11,6 +11,7 @@ import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.status.Message;
 import org.opengroup.osdu.core.common.status.IEventPublisher;
 import org.opengroup.osdu.file.provider.azure.config.EventGridConfig;
 import org.springframework.stereotype.Service;
@@ -31,16 +32,17 @@ public class StatusEventPublisher implements IEventPublisher {
     private final JaxRsDpsLog log;
 
     @Override
-    public void publish(String msg, Map<String, String> attributesMap) throws CoreException {
+    public void publish(Message[] messages, Map<String, String> attributesMap) throws CoreException {
         validateEventGrid();
-        validateInput(msg, attributesMap);
+        validateInput(messages, attributesMap);
 
-        HashMap<String, Object> message = createMessageMap(msg, attributesMap);
+        HashMap<String, Object> message = createMessageMap(messages, attributesMap);
         List<EventGridEvent> eventsList = createEventGridEventList(message);
 
         eventGridTopicStore.publishToEventGridTopic(attributesMap.get(DpsHeaders.DATA_PARTITION_ID),
                 eventGridConfig.getCustomTopicName(), eventsList);
-        log.debug("Status event generated successfully");
+        log.info("Status event generated successfully");
+        
     }
 
     private List<EventGridEvent> createEventGridEventList(HashMap<String, Object> message) {
@@ -52,11 +54,11 @@ public class StatusEventPublisher implements IEventPublisher {
         return eventsList;
     }
 
-    private HashMap<String, Object> createMessageMap(String msg, Map<String, String> attributesMap) {
+    private HashMap<String, Object> createMessageMap(Message[] messages, Map<String, String> attributesMap) {
         String dataPartitionId = attributesMap.get(DpsHeaders.DATA_PARTITION_ID);
         String correlationId = attributesMap.get(DpsHeaders.CORRELATION_ID);
         HashMap<String, Object> message = new HashMap<>();
-        message.put("data", msg);
+        message.put("data", messages);
         message.put(DpsHeaders.DATA_PARTITION_ID, dataPartitionId);
         message.put(DpsHeaders.CORRELATION_ID, correlationId);
         return message;
@@ -68,13 +70,13 @@ public class StatusEventPublisher implements IEventPublisher {
         }
     }
 
-    private void validateInput(String msg, Map<String, String> attributesMap) throws CoreException {
-        validateMsg(msg);
+    private void validateInput(Message[] messages, Map<String, String> attributesMap) throws CoreException {
+        validateMsg(messages);
         validateAttributesMap(attributesMap);
     }
 
-    private void validateMsg(String msg) throws CoreException {
-        if (msg == null || msg.isEmpty()) {
+    private void validateMsg(Message[] messages) throws CoreException {
+        if (messages == null || messages.length == 0) {
             throw new CoreException("Nothing in message to publish");
         }
     }
@@ -88,5 +90,4 @@ public class StatusEventPublisher implements IEventPublisher {
             throw new CoreException("correlation-id is required to publish status event");
         }
     }
-
 }

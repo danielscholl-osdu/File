@@ -20,6 +20,8 @@ import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.status.Message;
+import org.opengroup.osdu.core.common.model.status.StatusDetails;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 import org.opengroup.osdu.file.provider.azure.config.EventGridConfig;
 
@@ -39,13 +41,15 @@ class StatusEventPublisherTest {
 	@InjectMocks
 	private StatusEventPublisher statusEventPublisher;
 	
-	private String data;
+	private Message[] messages;
 	
 	private Map<String, String> attributes;
 	
 	@BeforeEach
 	public void setup() {
-		data = "{ \"data\": { \"field\": \"value\" } }";
+	    Message message = new StatusDetails();
+	    messages = new Message[1];
+		messages[0] = message;
 		attributes = new HashMap<String, String>();
 		attributes.put(DpsHeaders.DATA_PARTITION_ID, "data-partition-id");
 		attributes.put(DpsHeaders.CORRELATION_ID, "correlation-id");
@@ -54,9 +58,9 @@ class StatusEventPublisherTest {
 	}
 
 	@Test
-	public void testPublishWhenEventGridIsNotEnabled() {
+	void testPublishWhenEventGridIsNotEnabled() {
 		when(eventGridConfig.isEventGridEnabled()).thenReturn(false);
-		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(data, attributes));
+		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(messages, attributes));
 		then(thrown).isInstanceOf(CoreException.class).hasMessageContaining("Event grid is not enabled");
 	}
 	
@@ -68,27 +72,27 @@ class StatusEventPublisherTest {
 	
 	@Test
 	public void testPublishWithNullAttributes() {
-		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(data, null));
+		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(messages, null));
 		then(thrown).isInstanceOf(CoreException.class).hasMessageContaining("data-partition-id and correlation-id are required to publish status event");
 	}
 	
 	@Test
 	public void testPublishWithoutDataPartitionIdInAttributes() {
 		attributes.remove(DpsHeaders.DATA_PARTITION_ID);
-		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(data, attributes));
+		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(messages, attributes));
 		then(thrown).isInstanceOf(CoreException.class).hasMessageContaining("data-partition-id is required to publish status event");
 	}
 	
 	@Test
 	public void testPublishWithoutCorrelationIdInAttributes() {
 		attributes.remove(DpsHeaders.CORRELATION_ID);
-		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(data, attributes));
+		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(messages, attributes));
 		then(thrown).isInstanceOf(CoreException.class).hasMessageContaining("correlation-id is required to publish status event");
 	}
 	
 	@Test
 	public void testPublishSuccess() {
-		statusEventPublisher.publish(data, attributes);
+		statusEventPublisher.publish(messages, attributes);
 		
 		verify(eventGridTopicStore).publishToEventGridTopic(any(), any(), any());
 	}

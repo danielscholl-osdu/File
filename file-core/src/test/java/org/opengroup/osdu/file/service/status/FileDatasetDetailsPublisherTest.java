@@ -1,12 +1,12 @@
 package org.opengroup.osdu.file.service.status;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,23 +14,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.status.DatasetType;
-import org.opengroup.osdu.core.common.status.DatasetDetailsRequestBuilder;
+import org.opengroup.osdu.core.common.model.status.Message;
+import org.opengroup.osdu.core.common.status.AttributesBuilder;
 import org.opengroup.osdu.core.common.status.IEventPublisher;
-import org.opengroup.osdu.file.model.storage.Record;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @ExtendWith(MockitoExtension.class)
 class FileDatasetDetailsPublisherTest {
 
-    private static final String DATASET_DETAILS_STR = "datasetDetailsStr";
 
     @Mock
-    private DatasetDetailsRequestBuilder requestBuilder;
+    private AttributesBuilder attributesBuilder;
 
     @Mock
     private IEventPublisher datasetDetailsEventPublisher;
+    
+    @Mock
+    private DpsHeaders dpsHeaders;
 
     @Mock
     private JaxRsDpsLog log;
@@ -41,23 +42,13 @@ class FileDatasetDetailsPublisherTest {
     @Test
     void testDatasetDetailsPublishSuccess() throws JsonProcessingException {
 
-        Record record = createRecord();
         Map<String, String> attributesMap = createAttributesMap();
 
-        when(requestBuilder.createDatasetDetailsMessage(record.getId(), DatasetType.FILE, record.getVersion() + "", 1))
-                .thenReturn(DATASET_DETAILS_STR);
-        when(requestBuilder.createAttributesMap()).thenReturn(attributesMap);
+        when(attributesBuilder.createAttributesMap()).thenReturn(attributesMap);
 
-        fileDatasetDetailsPublisher.publishDatasetDetails(record);
+        fileDatasetDetailsPublisher.publishDatasetDetails("record-id", "record-id-version");
 
-        verify(datasetDetailsEventPublisher).publish(DATASET_DETAILS_STR, attributesMap);
-    }
-
-    private Record createRecord() {
-        Record record = new Record();
-        record.setId("id");
-        record.setVersion(1234L);
-        return record;
+        verify(datasetDetailsEventPublisher).publish(any(Message[].class), any(Map.class));
     }
 
     private Map<String, String> createAttributesMap() {

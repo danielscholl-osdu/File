@@ -36,6 +36,7 @@ import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
 import org.opengroup.osdu.file.util.FileMetadataUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -59,38 +60,45 @@ public class FileMetadataService {
 
         log.info(FileMetadataConstant.METADATA_SAVE_STARTED);
         fileStatusPublisher.publishInProgressStatus();
-
-        validateKind(fileMetadata.getKind());
-
-        DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
-        String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
-        fileMetadata.setId(fileMetadataUtil.generateRecordId(dpsHeaders.getPartitionId(),
-                fetchEntityFromKind(fileMetadata.getKind())));
-
-        String stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
-        String persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
-
-        cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
         FileMetadataResponse fileMetadataResponse = new FileMetadataResponse();
-        Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
-
+        String stagingLocation = null;
+        String persistentLocation = null;
         try {
+            validateKind(fileMetadata.getKind());
+
+            DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
+            String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
+            fileMetadata.setId(fileMetadataUtil.generateRecordId(dpsHeaders.getPartitionId(),
+                    fetchEntityFromKind(fileMetadata.getKind())));
+
+            stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
+            persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
+
+            cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
+            Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
+
             log.info("Save Record Id " + record.getId());
             UpsertRecords upsertRecords = dataLakeStorage.upsertRecord(record);
             log.info(upsertRecords.toString());
             fileMetadataResponse.setId(upsertRecords.getRecordIds().get(0));
             cloudStorageOperation.deleteFile(stagingLocation);
-            fileStatusPublisher.publishSuccessStatus(record);
-            fileDatasetDetailsPublisher.publishDatasetDetails(record);
+            fileStatusPublisher.publishSuccessStatus(upsertRecords.getRecordIds().get(0),
+                    upsertRecords.getRecordIdVersions().get(0));
+            fileDatasetDetailsPublisher.publishDatasetDetails(upsertRecords.getRecordIds().get(0),
+                    upsertRecords.getRecordIdVersions().get(0));
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record");
             cloudStorageOperation.deleteFile(persistentLocation);
-            fileStatusPublisher.publishFailureStatus(record, e.getMessage());
+            fileStatusPublisher.publishFailureStatus(e.getHttpResponse());
             throw e;
-        } catch (Exception e) {
-            log.error("Error occurred while creating file metadata ", e);
+        } catch(OsduBadRequestException e) {
+            log.error("Error occurred while creating file metadata storage record");
+            fileStatusPublisher.publishFailureStatus(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+            throw e;
+        }catch (Exception e) {
+            log.error("Error occurred while creating file metadata", e);
             cloudStorageOperation.deleteFile(persistentLocation);
-            fileStatusPublisher.publishFailureStatus(record, e.getMessage());
+            fileStatusPublisher.publishFailureStatus(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;
