@@ -21,7 +21,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DmsRecord {
+public class FileRetrievalData {
   private String recordId;
   private String unsignedUrl;
 }

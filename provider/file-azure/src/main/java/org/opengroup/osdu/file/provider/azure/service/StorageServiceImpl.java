@@ -29,7 +29,7 @@ import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.file.model.DmsRecord;
+import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
@@ -114,13 +114,12 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   @Override
-  public StorageInstructionsResponse createStorageInstructions(String datasetId, String authorizationToken, String partitionID) {
-    SignedUrl signedUrl = this.createSignedUrl(datasetId, authorizationToken, partitionID);
+  public StorageInstructionsResponse createStorageInstructions(String blobId, String authorizationToken, String partitionID) {
+    SignedUrl signedUrl = this.createSignedUrl(blobId, authorizationToken, partitionID);
 
     AzureFileDmsUploadLocation dmsLocation = AzureFileDmsUploadLocation.builder()
         .signedUrl(signedUrl.getUrl().toString())
         .createdBy(signedUrl.getCreatedBy())
-        .datasetId(datasetId)
         .fileSource(signedUrl.getFileSource()).build();
 
     Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
@@ -132,13 +131,13 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   @Override
-  public RetrievalInstructionsResponse createRetrievalInstructions(List<DmsRecord> dmsRecords,
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList,
                                                                    String authorizationToken) {
 
-    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(dmsRecords.size());
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
-    for(DmsRecord dmsRecord: dmsRecords) {
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(dmsRecord.getUnsignedUrl(), authorizationToken);
+    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), authorizationToken);
 
       AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())
@@ -148,7 +147,7 @@ public class StorageServiceImpl implements IStorageService {
       Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
       DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
           .retrievalProperties(downloadLocation)
-          .datasetRegistryId(dmsRecord.getRecordId())
+          .datasetRegistryId(fileRetrievalData.getRecordId())
           .build();
 
       datasetRetrievalProperties.add(datasetRetrievalProperty);

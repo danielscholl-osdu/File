@@ -1,6 +1,10 @@
 package org.opengroup.osdu.file.provider.interfaces;
 
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.file.FileCopyOperation;
+import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
+
+import java.util.List;
 
 public interface ICloudStorageOperation {
 
@@ -12,6 +16,10 @@ public interface ICloudStorageOperation {
    * @throws OsduBadRequestException if source or destination file path is invalid
    */
   default String copyFile(String sourceFilePath, String destinationFilePath) throws OsduBadRequestException {
+    return null;
+  }
+
+  default List<FileCopyOperationResponse> copyFiles(List<FileCopyOperation> fileCopyOperationList) {
     return null;
   }
 

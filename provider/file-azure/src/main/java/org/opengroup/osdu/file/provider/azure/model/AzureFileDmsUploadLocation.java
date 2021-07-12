@@ -28,6 +28,5 @@ import lombok.NoArgsConstructor;
 public class AzureFileDmsUploadLocation {
   private String signedUrl;
   private String fileSource;
-  private String datasetId;
   private String createdBy;
 }

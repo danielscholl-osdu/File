@@ -20,17 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.dms.model.*;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.dms.IDmsService;
-import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
-import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
-import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
-import org.opengroup.osdu.file.model.DmsRecord;
+import org.opengroup.osdu.file.model.FileRetrievalData;
+import org.opengroup.osdu.file.model.file.FileCopyOperation;
+import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
 import org.opengroup.osdu.file.model.filemetadata.filedetails.DatasetProperties;
 import org.opengroup.osdu.file.model.filemetadata.filedetails.FileSourceInfo;
+import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
@@ -56,6 +57,9 @@ public class FileDmsServiceImpl implements IDmsService {
   @Inject
   private IStorageUtilService storageUtilService;
 
+  @Inject
+  private ICloudStorageOperation cloudStorageOperation;
+
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Override
@@ -78,9 +82,9 @@ public class FileDmsServiceImpl implements IDmsService {
     try {
       MultiRecordInfo batchRecordsResponse = dataLakeStorage.getRecords(retrievalInstructionsRequest.getDatasetRegistryIds());
       List<Record> datasetMetadataRecords = batchRecordsResponse.getRecords();
-      List<DmsRecord> dmsRecords = createUnsignedUrls(datasetMetadataRecords);
+      List<FileRetrievalData> fileRetrievalData = buildUnsignedUrls(datasetMetadataRecords);
 
-      return this.storageService.createRetrievalInstructions(dmsRecords, headers.getAuthorization());
+      return this.storageService.createRetrievalInstructions(fileRetrievalData, headers.getAuthorization());
 
     } catch (StorageException storageExc) {
       final int statusCode = storageExc.getHttpResponse() != null ?
@@ -91,8 +95,32 @@ public class FileDmsServiceImpl implements IDmsService {
     }
   }
 
-  private List<DmsRecord> createUnsignedUrls(List<Record> datasetRegistryRecords){
-    List<DmsRecord> dmsRecords = new ArrayList<>();
+  @Override
+  public List<CopyDmsResponse> copyDatasetsToPersistentLocation(List<Record> datasetSources) {
+    List<FileCopyOperation> copyOperations = new ArrayList<>();
+    List<CopyDmsResponse> copyDmsResponseList = new ArrayList<>();
+
+    for (Record datasetSource: datasetSources) {
+      final String filePath = this.getStorageFilePath(datasetSource);
+      String stagingLocation = storageUtilService.getStagingLocation(filePath, headers.getPartitionId());
+      String persistentLocation = storageUtilService.getPersistentLocation(filePath, headers.getPartitionId());
+      copyOperations.add(FileCopyOperation.builder().sourcePath(stagingLocation).destinationPath(persistentLocation).build());
+    }
+
+    List<FileCopyOperationResponse> copyResponses = cloudStorageOperation.copyFiles(copyOperations);
+
+    for (int i = 0; i< datasetSources.size(); i++) {
+      copyDmsResponseList.add(CopyDmsResponse.builder()
+          .success(copyResponses.get(i).isSuccess())
+          .datasetBlobStoragePath(copyResponses.get(i).getCopyOperation().getDestinationPath())
+          .build());
+    }
+
+    return copyDmsResponseList;
+  }
+
+  private List<FileRetrievalData> buildUnsignedUrls(List<Record> datasetRegistryRecords){
+    List<FileRetrievalData> fileRetrievalDataList = new ArrayList<>();
     for(Record datasetRegistryRecord : datasetRegistryRecords){
       String cloudStorageFilePath = getStorageFilePath(datasetRegistryRecord);
 
@@ -105,13 +133,13 @@ public class FileDmsServiceImpl implements IDmsService {
       String fileAbsolutePath = storageUtilService.getPersistentLocation(cloudStorageFilePath,
           headers.getPartitionId());
 
-      DmsRecord dmsRecord = DmsRecord.builder()
+      FileRetrievalData fileRetrievalData = FileRetrievalData.builder()
           .recordId(datasetRegistryRecord.getId())
           .unsignedUrl(fileAbsolutePath).build();
 
-      dmsRecords.add(dmsRecord);
+      fileRetrievalDataList.add(fileRetrievalData);
     }
-    return dmsRecords;
+    return fileRetrievalDataList;
   }
 
   private String getStorageFilePath(Record datasetRegistryRecord){

@@ -20,9 +20,7 @@ package org.opengroup.osdu.file.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.IDmsService;
-import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
-import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
-import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.dms.model.*;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,5 +54,11 @@ public class FileDmsApi {
   public RetrievalInstructionsResponse getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
     return fileDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
+  }
+
+  @PostMapping("/v2/files/copy")
+  public List<CopyDmsResponse> copyDms(
+      @RequestBody CopyDmsRequest copyDmsRequest) {
+    return fileDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
   }
 }
