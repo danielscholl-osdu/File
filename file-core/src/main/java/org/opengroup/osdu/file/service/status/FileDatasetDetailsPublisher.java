@@ -17,15 +17,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class FileDatasetDetailsPublisher {
+	
+	private static final String KIND = "datasetDetails";
+    private static final DatasetType DATASET_TYPE = DatasetType.FILE;
+    private static final String FAILED_TO_PUBLISH_DATASET_DETAILS = "Failed to publish dataset details";
 
     private final IEventPublisher datasetDetailsEventPublisher;
     private final AttributesBuilder attributesBuilder;
     private final DpsHeaders dpsHeaders;
     private final JaxRsDpsLog log;
-
-    private static final String KIND = "datasetDetails";
-    private static final DatasetType DATASET_TYPE = DatasetType.FILE;
-    private static final String FAILED_TO_PUBLISH_DATASET_DETAILS = "Failed to publish dataset details";
 
     public void publishDatasetDetails(String datasetId, String datasetVersionId) {
         Map<String, String> attributesMap = attributesBuilder.createAttributesMap();
