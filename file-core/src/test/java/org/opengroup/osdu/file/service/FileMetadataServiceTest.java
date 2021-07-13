@@ -58,6 +58,7 @@ import static org.mockito.Mockito.when;
 public class FileMetadataServiceTest {
 
     public static final String RECORD_ID = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003";
+    public static final String RECORD_ID_VERSION = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003:123456789";
     public static final String FILE_METADATA_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
 
     @InjectMocks
@@ -109,7 +110,10 @@ public class FileMetadataServiceTest {
         UpsertRecords upsertRecords = new UpsertRecords();
         List<String> recordIds = new ArrayList<>();
         recordIds.add(RECORD_ID);
+        List<String> recordIdVersions = new ArrayList<>();
+        recordIdVersions.add(RECORD_ID_VERSION);
         upsertRecords.setRecordIds(recordIds);
+        upsertRecords.setRecordIdVersions(recordIdVersions);
 
         when(headers.getPartitionId()).thenReturn(dataPartitionId);
         when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);

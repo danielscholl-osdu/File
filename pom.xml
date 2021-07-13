@@ -36,10 +36,10 @@
 
   <modules>
     <module>file-core</module>
-    <module>provider/file-aws</module>
+    <!-- <module>provider/file-aws</module>
     <module>provider/file-gcp</module>
     <module>provider/file-ibm</module>
-    <module>provider/file-gcp-datastore</module>
+    <module>provider/file-gcp-datastore</module> -->
     <module>provider/file-azure</module>
   </modules>
 
@@ -51,7 +51,7 @@
     <javax.inject.version>1</javax.inject.version>
     <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
     <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
-    <os-core-common.version>0.10.0-rc1</os-core-common.version>
+    <os-core-common.version>0.10.0-rc2</os-core-common.version>
     <lombok.version>1.18.0</lombok.version>
   </properties>
 
