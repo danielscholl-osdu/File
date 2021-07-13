@@ -36,10 +36,10 @@
 
   <modules>
     <module>file-core</module>
-    <!-- <module>provider/file-aws</module>
+    <module>provider/file-aws</module>
     <module>provider/file-gcp</module>
     <module>provider/file-ibm</module>
-    <module>provider/file-gcp-datastore</module> -->
+    <module>provider/file-gcp-datastore</module>
     <module>provider/file-azure</module>
   </modules>
 
