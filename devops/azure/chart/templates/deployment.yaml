@@ -114,3 +114,7 @@ spec:
           value: "100"
         - name: SEARCH_QUERY_LIMIT
           value: "1000"
+        - name: event_grid_enabled
+          value: "true"
+        - name: event_grid_topic
+          value: "schemachangedtopic"

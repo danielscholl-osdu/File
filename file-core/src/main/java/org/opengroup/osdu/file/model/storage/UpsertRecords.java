@@ -10,4 +10,5 @@ public class UpsertRecords {
     private Integer recordCount;
     private List<String> recordIds;
     private List<String> skippedRecordIds;
+    private List<String> recordIdVersions;
 }
