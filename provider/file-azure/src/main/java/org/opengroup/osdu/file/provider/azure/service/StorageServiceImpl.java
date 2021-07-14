@@ -114,8 +114,8 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   @Override
-  public StorageInstructionsResponse createStorageInstructions(String blobId, String authorizationToken, String partitionID) {
-    SignedUrl signedUrl = this.createSignedUrl(blobId, authorizationToken, partitionID);
+  public StorageInstructionsResponse createStorageInstructions(String blobId, String partitionID) {
+    SignedUrl signedUrl = this.createSignedUrl(blobId, dpsHeaders.getAuthorization(), partitionID);
 
     AzureFileDmsUploadLocation dmsLocation = AzureFileDmsUploadLocation.builder()
         .signedUrl(signedUrl.getUrl().toString())
@@ -131,13 +131,12 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   @Override
-  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList,
-                                                                   String authorizationToken) {
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList) {
 
     List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), authorizationToken);
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), dpsHeaders.getAuthorization());
 
       AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())

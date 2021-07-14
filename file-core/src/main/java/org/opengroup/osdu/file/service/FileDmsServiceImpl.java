@@ -67,7 +67,7 @@ public class FileDmsServiceImpl implements IDmsService {
     String fileID = generateFileId();
 
     log.debug("Create the empty blob in bucket. FileID : {}", fileID);
-    return storageService.createStorageInstructions(fileID, headers.getAuthorization(),
+    return storageService.createStorageInstructions(fileID,
         headers.getPartitionIdWithFallbackToAccountId());
   }
 
@@ -84,7 +84,7 @@ public class FileDmsServiceImpl implements IDmsService {
       List<Record> datasetMetadataRecords = batchRecordsResponse.getRecords();
       List<FileRetrievalData> fileRetrievalData = buildUnsignedUrls(datasetMetadataRecords);
 
-      return this.storageService.createRetrievalInstructions(fileRetrievalData, headers.getAuthorization());
+      return this.storageService.createRetrievalInstructions(fileRetrievalData);
 
     } catch (StorageException storageExc) {
       final int statusCode = storageExc.getHttpResponse() != null ?

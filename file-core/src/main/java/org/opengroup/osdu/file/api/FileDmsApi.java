@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.opengroup.osdu.file.api;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,14 @@ import org.opengroup.osdu.core.common.dms.model.*;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ import java.util.List;
 @RestController
 @RequestScope
 @Validated
+@RequestMapping(value = "/v2/files")
 public class FileDmsApi {
 
   final DpsHeaders headers;
@@ -45,20 +48,23 @@ public class FileDmsApi {
   @Qualifier("FileDmsService")
   private IDmsService fileDmsService;
 
-  @PostMapping("/v2/files/storage")
-  public StorageInstructionsResponse getStorageInstructions() {
-    return fileDmsService.getStorageInstructions();
+  @PostMapping("/storage")
+  public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
+    StorageInstructionsResponse storageInstructionsResp = fileDmsService.getStorageInstructions();
+    return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
-  @PostMapping("/v2/files/retrieval")
-  public RetrievalInstructionsResponse getRetrievalInstructions(
+  @PostMapping("/retrieval")
+  public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
-    return fileDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
+    RetrievalInstructionsResponse retrievalInstructionsResp = fileDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
+    return new ResponseEntity<>(retrievalInstructionsResp, HttpStatus.OK);
   }
 
-  @PostMapping("/v2/files/copy")
-  public List<CopyDmsResponse> copyDms(
+  @PostMapping("/copy")
+  public ResponseEntity<List<CopyDmsResponse>> copyDms(
       @RequestBody CopyDmsRequest copyDmsRequest) {
-    return fileDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
+    List<CopyDmsResponse> copyOpResponse = fileDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
+    return new ResponseEntity<>(copyOpResponse, HttpStatus.OK);
   }
 }

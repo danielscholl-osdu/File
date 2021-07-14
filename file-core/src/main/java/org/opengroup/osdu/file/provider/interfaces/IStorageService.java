@@ -41,11 +41,10 @@ public interface IStorageService {
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.
    * @param datasetId Dataset ID
-   * @param authorizationToken Authorization token
    * @param partitionID partition ID
    * @return info about object URI, upload signed URL etc.
    */
-  default StorageInstructionsResponse createStorageInstructions(String datasetId, String authorizationToken, String partitionID) {
+  default StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionID) {
     return null;
   }
 
@@ -65,11 +64,9 @@ public interface IStorageService {
   /**
    * Generates Signed URL for File Download Operations in DMS API Context.
    * @param fileRetrievalData List of Unsigned URLs for which Signed URL / Temporary credentials should be generated.
-   * @param authorizationToken Authorization token
    * @return info about object URI, download signed URL etc.
    */
-  default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData,
-                                                                    String authorizationToken) {
+  default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
     return null;
   }
 }
