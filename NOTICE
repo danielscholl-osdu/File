@@ -550,8 +550,6 @@ The following software have components provided under the terms of this license:
 - Google OAuth Client Library for Java (from )
 - Gson (from https://github.com/google/gson)
 - Guava InternalFutureFailureAccess and InternalFutures (from )
-- Guava ListenableFuture only (from )
-- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
@@ -634,7 +632,6 @@ The following software have components provided under the terms of this license:
 - Microsoft Azure SDK for SQL API of Azure Cosmos DB Service (from https://github.com/Azure/azure-sdk-for-java)
 - Mockito (from http://mockito.org)
 - Netty Reactive Streams HTTP support (from )
-- Netty Reactive Streams Implementation (from )
 - Netty Reactive Streams Implementation (from )
 - Netty/Buffer (from http://netty.io/)
 - Netty/Codec (from )
@@ -840,6 +837,7 @@ The following software have components provided under the terms of this license:
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
 - Lucene Common Analyzers (from )
 - Lucene Core (from )
+- Reflections (from http://github.com/ronmamo/reflections)
 - Stax2 API (from http://github.com/FasterXML/stax2-api)
 - ThreeTen backport (from https://www.threeten.org/threetenbp)
 
@@ -878,7 +876,6 @@ The following software have components provided under the terms of this license:
 - Reflections (from http://github.com/ronmamo/reflections)
 - SnakeYAML (from http://www.snakeyaml.org)
 - Spring Core (from https://github.com/spring-projects/spring-framework)
-- Stax2 API (from http://github.com/FasterXML/stax2-api)
 - ThreeTen backport (from https://www.threeten.org/threetenbp)
 - jakarta.xml.bind-api (from )
 
@@ -913,7 +910,6 @@ CDDL-1.0
 The following software have components provided under the terms of this license:
 
 - JavaBeans Activation Framework API jar (from )
-- javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 
 ========================================================================
 CDDL-1.1
@@ -924,6 +920,7 @@ The following software have components provided under the terms of this license:
 - Java Architecture For XML Binding (from )
 - JavaBeans Activation Framework (from )
 - JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
+- javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
 ========================================================================
@@ -932,6 +929,14 @@ CPL-1.0
 The following software have components provided under the terms of this license:
 
 - JUnit (from http://junit.org)
+
+========================================================================
+DOC
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Lucene Core (from )
+- Woodstox (from https://github.com/FasterXML/woodstox)
 
 ========================================================================
 EPL-1.0
@@ -980,7 +985,6 @@ The following software have components provided under the terms of this license:
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
 - Java Architecture For XML Binding (from )
 - JavaBeans Activation Framework (from )
-- JavaBeans Activation Framework API jar (from )
 - JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
@@ -1004,7 +1008,6 @@ The following software have components provided under the terms of this license:
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
 - Java Architecture For XML Binding (from )
 - JavaBeans Activation Framework (from )
-- JavaBeans Activation Framework API jar (from )
 - JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
@@ -1019,6 +1022,14 @@ The following software have components provided under the terms of this license:
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
 - Project Lombok (from https://projectlombok.org)
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
+
+========================================================================
+ImageMagick
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Stax2 API (from http://github.com/FasterXML/stax2-api)
+- Woodstox (from https://github.com/FasterXML/woodstox)
 
 ========================================================================
 JSON
@@ -1052,6 +1063,7 @@ LGPL-2.1-or-later
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
 - SnakeYAML (from http://www.snakeyaml.org)
 
@@ -1163,10 +1175,6 @@ Public-Domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
-- HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
-- Joda-Time (from http://www.joda.org/joda-time/)
-- LatencyUtils (from http://latencyutils.github.io/LatencyUtils/)
 - Spongy Castle (from http://rtyley.github.io/spongycastle/)
 
 ========================================================================
@@ -1178,11 +1186,25 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 
 ========================================================================
+SunPro
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Lucene Core (from )
+
+========================================================================
 WTFPL
 ========================================================================
 The following software have components provided under the terms of this license:
 
 - Reflections (from http://github.com/ronmamo/reflections)
+
+========================================================================
+X11
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Lucene Core (from )
 
 ========================================================================
 public-domain
@@ -1201,6 +1223,7 @@ The following software have components provided under the terms of this license:
 - Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
+- Joda-Time (from http://www.joda.org/joda-time/)
 - Joda-Time (from http://www.joda.org/joda-time/)
 - LatencyUtils (from http://latencyutils.github.io/LatencyUtils/)
 - Microsoft Application Insights Java SDK Core (from https://github.com/Microsoft/ApplicationInsights-Java)
@@ -1223,6 +1246,7 @@ The following software have components provided under the terms of this license:
 - Byte Buddy (without dependencies) (from )
 - Checker Qual (from https://checkerframework.org)
 - JAXB OSGi bundle for GlassFish V3 (from http://jaxb.java.net/)
+- JSON in Java (from https://github.com/douglascrockford/JSON-java)
 - JUnit (from http://junit.org)
 - JUnit Jupiter (Aggregator) (from https://junit.org/junit5/)
 - JavaBeans Activation Framework API jar (from )

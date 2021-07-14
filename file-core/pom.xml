@@ -52,10 +52,15 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-      </dependency>
+	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.opengroup.osdu</groupId>
+		<artifactId>os-core-common</artifactId>
+		<version>${os-core-common.version}</version>
+	</dependency>
     <!-- swagger dependencies -->
     <dependency>
       <groupId>io.springfox</groupId>
