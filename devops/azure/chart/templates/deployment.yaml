@@ -117,4 +117,4 @@ spec:
         - name: event_grid_enabled
           value: "true"
         - name: event_grid_topic
-          value: "schemachangedtopic"
+          value: "statuschangedtopic"
