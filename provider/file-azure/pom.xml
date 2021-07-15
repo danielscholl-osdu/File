@@ -81,7 +81,7 @@
     </dependency>
     <dependency>
      <groupId>com.azure.spring</groupId>
-      <artifactId>azure-spring-boot-starter-active-directory</artifactId>      
+      <artifactId>azure-spring-boot-starter-active-directory</artifactId>
       <exclusions>
         <exclusion>
           <groupId>ch.qos.logback</groupId>

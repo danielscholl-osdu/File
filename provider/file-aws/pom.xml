@@ -17,6 +17,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opengroup.osdu</groupId>
+  <artifactId>file-aws</artifactId>
+  <version>0.10.0-SNAPSHOT</version>
+  <name>file-aws</name>
+  <description>File service on AWS</description>
+  <packaging>jar</packaging>
 
     <parent>
         <groupId>org.opengroup.osdu</groupId>
@@ -25,23 +31,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>file-aws</artifactId>
-    <version>0.10.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <description>File service on AWS</description>
-
     <properties>
         <aws.version>1.11.1018</aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
-
-
-
-
-  <!-- <properties>
-    <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
-  </properties> -->
 
     <dependencyManagement>
         <dependencies>
@@ -71,7 +65,7 @@
         <dependency>
         <groupId>org.opengroup.osdu.core.aws</groupId>
         <artifactId>os-core-lib-aws</artifactId>
-        <version>0.9.0</version>
+          <version>0.10.0-SNAPSHOT</version>
     </dependency>
     <!-- AWS managed packages -->
     <dependency>
