@@ -32,6 +32,10 @@
   <name>file-core</name>
   <description>Core project for the File service</description>
 
+  <properties>
+    <io.rest-assured.version>4.0.0</io.rest-assured.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -70,6 +74,7 @@
 	<dependency>
 		<groupId>io.rest-assured</groupId>
 		<artifactId>rest-assured</artifactId>
+    <version>${io.rest-assured.version}</version>
 	</dependency>
     <dependency>
       <groupId>junit</groupId>
