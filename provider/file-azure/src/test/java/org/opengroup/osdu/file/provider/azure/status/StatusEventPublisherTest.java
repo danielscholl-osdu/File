@@ -3,6 +3,7 @@ package org.opengroup.osdu.file.provider.azure.status;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,15 +54,15 @@ class StatusEventPublisherTest {
 		attributes = new HashMap<String, String>();
 		attributes.put(DpsHeaders.DATA_PARTITION_ID, "data-partition-id");
 		attributes.put(DpsHeaders.CORRELATION_ID, "correlation-id");
-		when(eventGridConfig.isEventGridEnabled()).thenReturn(true);
+		when(eventGridConfig.isStatusEventGridEnabled()).thenReturn(true);
 		
 	}
 
 	@Test
-	void testPublishWhenEventGridIsNotEnabled() {
-		when(eventGridConfig.isEventGridEnabled()).thenReturn(false);
-		Throwable thrown = catchThrowable(() -> statusEventPublisher.publish(messages, attributes));
-		then(thrown).isInstanceOf(CoreException.class).hasMessageContaining("Event grid is not enabled");
+	void testPublishWhenStatusEventGridIsNotEnabled() {
+		when(eventGridConfig.isStatusEventGridEnabled()).thenReturn(false);
+		statusEventPublisher.publish(messages, attributes);
+		verify(eventGridTopicStore, times(0)).publishToEventGridTopic(any(), any(), any());
 	}
 	
 	@Test

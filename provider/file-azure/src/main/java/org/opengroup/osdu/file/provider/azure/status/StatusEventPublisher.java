@@ -33,14 +33,18 @@ public class StatusEventPublisher implements IEventPublisher {
 
     @Override
     public void publish(Message[] messages, Map<String, String> attributesMap) throws CoreException {
-        validateEventGrid();
+		if (!eventGridConfig.isStatusEventGridEnabled()) {
+			log.warning("Status event grid is disabled");
+			return;
+		}
+    	
         validateInput(messages, attributesMap);
 
         HashMap<String, Object> message = createMessageMap(messages, attributesMap);
         List<EventGridEvent> eventsList = createEventGridEventList(message);
 
         eventGridTopicStore.publishToEventGridTopic(attributesMap.get(DpsHeaders.DATA_PARTITION_ID),
-                eventGridConfig.getCustomTopicName(), eventsList);
+                eventGridConfig.getStatusTopicName(), eventsList);
         log.info("Status event generated successfully");
         
     }
@@ -62,12 +66,6 @@ public class StatusEventPublisher implements IEventPublisher {
         message.put(DpsHeaders.DATA_PARTITION_ID, dataPartitionId);
         message.put(DpsHeaders.CORRELATION_ID, correlationId);
         return message;
-    }
-
-    private void validateEventGrid() throws CoreException {
-        if (!eventGridConfig.isEventGridEnabled()) {
-            throw new CoreException("Event grid is not enabled");
-        }
     }
 
     private void validateInput(Message[] messages, Map<String, String> attributesMap) throws CoreException {
