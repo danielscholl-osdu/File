@@ -70,7 +70,7 @@ public class FileStatusPublisher {
         try {
             statusEventPublisher.publish(statusDetailsArr, attributesMap);
         } catch (CoreException e) {
-            log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage());
+            log.warning(FAILED_TO_PUBLISH_STATUS + e.getMessage(), e);
         }
     }
 

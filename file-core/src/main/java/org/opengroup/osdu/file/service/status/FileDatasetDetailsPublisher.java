@@ -34,7 +34,7 @@ public class FileDatasetDetailsPublisher {
         try {
             datasetDetailsEventPublisher.publish(datasetDetailsArr, attributesMap);
         } catch (CoreException e) {
-            log.warning(FAILED_TO_PUBLISH_DATASET_DETAILS + e.getMessage());
+            log.warning(FAILED_TO_PUBLISH_DATASET_DETAILS + e.getMessage(), e);
         }
     }
 
