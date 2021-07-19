@@ -17,6 +17,7 @@
 package org.opengroup.osdu.file.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -44,21 +45,14 @@ import java.util.*;
 
 @Service("FileDmsService")
 @Slf4j
+@RequiredArgsConstructor
 public class FileDmsServiceImpl implements IDmsService {
-  @Inject
-  private IStorageService storageService;
 
-  @Inject
-  private DpsHeaders headers;
-
-  @Inject
-  private DataLakeStorageFactory storageFactory;
-
-  @Inject
-  private IStorageUtilService storageUtilService;
-
-  @Inject
-  private ICloudStorageOperation cloudStorageOperation;
+  final IStorageService storageService;
+  final DpsHeaders headers;
+  final DataLakeStorageFactory storageFactory;
+  final IStorageUtilService storageUtilService;
+  final ICloudStorageOperation cloudStorageOperation;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -154,6 +148,10 @@ public class FileDmsServiceImpl implements IDmsService {
         datasetRegistryRecord.getData().get("DatasetProperties"), DatasetProperties.class);
 
     FileSourceInfo fileSourceInfo = datasetProperties.getFileSourceInfo();
+    if (fileSourceInfo == null) {
+      throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad Request",
+          "File Source Info is missing in the record metadata");
+    }
 
     if (!StringUtils.isEmpty(fileSourceInfo.getFileSource())) {
       storageFilePath = fileSourceInfo.getFileSource();
