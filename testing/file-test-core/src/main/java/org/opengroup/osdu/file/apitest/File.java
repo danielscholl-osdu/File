@@ -224,5 +224,4 @@ public abstract class File extends TestBase {
         "{}");
     assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
   }
-
 }

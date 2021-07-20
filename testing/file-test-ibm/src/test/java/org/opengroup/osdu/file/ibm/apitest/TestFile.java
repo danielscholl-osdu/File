@@ -35,7 +35,7 @@ import org.opengroup.osdu.file.apitest.File;
 import org.opengroup.osdu.file.ibm.util.HttpClientIBM;
 import org.opengroup.osdu.file.util.FileUtils;
 import org.junit.jupiter.api.Test;
-
+import org.apache.http.HttpStatus;
 import com.sun.jersey.api.client.ClientResponse;
 
 public class TestFile extends File {
@@ -62,6 +62,17 @@ public class TestFile extends File {
 //      for (LocationResponse response : locationResponses) {
 //      }
 //    }
+  }
+  
+  @Test
+  @Override
+  public void shouldReturnUnauthorized_whenGivenInvalidPartitionId() throws Exception {
+    ClientResponse getLocationResponse = client.send(
+        getLocation,
+        "POST",
+        getHeaders("invalid_partition", client.getAccessToken()),
+        "{}");
+    assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
   }
 
 }
