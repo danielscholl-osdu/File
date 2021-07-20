@@ -48,13 +48,13 @@ public class FileDmsApi {
   @Qualifier("FileDmsService")
   private IDmsService fileDmsService;
 
-  @PostMapping("/storage")
+  @PostMapping("/storageInstructions")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
     StorageInstructionsResponse storageInstructionsResp = fileDmsService.getStorageInstructions();
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
-  @PostMapping("/retrieval")
+  @PostMapping("/retrievalInstructions")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
     RetrievalInstructionsResponse retrievalInstructionsResp = fileDmsService.getRetrievalInstructions(retrievalInstructionsRequest);

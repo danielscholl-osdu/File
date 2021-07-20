@@ -38,8 +38,8 @@ public class TestFile extends File {
   protected static final DummyRecordsHelper RECORDS_HELPER = new DummyRecordsHelper();
   private static String containerName = System.getProperty("STAGING_CONTAINER_NAME", System.getenv("STAGING_CONTAINER_NAME"));
 
-  private static final String storageInstructionsApi = "/files/storage";
-  private static final String retrievalInstructionsApi = "/files/retrieval";
+  private static final String storageInstructionsApi = "/files/storageInstructions";
+  private static final String retrievalInstructionsApi = "/files/retrievalInstructions";
   private static final String copyDmsApi = "/files/copy";
 
 
