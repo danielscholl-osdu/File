@@ -7,13 +7,19 @@ import org.junit.jupiter.api.BeforeAll;
 import static org.hamcrest.CoreMatchers.containsString;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.file.FileLocationResponse;
 import org.opengroup.osdu.core.common.model.file.LocationResponse;
+import org.opengroup.osdu.core.common.model.storage.UpsertRecords;
 import org.opengroup.osdu.file.apitest.Config;
 import org.opengroup.osdu.file.apitest.File;
 import org.opengroup.osdu.file.azure.HttpClientAzure;
 
 import org.opengroup.osdu.file.util.FileUtils;
+import org.opengroup.osdu.file.util.LegalTagUtils;
+import org.opengroup.osdu.file.util.StorageRecordUtils;
 import util.DummyRecordsHelper;
 import util.FileUtilsAzure;
 import util.StorageUtilAzure;
@@ -21,14 +27,22 @@ import util.StorageUtilAzure;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestFile extends File {
   protected static final DummyRecordsHelper RECORDS_HELPER = new DummyRecordsHelper();
   private static String containerName = System.getProperty("STAGING_CONTAINER_NAME", System.getenv("STAGING_CONTAINER_NAME"));
+
+  private static final String storageInstructionsApi = "/files/storageInstructions";
+  private static final String retrievalInstructionsApi = "/files/retrievalInstructions";
+  private static final String copyDmsApi = "/files/copy";
+
+
   @BeforeAll
   public static void setUp() throws IOException {
     client = new HttpClientAzure();
@@ -209,6 +223,88 @@ public class TestFile extends File {
     assertThat(responseObject.message, containsString(resp));
   }
 
+  @Test
+  public void testFileDmsApis() throws Exception {
+    ClientResponse storageInstructionsResponse = client.send(
+        storageInstructionsApi,
+        "POST",
+        getCommonHeader(),
+        null);
+
+    assertNotNull(storageInstructionsResponse);
+    assertEquals(HttpStatus.SC_OK, storageInstructionsResponse.getStatus());
+
+    // GET Storage Instructions....
+    StorageInstructionsResponse storageInstructions = mapper.readValue(
+        storageInstructionsResponse.getEntity(String.class), StorageInstructionsResponse.class);
+
+    System.out.println("Storage Response " + storageInstructions);
+
+    // Upload File to Signed URL
+    Map<String, String> fileUploadHeaders = new HashMap<>();
+    fileUploadHeaders.put("x-ms-blob-type", "BlockBlob");
+
+    assertEquals("AZURE", storageInstructions.getProviderKey());
+    assertTrue(storageInstructions.getStorageLocation().containsKey("signedUrl"));
+    assertTrue(storageInstructions.getStorageLocation().containsKey("fileSource"));
+
+    ClientResponse fileUploadResponse = client.sendExt(
+        storageInstructions.getStorageLocation().get("signedUrl").toString(),
+        "PUT", fileUploadHeaders, "foo-bar-content");
+
+    assertEquals(HttpStatus.SC_CREATED, fileUploadResponse.getStatus());
+
+    // Storage metadata create.
+    final String legalTagName = LegalTagUtils.createRandomName();
+    ClientResponse legalTagCreateResponse = LegalTagUtils.create(client, getCommonHeader(),
+        legalTagName);
+
+    assertEquals(HttpStatus.SC_CREATED, legalTagCreateResponse.getStatus());
+
+    final String fileMetadataRecord = StorageRecordUtils.createFileMetadataRecord(
+        storageInstructions.getStorageLocation().get("fileSource").toString(), legalTagName);
+
+    ClientResponse storageMetadataUpdateResponse = StorageRecordUtils.sendMetadataRecord(client,
+        getCommonHeader(), fileMetadataRecord);
+
+    assertEquals(HttpStatus.SC_CREATED, storageMetadataUpdateResponse.getStatus());
+
+    UpsertRecords createdRecords = mapper.readValue(
+        storageMetadataUpdateResponse.getEntity(String.class), UpsertRecords.class);
+
+    // Copy DMS
+    ClientResponse copyDmsResponse = client.send(
+        copyDmsApi,
+        "POST",
+        getCommonHeader(),
+        StorageRecordUtils.convertStorageMetadatRecordToCopyDmsRequest(fileMetadataRecord));
+
+    assertEquals(HttpStatus.SC_OK, copyDmsResponse.getStatus());
+
+    // Retrieval instructions
+    RetrievalInstructionsRequest request = new RetrievalInstructionsRequest();
+    request.setDatasetRegistryIds(createdRecords.getRecordIds());
+
+    ClientResponse retrievalInstructionsResponse = client.send(
+        retrievalInstructionsApi,
+        "POST",
+        getCommonHeader(),
+        mapper.writeValueAsString(request));
+
+    assertNotNull(retrievalInstructionsResponse);
+    assertEquals(HttpStatus.SC_OK, retrievalInstructionsResponse.getStatus());
+
+    RetrievalInstructionsResponse retrievalResponse = mapper.readValue(
+        retrievalInstructionsResponse.getEntity(String.class), RetrievalInstructionsResponse.class);
+
+    assertEquals("AZURE", retrievalResponse.getProviderKey());
+    assertEquals(1, retrievalResponse.getDatasets().size());
+
+    assertEquals(createdRecords.getRecordIds().get(0),
+        retrievalResponse.getDatasets().get(0).getDatasetRegistryId());
+
+    assertTrue(retrievalResponse.getDatasets().get(0).getRetrievalProperties().containsKey("signedUrl"));
+  }
 
   @AfterAll
   public static void tearDown() throws Exception {

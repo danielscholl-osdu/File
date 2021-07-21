@@ -44,7 +44,7 @@
     <azure.appservice.subscription />
     <springfox-version>2.7.0</springfox-version>
     <osdu.corelibazure.version>0.9.0-rc3</osdu.corelibazure.version>
-    <osdu.oscorecommon.version>0.9.0</osdu.oscorecommon.version>
+    <osdu.oscorecommon.version>0.10.0-rc3</osdu.oscorecommon.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-core-common</artifactId>
-      <version>${osdu.oscorecommon.version}</version>
+      <version>${os-core-common.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -81,7 +81,7 @@
     </dependency>
     <dependency>
      <groupId>com.azure.spring</groupId>
-      <artifactId>azure-spring-boot-starter-active-directory</artifactId>      
+      <artifactId>azure-spring-boot-starter-active-directory</artifactId>
       <exclusions>
         <exclusion>
           <groupId>ch.qos.logback</groupId>
