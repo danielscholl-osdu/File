@@ -57,7 +57,7 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>os-core-common</artifactId>
-        <version>0.10.0</version>
+        <version>0.10.0-rc3</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework.boot</groupId>
@@ -72,7 +72,7 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>core-lib-azure</artifactId>
-        <version>0.10.0</version>
+        <version>0.9.0-rc3</version>
         <scope>test</scope>
       </dependency>
 
@@ -144,7 +144,7 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>core-lib-azure</artifactId>
-        <version>0.10.0</version>
+        <version>0.9.0-rc3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
