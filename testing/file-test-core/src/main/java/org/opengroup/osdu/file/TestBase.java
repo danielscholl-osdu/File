@@ -20,6 +20,8 @@ package org.opengroup.osdu.file;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
 import org.opengroup.osdu.file.apitest.Config;
 import org.opengroup.osdu.file.util.CloudStorageUtil;
 
@@ -43,7 +45,11 @@ public abstract class TestBase {
     if (token != null && !token.isEmpty()) {
       headers.put("Authorization", token);
     }
+
+    final String correlationId = UUID.randomUUID().toString();
+    System.out.println("Using correlation-id for the request " + correlationId);
+    headers.put("correlation-id", correlationId);
+
     return headers;
   }
-
 }

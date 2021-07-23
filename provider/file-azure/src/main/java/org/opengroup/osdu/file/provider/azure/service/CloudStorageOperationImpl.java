@@ -23,6 +23,8 @@ import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.file.FileCopyOperation;
+import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import com.azure.storage.blob.models.BlobCopyInfo;
@@ -30,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CloudStorageOperationImpl implements ICloudStorageOperation {
@@ -67,6 +71,30 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
       String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH +  filePath;
       throw new OsduBadRequestException(message, ex);
     }
+  }
+
+  @Override
+  public List<FileCopyOperationResponse> copyFiles(List<FileCopyOperation> fileCopyOperationList) {
+    // TODO: Investigate if files can be copied in parallel with batch.
+    List<FileCopyOperationResponse> operationResponses = new ArrayList<>();
+
+    for (FileCopyOperation fileCopyOperation: fileCopyOperationList) {
+      FileCopyOperationResponse response;
+      try {
+        String copyId = this.copyFile(fileCopyOperation.getSourcePath(),
+            fileCopyOperation.getDestinationPath());
+        response = FileCopyOperationResponse.builder()
+            .copyOperation(fileCopyOperation)
+            .success(true).build();
+      } catch (Exception e) {
+        logger.error("Error in performing file copy operation", e);
+        response = FileCopyOperationResponse.builder()
+            .copyOperation(fileCopyOperation)
+            .success(false).build();
+      }
+      operationResponses.add(response);
+    }
+    return operationResponses;
   }
 
   @Override

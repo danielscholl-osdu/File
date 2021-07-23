@@ -20,8 +20,8 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.KindValidationException;
-import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.exception.NotFoundException;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.mapper.FileMetadataRecordMapper;
 import org.opengroup.osdu.file.model.filemetadata.FileMetadata;
 import org.opengroup.osdu.file.model.filemetadata.FileMetadataResponse;
@@ -30,11 +30,15 @@ import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
+import org.opengroup.osdu.file.service.status.FileDatasetDetailsPublisher;
+import org.opengroup.osdu.file.service.status.FileStatusPublisher;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
 import org.opengroup.osdu.file.util.FileMetadataUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -48,39 +52,53 @@ public class FileMetadataService {
     final DpsHeaders dpsHeaders;
     final FileMetadataUtil fileMetadataUtil;
     final FileMetadataRecordMapper fileMetadataRecordMapper;
+    final FileStatusPublisher fileStatusPublisher;
+    final FileDatasetDetailsPublisher fileDatasetDetailsPublisher;
 
     public FileMetadataResponse saveMetadata(FileMetadata fileMetadata)
             throws OsduBadRequestException, StorageException, ApplicationException {
 
         log.info(FileMetadataConstant.METADATA_SAVE_STARTED);
-
-        validateKind(fileMetadata.getKind());
-
-        DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
-        String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
-        fileMetadata.setId(fileMetadataUtil.generateRecordId(dpsHeaders.getPartitionId(),
-                fetchEntityFromKind(fileMetadata.getKind())));
-
-        String stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
-        String persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
-
-        cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
+        fileStatusPublisher.publishInProgressStatus();
         FileMetadataResponse fileMetadataResponse = new FileMetadataResponse();
-        Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
-
+        String stagingLocation = null;
+        String persistentLocation = null;
         try {
+            validateKind(fileMetadata.getKind());
+
+            DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
+            String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
+            fileMetadata.setId(fileMetadataUtil.generateRecordId(dpsHeaders.getPartitionId(),
+                    fetchEntityFromKind(fileMetadata.getKind())));
+
+            stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
+            persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
+
+            cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
+            Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
+
             log.info("Save Record Id " + record.getId());
             UpsertRecords upsertRecords = dataLakeStorage.upsertRecord(record);
             log.info(upsertRecords.toString());
             fileMetadataResponse.setId(upsertRecords.getRecordIds().get(0));
             cloudStorageOperation.deleteFile(stagingLocation);
+            fileStatusPublisher.publishSuccessStatus(upsertRecords.getRecordIds().get(0),
+                    upsertRecords.getRecordIdVersions().get(0));
+            fileDatasetDetailsPublisher.publishDatasetDetails(upsertRecords.getRecordIds().get(0),
+                    upsertRecords.getRecordIdVersions().get(0));
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record");
             cloudStorageOperation.deleteFile(persistentLocation);
+            fileStatusPublisher.publishFailureStatus(e.getHttpResponse());
             throw e;
-        } catch (Exception e) {
-            log.error("Error occurred while creating file metadata ", e);
+        } catch(OsduBadRequestException e) {
+            log.error("Error occurred while creating file metadata storage record");
+            fileStatusPublisher.publishFailureStatus(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+            throw e;
+        }catch (Exception e) {
+            log.error("Error occurred while creating file metadata", e);
             cloudStorageOperation.deleteFile(persistentLocation);
+            fileStatusPublisher.publishFailureStatus(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;

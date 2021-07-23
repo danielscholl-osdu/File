@@ -18,31 +18,30 @@ package org.opengroup.osdu.file.provider.azure.service;
 
 import com.azure.cosmos.implementation.InternalServerErrorException;
 import com.azure.storage.blob.sas.BlobSasPermission;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.common.Strings;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
-import org.opengroup.osdu.core.common.exception.BadRequestException;
+import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.file.exception.ApplicationException;
-import org.opengroup.osdu.file.exception.OsduBadRequestException;
-import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
+import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
+import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsDownloadLocation;
+import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsUploadLocation;
 import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotBlank;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.time.Clock;
@@ -50,8 +49,9 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -64,6 +64,10 @@ public class StorageServiceImpl implements IStorageService {
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER
       = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS");
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  private static final String PROVIDER_KEY = "AZURE";
 
   @Autowired
   DpsHeaders dpsHeaders;
@@ -106,6 +110,51 @@ public class StorageServiceImpl implements IStorageService {
         .fileSource(getRelativeFileSource(filepath))
         .createdBy(userDesID)
         .createdAt(now)
+        .build();
+  }
+
+  @Override
+  public StorageInstructionsResponse createStorageInstructions(String blobId, String partitionID) {
+    SignedUrl signedUrl = this.createSignedUrl(blobId, dpsHeaders.getAuthorization(), partitionID);
+
+    AzureFileDmsUploadLocation dmsLocation = AzureFileDmsUploadLocation.builder()
+        .signedUrl(signedUrl.getUrl().toString())
+        .createdBy(signedUrl.getCreatedBy())
+        .fileSource(signedUrl.getFileSource()).build();
+
+    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+    StorageInstructionsResponse response = StorageInstructionsResponse.builder()
+        .providerKey(PROVIDER_KEY)
+        .storageLocation(uploadLocation).build();
+
+    return response;
+  }
+
+  @Override
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList) {
+
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
+
+    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), dpsHeaders.getAuthorization());
+
+      AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
+          .signedUrl(signedUrl.getUrl().toString())
+          .fileSource(signedUrl.getFileSource())
+          .createdBy(signedUrl.getCreatedBy()).build();
+
+      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
+          .retrievalProperties(downloadLocation)
+          .datasetRegistryId(fileRetrievalData.getRecordId())
+          .build();
+
+      datasetRetrievalProperties.add(datasetRetrievalProperty);
+    }
+
+    return RetrievalInstructionsResponse.builder()
+        .datasets(datasetRetrievalProperties)
+        .providerKey(PROVIDER_KEY)
         .build();
   }
 
