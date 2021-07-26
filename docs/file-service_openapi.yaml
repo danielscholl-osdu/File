@@ -276,6 +276,68 @@ paths:
       security:
         - bearer: []
         - appkey: []
+    delete:
+      tags:
+        - File Service
+      description: >-
+        Deletes the File metadata record identified by the given id and file associated with that metadata record.
+
+          **Required roles**: 'users.datalake.editors'  or 'users.datalake.admins'.
+      operationId: Deletes metadata record & File for the given id
+      summary: Deletes metadata record & file assocaited with that record for the given id
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: >-
+            Specifies the data partition to use. This should either be the
+            partition name or crm account ID associated with the partition.
+          required: true
+          schema:
+            type: string
+            example: opendes
+        - name: Id
+          description: File metadata record Id.
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Record deleted successfully.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+        '401':
+          description: Invalid/Expired Credential
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationError'
+      security:
+        - bearer: []
+        - appkey: []
+    
   /v2/files/{Id}/DownloadURL:
     get:
       tags:
