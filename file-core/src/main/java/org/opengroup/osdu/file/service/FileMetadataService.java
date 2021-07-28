@@ -72,7 +72,11 @@ public class FileMetadataService {
                     fetchEntityFromKind(fileMetadata.getKind())));
 
             stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
-            filePath = changePersistentFileLocation(fileMetadata);
+            
+            if(fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getName()!=null) {
+                filePath = updateFileNameInPersistentPath(fileMetadata);    
+            }
+            
             persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
             cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
             Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
@@ -104,16 +108,15 @@ public class FileMetadataService {
         return fileMetadataResponse;
     }
 
-    private String changePersistentFileLocation(FileMetadata fileMetadata) {
-        String fileName = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getName();
+    private String updateFileNameInPersistentPath(FileMetadata fileMetadata) {
         String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
-        
-        if(fileName!=null) {
-            String[] filePathElement = filePath.split("/");
-            filePathElement[filePathElement.length-1]=fileName;
-            filePath = String.join("/", filePathElement);
-            fileMetadata.getData().getDatasetProperties().getFileSourceInfo().setFileSource(filePath);
-        }
+
+        String[] filePathElement = filePath.split("/");
+        filePathElement[filePathElement.length - 1] = fileMetadata.getData().getDatasetProperties().getFileSourceInfo()
+                .getName();
+        filePath = String.join("/", filePathElement);
+        fileMetadata.getData().getDatasetProperties().getFileSourceInfo().setFileSource(filePath);
+
         return filePath;
     }
 
