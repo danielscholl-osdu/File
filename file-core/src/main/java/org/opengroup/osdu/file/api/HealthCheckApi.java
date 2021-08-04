@@ -30,13 +30,13 @@ public class HealthCheckApi {
   @PermitAll
   @GetMapping("/v2/liveness_check")
   public ResponseEntity<String> livenessCheck() {
-    return new ResponseEntity<>("Ingest service is alive", HttpStatus.OK);
+    return new ResponseEntity<>("File service is alive", HttpStatus.OK);
   }
 
   @PermitAll
   @GetMapping("/v2/readiness_check")
   public ResponseEntity<String> readinessCheck() {
-    return new ResponseEntity<>("Ingest service is ready", HttpStatus.OK);
+    return new ResponseEntity<>("File service is ready", HttpStatus.OK);
   }
 
 }

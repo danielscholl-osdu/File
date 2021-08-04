@@ -9,6 +9,15 @@ variables:
   OSDU_GCP_ENV_VARS: OSDU_ENTITLEMENTS_URL=$OSDU_GCP_ENTITLEMENTS_V2_URL,FILE_LOCATION_BUCKET_NAME=$FILE_BUCKET,PARTITION_API=$OSDU_GCP_PARTITION_API,GOOGLE_AUDIENCES=$GOOGLE_AUDIENCE,SPRING_CLOUD_GCP_DATASTORE_NAMESPACE=$OSDU_GCP_DATASTORE_NAMESPACE,FILE_LOCATION_USER_ID=$USER_ID,STORAGE_API=$OSDU_GCP_STORAGE_URL,GCP_RECORDS_URL=$OSDU_GCP_RECORDS_ROOT_URL --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
+  OSDU_GCP_HELM_DEPLOYMENT_DIR: "devops/gcp/deploy"
+  OSDU_GCP_HELM_CONFIG_DIR: "devops/gcp/configmap"
+  OSDU_GCP_HELM_NAMESPACE: default
+  OSDU_GCP_HELM_CONFIG_SERVICE: file-config
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE: file-deploy
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.server_servlet_contextpath=/api/file --set data.log_level=INFO --set data.osdu_entitlements_url=$OSDU_GCP_AUTHORIZE_API --set data.file_location_bucket_name=$FILE_BUCKET --set data.partition_api=$OSDU_GCP_PARTITION_API --set data.audiences=$GOOGLE_AUDIENCE --set data.spring_cloud_gcp_datastore_namespace=$OSDU_GCP_DATASTORE_NAMESPACE --set data.file_location_user_id=$USER_ID --set data.storage_api=$OSDU_GCP_STORAGE_URL --set data.gcp_records_url=$OSDU_GCP_RECORDS_ROOT_URL"
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-file"
+
+
 
   #Azure
   AZURE_SERVICE: file
@@ -50,7 +59,7 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     ref: 'master'
-    file: 'cloud-providers/osdu-gcp-cloudrun.yml'
+    file: 'cloud-providers/osdu-gcp-gke.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
@@ -63,3 +72,7 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     ref: 'master'
     file: 'cloud-providers/aws-maven.yml'
+
+osdu-gcp-test:
+  variables:
+    OSDU_GCP_VENDOR: gcp
