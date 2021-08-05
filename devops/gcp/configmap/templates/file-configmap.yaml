@@ -15,3 +15,4 @@ data:
   FILE_LOCATION_USER_ID: "{{ .Values.data.file_location_user_id }}"
   STORAGE_API: "{{ .Values.data.storage_api }}"
   GCP_RECORDS_URL: "{{ .Values.data.gcp_records_url }}"
+  SERVER_SERVLET_CONTEXTPATH: "/api/file/"
