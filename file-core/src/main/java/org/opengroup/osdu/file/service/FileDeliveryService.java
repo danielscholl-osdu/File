@@ -1,12 +1,11 @@
 package org.opengroup.osdu.file.service;
 
 import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
-import org.opengroup.osdu.file.model.DownloadUrlParameters;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.storage.Record;
@@ -34,7 +33,7 @@ public class FileDeliveryService {
   final IStorageUtilService storageUtilService;
 
   public DownloadUrlResponse getSignedUrlsByRecordId(String id,
-      DownloadUrlParameters downloadUrlParameters) throws StorageException {
+      SignedUrlParameters signedUrlParameters) throws StorageException {
 
     DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
     Record rec;
@@ -55,8 +54,8 @@ public class FileDeliveryService {
     String absolutePath = storageUtilService.getPersistentLocation(fileSource,
                                                                    headers.getPartitionId());
     SignedUrl signedUrl = storageService
-        .createCustomSignedUrlForFileLocation(absolutePath, headers.getAuthorization(),
-            downloadUrlParameters);
+        .createSignedUrlForFileLocationBasedOnParams(absolutePath, headers.getAuthorization(),
+            signedUrlParameters);
     return DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
   }
 

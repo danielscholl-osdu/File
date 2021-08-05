@@ -16,7 +16,7 @@
 
 package org.opengroup.osdu.file.provider.interfaces;
 
-import org.opengroup.osdu.file.model.DownloadUrlParameters;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.SignedObject;
 
 public interface IStorageRepository {
@@ -46,11 +46,11 @@ public interface IStorageRepository {
    *
    * @param bucketName bucket name
    * @param filepath file path
-   * @param downloadUrlParameters
+   * @param signedUrlParameters
    * @return info blob and signed URL
    */
-  default SignedObject getCustomSignedObject(String bucketName, String filepath,
-      DownloadUrlParameters downloadUrlParameters) {
+  default SignedObject getSignedObjectBasedOnParams(String bucketName, String filepath,
+      SignedUrlParameters signedUrlParameters) {
     return getSignedObject(bucketName,filepath);
   }
 

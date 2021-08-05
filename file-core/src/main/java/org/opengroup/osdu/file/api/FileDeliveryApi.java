@@ -1,8 +1,7 @@
 package org.opengroup.osdu.file.api;
 
-import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.file.constant.FileServiceRole;
-import org.opengroup.osdu.file.model.DownloadUrlParameters;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.service.FileDeliveryService;
 import org.opengroup.osdu.file.service.storage.StorageException;
@@ -33,7 +32,7 @@ public class FileDeliveryApi {
       @RequestParam(required = false, name = "expiryTime") String expiryTime)
       throws StorageException {
 
-    DownloadUrlParameters params = new DownloadUrlParameters(expiryTime);
+    SignedUrlParameters params = new SignedUrlParameters(expiryTime);
       DownloadUrlResponse signedUrl = fileDeliveryService.getSignedUrlsByRecordId(id,params);
       return new ResponseEntity<>(signedUrl, HttpStatus.OK);
   }

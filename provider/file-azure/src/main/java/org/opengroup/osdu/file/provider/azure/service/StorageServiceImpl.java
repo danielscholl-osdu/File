@@ -29,7 +29,7 @@ import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.file.model.DownloadUrlParameters;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
@@ -218,8 +218,8 @@ public class StorageServiceImpl implements IStorageService {
 
   @SneakyThrows
   @Override
-  public SignedUrl createCustomSignedUrlForFileLocation(String unsignedUrl,
-      String authorizationToken, DownloadUrlParameters downloadUrlParameters) {
+  public SignedUrl createSignedUrlForFileLocationBasedOnParams(String unsignedUrl,
+      String authorizationToken, SignedUrlParameters signedUrlParameters) {
 
     if (StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
@@ -234,7 +234,7 @@ public class StorageServiceImpl implements IStorageService {
     permission.setReadPermission(true);
 
     OffsetDateTime expiryTime = expiryTimeUtil
-        .getExpiryTimeInTimeUnit(downloadUrlParameters.getExpiryTime());
+        .getExpiryTimeInTimeUnit(signedUrlParameters.getExpiryTime());
 
     String signedUrlString = blobStore
         .generatePreSignedURL(dpsHeaders.getPartitionId(), filePath.toString(), containerName,
