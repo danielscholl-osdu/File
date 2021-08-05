@@ -32,9 +32,9 @@ These endpoints are used to generate signed URL, and are used by the users or an
 - `/v2/getLocation`
 This is a **POST** endpoint, that creates a new location in the landing zone to upload a file. If a FileID isn't provided in the request, the File Service generates a
 Universally Unique Identifier (UUID) to be stored in FileID. If a FileID is provided and is already registered in the system, an error is returned.
-	
+
 	The generated signed URL has a maximum duration of 7 days.
-	
+
 	The response body constains `FileID` along with a Location object which contains the Signed URL within it. Using this signed URL user can upload the file.
 
   **Note:**
@@ -67,10 +67,10 @@ These endpoints are used to perform create and read operations on file metadata:
 - `/v2/files/metadata`
 
 	This is a **POST** endpoint that creates a metadata record for a file that is already uploaded. The Metadata is linked to the file via FileSource provided in the request body.
-	
+
 	If FileSource attribute is missing in the request body, "FileSource can not be empty" error is returned.
   If there is no file present, then the request fails with an error "Invalid source file path to copy from /osdu-user/1614784413120-2021-03-03-15-13-33-120/da92f52401dc4d1cb93515f159c110d4"
-	
+
 	When metadata is successfully updated in the system, the file is copied to persistent zone and then deleted from landing zone. Success response returns the Id of the file metadata record.
 
 - `/v2/files/{Id}/metadata`
@@ -82,10 +82,14 @@ These endpoints are used to perform create and read operations on file metadata:
 The below endpoints are used to generate the signed URL used to download and access the already uploaded file content.
 
 - `/v2/files/{Id}/downloadURL`
-This is a **GET** endpoint to generate a download signed URL for the files which were already uploaded and whose metadata were also created. For all such files, users should provide unique file `Id`. This download signed URL allows the user to download and access the content of the file.
+  This is a **GET** endpoint to generate a download signed URL for the files which were already
+  uploaded and whose metadata were also created. For all such files, users should provide unique
+  file `Id`. The time for which the signed URL to be active can be given by the user as a query
+  Paramater 'expiryTime' and patterns support is for Time Units Minutes,Hours,Days. This download signed URL
+  allows the user to download and access the content of the file.
 
-	**Note:** 
-	-	The signed URL expires after a set time that varies as per environment. For example Azure implementation has the expiry limit set to 7 days.
+	**Note:**
+	-	The signed URL expires after a set time that varies as per environment. For example Azure implementation has the default expiry limit set to 7 days.
 	-	The duration that signed URL is valid may vary from vendor to vendor.
     -   When generated URL expires it cannot be used anymore to download the file. The user should request a new signed URL.
     -   When the generated URL expires in the middle of file download the download will continue, and the file will be downloaded successfully.
@@ -102,7 +106,7 @@ This is a **POST** endpoint, which returns the `Location` (signed URL) and `Driv
 The File Service implementation performs a general check of the validity of the
 authorization token and partition ID before the service starts generation of a location. For accessing the file metadata, legal tags and ACL associated with the file are validated.
 
-However, File Service won’t do any validation on attribute value passed in payload, it is the user's responsibility to pass right value by looking at description & pattern of that attribute in schema (schema reference can be found below in reference section) and File Service doesn't perform any verification whether a file upload happened or whether the user started ingestion after uploading a file. 
+However, File Service won’t do any validation on attribute value passed in payload, it is the user's responsibility to pass right value by looking at description & pattern of that attribute in schema (schema reference can be found below in reference section) and File Service doesn't perform any verification whether a file upload happened or whether the user started ingestion after uploading a file.
 
 The File service doesn't look inside the file to validate the content within.
 
