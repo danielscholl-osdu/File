@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
@@ -117,6 +118,36 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
       .uri(signedObject.getUri())
       .createdAt(now)
       .build();
+  }
+
+  @Override
+  public SignedUrl createSignedUrlForFileLocationBasedOnParams(String unsignedUrl,
+      String authorizationToken, SignedUrlParameters signedUrlParameters) {
+    Instant now = Instant.now(Clock.systemUTC());
+
+    String[] gsPathParts = unsignedUrl.split("gs://");
+
+    if (gsPathParts.length < 2) {
+      throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed URL", INVALID_GS_PATH_REASON);
+    }
+
+    String[] gsObjectKeyParts = gsPathParts[1].split("/");
+    if (gsObjectKeyParts.length < 1) {
+      throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed URL", INVALID_GS_PATH_REASON);
+    }
+
+    String bucketName = gsObjectKeyParts[0];
+    String filePath = String.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
+
+    SignedObject signedObject = storageRepository.getSignedObjectBasedOnParams(bucketName, filePath,
+        signedUrlParameters);
+
+
+    return SignedUrl.builder()
+        .url(signedObject.getUrl())
+        .uri(signedObject.getUri())
+        .createdAt(now)
+        .build();
 
   }
 

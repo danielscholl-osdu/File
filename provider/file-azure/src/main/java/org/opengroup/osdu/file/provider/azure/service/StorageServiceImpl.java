@@ -234,7 +234,7 @@ public class StorageServiceImpl implements IStorageService {
     permission.setReadPermission(true);
 
     OffsetDateTime expiryTime = expiryTimeUtil
-        .getExpiryTimeInTimeUnit(signedUrlParameters.getExpiryTime());
+        .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
 
     String signedUrlString = blobStore
         .generatePreSignedURL(dpsHeaders.getPartitionId(), filePath.toString(), containerName,
