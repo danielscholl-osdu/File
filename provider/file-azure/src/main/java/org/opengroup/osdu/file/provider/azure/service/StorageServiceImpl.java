@@ -29,6 +29,7 @@ import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.model.DownloadUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
@@ -39,6 +40,7 @@ import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +51,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.String.format;
 
@@ -79,6 +79,9 @@ public class StorageServiceImpl implements IStorageService {
 
   @Autowired
   final BlobStoreConfig blobStoreConfig;
+
+  @Autowired
+  private final ExpiryTimeUtil expiryTimeUtil;
 
   @Autowired
   ServiceHelper serviceHelper;
@@ -212,4 +215,41 @@ public class StorageServiceImpl implements IStorageService {
           .createdAt(Instant.now(Clock.systemUTC()))
           .build();
   }
+
+  @SneakyThrows
+  @Override
+  public SignedUrl createCustomSignedUrlForFileLocation(String unsignedUrl,
+      String authorizationToken, DownloadUrlParameters downloadUrlParameters) {
+
+    if (StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
+      throw new IllegalArgumentException(
+          String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
+              authorizationToken, unsignedUrl));
+    }
+
+    String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(unsignedUrl);
+    String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(unsignedUrl);
+
+    BlobSasPermission permission = new BlobSasPermission();
+    permission.setReadPermission(true);
+
+    OffsetDateTime expiryTime = expiryTimeUtil
+        .getExpiryTimeInTimeUnit(downloadUrlParameters.getExpiryTime());
+
+    String signedUrlString = blobStore
+        .generatePreSignedURL(dpsHeaders.getPartitionId(), filePath.toString(), containerName,
+            expiryTime, permission);
+
+    if(StringUtils.isBlank(signedUrlString)) {
+      throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
+    }
+
+    return SignedUrl.builder()
+        .url(new URL(signedUrlString))
+        .uri(URI.create(unsignedUrl))
+        .createdBy(getUserDesID(authorizationToken))
+        .createdAt(Instant.now(Clock.systemUTC()))
+        .build();
+  }
+
 }

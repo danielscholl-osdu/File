@@ -41,6 +41,7 @@ import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
 import javax.annotation.Signed;
 import java.net.URI;
@@ -76,6 +77,9 @@ class StorageServiceImplTest {
   @Mock
   private BlobStoreConfig blobStoreConfig;
 
+  @Mock
+  private ExpiryTimeUtil expiryTimeUtil;
+
   @Captor
   ArgumentCaptor<String> filenameCaptor;
 
@@ -87,8 +91,8 @@ class StorageServiceImplTest {
     FileLocationProperties fileLocationProperties
         = new FileLocationProperties(TestUtils.STAGING_CONTAINER_NAME, TestUtils.USER_DES_ID);
 
-    storageService = new StorageServiceImpl(
-        blobStore, dpsHeaders, fileLocationProperties, storageRepository, blobStoreConfig, serviceHelper);
+    storageService = new StorageServiceImpl(blobStore, dpsHeaders, fileLocationProperties,
+        storageRepository, blobStoreConfig, expiryTimeUtil, serviceHelper);
 
   }
 

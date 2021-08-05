@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.opengroup.osdu.file.model.DownloadUrlParameters;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.service.FileDeliveryService;
 import org.opengroup.osdu.file.service.storage.StorageException;
@@ -27,8 +28,9 @@ public class FileDeliveryApiTest {
   @Test
   public void test_downloadURL() throws StorageException {
     DownloadUrlResponse downloadUrlResponse = new DownloadUrlResponse();
-    when(fileDeliveryService.getSignedUrlsByRecordId("1234")).thenReturn(downloadUrlResponse);
-    assertEquals(HttpStatus.OK, fileDeliveryApi.downloadURL("1234").getStatusCode());
+    DownloadUrlParameters downloadUrlParameters = new DownloadUrlParameters("7D");
+    when(fileDeliveryService.getSignedUrlsByRecordId("1234",downloadUrlParameters)).thenReturn(downloadUrlResponse);
+    assertEquals(HttpStatus.OK, fileDeliveryApi.downloadURL("1234","7D").getStatusCode());
   }
 
 }

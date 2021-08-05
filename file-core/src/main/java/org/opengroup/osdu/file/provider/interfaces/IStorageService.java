@@ -18,6 +18,7 @@ package org.opengroup.osdu.file.provider.interfaces;
 
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.file.model.DownloadUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 
@@ -69,4 +70,19 @@ public interface IStorageService {
   default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
     return null;
   }
+
+  //stub Implementation
+  /**
+   * Gets a custom signed url based on params for a file specified by its location in cloud
+   *
+   * @param fileLocation
+   * @param authorizationToken
+   * @param downloadUrlParameters
+   * @return
+   */
+  default SignedUrl createCustomSignedUrlForFileLocation(String fileLocation,
+      String authorizationToken, DownloadUrlParameters downloadUrlParameters) {
+    return createSignedUrlFileLocation(fileLocation, authorizationToken);
+  }
+
 }
