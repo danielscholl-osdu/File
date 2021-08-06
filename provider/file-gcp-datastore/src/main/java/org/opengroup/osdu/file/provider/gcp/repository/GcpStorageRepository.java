@@ -18,7 +18,6 @@ package org.opengroup.osdu.file.provider.gcp.repository;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.SignedObject;
@@ -70,7 +69,7 @@ public class GcpStorageRepository implements IStorageRepository {
         .setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
         .build();
 
-    ExpiryTimeUtil.TimeValue expiryTimeInTimeUnit = expiryTimeUtil
+    ExpiryTimeUtil.RelativeTimeValue expiryTimeInTimeUnit = expiryTimeUtil
         .getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
 
     URL signedUrl = storage
