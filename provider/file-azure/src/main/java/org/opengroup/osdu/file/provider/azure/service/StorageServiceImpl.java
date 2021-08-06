@@ -184,36 +184,10 @@ public class StorageServiceImpl implements IStorageService {
 
   @SneakyThrows
   @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
-    if(StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
-      throw new IllegalArgumentException(
-          String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
-              authorizationToken, unsignedUrl));
-    }
-
-    String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(unsignedUrl);
-    String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(unsignedUrl);
-    BlobSasPermission permission = new BlobSasPermission();
-    permission.setReadPermission(true);
-    OffsetDateTime expiryTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(7);
-
-    String signedUrlString = blobStore.generatePreSignedURL(
-        dpsHeaders.getPartitionId(),
-        filePath.toString(),
-        containerName,
-        expiryTime,
-        permission);
-
-    if(StringUtils.isBlank(signedUrlString)) {
-      throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
-    }
-
-    return SignedUrl.builder()
-          .url(new URL(signedUrlString))
-          .uri(URI.create(unsignedUrl))
-          .createdBy(getUserDesID(authorizationToken))
-          .createdAt(Instant.now(Clock.systemUTC()))
-          .build();
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
+      String authorizationToken) {
+    return createSignedUrlForFileLocationBasedOnParams(unsignedUrl, authorizationToken,
+        new SignedUrlParameters());
   }
 
   @SneakyThrows

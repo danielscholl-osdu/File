@@ -77,7 +77,6 @@ class StorageServiceImplTest {
   @Mock
   private BlobStoreConfig blobStoreConfig;
 
-  @Mock
   private ExpiryTimeUtil expiryTimeUtil;
 
   @Captor
@@ -91,6 +90,7 @@ class StorageServiceImplTest {
     FileLocationProperties fileLocationProperties
         = new FileLocationProperties(TestUtils.STAGING_CONTAINER_NAME, TestUtils.USER_DES_ID);
 
+    expiryTimeUtil = new ExpiryTimeUtil();
     storageService = new StorageServiceImpl(blobStore, dpsHeaders, fileLocationProperties,
         storageRepository, blobStoreConfig, expiryTimeUtil, serviceHelper);
 
