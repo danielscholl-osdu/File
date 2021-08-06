@@ -57,13 +57,12 @@ class GcpStorageRepositoryTest {
   @Captor
   private ArgumentCaptor<SignUrlOption> optionsCaptor;
 
-  @Mock
-  private ExpiryTimeUtil expiryTimeUtil;
 
   @Test
   void shouldCreateSignedObject() {
     // given
     Storage storage = spyLocalStorage(TestCredential.getSa());
+    ExpiryTimeUtil expiryTimeUtil = new ExpiryTimeUtil();
     IStorageRepository storageRepository = new GcpStorageRepository(storage,expiryTimeUtil);
     // when
     SignedObject signedObject = storageRepository.createSignedObject(BUCKET_NAME, FILEPATH);
@@ -84,6 +83,7 @@ class GcpStorageRepositoryTest {
   void shouldThrowExceptionWhenCallerIsNotSigner () {
     // given
     Storage storage = spyLocalStorage(TestCredential.getUserCredentials());
+    ExpiryTimeUtil expiryTimeUtil = new ExpiryTimeUtil();
     IStorageRepository storageRepository = new GcpStorageRepository(storage,expiryTimeUtil);
 
     // when
