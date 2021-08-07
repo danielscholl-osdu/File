@@ -18,8 +18,7 @@ package org.opengroup.osdu.file.provider.gcp.service;
 
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 import static org.mockito.Mockito.verify;
@@ -40,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.gcp.TestUtils;
 import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
@@ -68,12 +68,16 @@ class DataLakeStorageServiceImplTest {
   void shouldCreateObjectSignedUrl_FileLocation() {
     // given
     SignedObject signedObject = getSignedObject();
+    String unsignedUrl = TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, "folder", "filename")
+        .toString();
 
-    given(storageRepository.getSignedObject(eq(TestUtils.BUCKET_NAME), anyString())).willReturn(signedObject);
+    given(storageRepository
+        .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), anyString(), any()))
+        .willReturn(signedObject);
 
     // when
-    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(
-            TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
+    SignedUrl signedUrl = storageService
+        .createSignedUrlFileLocation(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN);
 
     // then
     then(signedUrl).satisfies(url -> {
@@ -82,7 +86,8 @@ class DataLakeStorageServiceImplTest {
       then(url.getCreatedAt()).isBeforeOrEqualTo(now());
 
     });
-    verify(storageRepository).getSignedObject(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture());
+    verify(storageRepository)
+        .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture(), any());
 
   }
 
@@ -91,12 +96,16 @@ class DataLakeStorageServiceImplTest {
   void shouldCreateObjectSignedUrl() {
     // given
     SignedObject signedObject = getSignedObject();
+    String unsignedUrl = TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, "folder", "filename")
+        .toString();
 
-    given(storageRepository.getSignedObject(eq(TestUtils.BUCKET_NAME), anyString())).willReturn(signedObject);
+    given(storageRepository
+        .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), anyString(), any()))
+        .willReturn(signedObject);
 
     // when
-    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(
-            TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, anyString(), anyString()).toString(), TestUtils.AUTHORIZATION_TOKEN);
+    SignedUrl signedUrl = storageService
+        .createSignedUrlFileLocation(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN);
 
     // then
     then(signedUrl).satisfies(url -> {
@@ -105,10 +114,40 @@ class DataLakeStorageServiceImplTest {
       then(url.getCreatedAt()).isBeforeOrEqualTo(now());
 
     });
-    verify(storageRepository).getSignedObject(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture());
+    verify(storageRepository)
+        .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture(), any());
 
   }
 
+  @Test
+  void shouldCreateObjectSignedUrlBasedOnParamsProvided() {
+    // given
+    SignedObject signedObject = getSignedObject();
+    String unsignedUrl = TestUtils.getGcsObjectUri(TestUtils.BUCKET_NAME, "folder", "filename")
+        .toString();
+    SignedUrlParameters parameters = new SignedUrlParameters("1H");
+
+    given(storageRepository
+        .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), anyString(), eq(parameters)))
+        .willReturn(signedObject);
+
+    // when
+    SignedUrl signedUrl = storageService
+        .createSignedUrlForFileLocationBasedOnParams(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN,
+            parameters);
+
+    // then
+    then(signedUrl).satisfies(url -> {
+      then(url.getUrl().toString()).is(TestUtils.GCS_URL_CONDITION);
+      then(url.getUri().toString()).matches(TestUtils.GCS_OBJECT_URI);
+      then(url.getCreatedAt()).isBeforeOrEqualTo(now());
+
+    });
+    verify(storageRepository)
+        .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture(),
+            eq(parameters));
+
+  }
 
   private SignedObject getSignedObject() {
     String bucketName = RandomStringUtils.randomAlphanumeric(4);

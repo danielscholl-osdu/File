@@ -93,31 +93,10 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
 
 
   @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
-    Instant now = Instant.now(Clock.systemUTC());
-
-    String[] gsPathParts = unsignedUrl.split("gs://");
-
-    if (gsPathParts.length < 2) {
-      throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed URL", INVALID_GS_PATH_REASON);
-    }
-
-    String[] gsObjectKeyParts = gsPathParts[1].split("/");
-    if (gsObjectKeyParts.length < 1) {
-      throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed URL", INVALID_GS_PATH_REASON);
-    }
-
-    String bucketName = gsObjectKeyParts[0];
-    String filePath = String.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
-
-    SignedObject signedObject = storageRepository.getSignedObject(bucketName, filePath);
-
-
-    return SignedUrl.builder()
-      .url(signedObject.getUrl())
-      .uri(signedObject.getUri())
-      .createdAt(now)
-      .build();
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
+      String authorizationToken) {
+    return createSignedUrlForFileLocationBasedOnParams(unsignedUrl, authorizationToken,
+        new SignedUrlParameters());
   }
 
   @Override
