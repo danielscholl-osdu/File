@@ -85,8 +85,9 @@ The below endpoints are used to generate the signed URL used to download and acc
   This is a **GET** endpoint to generate a download signed URL for the files which were already
   uploaded and whose metadata were also created. For all such files, users should provide unique
   file `Id`. The time for which the signed URL to be active can be given by the user as a query
-  Paramater 'expiryTime' and patterns support is for Time Units Minutes,Hours,Days. This download signed URL
-  allows the user to download and access the content of the file.
+  Paramater 'expiryTime' and patterns support is for Time Units Minutes,Hours,Days. The expiry time is set to default
+  capped value of 7 Days if the time provided by the User exceeds the capped value.
+  This download signed URL allows the user to download and access the content of the file.
 
 	**Note:**
 	-	The signed URL expires after a set time that varies as per environment. For example Azure implementation has the default expiry limit set to 7 days.

@@ -372,6 +372,7 @@ paths:
         required: false
         in: query
         style: simple
+        example: '5M'
         schema:
           type: string
       responses:
