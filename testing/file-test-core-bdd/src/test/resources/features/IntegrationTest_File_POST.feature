@@ -21,11 +21,12 @@ Feature: File service API integration test
       | "/input_payloads/File_missing_fileSource.json"      | "400"             | "/output_payloads/File_missing_fileSource_msg.json"      | "PRIVATE_TENANT2" |
       | "/input_payloads/File_invalid_fileSource.json"      | "400"             | "/output_payloads/File_invalid_fileSource_msg.json"      | "PRIVATE_TENANT2" |
       | "/input_payloads/File_invalid_Endian.json"          | "400"             | "/output_payloads/File_invalid_Endian_msg.json"          | "PRIVATE_TENANT2" |
-      | "/input_payloads/File_invalid_ScalarIndicator.json" | "400"             | "/output_payloads/File_invalid_ScalarIndicator_msg.json" | "PRIVATE_TENANT2" |
-      | "/input_payloads/File_missing_name.json"            | "400"             | "/output_payloads/File_missing_name_msg.json"            | "PRIVATE_TENANT2" |
+      #| "/input_payloads/File_invalid_ScalarIndicator.json" | "400"             | "/output_payloads/File_invalid_ScalarIndicator_msg.json" | "PRIVATE_TENANT2" |
+      #| "/input_payloads/File_missing_name.json"            | "400"             | "/output_payloads/File_missing_name_msg.json"            | "PRIVATE_TENANT2" |
+      | "/input_payloads/File_nameHavingSpecialChars.json"  | "400"             | "/output_payloads/File_nameHavingSpecialChars_msg.json"  | "PRIVATE_TENANT2" |
 
   #| "/input_payloads/File_Datatype_Mismatch.json"       | "400"             | "/output_payloads/File_Datatype_Mismatch_msg.json"       | "PRIVATE_TENANT2" |
-  @File_meta
+  @File
   Scenario Outline: Verify that File returns expected output when payload has meta and tags block and hits POST /files/metadata
     Given I hit File service GET uploadURL API
     Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>
@@ -36,7 +37,7 @@ Feature: File service API integration test
       | inputPayload                                          | postReponseStatusCode | tenant            | getReponseStatusCode | inputFilePath                   |
       | "/input_payloads/File_Single_object_MetaAndTags.json" | "201"                 | "PRIVATE_TENANT2" | "200"                | "/sample_upload_files/test.csv" |
 
-  @File_meta
+  @File
   Scenario Outline: Verify that File returns expected output when payload has meta and tags block and hits POST /files/metadata
     Given I hit File service GET uploadURL API
     Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>
@@ -55,5 +56,5 @@ Feature: File service API integration test
     Then Service should respond back with <postReponseStatusCode>
 
     Examples: 
-      | inputPayload                               | postReponseStatusCode | tenant            | getReponseStatusCode | inputFilePath                   |
-      | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT2" | "200"                | "/sample_upload_files/test.csv" |
+      | inputPayload                                    | postReponseStatusCode | tenant            | getReponseStatusCode | inputFilePath                   |
+      | "/input_payloads/File_CorrectPayload_json.json" | "201"                 | "PRIVATE_TENANT2" | "200"                | "/sample_upload_files/test.csv" |

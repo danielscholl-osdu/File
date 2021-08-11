@@ -12,13 +12,13 @@ Feature: File Service API integration test
     Then Service should respond back with <postReponseStatusCode>
     When I hit File service GET download signed API with a valid Id
     Then download service should respond back with a valid <getReponseStatusCode>
+    When I hit signed url to download a file within expiration period at <outPathToCreateFile>
+    And name <name> and content of the file uploaded <outputFilePath> and downloaded <inputFilePath> files is same
 
-    #When I hit signed url to download a file within expiration period at <outPathToCreateFile>
-    #And content of the file uploaded <outputFilePath> and downloaded <inputFilePath> files is same
     Examples: 
-      | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                              | outputFilePath                                            | outPathToCreateFile                                                          |
-      | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT2" | "/sample_upload_files/test.csv"            | "/sample_downloaded_files/test_downloaded.csv"            | "/src/test/resources/sample_downloaded_files/test_downloaded.csv"            |
-      | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT2" | "/sample_upload_files/TestDownloadUrl.txt" | "/sample_downloaded_files/TestDownloadUrl_downloaded.txt" | "/src/test/resources/sample_downloaded_files/TestDownloadUrl_downloaded.txt" |
+      | name                  | getReponseStatusCode | inputPayload                                    | postReponseStatusCode | tenant            | inputFilePath                              | outputFilePath              | outPathToCreateFile                            |
+      | "test.csv"            | "200"                | "/input_payloads/File_CorrectPayload_json.json" | "201"                 | "PRIVATE_TENANT2" | "/sample_upload_files/test.csv"            | "/sample_downloaded_files/" | "/src/test/resources/sample_downloaded_files/" |
+      | "TestDownloadUrl.txt" | "200"                | "/input_payloads/File_CorrectPayload_txt.json"  | "201"                 | "PRIVATE_TENANT2" | "/sample_upload_files/TestDownloadUrl.txt" | "/sample_downloaded_files/" | "/src/test/resources/sample_downloaded_files/" |
 
   #Positive scenario for FILE service
   @File
@@ -31,10 +31,10 @@ Feature: File Service API integration test
     Then metadata service should respond back with a valid <getReponseStatusCode>
 
     Examples: 
-      | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                   |
-      | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT2" | "/sample_upload_files/test.csv" |
+      | getReponseStatusCode | inputPayload                                    | postReponseStatusCode | tenant            | inputFilePath                   |
+      | "200"                | "/input_payloads/File_CorrectPayload_json.json" | "201"                 | "PRIVATE_TENANT2" | "/sample_upload_files/test.csv" |
 
-  @File_meta
+  @File
   Scenario Outline: Verify that meta and tags block can be retrieved and is same as the time of posting in payload
     Given I hit File service GET uploadURL API
     Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>

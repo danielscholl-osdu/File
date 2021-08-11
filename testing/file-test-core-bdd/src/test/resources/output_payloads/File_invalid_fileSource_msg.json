@@ -1,12 +1,12 @@
 {
     "error": {
         "code": 400,
-        "message": "Invalid source file path to copy from /3f538327-85c8-459d-896c-198173436358neha/test.csv",
+        "message": "Invalid source file path to copy from /osdu-user/1628228076310-2021-08-06-05-34-36-310/test.csv",
         "errors": [
             {
                 "domain": "global",
                 "reason": "badRequest",
-                "message": "Invalid source file path to copy from /3f538327-85c8-459d-896c-198173436358neha/test.csv"
+                "message": "Invalid source file path to copy from /osdu-user/1628228076310-2021-08-06-05-34-36-310/test.csv"
             }
         ]
     }
