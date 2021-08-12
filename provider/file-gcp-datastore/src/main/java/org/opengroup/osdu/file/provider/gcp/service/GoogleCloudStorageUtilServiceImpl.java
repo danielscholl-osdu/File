@@ -1,7 +1,7 @@
 package org.opengroup.osdu.file.provider.gcp.service;
 
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.file.provider.gcp.util.GoogleCloudStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class GoogleCloudStorageUtilServiceImpl implements IStorageUtilService {
 
   @Autowired
-  TenantFactory tenantFactory;
+  ITenantFactory tenantFactory;
 
   @Autowired
   GoogleCloudStorageUtil googleCloudStorageUtil;

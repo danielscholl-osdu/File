@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
@@ -55,7 +55,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
   GoogleCloudStorageUtil googleCloudStorageUtil;
 
   @Autowired
-  TenantFactory tenantFactory;
+  ITenantFactory tenantFactory;
 
   @Autowired
   Storage storage;

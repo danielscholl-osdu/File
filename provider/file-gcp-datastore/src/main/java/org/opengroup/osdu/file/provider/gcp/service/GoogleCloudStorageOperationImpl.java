@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.gcp.util.GoogleCloudStorageUtil;
@@ -26,7 +26,7 @@ public class GoogleCloudStorageOperationImpl implements ICloudStorageOperation {
 
   final DpsHeaders headers;
   final GcsMultiTenantAccess storageFactory;
-  final TenantFactory tenantFactory;
+  final ITenantFactory tenantFactory;
   final GoogleCloudStorageUtil googleCloudStorageUtil;
   final JaxRsDpsLog log;
 
