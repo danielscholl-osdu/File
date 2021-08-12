@@ -1,0 +1,4 @@
+{
+    "status": "BAD_REQUEST",
+    "message": "IllegalArgumentException: URLDecoder: Illegal hex characters in escape (%) pattern - For input string: \".j\""
+}

@@ -18,51 +18,39 @@
 		"status": "compliant"
 	},
 	"data": {
-		"SchemaFormatTypeID": "string",
-		"PreLoadFilePath": "string",
-		"FileSource": "string",
-		"FileSize": 0,
-		"Name": "File",
+		"Name": "string",
+		"Description": "string",
+		"TotalSize": "string",
 		"EncodingFormatTypeID": "string",
+		"SchemaFormatTypeID": "string",
 		"Endian": "BIG",
-		"LossyCompressionIndicator": true,
-		"CompressionMethodTypeID": "string",
-		"CompressionLevel": 0,
-		"Checksum": "string",
-		"VectorHeaderMapping": [
-			{
-				"KeyName": "string",
-				"WordFormat": "string",
-				"WordWidth": 0,
-				"Position": 0,
-				"UoM": "string",
-				"ScalarIndicator": "STANDARD",
-				"ScalarOverride": 0
-			}
-		],
-		"relationships": {
-			"parentEntity": {
-				"confidence": 1,
-				"id": "data_partition:namespace:entity_845934c40e8d922bc57b678990d55722",
-				"name": "Survey ST2016",
-				"version": 0
-			},
-			"relatedItems": {
-				"confidences": [
-					0
-				],
-				"ids": [
-					"string"
-				],
-				"names": [
-					"string"
-				],
-				"versions": [
-					0
-				]
+		"DatasetProperties": {
+			"FileSourceInfo": {
+				"Name": "test.csv",
+				"PreLoadFilePath": "string",
+				"FileSource": "/osdu-user/1628228076310-2021-08-06-05-34-36-310/054e6b33156c47f1b684c9b6c6f722f2",
+				"PreloadFileCreateUser": "string",
+				"PreloadFileCreateDate": "string",
+				"PreloadFileModifyUser": "string",
+				"PreloadFileModifyDate": "string",
+				"FileSize": "string",
+				"EncodingFormatTypeID": "string",
+				"Checksum": "string",
+				"ChecksumAlgorithm": "string"
 			}
 		},
+		"Checksum": "string",
+		"ResourceHomeRegionID": "string",
+		"ResourceHostRegionIDs": [
+			"string"
+		],
+		"ResourceCurationStatus": "string",
+		"ResourceLifecycleStatus": "string",
+		"ResourceSecurityClassification": "string",
+		"Source": "string",
+		"ExistenceKind": "string",
 		"ExtensionProperties": {
+			"Name": "File",
 			"Classification": "Raw File",
 			"Description": "An text further describing this file example.",
 			"ExternalIds": [
@@ -78,11 +66,11 @@
 				"FrameOfReference": [
 					{
 						"kind": "CRS",
-						"name": "[NAD27 * OGP-Usa Conus / North Dakota South [3202115851]ft]",
-						"persistableReference": "scaleOffset:scale:0.3048006096012192offset:0.0symbol:ftUSbaseMeasurement:ancestry:Lengthtype:UMtype:USO}",
+						"name": "[\"NAD27 * OGP-Usa Conus / North Dakota South [32021,15851]\",\"ft\"]",
+						"persistableReference": "{\"scaleOffset\":{\"scale\":0.3048006096012192,\"offset\":0.0},\"symbol\":\"ftUS\",\"baseMeasurement\":{\"ancestry\":\"Length\",\"type\":\"UM\"},\"type\":\"USO\"}",
 						"propertyNames": [
 							"elevationFromMsl",
-							"totalDepthMdDriller",
+							"\"totalDepthMdDriller",
 							"wellHeadProjected"
 						],
 						"propertyValues": [
@@ -90,25 +78,69 @@
 							"ftUS",
 							"deg"
 						],
-						"uncertainty": 0
+						"uncertainty": 0,
+						"additionalProp1": {
+						},
+						"additionalProp2": {
+						},
+						"additionalProp3": {
+						}
 					}
 				],
 				"ExtensionProperties": {
 					"kind": "os:npd:csvFileExtDetails:1.0.0"
 				},
 				"ParentReference": "CSBE0417"
+			},
+			"relationships": {
+				"parentEntity": {
+					"confidence": 1,
+					"id": "data_partition:namespace:entity_845934c40e8d922bc57b678990d55722",
+					"name": "Survey ST2016",
+					"version": 0
+				},
+				"relatedItems": {
+					"confidences": [
+						0
+					],
+					"ids": [
+						"string"
+					],
+					"names": [
+						"string"
+					],
+					"versions": [
+						0
+					]
+				}
 			}
 		}
 	},
-	"ancestry": {
-		"additionalProp1": [
-			"string"
-		],
-		"additionalProp2": [
-			"string"
-		],
-		"additionalProp3": [
-			"string"
-		]
+	"meta": [
+		{
+			"kind": "CRS",
+			"name": "[\"NAD27 * OGP-Usa Conus / North Dakota South [32021,15851]\",\"ft\"]",
+			"persistableReference": "{\"scaleOffset\":{\"scale\":0.3048006096012192,\"offset\":0.0},\"symbol\":\"ftUS\",\"baseMeasurement\":{\"ancestry\":\"Length\",\"type\":\"UM\"},\"type\":\"USO\"}",
+			"propertyNames": [
+				"elevationFromMsl",
+				"\"totalDepthMdDriller",
+				"wellHeadProjected"
+			],
+			"propertyValues": [
+				"F",
+				"ftUS",
+				"deg"
+			],
+			"uncertainty": 0,
+			"additionalProp1": {
+			},
+			"additionalProp2": {
+			},
+			"additionalProp3": {
+			}
+		}
+	],
+	"tags": {
+		"dataflowId": "dataflowId"
 	}
 }
