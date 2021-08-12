@@ -41,9 +41,11 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -190,6 +192,8 @@ public class StorageServiceImpl implements IStorageService {
 
     String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(unsignedUrl);
     String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(unsignedUrl);
+   
+    
     BlobSasPermission permission = new BlobSasPermission();
     permission.setReadPermission(true);
     OffsetDateTime expiryTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(7);
@@ -201,13 +205,16 @@ public class StorageServiceImpl implements IStorageService {
         expiryTime,
         permission);
 
+    
     if(StringUtils.isBlank(signedUrlString)) {
       throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
     }
-
+   
+      
+    
     return SignedUrl.builder()
           .url(new URL(signedUrlString))
-          .uri(URI.create(unsignedUrl))
+          .uri(URI.create(UriUtils.encodePath(unsignedUrl, StandardCharsets.UTF_8)))
           .createdBy(getUserDesID(authorizationToken))
           .createdAt(Instant.now(Clock.systemUTC()))
           .build();
