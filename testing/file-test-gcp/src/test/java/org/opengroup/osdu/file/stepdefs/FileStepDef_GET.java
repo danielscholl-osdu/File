@@ -215,7 +215,8 @@ public class FileStepDef_GET implements En {
 
 		And("I should not be able to download the file after {string}", (String expiryTimeInMinutes) -> {
 			// wait for timeout to expire
-			CommonUtility.customStaticWait_Max_5_Minutes(Long.valueOf(expiryTimeInMinutes));
+			CommonUtility.customStaticWait_Max_5_Minutes(
+					Long.valueOf(expiryTimeInMinutes.substring(0, expiryTimeInMinutes.length() - 1)));
 
 			String response = this.context.getHttpResponse().getBody();
 			DownloadUrlResponse signedURLResp = JsonUtils.getPojoFromJSONString(DownloadUrlResponse.class, response);
