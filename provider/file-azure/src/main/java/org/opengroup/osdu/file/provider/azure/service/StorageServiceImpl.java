@@ -138,7 +138,7 @@ public class StorageServiceImpl implements IStorageService {
     List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), dpsHeaders.getAuthorization());
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), dpsHeaders.getAuthorization(),null,null);
 
       AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())
@@ -183,7 +183,7 @@ public class StorageServiceImpl implements IStorageService {
 
   @SneakyThrows
   @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
     if(StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
           String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
@@ -197,20 +197,30 @@ public class StorageServiceImpl implements IStorageService {
     BlobSasPermission permission = new BlobSasPermission();
     permission.setReadPermission(true);
     OffsetDateTime expiryTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(7);
-
-    String signedUrlString = blobStore.generatePreSignedURL(
-        dpsHeaders.getPartitionId(),
-        filePath.toString(),
-        containerName,
-        expiryTime,
-        permission);
-
+    String signedUrlString = null;
+    if (StringUtils.isEmpty(fileName)) {
+         signedUrlString = blobStore.generatePreSignedURL(
+                dpsHeaders.getPartitionId(),
+                filePath.toString(),
+                containerName,
+                expiryTime,
+                permission);
+    
+    }else {
+         signedUrlString = blobStore.generatePreSignedURL(
+                 dpsHeaders.getPartitionId(),
+                 filePath.toString(),
+                 containerName,
+                 expiryTime,
+                 permission,
+                 UriUtils.encodePath(fileName, StandardCharsets.UTF_8),
+                 contentType);
+    }
+    
     
     if(StringUtils.isBlank(signedUrlString)) {
       throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
     }
-   
-      
     
     return SignedUrl.builder()
           .url(new URL(signedUrlString))
@@ -219,4 +229,5 @@ public class StorageServiceImpl implements IStorageService {
           .createdAt(Instant.now(Clock.systemUTC()))
           .build();
   }
+
 }

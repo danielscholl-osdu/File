@@ -56,7 +56,7 @@ public interface IStorageService {
    * @param authorizationToken
    * @return
    */
-  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
     return null;
   }
 

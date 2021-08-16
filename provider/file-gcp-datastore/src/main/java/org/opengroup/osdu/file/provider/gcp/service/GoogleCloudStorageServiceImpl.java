@@ -92,7 +92,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
 
 
   @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
     Instant now = Instant.now(Clock.systemUTC());
 
     String[] gsPathParts = unsignedUrl.split("gs://");

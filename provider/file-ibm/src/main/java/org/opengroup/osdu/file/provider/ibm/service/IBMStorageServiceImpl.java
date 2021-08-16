@@ -143,7 +143,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 	}
 
 	 @Override
-	  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+	  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken,String fileName, String contentType) {
 		 
 		 // "unsignedUrl": "s3://osdu-seismic-test-data/r1/data/provided/trajectories/1537.csv"
 		 log.info("Creating the signed url for unsugnedurl : {}. Authorization : {}, partitionID : {}", unsignedUrl);

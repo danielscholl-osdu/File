@@ -86,7 +86,7 @@ public class StorageServiceImpl implements IStorageService {
     }
 
     @Override
-    public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+    public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
         
         throw new NotImplementedException("Not implemented. Use createSignedUrl(fileId, ...) instead");
     }  

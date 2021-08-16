@@ -72,12 +72,8 @@ public class FileMetadataService {
                     fetchEntityFromKind(fileMetadata.getKind())));
 
             stagingLocation = storageUtilService.getStagingLocation(filePath, dpsHeaders.getPartitionId());
-            
-            if(fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getName()!=null) {
-                filePath = updateFileNameInPersistentPath(fileMetadata);    
-            }
-            
             persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
+
             cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
             Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
 
@@ -106,18 +102,6 @@ public class FileMetadataService {
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;
-    }
-
-    private String updateFileNameInPersistentPath(FileMetadata fileMetadata) {
-        String filePath = fileMetadata.getData().getDatasetProperties().getFileSourceInfo().getFileSource();
-
-        String[] filePathElement = filePath.split("/");
-        filePathElement[filePathElement.length - 1] = fileMetadata.getData().getDatasetProperties().getFileSourceInfo()
-                .getName();
-        filePath = String.join("/", filePathElement);
-        fileMetadata.getData().getDatasetProperties().getFileSourceInfo().setFileSource(filePath);
-
-        return filePath;
     }
 
     public RecordVersion getMetadataById(String id)
