@@ -199,8 +199,9 @@ public class FileStepDef_GET implements En {
 
 		Then("I should be able to download the file within expiry period", () -> {
 			String response = this.context.getHttpResponse().getBody();
-			String downLoadUrl = this.context.getSignedUrl();
-			URL url = new URL(downLoadUrl);
+			DownloadUrlResponse signedURLResp = JsonUtils.getPojoFromJSONString(DownloadUrlResponse.class, response);
+			assertNotNull("No download url returned by service.", signedURLResp.getSignedUrl());
+			URL url = new URL(signedURLResp.getSignedUrl());
 			URLConnection conn = url.openConnection();
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -217,8 +218,8 @@ public class FileStepDef_GET implements En {
 			CommonUtility.customStaticWait_Max_5_Minutes(Long.valueOf(expiryTimeInMinutes));
 
 			String response = this.context.getHttpResponse().getBody();
-			String downLoadUrl = this.context.getSignedUrl();
-			URL url = new URL(downLoadUrl);
+			DownloadUrlResponse signedURLResp = JsonUtils.getPojoFromJSONString(DownloadUrlResponse.class, response);
+			URL url = new URL(signedURLResp.getSignedUrl());
 			URLConnection conn = url.openConnection();
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
