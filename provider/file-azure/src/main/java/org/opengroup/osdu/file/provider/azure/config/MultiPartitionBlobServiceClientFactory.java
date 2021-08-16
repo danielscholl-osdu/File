@@ -49,9 +49,8 @@ class MultiPartitionBlobServiceClientFactory implements IBlobServiceClientFactor
     return blobServiceClient;
   }
 
-@Override
-public BlobServiceClient getSystemBlobServiceClient() {
-    // TODO Auto-generated method stub
+  @Override
+  public BlobServiceClient getSystemBlobServiceClient() {
     return null;
-}
+  }
 }
