@@ -133,7 +133,7 @@ class DataLakeStorageServiceImplTest {
 
     // when
     SignedUrl signedUrl = storageService
-        .createSignedUrlForFileLocationBasedOnParams(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN,
+        .createSignedUrlFileLocation(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN,
             parameters);
 
     // then

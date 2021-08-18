@@ -186,13 +186,13 @@ public class StorageServiceImpl implements IStorageService {
   @Override
   public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
       String authorizationToken) {
-    return createSignedUrlForFileLocationBasedOnParams(unsignedUrl, authorizationToken,
+    return createSignedUrlFileLocation(unsignedUrl, authorizationToken,
         new SignedUrlParameters());
   }
 
   @SneakyThrows
   @Override
-  public SignedUrl createSignedUrlForFileLocationBasedOnParams(String unsignedUrl,
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
       String authorizationToken, SignedUrlParameters signedUrlParameters) {
 
     if (StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {

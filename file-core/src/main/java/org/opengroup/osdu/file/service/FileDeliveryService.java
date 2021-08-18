@@ -58,7 +58,7 @@ public class FileDeliveryService {
     String absolutePath = storageUtilService.getPersistentLocation(fileSource,
                                                                    headers.getPartitionId());
     SignedUrl signedUrl = storageService
-        .createSignedUrlForFileLocationBasedOnParams(absolutePath, headers.getAuthorization(),
+        .createSignedUrlFileLocation(absolutePath, headers.getAuthorization(),
             signedUrlParameters);
     return DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
   }

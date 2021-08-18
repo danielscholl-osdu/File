@@ -80,9 +80,9 @@ public interface IStorageService {
    * @param signedUrlParameters
    * @return
    */
-  default SignedUrl createSignedUrlForFileLocationBasedOnParams(String fileLocation,
+  default SignedUrl createSignedUrlFileLocation(String fileLocation,
       String authorizationToken, SignedUrlParameters signedUrlParameters) {
-    return createSignedUrlFileLocation(fileLocation, authorizationToken);
+    return null;
   }
 
 }
