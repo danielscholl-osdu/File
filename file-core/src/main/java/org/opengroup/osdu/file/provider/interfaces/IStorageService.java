@@ -55,9 +55,10 @@ public interface IStorageService {
    *
    * @param unsignedUrl
    * @param authorizationToken
+   * @param signedUrlParameters
    * @return
    */
-  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
+  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, SignedUrlParameters signedUrlParameters) {
     return null;
   }
 
@@ -70,19 +71,4 @@ public interface IStorageService {
   default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
     return null;
   }
-
-  //stub Implementation
-  /**
-   * Gets a custom signed url based on params for a file specified by its location in cloud
-   *
-   * @param fileLocation
-   * @param authorizationToken
-   * @param signedUrlParameters
-   * @return
-   */
-  default SignedUrl createSignedUrlFileLocation(String fileLocation,
-      String authorizationToken, SignedUrlParameters signedUrlParameters) {
-    return null;
-  }
-
 }

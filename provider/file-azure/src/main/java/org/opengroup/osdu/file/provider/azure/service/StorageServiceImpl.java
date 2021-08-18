@@ -139,7 +139,8 @@ public class StorageServiceImpl implements IStorageService {
     List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), dpsHeaders.getAuthorization());
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
+          dpsHeaders.getAuthorization(), new SignedUrlParameters());
 
       AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())
@@ -180,14 +181,6 @@ public class StorageServiceImpl implements IStorageService {
         .format(instant);
 
     return format("%s/%s/%s", userDesID, folderName, filename);
-  }
-
-  @SneakyThrows
-  @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
-      String authorizationToken) {
-    return createSignedUrlFileLocation(unsignedUrl, authorizationToken,
-        new SignedUrlParameters());
   }
 
   @SneakyThrows

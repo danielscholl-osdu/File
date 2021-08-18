@@ -91,14 +91,6 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
         .build();
   }
 
-
-  @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
-      String authorizationToken) {
-    return createSignedUrlFileLocation(unsignedUrl, authorizationToken,
-        new SignedUrlParameters());
-  }
-
   @Override
   public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
       String authorizationToken, SignedUrlParameters signedUrlParameters) {
