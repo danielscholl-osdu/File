@@ -100,12 +100,12 @@
             <artifactId>maven-compiler-plugin</artifactId>
         </plugin>
         <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-                <classifier>spring-boot</classifier>
-                <mainClass>org.opengroup.osdu.file.FileApplication</mainClass>
-            </configuration>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <configuration>
+            <classifier>spring-boot</classifier>
+            <mainClass>org.opengroup.osdu.file.FileApplication</mainClass>
+          </configuration>
         </plugin>
         <plugin>
             <artifactId>maven-shade-plugin</artifactId>
