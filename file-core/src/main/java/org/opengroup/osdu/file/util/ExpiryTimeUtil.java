@@ -3,6 +3,8 @@ package org.opengroup.osdu.file.util;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.opengroup.osdu.file.constant.ErrorMessages;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -82,6 +84,13 @@ public class ExpiryTimeUtil {
     return Long.valueOf(expiryTime.substring(0, expiryTime.length() - 1));
   }
 
+  public boolean isInputPatternSupported(String input) {
+    if (null != input && !getTimeUnitForInput(input).isPresent()) {
+      return false;
+    }
+    return true;
+  }
+
   private Optional<TimeUnitEnum> getTimeUnitForInput(String input) {
     if (null != input) {
       for (TimeUnitEnum timeUnitEnum : TimeUnitEnum.values()) {
@@ -89,6 +98,7 @@ public class ExpiryTimeUtil {
           return Optional.of(timeUnitEnum);
         }
       }
+      throw new OsduBadRequestException(ErrorMessages.INVALID_EXPIRY_TIME_PATTERN);
     }
     return Optional.empty();
   }
