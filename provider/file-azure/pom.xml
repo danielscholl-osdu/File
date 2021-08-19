@@ -43,8 +43,9 @@
     <azure.appservice.appname />
     <azure.appservice.subscription />
     <springfox-version>2.7.0</springfox-version>
+
     <osdu.corelibazure.version>0.12.0-SNAPSHOT</osdu.corelibazure.version>
-    <osdu.oscorecommon.version>0.10.0-rc3</osdu.oscorecommon.version>
+    <osdu.oscorecommon.version>0.11.0-rc4</osdu.oscorecommon.version>
   </properties>
   <dependencyManagement>
     <dependencies>
