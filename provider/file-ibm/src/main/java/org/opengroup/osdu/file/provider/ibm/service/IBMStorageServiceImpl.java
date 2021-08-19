@@ -169,8 +169,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 			String bucketName = s3ObjectKeyParts[0];
 			String s3Key = String.join("/", Arrays.copyOfRange(s3ObjectKeyParts, 1, s3ObjectKeyParts.length));
 
-
-			URL s3SignedUrl = generateSignedS3DownloadUrl(bucketName, s3Key, "GET");
+     URL s3SignedUrl = generateSignedS3DownloadUrl(bucketName, s3Key, "GET", signedUrlParameters);
 
 			 return SignedUrl.builder()
 			          .url(s3SignedUrl)
@@ -182,18 +181,20 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	 /**
 		 * This method will take a string of a pre-validated S3 bucket name, and use the
-		 * AWS Java SDK to generate a signed URL with an expiration date set to be
-		 * as-configured
+		 * AWS Java SDK to generate a signed URL with an expiration date based on
+		 * signedUrl params provided
 		 *
 		 * @param s3BucketName - pre-validated S3 bucket name
 		 * @param s3ObjectKey  - pre-validated S3 object key (keys include the path +
 		 *                     filename)
+     * @param signedUrlParameters - params(like expiry time) to be set for signedUrl
 		 * @return - String of the signed S3 URL to allow file access temporarily
 		 */
 
-	private URL generateSignedS3DownloadUrl(String s3BucketName, String s3ObjectKey, String httpMethod) {
+   private URL generateSignedS3DownloadUrl(String s3BucketName, String s3ObjectKey,
+       String httpMethod, SignedUrlParameters signedUrlParameters) {
 		// TODO Auto-generated method stub
-		Date expiration = expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays);
+		Date expiration = expirationDateHelper.getExpirationTime(signedUrlParameters.getExpiryTime());
 		log.debug("Requesting a signed S3 URL with an expiration of: " + expiration.toString() + " ("
 				+ s3SignedUrlExpirationTimeInDays + " minutes from now)");
 
