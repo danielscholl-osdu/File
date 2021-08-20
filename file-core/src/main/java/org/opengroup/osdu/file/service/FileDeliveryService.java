@@ -34,6 +34,7 @@ public class FileDeliveryService {
   final IStorageService storageService;
   final DataLakeStorageFactory storageFactory;
   final IStorageUtilService storageUtilService;
+  final ExpiryTimeUtil expiryTimeUtil;
 
   public DownloadUrlResponse getSignedUrlsByRecordId(String id,
       SignedUrlParameters signedUrlParameters) throws StorageException {
@@ -64,7 +65,6 @@ public class FileDeliveryService {
   }
 
   private void validateParameters(SignedUrlParameters signedUrlParameters) {
-    ExpiryTimeUtil expiryTimeUtil = new ExpiryTimeUtil();
     if (!expiryTimeUtil.isInputPatternSupported(signedUrlParameters.getExpiryTime())) {
       throw new OsduBadRequestException(ErrorMessages.INVALID_EXPIRY_TIME_PATTERN);
     }
