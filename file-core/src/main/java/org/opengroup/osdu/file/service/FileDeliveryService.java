@@ -99,16 +99,16 @@ public class FileDeliveryService {
 
 	
 	
-    private String extractFileName(Record obj) {
+    private String extractFileName(Record record) {
         ObjectMapper mapper = new ObjectMapper();
         String fileName = null;
         String jsonStr;
         try {
-            jsonStr = mapper.writeValueAsString(obj);
+            jsonStr = mapper.writeValueAsString(record);
             JsonPath jsonPath = JsonPath.with(jsonStr);
             fileName = jsonPath.get(FileMetadataConstant.FILE_NAME_PATH);
         } catch (JsonProcessingException e) {
-            log.warning("Unable to parse fileName in data.DatasetProperties.FileSourceInfo.Name");
+            log.warning("Unable to parse fileName in data.DatasetProperties.FileSourceInfo.Name", e);
         }
         return fileName;
     }

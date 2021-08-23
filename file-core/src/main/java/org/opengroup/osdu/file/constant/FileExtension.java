@@ -18,7 +18,7 @@ public enum FileExtension {
     JPEG("image/jpeg"),
     PNG("image/png"),
     SVG("image/svg+xml"),
-    JPG("image/jpeg"),
+    JPG("image/jpg"),
     JSON("application/json"),
     MSG("application/vnd.ms-outlook");
 
