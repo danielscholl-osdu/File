@@ -14,6 +14,7 @@ import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.aws.di.DatasetException;
 import org.opengroup.osdu.file.provider.aws.di.IDatasetFactory;
 import org.opengroup.osdu.file.provider.aws.di.IDatasetService;
@@ -41,12 +42,12 @@ public class StorageServiceImpl implements IStorageService {
     private final ObjectMapper objectMapper = new ObjectMapper()
                                                     .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
                                                     .findAndRegisterModules();
-    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper); 
+    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
 
     @Override
     public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
-        
+
         IDatasetService datasetService = datasetFactory.create(headers);
 
         GetDatasetStorageInstructionsResponse response;
@@ -64,7 +65,7 @@ public class StorageServiceImpl implements IStorageService {
             }
         }
 
-        FileUploadLocationAWSImpl fileUploadProperties = response.getStorageLocation();        
+        FileUploadLocationAWSImpl fileUploadProperties = response.getStorageLocation();
 
         try {
             return SignedUrl.builder()
@@ -80,15 +81,16 @@ public class StorageServiceImpl implements IStorageService {
                         HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                         "Failed to parse URI into URL for File Signed Url Path");
         }
-                        
-        
-        
+
+
+
     }
 
     @Override
-    public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
-        
+    public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
+        String authorizationToken, SignedUrlParameters signedUrlParameters) {
+
         throw new NotImplementedException("Not implemented. Use createSignedUrl(fileId, ...) instead");
-    }  
-    
+    }
+
 }

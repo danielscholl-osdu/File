@@ -32,6 +32,9 @@ class MultiPartitionBlobServiceClientFactory implements IBlobServiceClientFactor
     StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential(
         pi.getStorageAccountName(), pi.getStorageAccountKey());
     String endpoint = String
+            
+            
+            
         .format(BLOB_STORAGE_ACCOUNT_BASE_URI_REGEX, AZURE_PROTOCOL, pi.getStorageAccountName());
 
     BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().endpoint(endpoint)

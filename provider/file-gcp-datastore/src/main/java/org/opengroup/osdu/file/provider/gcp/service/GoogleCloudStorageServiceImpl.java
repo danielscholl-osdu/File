@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
@@ -90,10 +91,11 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
         .build();
   }
 
-
   @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
-    Instant now = Instant.now(Clock.systemUTC());
+
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
+      String authorizationToken, SignedUrlParameters signedUrlParameters) {
+     Instant now = Instant.now(Clock.systemUTC());
 
     String[] gsPathParts = unsignedUrl.split("gs://");
 
@@ -109,14 +111,15 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
     String bucketName = gsObjectKeyParts[0];
     String filePath = String.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
 
-    SignedObject signedObject = storageRepository.getSignedObject(bucketName, filePath);
+    SignedObject signedObject = storageRepository.getSignedObjectBasedOnParams(bucketName, filePath,
+        signedUrlParameters);
 
 
     return SignedUrl.builder()
-      .url(signedObject.getUrl())
-      .uri(signedObject.getUri())
-      .createdAt(now)
-      .build();
+        .url(signedObject.getUrl())
+        .uri(signedObject.getUri())
+        .createdAt(now)
+        .build();
 
   }
 

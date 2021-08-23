@@ -18,6 +18,7 @@ package org.opengroup.osdu.file.provider.interfaces;
 
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 
@@ -54,9 +55,11 @@ public interface IStorageService {
    *
    * @param unsignedUrl
    * @param authorizationToken
+   * @param signedUrlParameters
    * @return
    */
-  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, String fileName, String contentType) {
+
+  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, SignedUrlParameters signedUrlParameters) {
     return null;
   }
 
