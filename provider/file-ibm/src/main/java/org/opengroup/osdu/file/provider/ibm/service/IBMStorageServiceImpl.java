@@ -194,7 +194,12 @@ public class IBMStorageServiceImpl implements IStorageService {
    private URL generateSignedS3DownloadUrl(String s3BucketName, String s3ObjectKey,
        String httpMethod, SignedUrlParameters signedUrlParameters) {
 		// TODO Auto-generated method stub
-		Date expiration = expirationDateHelper.getExpirationTime(signedUrlParameters.getExpiryTime());
+     Date expiration;
+     if (signedUrlParameters.getExpiryTime() != null) {
+       expiration = expirationDateHelper.getExpirationTime(signedUrlParameters.getExpiryTime());
+     } else {
+       expiration = expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays);
+     }
 		log.debug("Requesting a signed S3 URL with an expiration of: " + expiration.toString() + " ("
 				+ s3SignedUrlExpirationTimeInDays + " minutes from now)");
 
