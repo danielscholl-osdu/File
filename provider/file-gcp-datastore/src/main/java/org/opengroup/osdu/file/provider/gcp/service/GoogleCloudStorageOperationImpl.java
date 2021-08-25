@@ -6,7 +6,9 @@ import java.util.stream.Stream;
 
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.*;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
@@ -14,6 +16,8 @@ import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.file.FileCopyOperation;
+import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
 import org.opengroup.osdu.file.provider.gcp.util.GoogleCloudStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.springframework.stereotype.Service;
@@ -41,10 +45,8 @@ public class GoogleCloudStorageOperationImpl implements ICloudStorageOperation {
     String destinationBucket = googleCloudStorageUtil.getBucketName(toFile);
     String destinationFilePath = googleCloudStorageUtil.getDirectoryPath(toFile);
 
-    if (googleCloudStorageUtil.isPathsEmpty(fromBucket,
-                                            fromPath,
-                                            destinationBucket,
-                                            destinationFilePath)) {
+    if (Stream.of(fromBucket, fromPath, destinationBucket, destinationFilePath)
+        .anyMatch(StringUtils::isEmpty)) {
       throwBadRequest(INVALID_RESOURCE_PATH);
     }
 
@@ -73,6 +75,26 @@ public class GoogleCloudStorageOperationImpl implements ICloudStorageOperation {
   }
 
   @Override
+  public List<FileCopyOperationResponse> copyFiles(List<FileCopyOperation> fileCopyOperationList) {
+    return fileCopyOperationList.stream()
+        .map(operation -> {
+          try {
+            this.copyFile(operation.getSourcePath(), operation.getDestinationPath());
+            return FileCopyOperationResponse.builder()
+                .copyOperation(operation)
+                .success(Boolean.TRUE)
+                .build();
+          } catch (OsduBadRequestException e) {
+            log.error("Error in performing file copy operation", e);
+            return FileCopyOperationResponse.builder()
+                .copyOperation(operation)
+                .success(Boolean.FALSE)
+                .build();
+          }
+        }).collect(Collectors.toList());
+  }
+
+  @Override
   public Boolean deleteFile(String location) {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
     Storage storage = storageFactory.get(tenantInfo);
@@ -88,26 +110,13 @@ public class GoogleCloudStorageOperationImpl implements ICloudStorageOperation {
 
   private Boolean deleteStorageBlob(Storage storage, String bucketName, String filePath) {
     Blob blob = storage.get(bucketName, filePath);
-    Boolean isDeleted = false;
-    if (blob != null) {
-      String sourceBlobName = blob.getName();
-      BlobId sourceBlobId = BlobId.of(bucketName, sourceBlobName);
-      isDeleted = storage.delete(sourceBlobId);
-    }
-    return isDeleted;
+    return blob != null && storage.delete(BlobId.of(bucketName, blob.getName()));
   }
 
   private Boolean isDirEmpty(Storage storage, String bucket, String folderName) {
     Page<Blob> blobs = readStorage(storage, bucket, folderName);
-    if (blobs == null) {
-      return true;
-    }
-    for (Blob blob : blobs.iterateAll()) {
-      if (!blob.getName().equals(folderName)) {
-        return false;
-      }
-    }
-    return true;
+    return blobs == null || StreamSupport.stream(blobs.iterateAll().spliterator(), false)
+        .allMatch(blob -> blob.getName().equals(folderName));
   }
 
   private Page<Blob> readStorage(Storage storage, String bucket, String location) {
