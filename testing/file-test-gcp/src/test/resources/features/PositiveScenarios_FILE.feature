@@ -1,6 +1,6 @@
 Feature: File Service API integration test
 
-  Background:
+  Background: 
     Given I generate user token and set request headers with "PRIVATE_TENANT1"
 
   #Positive scenario for FILE service
@@ -12,10 +12,10 @@ Feature: File Service API integration test
     Then Service should respond back with <postReponseStatusCode>
     When I hit File service GET download signed API with a valid Id
     Then download service should respond back with a valid <getReponseStatusCode>
+
     #When I hit signed url to download a file within expiration period at <outPathToCreateFile>
     #And content of the file uploaded <outputFilePath> and downloaded <inputFilePath> files is same
-
-    Examples:
+    Examples: 
       | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                              | outputFilePath                                            | outPathToCreateFile                                                          |
       | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/test.csv"            | "/sample_downloaded_files/test_downloaded.csv"            | "/src/test/resources/sample_downloaded_files/test_downloaded.csv"            |
       | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/TestDownloadUrl.txt" | "/sample_downloaded_files/TestDownloadUrl_downloaded.txt" | "/src/test/resources/sample_downloaded_files/TestDownloadUrl_downloaded.txt" |
@@ -30,6 +30,20 @@ Feature: File Service API integration test
     When I hit File service GET metadata signed API with a valid Id
     Then metadata service should respond back with a valid <getReponseStatusCode>
 
-    Examples:
+    Examples: 
       | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                   |
       | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/test.csv" |
+
+  @File
+  Scenario Outline: Verification for expiry time feature of downloadURL
+    Given I hit File service GET uploadURL API
+    Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>
+    When I hit File service metadata service POST API with <inputPayload> and data-partition-id as <tenant>
+    Then Service should respond back with <postReponseStatusCode>
+    When I hit File service GET download signed API with a valid Id and <expiryTimeInMinutes>
+    Then I should be able to download the file within expiry period
+    And I should not be able to download the file after <expiryTimeInMinutes>
+
+    Examples: 
+      | expiryTimeInMinutes | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                   | outputFilePath                                 | outPathToCreateFile                                               |
+      | "1M"                | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/test.csv" | "/sample_downloaded_files/test_downloaded.csv" | "/src/test/resources/sample_downloaded_files/test_downloaded.csv" |

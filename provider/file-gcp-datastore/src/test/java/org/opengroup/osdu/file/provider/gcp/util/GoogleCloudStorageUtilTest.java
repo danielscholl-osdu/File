@@ -52,13 +52,6 @@ public class GoogleCloudStorageUtilTest {
     }
 
     @Test
-    public void isPathEmpty() {
-        assertFalse(googleCloudStorageUtil.isPathsEmpty("fromBucket", "fromPath", "toBucket", "toPath"));
-        assertTrue(googleCloudStorageUtil.isPathsEmpty("", "fromPath", "toBucket", "toPath"));
-        assertTrue(googleCloudStorageUtil.isPathsEmpty(null, "fromPath", "toBucket", "toPath"));
-    }
-
-    @Test
     public void getBucketName() {
         String path = "gs://google-bucket/some-area/some-folder/filename.txt";
         assertEquals("google-bucket", googleCloudStorageUtil.getBucketName(path));

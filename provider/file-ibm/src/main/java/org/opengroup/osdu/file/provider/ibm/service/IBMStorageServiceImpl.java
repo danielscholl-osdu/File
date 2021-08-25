@@ -25,6 +25,7 @@ import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Autowired
 	private DpsHeaders headers;
-	
+
 	@Autowired
 	private TenantInfo tenant;
 
@@ -103,10 +104,10 @@ public class IBMStorageServiceImpl implements IStorageService {
 		try {
 		tenant.getName();
 		} catch (Exception e) {
-			
+
 			 throw new OsduUnauthorizedException("Unauthorized");
 		}
-		
+
 		SignedUrl url = new SignedUrl();
 
 		try {
@@ -143,61 +144,68 @@ public class IBMStorageServiceImpl implements IStorageService {
 	}
 
 	 @Override
-	  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
-		 
+   public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
+       String authorizationToken, SignedUrlParameters signedUrlParameters) {
+
 		 // "unsignedUrl": "s3://osdu-seismic-test-data/r1/data/provided/trajectories/1537.csv"
 		 log.info("Creating the signed url for unsugnedurl : {}. Authorization : {}, partitionID : {}", unsignedUrl);
 		 try {
 				tenant.getName();
 				} catch (Exception e) {
-					
+
 					 throw new OsduUnauthorizedException("Unauthorized");
 				}
-		 
+
 		 String[] s3PathParts = unsignedUrl.split("s3://");
 			if (s3PathParts.length < 2) {
 				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Malformed URL", INVALID_S3_PATH_REASON);
 			}
-			
+
 			String[] s3ObjectKeyParts = s3PathParts[1].split("/");
 			if (s3ObjectKeyParts.length < 1) {
 				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Malformed URL", INVALID_S3_PATH_REASON);
 			}
-			
+
 			String bucketName = s3ObjectKeyParts[0];
 			String s3Key = String.join("/", Arrays.copyOfRange(s3ObjectKeyParts, 1, s3ObjectKeyParts.length));
-			
 
-			URL s3SignedUrl = generateSignedS3DownloadUrl(bucketName, s3Key, "GET");
-			
+     URL s3SignedUrl = generateSignedS3DownloadUrl(bucketName, s3Key, "GET", signedUrlParameters);
+
 			 return SignedUrl.builder()
 			          .url(s3SignedUrl)
 			          .build();
-			
-		 
-		 
+
+
+
 	 }
-	
+
 	 /**
 		 * This method will take a string of a pre-validated S3 bucket name, and use the
-		 * AWS Java SDK to generate a signed URL with an expiration date set to be
-		 * as-configured
+		 * AWS Java SDK to generate a signed URL with an expiration date based on
+		 * signedUrl params provided
 		 *
 		 * @param s3BucketName - pre-validated S3 bucket name
 		 * @param s3ObjectKey  - pre-validated S3 object key (keys include the path +
 		 *                     filename)
+     * @param signedUrlParameters - params(like expiry time) to be set for signedUrl
 		 * @return - String of the signed S3 URL to allow file access temporarily
 		 */
 
-	private URL generateSignedS3DownloadUrl(String s3BucketName, String s3ObjectKey, String httpMethod) {
+   private URL generateSignedS3DownloadUrl(String s3BucketName, String s3ObjectKey,
+       String httpMethod, SignedUrlParameters signedUrlParameters) {
 		// TODO Auto-generated method stub
-		Date expiration = expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays);
+     Date expiration;
+     if (signedUrlParameters.getExpiryTime() != null) {
+       expiration = expirationDateHelper.getExpirationTime(signedUrlParameters.getExpiryTime());
+     } else {
+       expiration = expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays);
+     }
 		log.debug("Requesting a signed S3 URL with an expiration of: " + expiration.toString() + " ("
 				+ s3SignedUrlExpirationTimeInDays + " minutes from now)");
-		
+
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(s3BucketName, s3ObjectKey)
 				.withMethod(HttpMethod.valueOf(httpMethod)).withExpiration(expiration);
-		
+
 		try {
 			// Attempt to generate the signed S3 URL
 			URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);

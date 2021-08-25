@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 import org.opengroup.osdu.file.model.SignedObject;
@@ -42,6 +43,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.SignUrlOption;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceCamelCase.class)
@@ -55,11 +57,13 @@ class GcpStorageRepositoryTest {
   @Captor
   private ArgumentCaptor<SignUrlOption> optionsCaptor;
 
+
   @Test
   void shouldCreateSignedObject() {
     // given
     Storage storage = spyLocalStorage(TestCredential.getSa());
-    IStorageRepository storageRepository = new GcpStorageRepository(storage);
+    ExpiryTimeUtil expiryTimeUtil = new ExpiryTimeUtil();
+    IStorageRepository storageRepository = new GcpStorageRepository(storage,expiryTimeUtil);
     // when
     SignedObject signedObject = storageRepository.createSignedObject(BUCKET_NAME, FILEPATH);
 
@@ -79,7 +83,8 @@ class GcpStorageRepositoryTest {
   void shouldThrowExceptionWhenCallerIsNotSigner () {
     // given
     Storage storage = spyLocalStorage(TestCredential.getUserCredentials());
-    IStorageRepository storageRepository = new GcpStorageRepository(storage);
+    ExpiryTimeUtil expiryTimeUtil = new ExpiryTimeUtil();
+    IStorageRepository storageRepository = new GcpStorageRepository(storage,expiryTimeUtil);
 
     // when
     Throwable thrown = catchThrowable(() -> storageRepository.createSignedObject(BUCKET_NAME, FILEPATH));

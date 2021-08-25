@@ -1,11 +1,13 @@
 package org.opengroup.osdu.file.service;
 
 import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.constant.ErrorMessages;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.storage.Record;
@@ -14,6 +16,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,9 +34,12 @@ public class FileDeliveryService {
   final IStorageService storageService;
   final DataLakeStorageFactory storageFactory;
   final IStorageUtilService storageUtilService;
+  final ExpiryTimeUtil expiryTimeUtil;
 
-  public DownloadUrlResponse getSignedUrlsByRecordId(String id) throws StorageException {
+  public DownloadUrlResponse getSignedUrlsByRecordId(String id,
+      SignedUrlParameters signedUrlParameters) throws StorageException {
 
+    validateParameters(signedUrlParameters);
     DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
     Record rec;
 
@@ -52,9 +58,16 @@ public class FileDeliveryService {
     String fileSource = extractFileSource(rec);
     String absolutePath = storageUtilService.getPersistentLocation(fileSource,
                                                                    headers.getPartitionId());
-    SignedUrl signedUrl = storageService.createSignedUrlFileLocation(absolutePath,
-                                                                     headers.getAuthorization());
+    SignedUrl signedUrl = storageService
+        .createSignedUrlFileLocation(absolutePath, headers.getAuthorization(),
+            signedUrlParameters);
     return DownloadUrlResponse.builder().signedUrl(signedUrl.getUrl().toString()).build();
+  }
+
+  private void validateParameters(SignedUrlParameters signedUrlParameters) {
+    if (!expiryTimeUtil.isInputPatternSupported(signedUrlParameters.getExpiryTime())) {
+      throw new OsduBadRequestException(ErrorMessages.INVALID_EXPIRY_TIME_PATTERN);
+    }
   }
 
 	private String extractFileSource(Object obj) {

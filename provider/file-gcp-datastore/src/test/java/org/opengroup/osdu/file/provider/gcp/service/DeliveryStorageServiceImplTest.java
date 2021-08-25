@@ -30,21 +30,14 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.file.model.delivery.SignedUrl;
 import org.opengroup.osdu.file.provider.gcp.config.properties.GcpConfigurationProperties;
 import org.opengroup.osdu.file.provider.gcp.service.downscoped.*;
-// import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +48,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +55,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(SpringExtension.class)
 @EnableConfigurationProperties({GcpConfigurationProperties.class})
 @TestPropertySource(locations = {"classpath:application.properties"})
-public class DeliveryStorageServiceImplTest {
+class DeliveryStorageServiceImplTest {
 
     @Autowired
     @Spy
@@ -113,7 +105,7 @@ public class DeliveryStorageServiceImplTest {
     }
 
     @Test
-    public void givenBlobResource_whenCreateSignedUrl_thenCreatedProperly() throws IOException, URISyntaxException {
+    void givenBlobResource_whenCreateSignedUrl_thenCreatedProperly() throws IOException, URISyntaxException {
 
         URL url = new URL("http://testsignedurl.com");
 
@@ -140,7 +132,7 @@ public class DeliveryStorageServiceImplTest {
     }
 
     @Test
-    public void givenFolderResource_whenCreateSignedUrl_thenCreatedProperly() throws IOException {
+    void givenFolderResource_whenCreateSignedUrl_thenCreatedProperly() throws IOException {
 
         URL url = new URL("http://testsignedurl.com");
 
@@ -159,7 +151,7 @@ public class DeliveryStorageServiceImplTest {
     }
 
     @Test
-    public void createSignedUrl_malformedUnsignedUrl_throwsAppException() {
+    void createSignedUrl_malformedUnsignedUrl_throwsAppException() {
         try {
             String unsignedUrl = "malformedUrlString";
             String authorizationToken = "testAuthorizationToken";

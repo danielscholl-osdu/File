@@ -21,7 +21,7 @@ public class IBMSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers("/", "/index.html", "/v2/api-docs", "/health/**", "/configuration/ui",
 						"/swagger-resources/**", "/configuration/security", "/swagger", "/swagger-ui.html",
-						"/webjars/**","/v2/**")
+						"/webjars/**","/v2/**", "/v2/info")
 				.permitAll().anyRequest().authenticated().and().oauth2ResourceServer().jwt();
 	}
 

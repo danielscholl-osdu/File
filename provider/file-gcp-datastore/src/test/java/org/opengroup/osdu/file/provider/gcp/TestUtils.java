@@ -35,6 +35,7 @@ public final class TestUtils {
   public static final String PARTITION = "partition";
   public static final String USER_DES_ID = "common-user";
   public static final String BUCKET_NAME = "odes-os-file-temp";
+  public static final String FOLDER_NAME = "osdu";
 
   public static final String UUID_REGEX = "(.{8})(.{4})(.{4})(.{4})(.{12})";
   public static final Pattern GCS_OBJECT_URI
