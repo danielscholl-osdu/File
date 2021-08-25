@@ -16,11 +16,9 @@
 
 package org.opengroup.osdu.file.provider.gcp.service;
 
-
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-
 import static org.mockito.Mockito.verify;
 
 import java.net.URI;
@@ -28,12 +26,12 @@ import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.ReplaceCamelCase;
@@ -43,26 +41,21 @@ import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.gcp.TestUtils;
 import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
-import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceCamelCase.class)
 class DataLakeStorageServiceImplTest {
 
+  @InjectMocks
+  GoogleCloudStorageServiceImpl storageService;
+
   @Mock
-  private IStorageRepository storageRepository;
+  IStorageRepository storageRepository;
+  @Mock
+  FileLocationProperties fileLocationProperties;
 
   @Captor
   ArgumentCaptor<String> filenameCaptor;
-
-  private IStorageService storageService;
-
-  @BeforeEach
-  void setUp() {
-    FileLocationProperties fileLocationProperties
-        = new FileLocationProperties(TestUtils.BUCKET_NAME, TestUtils.USER_DES_ID);
-    storageService = new GoogleCloudStorageServiceImpl(fileLocationProperties, storageRepository);
-  }
 
   @Test
   void shouldCreateObjectSignedUrl_FileLocation() {
@@ -93,7 +86,6 @@ class DataLakeStorageServiceImplTest {
 
   }
 
-
   @Test
   void shouldCreateObjectSignedUrl() {
     // given
@@ -115,7 +107,6 @@ class DataLakeStorageServiceImplTest {
       then(url.getUrl().toString()).is(TestUtils.GCS_URL_CONDITION);
       then(url.getUri().toString()).matches(TestUtils.GCS_OBJECT_URI);
       then(url.getCreatedAt()).isBeforeOrEqualTo(now());
-
     });
     verify(storageRepository)
         .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), filenameCaptor.capture(), any());
@@ -169,5 +160,4 @@ class DataLakeStorageServiceImplTest {
   private Instant now() {
     return Instant.now(Clock.systemUTC());
   }
-
 }

@@ -22,14 +22,11 @@ public class GoogleCloudStorageUtil {
         return acls;
     }
 
-
-
     public String getCompleteFilePath(String destinationBucket, String filePath) {
         StringBuilder destinationBlob = new StringBuilder();
         destinationBlob.append("gs://").append(destinationBucket).append(filePath);
         return destinationBlob.toString();
     }
-
 
     public String getPersistentBucket(String tenantProject) {
         return tenantProject + "-" + propertiesConfiguration.getPersistentArea();
@@ -37,11 +34,6 @@ public class GoogleCloudStorageUtil {
 
     public String getStagingBucket(String tenantProject) {
         return tenantProject + "-" + propertiesConfiguration.getStagingArea();
-    }
-
-
-    public boolean isPathsEmpty(String fromBucket, String fromPath, String toBucket, String toPath) {
-        return StringUtils.isEmpty(fromBucket) || StringUtils.isEmpty(fromPath) || StringUtils.isEmpty(toBucket) || StringUtils.isEmpty(toPath);
     }
 
     public String getBucketName(String filePath) {
