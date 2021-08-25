@@ -2,8 +2,12 @@ package org.opengroup.osdu.file.stepdefs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.awaitility.Awaitility;
+import org.awaitility.Duration;
+import static org.awaitility.Awaitility.await;
 import org.opengroup.osdu.file.constants.TestConstants;
 import org.opengroup.osdu.file.util.AuthUtil;
 import org.opengroup.osdu.file.util.CommonUtil;
@@ -71,5 +75,10 @@ public class CommonUtility {
 
 	public static String generateFileIDExceedingLegthLimit() {
 		return RandomStringUtils.randomAlphanumeric(1025).toLowerCase();
+	}
+	
+	public static void customStaticWait_Max_5_Minutes(long timeout) {
+		Awaitility.setDefaultTimeout(Duration.FIVE_MINUTES);
+		await().pollDelay(timeout, TimeUnit.MINUTES).until(() -> true);
 	}
 }

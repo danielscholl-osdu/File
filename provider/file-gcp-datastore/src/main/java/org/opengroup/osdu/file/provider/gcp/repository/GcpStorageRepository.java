@@ -18,10 +18,12 @@ package org.opengroup.osdu.file.provider.gcp.repository;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import com.google.cloud.storage.*;
@@ -38,18 +40,27 @@ public class GcpStorageRepository implements IStorageRepository {
 
   final private Storage storage;
 
+  @Autowired
+  private final ExpiryTimeUtil expiryTimeUtil;
+
   @Override
   public SignedObject getSignedObject(String bucketName, String filepath) {
-    return prepareSignedObject(bucketName, filepath, HttpMethod.GET);
+    return prepareSignedObject(bucketName, filepath, HttpMethod.GET, new SignedUrlParameters());
   }
 
   @Override
   public SignedObject createSignedObject(String bucketName, String filepath) {
-    return prepareSignedObject(bucketName, filepath, HttpMethod.PUT);
+    return prepareSignedObject(bucketName, filepath, HttpMethod.PUT, new SignedUrlParameters());
+  }
+
+  @Override
+  public SignedObject getSignedObjectBasedOnParams(String bucketName, String filePath,
+      SignedUrlParameters signedUrlParameters) {
+    return prepareSignedObject(bucketName, filePath, HttpMethod.GET, signedUrlParameters);
   }
 
   private SignedObject prepareSignedObject(
-      String bucketName, String filepath, HttpMethod httpMethod) {
+      String bucketName, String filepath, HttpMethod httpMethod, SignedUrlParameters signedUrlParameters) {
     log.debug("Creating the signed blob in bucket {} for path {}", bucketName, filepath);
 
     BlobId blobId = BlobId.of(bucketName, filepath);
@@ -57,11 +68,13 @@ public class GcpStorageRepository implements IStorageRepository {
         .newBuilder(blobId)
         .setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
         .build();
-    URL signedUrl = storage.signUrl(blobInfo,
-                                    7L,
-                                    TimeUnit.DAYS,
-                                    SignUrlOption.withV4Signature(),
-                                    SignUrlOption.httpMethod(httpMethod));
+
+    ExpiryTimeUtil.RelativeTimeValue expiryTimeInTimeUnit = expiryTimeUtil
+        .getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
+
+    URL signedUrl = storage
+        .signUrl(blobInfo, expiryTimeInTimeUnit.getValue(), expiryTimeInTimeUnit.getTimeUnit(),
+            SignUrlOption.withV4Signature(), SignUrlOption.httpMethod(httpMethod));
 
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
               blobId,

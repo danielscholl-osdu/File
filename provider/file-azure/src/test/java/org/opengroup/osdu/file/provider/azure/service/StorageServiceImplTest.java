@@ -36,11 +36,13 @@ import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
 import javax.annotation.Signed;
 import java.net.URI;
@@ -76,6 +78,8 @@ class StorageServiceImplTest {
   @Mock
   private BlobStoreConfig blobStoreConfig;
 
+  private ExpiryTimeUtil expiryTimeUtil;
+
   @Captor
   ArgumentCaptor<String> filenameCaptor;
 
@@ -87,8 +91,9 @@ class StorageServiceImplTest {
     FileLocationProperties fileLocationProperties
         = new FileLocationProperties(TestUtils.STAGING_CONTAINER_NAME, TestUtils.USER_DES_ID);
 
-    storageService = new StorageServiceImpl(
-        blobStore, dpsHeaders, fileLocationProperties, storageRepository, blobStoreConfig, serviceHelper);
+    expiryTimeUtil = new ExpiryTimeUtil();
+    storageService = new StorageServiceImpl(blobStore, dpsHeaders, fileLocationProperties,
+        storageRepository, blobStoreConfig, expiryTimeUtil, serviceHelper);
 
   }
 
@@ -135,8 +140,9 @@ class StorageServiceImplTest {
     String[] invalidUnsignedURLs = {"", "    ", null};
     for(String unsignedURl: invalidUnsignedURLs) {
       // when
-      Throwable thrown = catchThrowable(() -> storageService.createSignedUrlFileLocation(
-          unsignedURl, TestUtils.AUTHORIZATION_TOKEN));
+      Throwable thrown = catchThrowable(() -> storageService
+          .createSignedUrlFileLocation(unsignedURl, TestUtils.AUTHORIZATION_TOKEN,
+              new SignedUrlParameters()));
       // then
       then(thrown)
           .isInstanceOf(IllegalArgumentException.class)
@@ -150,8 +156,9 @@ class StorageServiceImplTest {
     String[] invalidAuthTokens = {"", "    ", null};
     for(String authToken: invalidAuthTokens) {
       // when
-      Throwable thrown = catchThrowable(() -> storageService.createSignedUrlFileLocation(
-          TestUtils.ABSOLUTE_FILE_PATH, authToken));
+      Throwable thrown = catchThrowable(() -> storageService
+          .createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH, authToken,
+              new SignedUrlParameters()));
       // then
       then(thrown)
           .isInstanceOf(IllegalArgumentException.class)
@@ -176,8 +183,9 @@ class StorageServiceImplTest {
         anyString(),anyString(),anyString(),any(OffsetDateTime.class),any(BlobSasPermission.class));
 
     // when
-    Throwable thrown = catchThrowable(() -> storageService.createSignedUrlFileLocation(
-        TestUtils.ABSOLUTE_FILE_PATH, TestUtils.AUTHORIZATION_TOKEN));
+    Throwable thrown = catchThrowable(() -> storageService
+        .createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH, TestUtils.AUTHORIZATION_TOKEN,
+            new SignedUrlParameters()));
     // then
     then(thrown)
         .isInstanceOf(InternalServerErrorException.class)
@@ -197,7 +205,9 @@ class StorageServiceImplTest {
     doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
         anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
 
-    storageService.createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH,TestUtils.AUTHORIZATION_TOKEN);
+    storageService
+        .createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH, TestUtils.AUTHORIZATION_TOKEN,
+            new SignedUrlParameters());
     verify(blobStore,times(1)).generatePreSignedURL(
         anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class));
   }

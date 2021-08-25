@@ -29,6 +29,7 @@ import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
@@ -39,6 +40,7 @@ import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +51,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.String.format;
 
@@ -79,6 +79,9 @@ public class StorageServiceImpl implements IStorageService {
 
   @Autowired
   final BlobStoreConfig blobStoreConfig;
+
+  @Autowired
+  private final ExpiryTimeUtil expiryTimeUtil;
 
   @Autowired
   ServiceHelper serviceHelper;
@@ -136,7 +139,8 @@ public class StorageServiceImpl implements IStorageService {
     List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(), dpsHeaders.getAuthorization());
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
+          dpsHeaders.getAuthorization(), new SignedUrlParameters());
 
       AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())
@@ -181,8 +185,10 @@ public class StorageServiceImpl implements IStorageService {
 
   @SneakyThrows
   @Override
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken) {
-    if(StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
+  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
+      String authorizationToken, SignedUrlParameters signedUrlParameters) {
+
+    if (StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
           String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
               authorizationToken, unsignedUrl));
@@ -190,26 +196,27 @@ public class StorageServiceImpl implements IStorageService {
 
     String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(unsignedUrl);
     String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(unsignedUrl);
+
     BlobSasPermission permission = new BlobSasPermission();
     permission.setReadPermission(true);
-    OffsetDateTime expiryTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(7);
 
-    String signedUrlString = blobStore.generatePreSignedURL(
-        dpsHeaders.getPartitionId(),
-        filePath.toString(),
-        containerName,
-        expiryTime,
-        permission);
+    OffsetDateTime expiryTime = expiryTimeUtil
+        .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
+
+    String signedUrlString = blobStore
+        .generatePreSignedURL(dpsHeaders.getPartitionId(), filePath.toString(), containerName,
+            expiryTime, permission);
 
     if(StringUtils.isBlank(signedUrlString)) {
       throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
     }
 
     return SignedUrl.builder()
-          .url(new URL(signedUrlString))
-          .uri(URI.create(unsignedUrl))
-          .createdBy(getUserDesID(authorizationToken))
-          .createdAt(Instant.now(Clock.systemUTC()))
-          .build();
+        .url(new URL(signedUrlString))
+        .uri(URI.create(unsignedUrl))
+        .createdBy(getUserDesID(authorizationToken))
+        .createdAt(Instant.now(Clock.systemUTC()))
+        .build();
   }
+
 }

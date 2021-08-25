@@ -50,4 +50,5 @@ public class TestConstants {
 	public static final String GET_LOCATION = "/v2/getLocation";
 	public static final String GET_FILE_LOCATION = "/v2/getFileLocation";
 	public static final String GET_FILE_LIST = "/v2/getFileList";
+	public static final String EXPIRY_TIME_PARA_NAME = "expiryTime";
 }
