@@ -7,9 +7,11 @@ import java.net.URI;
 import java.net.URL;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //import org.opengroup.osdu.file.provider.ibm.security.WhoamiController;
@@ -17,6 +19,9 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
@@ -24,8 +29,11 @@ import org.opengroup.osdu.core.ibm.objectstorage.CloudObjectStorageFactory;
 import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
+import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.file.provider.ibm.model.file.S3Location;
+import org.opengroup.osdu.file.provider.ibm.model.file.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +62,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 	private final static String AWS_SDK_EXCEPTION_MSG = "There was an error communicating with the Amazon S3 SDK request "
 			+ "for S3 URL signing.";
 	private final static String INVALID_S3_PATH_REASON = "Unsigned url invalid, needs to be full S3 path";
-
+	private static final String s3UploadLocationUriFormat = "s3://%s/%s";
 	// TODO soon tenant factory based on partionid
 
 	@Value("${ibm.cos.signed-url.expiration-days:7}")
@@ -74,8 +82,15 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Value("${ibm.env.prefix:local-dev}")
 	private String bucketNamePrefix;
+	
+	@Value("${PROVIDER_KEY}")
+	private String providerKey;
+	
+	private String roleArn;
 
 	private ExpirationDateHelper expirationDateHelper;
+	
+	private SignedUrlParameters signedParam;
 
 	@Inject
 	private CloudObjectStorageFactory cosFactory;
@@ -87,6 +102,9 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Autowired
 	private TenantInfo tenant;
+	
+	@Inject
+	private STSHelper stsHelper;
 
 
 	@Value("${ibm.staging.bucket}")
@@ -95,7 +113,9 @@ public class IBMStorageServiceImpl implements IStorageService {
 	@PostConstruct
 	public void init() {
 		s3Client = cosFactory.getClient();
+		roleArn = "arn:123:456:789:1234";
 		expirationDateHelper = new ExpirationDateHelper();
+		signedParam= new SignedUrlParameters();
 	}
 
 	@Override
@@ -219,6 +239,72 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 
 	}
+   
+   @Override
+	public StorageInstructionsResponse createStorageInstructions(String fileID, String partitionID) {
+		
+		log.info("calling StorageInstructions to create temporaryCredentials and signed url for file upload");
+		StorageInstructionsResponse storageInstructionsResponse = new StorageInstructionsResponse();
+		Map<String, Object> storageLocation = new HashMap<String, Object>();
+		Date expiration = expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays);
+		String unsignedUrl = String.format(s3UploadLocationUriFormat, getBucketName(), fileID);
+		S3Location s3Location = new S3Location(unsignedUrl);
+		URL signedUrl=generateSignedS3Url(getBucketName(), fileID);
+		TemporaryCredentials credentials = stsHelper.getUploadCredentials(s3Location, roleArn,
+				this.headers.getUserEmail(), expiration);
+		log.debug("temporaryCredentials for file upload:", credentials);
+		storageLocation.put("unsignedUrl", unsignedUrl);
+		storageLocation.put("signedUrl", signedUrl);
+		storageLocation.put("createdAt", Instant.now());
+		storageLocation.put("connectionString", credentials.toConnectionString());
+		storageLocation.put("credentials", credentials);
+		storageLocation.put("region", s3Region);
+		storageInstructionsResponse.setStorageLocation(storageLocation);
+		storageInstructionsResponse.setProviderKey(providerKey);
+		log.debug("signedUrl for file upload:",signedUrl);
+		return storageInstructionsResponse;
+	}
+	
+	@Override
+	public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
+	
+		log.info("calling Retrieval Instructions to generate temporaryCredentials and signed url for file download");	
+		RetrievalInstructionsResponse response = new RetrievalInstructionsResponse();
+		Map<String, Object> retrivalDataSet = new HashMap<String, Object>();
+		DatasetRetrievalProperties dataset = new DatasetRetrievalProperties();
+		List<DatasetRetrievalProperties> listOfdDataSet = new ArrayList<DatasetRetrievalProperties>();
+		Instant currentTime = Instant.now();
+		Date expiration = expirationDateHelper.getExpirationDate(s3SignedUrlExpirationTimeInDays);
+		for (FileRetrievalData retrivaldata : fileRetrievalData) {
+			S3Location fileLocation = new S3Location(retrivaldata.getUnsignedUrl());
+			if (!fileLocation.isValid()) {
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Malformed URL", INVALID_S3_PATH_REASON);
+			}
+			if (fileLocation.getKey().trim().endsWith("/")) {
+				throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Invalid S3 Object Key",
+						"Invalid S3 Object Key - Object key cannot contain trailing '/'");
+			}
+			TemporaryCredentials credentials = stsHelper.getRetrievalCredentials(fileLocation, roleArn,
+					this.headers.getUserEmail(), expiration);
+			SignedUrlParameters signedParam=new SignedUrlParameters();
+			SignedUrl signedUrl=createSignedUrlFileLocation(retrivaldata.getUnsignedUrl(), headers.getAuthorization(),signedParam);
+			retrivalDataSet.put("unsignedUrl", retrivaldata.getUnsignedUrl());
+			retrivalDataSet.put("signedUrl",signedUrl);
+			retrivalDataSet.put("signedUrlExpiration", expiration);
+			retrivalDataSet.put("connectionString", credentials.toConnectionString());
+			retrivalDataSet.put("credentials", credentials);
+			retrivalDataSet.put("createdAt", currentTime);
+			retrivalDataSet.put("createdAt", Instant.now());
+			retrivalDataSet.put("region", s3Region);
+			dataset.setRetrievalProperties(retrivalDataSet);
+			dataset.setDatasetRegistryId(retrivaldata.getRecordId());
+			listOfdDataSet.add(dataset);
+			response.setDatasets(listOfdDataSet);
+			response.setProviderKey(providerKey);
+		}
+		return response;
+	}
+
 
 	public String getBucketName() {
 		String partitionId = headers.getPartitionIdWithFallbackToAccountId();
