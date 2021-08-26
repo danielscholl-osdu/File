@@ -17,6 +17,9 @@ package org.opengroup.osdu.file.provider.ibm.service;
 
 import java.time.Instant;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class InstantHelper {
     public Instant getCurrentInstant() {
         return Instant.now();
