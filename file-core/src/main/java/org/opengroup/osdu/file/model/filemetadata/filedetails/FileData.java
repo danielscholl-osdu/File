@@ -81,8 +81,9 @@ public class FileData {
     private Endian endian;
 
     @JsonProperty("Checksum")
-    private String checksum;
-
+    private String checksum; 
+	
     @JsonProperty("ExtensionProperties")
     private Map<String,Object> extensionProperties;
+	
 }
