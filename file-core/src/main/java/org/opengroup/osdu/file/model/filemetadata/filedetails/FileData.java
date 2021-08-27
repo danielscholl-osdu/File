@@ -14,14 +14,19 @@
 
 package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
-import java.util.List;
+import java.util.Map;
+
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.opengroup.osdu.file.model.filemetadata.relationships.Relationships;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Builder
 @Getter
@@ -79,5 +84,5 @@ public class FileData {
     private String checksum;
 
     @JsonProperty("ExtensionProperties")
-    private ExtensionProperties extensionProperties;
+    private Map<String,Object> extensionProperties;
 }
