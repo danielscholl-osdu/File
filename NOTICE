@@ -587,7 +587,7 @@ The following software have components provided under the terms of this license:
 - Jackson-dataformat-XML (from https://github.com/FasterXML/jackson-dataformat-xml)
 - Jackson-dataformat-YAML (from https://github.com/FasterXML/jackson-dataformats-text)
 - Jackson-module-parameter-names (from https://repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names)
-- Jakarta Expression Language Implementation (from https://projects.eclipse.org/projects/ee4j.el)
+- Jakarta Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - Java Libraries for Amazon Simple WorkFlow (from https://aws.amazon.com/sdkforjava)
 - Java Native Access (from https://github.com/java-native-access/jna)
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
@@ -678,8 +678,8 @@ The following software have components provided under the terms of this license:
 - Spring Beans (from https://github.com/spring-projects/spring-framework)
 - Spring Boot Log4j 2 Starter (from http://projects.spring.io/spring-boot/)
 - Spring Boot Tomcat Starter (from https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-tomcat)
-- Spring Cloud Commons (from https://projects.spring.io/spring-cloud/spring-cloud-commons/)
-- Spring Cloud Context (from https://projects.spring.io/spring-cloud/spring-cloud-context/)
+- Spring Cloud Commons (from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-commons)
+- Spring Cloud Context (from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-context)
 - Spring Cloud GCP Autoconfigure Module (from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-gcp-autoconfigure)
 - Spring Cloud GCP Core Module (from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-gcp-core)
 - Spring Cloud GCP Datastore Module (from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-gcp-data-datastore)
@@ -775,7 +775,7 @@ The following software have components provided under the terms of this license:
 - proto-google-cloud-firestore-v1beta1 (from https://repo1.maven.org/maven2/com/google/api/grpc/proto-google-cloud-firestore-v1beta1)
 - proto-google-cloud-logging-v2 (from https://repo1.maven.org/maven2/com/google/api/grpc/proto-google-cloud-logging-v2)
 - proto-google-cloud-pubsub-v1 (from https://github.com/googleapis/java-pubsub/proto-google-cloud-pubsub-v1)
-- proto-google-common-protos (from https://github.com/googleapis/api-client-staging)
+- proto-google-common-protos (from https://github.com/googleapis/java-iam/proto-google-common-protos)
 - proto-google-iam-v1 (from https://github.com/googleapis/java-iam/proto-google-iam-v1)
 - rank-eval (from https://github.com/elastic/elasticsearch)
 - resilience4j (from https://github.com/resilience4j/resilience4j)
@@ -967,7 +967,7 @@ The following software have components provided under the terms of this license:
 - JUnit Platform Commons (from https://junit.org/junit5/)
 - JUnit Platform Engine API (from https://junit.org/junit5/)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Expression Language Implementation (from https://projects.eclipse.org/projects/ee4j.el)
+- Jakarta Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - Logback Classic Module (from https://repo1.maven.org/maven2/ch/qos/logback/logback-classic)
 - Logback Contrib :: JSON :: Classic (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-classic)
 - Logback Contrib :: JSON :: Core (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-core)
@@ -991,7 +991,7 @@ The following software have components provided under the terms of this license:
 - JUnit Platform Commons (from https://junit.org/junit5/)
 - JUnit Platform Engine API (from https://junit.org/junit5/)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Expression Language Implementation (from https://projects.eclipse.org/projects/ee4j.el)
+- Jakarta Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 
 ========================================================================
 GPL-2.0-only
@@ -1022,7 +1022,7 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 - JAXB OSGI (from https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-osgi)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Expression Language Implementation (from https://projects.eclipse.org/projects/ee4j.el)
+- Jakarta Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - JavaBeans Activation Framework (from )
 - JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
@@ -1036,7 +1036,7 @@ The following software have components provided under the terms of this license:
 
 - JAXB OSGI (from https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-osgi)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Expression Language Implementation (from https://projects.eclipse.org/projects/ee4j.el)
+- Jakarta Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
 - Project Lombok (from https://projectlombok.org)
 
 ========================================================================
