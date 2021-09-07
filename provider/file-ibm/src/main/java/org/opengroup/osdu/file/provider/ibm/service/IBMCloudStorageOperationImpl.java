@@ -3,7 +3,9 @@
 
 package org.opengroup.osdu.file.provider.ibm.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -13,6 +15,8 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.ibm.objectstorage.CloudObjectStorageFactory;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.file.FileCopyOperation;
+import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +73,28 @@ public class IBMCloudStorageOperationImpl implements ICloudStorageOperation {
 		return true;
 	}
 	
+	
+	  @Override
+	  public List<FileCopyOperationResponse> copyFiles(List<FileCopyOperation> fileCopyOperationList) {
+	    List<FileCopyOperationResponse> operationResponses = new ArrayList<>();
+
+	    for (FileCopyOperation fileCopyOperation: fileCopyOperationList) {
+	      FileCopyOperationResponse response;
+	      try {
+	        String copyId = this.copyFile(fileCopyOperation.getSourcePath(),
+	            fileCopyOperation.getDestinationPath());
+	        response = FileCopyOperationResponse.builder()
+	            .copyOperation(fileCopyOperation)
+	            .success(true).build();
+	      } catch (Exception e) {
+	        response = FileCopyOperationResponse.builder()
+	            .copyOperation(fileCopyOperation)
+	            .success(false).build();
+	      }
+	      operationResponses.add(response);
+	    }
+	    return operationResponses;
+	  }
 	
 	
 	public String[] getFileName(String unsignedUrl) {
