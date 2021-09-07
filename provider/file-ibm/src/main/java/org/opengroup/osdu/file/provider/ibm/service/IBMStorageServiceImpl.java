@@ -290,7 +290,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 			SignedUrlParameters signedParam=new SignedUrlParameters();
 			SignedUrl signedUrl=createSignedUrlFileLocation(retrivaldata.getUnsignedUrl(), headers.getAuthorization(),signedParam);
 			retrivalDataSet.put("unsignedUrl", retrivaldata.getUnsignedUrl());
-			retrivalDataSet.put("signedUrl",signedUrl);
+			retrivalDataSet.put("signedUrl",signedUrl.getUrl().toString());
 			retrivalDataSet.put("signedUrlExpiration", expiration);
 			retrivalDataSet.put("connectionString", credentials.toConnectionString());
 			retrivalDataSet.put("credentials", credentials);
