@@ -493,7 +493,7 @@ The following software have components provided under the terms of this license:
 - Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
 - Apache Geronimo JMS Spec 2.0 (from http://geronimo.apache.org/maven/${siteId}/${version})
 - Apache Groovy (from https://groovy-lang.org)
-- Apache Groovy (from http://groovy-lang.org)
+- Apache Groovy (from https://groovy-lang.org)
 - Apache Groovy (from http://groovy-lang.org)
 - Apache Groovy (from http://groovy-lang.org)
 - Apache HttpAsyncClient (from http://hc.apache.org/httpcomponents-asyncclient)
