@@ -116,10 +116,9 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
         .storageLocation(uploadLocation).build();
   }
 
-  @Override
   public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
       String authorizationToken, SignedUrlParameters signedUrlParameters) {
-    Instant now = Instant.now(Clock.systemUTC());
+     Instant now = Instant.now(Clock.systemUTC());
 
     String[] gsPathParts = unsignedUrl.split("gs://");
 

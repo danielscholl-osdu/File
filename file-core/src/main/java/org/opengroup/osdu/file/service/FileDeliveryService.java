@@ -1,9 +1,14 @@
 package org.opengroup.osdu.file.service;
 
+
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.constant.FileExtension;
+
 import org.opengroup.osdu.file.constant.ErrorMessages;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
@@ -42,6 +47,7 @@ public class FileDeliveryService {
     validateParameters(signedUrlParameters);
     DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
     Record rec;
+    String contentType = null;
 
     try {
       rec = dataLakeStorage.getRecord(id);
@@ -56,6 +62,14 @@ public class FileDeliveryService {
       throw new AppException(HttpStatus.SC_NOT_FOUND, "Not Found.", "File id not found.");
 
     String fileSource = extractFileSource(rec);
+
+    String fileName = extractFileName(rec);
+    if (StringUtils.isNoneEmpty(fileName)) {
+        contentType = getContentTypeFromFileName(fileName);
+    }
+    signedUrlParameters.setFileName(fileName);
+    signedUrlParameters.setContentType(contentType);
+    
     String absolutePath = storageUtilService.getPersistentLocation(fileSource,
                                                                    headers.getPartitionId());
     SignedUrl signedUrl = storageService
@@ -83,4 +97,35 @@ public class FileDeliveryService {
 		return jsonPath.get(FileMetadataConstant.FILE_SOURCE_PATH);
 	}
 
+	
+	
+    private String extractFileName(Record record) {
+        ObjectMapper mapper = new ObjectMapper();
+        String fileName = null;
+        String jsonStr;
+        try {
+            jsonStr = mapper.writeValueAsString(record);
+            JsonPath jsonPath = JsonPath.with(jsonStr);
+            fileName = jsonPath.get(FileMetadataConstant.FILE_NAME_PATH);
+        } catch (JsonProcessingException e) {
+            log.warning("Unable to parse fileName in data.DatasetProperties.FileSourceInfo.Name", e);
+        }
+        return fileName;
+    }
+	
+    private String getContentTypeFromFileName(String fileName) {
+        FileExtension fileExtension = null;
+        String contentType = null;
+        try {
+            int index = fileName.lastIndexOf('.');
+            if (index > 0) {
+                String result = fileName.substring(index + 1);
+                fileExtension = Enum.valueOf(FileExtension.class, result.toUpperCase());
+                return fileExtension.getMimeType();
+            }
+        } catch (IllegalArgumentException e) {
+            contentType = FileMetadataConstant.FILE_DEFAULT_EXTENSION;
+        }
+        return contentType;
+    }
 }
