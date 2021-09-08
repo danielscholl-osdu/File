@@ -39,7 +39,8 @@ public class FileStepDef_GET implements En {
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	Gson gsn = null;
 	Gson gsnActual = null;
-
+	private static String fileName = null;
+	
 	public FileStepDef_GET() {
 
 		Given("I generate user token and set request headers with {string}", (String tenant) -> {
@@ -160,6 +161,7 @@ public class FileStepDef_GET implements En {
 
 			HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);
 			this.context.setHttpResponse(response);
+			setDownloadSignedUrl();
 			LOGGER.log(Level.INFO, "resp - " + response.toString());
 		});
 
@@ -188,13 +190,17 @@ public class FileStepDef_GET implements En {
 		When("I hit signed url to download a file within expiration period at {string}", (String outputFilePath) -> {
 			String response = this.context.getHttpResponse().getBody();
 			String downLoadUrl = this.context.getSignedUrl();
-			readFile(downLoadUrl, outputFilePath);
+//			String[] filenameString = downLoadUrl.split("filename%3D%20");
+//			String[] exactFilename = filenameString[1].split("&");
+//			fileName = exactFilename[0];
+			readFile(downLoadUrl, outputFilePath, fileName);
 		});
-		When("content of the file uploaded {string} and downloaded {string} files is same",
-				(String outputFilePath, String inputFilePath) -> {
+		When("name {string} and content of the file uploaded {string} and downloaded {string} files is same",
+				(String filename, String outputFilePath, String inputFilePath) -> {
+					assertTrue(filename.equals(fileName));
+					outputFilePath = outputFilePath + fileName;
 					compareFileContent(outputFilePath, inputFilePath);
 				});
-
 	}
 
 	private void compareFileContent(String outputFilePath, String inputFilePath) throws IOException {
@@ -203,14 +209,14 @@ public class FileStepDef_GET implements En {
 		assertTrue(outputContent.contentEquals(inputContent));
 	}
 
-	private void readFile(String fileURL, String outputFilePath) throws InterruptedException, AWTException {
+	private void readFile(String fileURL, String outputFilePath, String filename) throws InterruptedException, AWTException {
 		URL url;
 		try {
 			url = new URL(fileURL);
 			URLConnection conn = url.openConnection();
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String inputLine;
-			String fileName = System.getProperty("user.dir") + outputFilePath;
+			String fileName = System.getProperty("user.dir") + outputFilePath + filename;
 			File file = new File(fileName);
 			if (!file.exists()) {
 				file.createNewFile();
@@ -278,6 +284,13 @@ public class FileStepDef_GET implements En {
 		gsn = new Gson();
 		JsonObject root = gsn.fromJson(response, JsonObject.class);
 		this.context.setSignedUrl(root.get("Location").getAsJsonObject().get("SignedURL").getAsString());
+	}
+	
+	private void setDownloadSignedUrl() throws IOException {
+		String response = this.context.getHttpResponse().getBody();
+		gsn = new Gson();
+		JsonObject root = gsn.fromJson(response, JsonObject.class);
+		this.context.setSignedUrl(root.get("SignedUrl").getAsString());
 	}
 
 	private int uploadFile(String endPoint, String inputFilePath) throws IOException {

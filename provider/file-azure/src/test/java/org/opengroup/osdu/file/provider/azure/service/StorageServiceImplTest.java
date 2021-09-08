@@ -140,6 +140,7 @@ class StorageServiceImplTest {
     String[] invalidUnsignedURLs = {"", "    ", null};
     for(String unsignedURl: invalidUnsignedURLs) {
       // when
+
       Throwable thrown = catchThrowable(() -> storageService
           .createSignedUrlFileLocation(unsignedURl, TestUtils.AUTHORIZATION_TOKEN,
               new SignedUrlParameters()));
@@ -182,7 +183,6 @@ class StorageServiceImplTest {
     Mockito.doReturn(null).when(blobStore).generatePreSignedURL(
         anyString(),anyString(),anyString(),any(OffsetDateTime.class),any(BlobSasPermission.class));
 
-    // when
     Throwable thrown = catchThrowable(() -> storageService
         .createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH, TestUtils.AUTHORIZATION_TOKEN,
             new SignedUrlParameters()));
@@ -212,6 +212,25 @@ class StorageServiceImplTest {
         anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class));
   }
 
+  @Test
+  void createSignedUrlFileLocation_with_fileName_ShouldCallGeneratePreSignedURL() {
+    Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    Mockito.when(serviceHelper
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    Mockito.when(serviceHelper
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+    String signedUrlString = getSignedObject().getUrl().toString();
+    doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
+        anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class), anyString(), anyString());
+
+    storageService.createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH,TestUtils.AUTHORIZATION_TOKEN,new SignedUrlParameters(null, TestUtils.FILE_NAME, TestUtils.FILE_CONTENT_TYPE));
+    verify(blobStore,times(1)).generatePreSignedURL(
+        anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class), anyString(), anyString());
+  }
+
+  
   private SignedObject getSignedObject() {
     String containerName = RandomStringUtils.randomAlphanumeric(4);
     String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);

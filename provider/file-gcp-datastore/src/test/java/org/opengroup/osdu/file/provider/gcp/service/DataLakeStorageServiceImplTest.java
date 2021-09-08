@@ -69,6 +69,7 @@ class DataLakeStorageServiceImplTest {
         .willReturn(signedObject);
 
     // when
+
     SignedUrl signedUrl = storageService
         .createSignedUrlFileLocation(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN,
             new SignedUrlParameters());
@@ -96,7 +97,7 @@ class DataLakeStorageServiceImplTest {
         .getSignedObjectBasedOnParams(eq(TestUtils.BUCKET_NAME), anyString(), any()))
         .willReturn(signedObject);
 
-    // when
+
     SignedUrl signedUrl = storageService
         .createSignedUrlFileLocation(unsignedUrl, TestUtils.AUTHORIZATION_TOKEN,
             new SignedUrlParameters());

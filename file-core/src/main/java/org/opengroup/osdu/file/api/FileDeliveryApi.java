@@ -32,8 +32,8 @@ public class FileDeliveryApi {
       @RequestParam(required = false, name = "expiryTime") String expiryTime)
       throws StorageException {
 
-    SignedUrlParameters params = new SignedUrlParameters(expiryTime);
-      DownloadUrlResponse signedUrl = fileDeliveryService.getSignedUrlsByRecordId(id,params);
+      SignedUrlParameters params = new SignedUrlParameters(expiryTime);
+      DownloadUrlResponse signedUrl = fileDeliveryService.getSignedUrlsByRecordId(id, params);
       return new ResponseEntity<>(signedUrl, HttpStatus.OK);
   }
 

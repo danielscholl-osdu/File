@@ -4,9 +4,9 @@ public class TestConstants {
 	public static final String FORWARD_SLASH = "/";
 	public static final String PUT_ENDPOINT = "";
 	public static final String STORAGE_HOST = "https://storage-dot-evd-ddl-us-services.appspot.com/api/storage/v2/records/";
-	public static final String POST_ENDPOINT = "/v2/files/metadata";
-	public static final String GET_SIGNEDURL_UPLOAD_ENDPOINT = "/v2/files/uploadURL";
-	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 = "/v2/files/";
+	public static final String POST_ENDPOINT = "/files/metadata";
+	public static final String GET_SIGNEDURL_UPLOAD_ENDPOINT = "/files/uploadURL";
+	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 = "/files/";
 	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT2 = "/downloadURL";
 	public static final String GET_METADATA_ENDPOINT2 = "/metadata";
 	public static final String GET_ENDPOINT = "";

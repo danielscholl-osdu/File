@@ -15,7 +15,9 @@ public class FileMetadataConstant {
 	public static final String FILE_SOURCE = "FileSource";
 	public static final String DATASET_PROPERTIES = "DatasetProperties";
 	public static final String FILE_SOURCE_PATH= "data.DatasetProperties.FileSourceInfo.FileSource";
+	public static final String FILE_NAME_PATH= "data.DatasetProperties.FileSourceInfo.Name";
 	public static final String METADATA_DELETE_STARTED = "Deleting metadata in store";
+	public static final String FILE_DEFAULT_EXTENSION= "application/octet-stream";
 
 
 }

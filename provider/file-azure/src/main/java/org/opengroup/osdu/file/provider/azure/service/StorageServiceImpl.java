@@ -43,9 +43,11 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -139,6 +141,7 @@ public class StorageServiceImpl implements IStorageService {
     List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
+
       SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
           dpsHeaders.getAuthorization(), new SignedUrlParameters());
 
@@ -199,24 +202,40 @@ public class StorageServiceImpl implements IStorageService {
 
     BlobSasPermission permission = new BlobSasPermission();
     permission.setReadPermission(true);
-
     OffsetDateTime expiryTime = expiryTimeUtil
-        .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
+            .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
 
-    String signedUrlString = blobStore
-        .generatePreSignedURL(dpsHeaders.getPartitionId(), filePath.toString(), containerName,
-            expiryTime, permission);
-
-    if(StringUtils.isBlank(signedUrlString)) {
+    
+    String signedUrlString = null;
+    if (StringUtils.isEmpty(signedUrlParameters.getFileName())) {
+         signedUrlString = blobStore.generatePreSignedURL(
+                dpsHeaders.getPartitionId(),
+                filePath.toString(),
+                containerName,
+                expiryTime,
+                permission);
+    
+    }else {
+         signedUrlString = blobStore.generatePreSignedURL(
+                 dpsHeaders.getPartitionId(),
+                 filePath.toString(),
+                 containerName,
+                 expiryTime,
+                 permission,
+                 UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
+                 signedUrlParameters.getContentType());
+    }
+    
+   if(StringUtils.isBlank(signedUrlString)) {
       throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
     }
-
+    
     return SignedUrl.builder()
-        .url(new URL(signedUrlString))
-        .uri(URI.create(unsignedUrl))
-        .createdBy(getUserDesID(authorizationToken))
-        .createdAt(Instant.now(Clock.systemUTC()))
-        .build();
+          .url(new URL(signedUrlString))
+          .uri(URI.create(UriUtils.encodePath(unsignedUrl, StandardCharsets.UTF_8)))
+          .createdBy(getUserDesID(authorizationToken))
+          .createdAt(Instant.now(Clock.systemUTC()))
+          .build();
   }
 
 }
