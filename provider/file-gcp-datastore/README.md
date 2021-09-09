@@ -38,6 +38,9 @@ In order to run the service locally, you will need to have the following environ
 | `GCP_STORAGE_STAGING_AREA` | ex `staging-area` | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`) |no | output of infrastructure deployment |
 | `GCP_STORAGE_PERSISTENT_AREA` | ex `persistent-area` | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area` | no | output of infrastructure deployment |
 | `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
+| `GCP_STATUS_CHANGED_MESSAGING_ENABLED` | `true` or `false` | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs| no | - |
+| `GCP_STATUS_CHANGED_TOPIC_NAME` | ex `status-changed` | Pubsub topic for status publishing | no | output of infrastructure deployment |
+| `GCP_STATUS_CHANGED_SHUTDOWN_DURATION` | ex `20` | Pubsub publisher shutdown await duration in seconds, can be configured according to environment requirements, default value `20` seconds | no | - |
 
 
 **Cloud roles configuration for accounts**
