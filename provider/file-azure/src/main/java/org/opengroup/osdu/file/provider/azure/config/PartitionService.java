@@ -16,6 +16,8 @@ public class PartitionService {
 
   private final String storageAccount;
 
+  private final String storageAccountKey;
+
   @Autowired
   private final PartitionServiceClient partitionServiceClient;
 
@@ -27,9 +29,14 @@ public class PartitionService {
 
     PartitionInfoAzure partitionInfo = this.partitionServiceClient.getPartition(dataPartitionId);
     storageAccount = partitionInfo.getStorageAccountName();
+    storageAccountKey = partitionInfo.getStorageAccountKey();
   }
 
   public String getStorageAccount() {
     return storageAccount;
+  }
+
+  public String getStorageAccountKey() {
+    return storageAccountKey;
   }
 }

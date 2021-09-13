@@ -36,6 +36,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
 import com.azure.storage.blob.BlobUrlParts;
 import com.azure.storage.blob.specialized.BlockBlobClient;
+import com.azure.storage.common.StorageSharedKeyCredential;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
@@ -59,15 +60,6 @@ import java.util.concurrent.TimeUnit;
 public class StorageImpl implements Storage {
 
   private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
-  @Value("${azure.client.secret}")
-  private String clientSecret;
-
-  @Value("${azure.client.id}")
-  private String clientId;
-
-  @Value("${azure.tenant.id}")
-  private String tenantId;
 
   @Autowired
   private AzureBootstrapConfig azureBootstrapConfig;
@@ -141,14 +133,14 @@ public class StorageImpl implements Storage {
   }
 
   private BlobContainerClient getBlobContainerClient(String accountName, String containerName) {
-    ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
-        .clientSecret(clientSecret)
-        .clientId(clientId)
-        .tenantId(tenantId)
-        .build();
+
+    StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential(
+        partitionService.getStorageAccount(),
+        partitionService.getStorageAccountKey()
+    );
     BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
         .endpoint(getBlobAccountUrl(accountName))
-        .credential(clientSecretCredential)
+        .credential(storageSharedKeyCredential)
         .containerName(containerName)
         .buildClient();
     return blobContainerClient;
