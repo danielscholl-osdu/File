@@ -44,7 +44,6 @@ import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.provider.gcp.model.GcpFileDmsDownloadLocation;
 import org.opengroup.osdu.file.provider.gcp.model.GcpFileDmsUploadLocation;
 import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
-import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.gcp.util.GoogleCloudStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
@@ -59,7 +58,6 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
   private static final String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
   private static final String PROVIDER_KEY = "GCP";
 
-  final FileLocationProperties fileLocationProperties;
   final IStorageRepository storageRepository;
   final DpsHeaders dpsHeaders;
   final ObjectMapper objectMapper;
@@ -77,7 +75,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
 
     String filepath = buildRelativePath(fileName);
     String bucketName = googleCloudStorageUtil.getStagingBucket(tenantInfo.getProjectId());
-    String userDesID = getUserDesID(authorizationToken);
+    String userDesID = this.dpsHeaders.getUserEmail();
     log.debug("Create storage object for fileName {} in bucket {} with filepath {}",
         fileName, bucketName, filepath);
 
@@ -132,7 +130,7 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
     }
 
     String bucketName = gsObjectKeyParts[0];
-    String userDesID = getUserDesID(authorizationToken);
+    String userDesID = this.dpsHeaders.getUserEmail();
     String filePath = String.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
 
     SignedObject signedObject = storageRepository.getSignedObjectBasedOnParams(bucketName, filePath,
@@ -163,10 +161,6 @@ public class GoogleCloudStorageServiceImpl implements IStorageService {
 
   private String buildRelativeFileSource(String filepath) {
     return "/" + filepath;
-  }
-
-  private String getUserDesID(String authorizationToken) {
-    return fileLocationProperties.getUserId();
   }
 
   private String buildRelativePath(String filename) {

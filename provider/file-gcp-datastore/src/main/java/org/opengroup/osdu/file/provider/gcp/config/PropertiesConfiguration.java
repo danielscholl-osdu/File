@@ -19,15 +19,11 @@ package org.opengroup.osdu.file.provider.gcp.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.opengroup.osdu.file.config.SharedAutoConfiguration;
-import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 @Setter
 @Getter
 @ConfigurationProperties(prefix = "gcp.storage")
-@EnableConfigurationProperties(FileLocationProperties.class)
 @Import(SharedAutoConfiguration.class)
 public class PropertiesConfiguration {
 
