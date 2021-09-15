@@ -20,12 +20,14 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,28 +36,36 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.gcp.TestUtils;
-import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceCamelCase.class)
 class DataLakeStorageServiceImplTest {
 
+  private static final String USER_DES_ID = "user des id";
+
   @InjectMocks
   GoogleCloudStorageServiceImpl storageService;
 
   @Mock
   IStorageRepository storageRepository;
+
   @Mock
-  FileLocationProperties fileLocationProperties;
+  DpsHeaders dpsHeaders;
 
   @Captor
   ArgumentCaptor<String> filenameCaptor;
+
+  @BeforeEach
+  void setUp() {
+    when(dpsHeaders.getUserEmail()).thenReturn(USER_DES_ID);
+  }
 
   @Test
   void shouldCreateObjectSignedUrl_FileLocation() {

@@ -29,8 +29,6 @@ In order to run the service locally, you will need to have the following environ
 | ---  | ---   | ---         | ---        | ---    |
 | `LOG_PREFIX` | `ingest` | Logging prefix | no | - |
 | `OSDU_ENTITLEMENTS_URL` | `/https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `FILE_LOCATION_BUCKET-NAME` | ex `osdu-cicd-epam-file` | Bucket name for files | no | - |
-| `FILE_LOCATION_USER-ID` | ex `common-user` |  User id which used to define files location in bucket | no | output of infrastructure deployment |
 | `GCLOUD_PROJECT` | ex `osdu-cicd-epam` | Google cloud project id | no | -- |
 | `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
 | `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, you only need this if running locally | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |

@@ -46,7 +46,6 @@ import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
-import org.opengroup.osdu.file.provider.gcp.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.gcp.util.GoogleCloudStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 
@@ -79,8 +78,6 @@ class GoogleCloudStorageServiceImplTest {
   @Mock
   TenantInfo tenantInfo;
   @Mock
-  FileLocationProperties fileLocationProperties;
-  @Mock
   IStorageRepository storageRepository;
   @Mock
   SignedObject signedObject;
@@ -110,7 +107,7 @@ class GoogleCloudStorageServiceImplTest {
     when(googleCloudStorageUtil.getStagingBucket(any())).thenReturn(BUCKET_NAME);
     when(storageRepository.createSignedObject(eq(BUCKET_NAME), any())).thenReturn(signedObject);
     when(signedObject.getUrl()).thenReturn(url);
-    when(fileLocationProperties.getUserId()).thenReturn(USER_DES_ID);
+    when(dpsHeaders.getUserEmail()).thenReturn(USER_DES_ID);
 
     StorageInstructionsResponse response =
         storageService.createStorageInstructions(DATASET_ID, PARTITION_ID);
@@ -149,7 +146,7 @@ class GoogleCloudStorageServiceImplTest {
             BUCKET_NAME, FILE_PATH, new SignedUrlParameters()))
         .thenReturn(signedObject);
     when(signedObject.getUrl()).thenReturn(url);
-    when(fileLocationProperties.getUserId()).thenReturn(USER_DES_ID);
+    when(dpsHeaders.getUserEmail()).thenReturn(USER_DES_ID);
 
     RetrievalInstructionsResponse response =
         storageService.createRetrievalInstructions(fileRetrievalDataList);
