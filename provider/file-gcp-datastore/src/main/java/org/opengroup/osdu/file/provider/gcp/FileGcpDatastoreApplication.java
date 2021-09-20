@@ -16,12 +16,21 @@
 
 package org.opengroup.osdu.file.provider.gcp;
 
+
+import org.opengroup.osdu.core.gcp.di.PartitionTenantInfoFactoryBean;
+import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.file.FileApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 @ConfigurationPropertiesScan(basePackages = "org.opengroup")
 @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
+@ComponentScan(value = {"org.opengroup.osdu"}, excludeFilters = {
+    @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {
+        PartitionTenantInfoFactoryBean.class, FileApplication.class, TenantFactory.class})})
 public class FileGcpDatastoreApplication {
 
   public static void main(String[] args) {
