@@ -13,7 +13,6 @@ public class AuthUtil {
           System.getenv("INTEGRATION_TEST_AUDIENCE"));
       token = new GoogleServiceAccount(serviceAccountFile).getAuthToken(audience);
     }
-    System.out.println("Bearer " + token);
     return "Bearer " + token;
   }
 }
