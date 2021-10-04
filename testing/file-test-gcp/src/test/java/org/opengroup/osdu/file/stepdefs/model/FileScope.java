@@ -1,13 +1,10 @@
 package org.opengroup.osdu.file.stepdefs.model;
 
-import java.util.Map;
-
-import org.opengroup.osdu.file.util.FileUtils;
-
 import com.google.inject.Inject;
-
 import io.cucumber.guice.ScenarioScoped;
+import java.util.Map;
 import lombok.Data;
+import org.opengroup.osdu.file.util.FileUtils;
 
 @ScenarioScoped
 @Data

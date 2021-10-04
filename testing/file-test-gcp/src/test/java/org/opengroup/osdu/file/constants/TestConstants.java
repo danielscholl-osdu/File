@@ -11,6 +11,8 @@ public class TestConstants {
 	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 = "/v2/files/";
 	public static final String GET_SIGNEDURL_DOWNLOAD_ENDPOINT2 = "/downloadURL";
 	public static final String GET_METADATA_ENDPOINT2 = "/metadata";
+  public static final String DMS_GET_STORAGE_INSTRUCTIONS_ENDPOINT = "/v2/files/storageInstructions";
+  public static final String DMS_GET_RETRIEVAL_INSTRUCTIONS_ENDPOINT ="/v2/files/retrievalInstructions";
 	public static final String GET_ENDPOINT = "";
 	public static final String GET_FLATTENED_ENDPOINT = "";
 	public static final String INTERNAL_SERVER_ERROR = "internal server error";
@@ -39,6 +41,7 @@ public class TestConstants {
 	public static final String ACL_OWNERS_GROUP = "<acl_owners>";
 	public static final String CLOUD_DOMAIN = "<cloud_domain>";
 	public static final String LEGAL_TAGS = "<legal_tags>";
+  public static final String REGISTRY_ID = "<registry_id>";
 	public static final String TENANT_NAME_PLACEHOLDER_VALUE = System.getProperty("TENANT_NAME",
 			System.getenv("TENANT_NAME"));
 	public static final String ACL_VIEWERS_GROUP_VALUE = System.getProperty("ACL_VIEWERS",
