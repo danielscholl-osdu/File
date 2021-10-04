@@ -1,8 +1,6 @@
 package org.opengroup.osdu.file.stepdefs;
 
-import java.awt.*;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -24,7 +22,6 @@ import org.opengroup.osdu.file.util.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
-import com.squareup.okhttp.*;
 import io.cucumber.java8.En;
 import static org.junit.Assert.*;
 
@@ -90,7 +87,7 @@ public class FileStepDef_GET implements En {
 
 		When("I try to use signed url after expiration period {string} and file path {string}",
 				(String expiredURL, String inputFilePath) -> {
-					int code = uploadFile(expiredURL, inputFilePath);
+					int code = this.context.getFileUtils().uploadFileBySignedUrl(expiredURL, inputFilePath);
 					this.context.setResponseCode(new Integer(code).toString());
 
 				});
@@ -100,7 +97,7 @@ public class FileStepDef_GET implements En {
 			String response = this.context.getHttpResponse().getBody();
 			LocationResponse signedURLResp = JsonUtils.getPojoFromJSONString(LocationResponse.class, response);
 			assertNotNull(signedURLResp.getLocation().get("SignedURL"));
-			int code = uploadFile(signedURLResp.getLocation().get("SignedURL"), inputFilePath);
+			int code = this.context.getFileUtils().uploadFileBySignedUrl(signedURLResp.getLocation().get("SignedURL"), inputFilePath);
 			this.context.setResponseCode(new Integer(code).toString());
 		});
 
@@ -172,7 +169,7 @@ public class FileStepDef_GET implements En {
 		When("I hit signed url to download a file within expiration period at {string}", (String outputFilePath) -> {
 			String response = this.context.getHttpResponse().getBody();
 			String downLoadUrl = this.context.getSignedUrl();
-			readFile(downLoadUrl, outputFilePath);
+			this.context.getFileUtils().readFileBySignedUrlAndWriteToLocalFile(downLoadUrl, outputFilePath);
 		});
 
 		When("content of the file uploaded {string} and downloaded {string} files is same",
@@ -244,36 +241,9 @@ public class FileStepDef_GET implements En {
 	}
 
 	private void compareFileContent(String outputFilePath, String inputFilePath) throws IOException {
-		String outputContent = this.context.getFileUtils().read(outputFilePath);
-		String inputContent = this.context.getFileUtils().read(inputFilePath);
+		String outputContent = this.context.getFileUtils().readFromLocalFilePath(outputFilePath);
+		String inputContent = this.context.getFileUtils().readFromLocalFilePath(inputFilePath);
 		assertTrue(outputContent.contentEquals(inputContent));
-	}
-
-	private void readFile(String fileURL, String outputFilePath) throws InterruptedException, AWTException {
-		URL url;
-		try {
-			url = new URL(fileURL);
-			URLConnection conn = url.openConnection();
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String inputLine;
-			String fileName = System.getProperty("user.dir") + outputFilePath;
-			File file = new File(fileName);
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			while ((inputLine = br.readLine()) != null) {
-				bw.write(inputLine);
-			}
-			bw.close();
-			br.close();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	private void verifySuccessfulGetSignedURLResponse(String responseCode, String inputFilePath)
@@ -289,7 +259,7 @@ public class FileStepDef_GET implements En {
 
 		int code = 0;
 		try {
-			code = uploadFile(signedURLResp.getLocation().get("SignedURL"), inputFilePath);
+			code = this.context.getFileUtils().uploadFileBySignedUrl(signedURLResp.getLocation().get("SignedURL"), inputFilePath);
 		} catch (IOException e) {
 			fail("Fail to call signed URL because of message=" + e.getMessage());
 		}
@@ -325,21 +295,6 @@ public class FileStepDef_GET implements En {
 		this.context.setSignedUrl(root.get("Location").getAsJsonObject().get("SignedURL").getAsString());
 	}
 
-	private int uploadFile(String endPoint, String inputFilePath) throws IOException {
-
-		String fileContent = this.context.getFileUtils().read(inputFilePath);// System.getProperty("user.dir")+
-
-		OkHttpClient client = new OkHttpClient();
-		MediaType mediaType = MediaType.parse("text/csv");
-		RequestBody body = RequestBody.create(mediaType, fileContent);
-
-		Request request = new Request.Builder().url(endPoint).method("PUT", body).addHeader("Content-Type", "text/csv")
-				.addHeader("x-ms-blob-type", "BlockBlob").build();
-		Response response = client.newCall(request).execute();
-
-		return response.code();
-	}
-
 	private void verifyFailedResponse(String statusCode, String respMsg) throws IOException {
 
 		HttpResponse actualResponse = this.context.getHttpResponse();
@@ -347,7 +302,7 @@ public class FileStepDef_GET implements En {
 
 		gsnActual = new Gson();
 
-		String expectedRespStr = this.context.getFileUtils().read(respMsg);
+		String expectedRespStr = this.context.getFileUtils().readFromLocalFilePath(respMsg);
 		Gson gsnExpected = new Gson();
 		JsonObject expectedResponseJO = gsnExpected.fromJson(expectedRespStr, JsonObject.class);
 		JsonObject actualResponseJO = gsnActual.fromJson(actualResponse.getBody().toString(), JsonObject.class);

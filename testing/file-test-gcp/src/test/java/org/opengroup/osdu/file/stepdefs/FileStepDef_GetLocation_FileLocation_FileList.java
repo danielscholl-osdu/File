@@ -1,28 +1,21 @@
 package org.opengroup.osdu.file.stepdefs;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.inject.Inject;
+import io.cucumber.java8.En;
+import io.restassured.path.json.JsonPath;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.opengroup.osdu.file.constants.TestConstants;
 import org.opengroup.osdu.file.stepdefs.model.FileScope;
 import org.opengroup.osdu.file.stepdefs.model.HttpRequest;
 import org.opengroup.osdu.file.stepdefs.model.HttpResponse;
 import org.opengroup.osdu.file.util.HttpClientFactory;
-import org.opengroup.osdu.file.util.JsonUtils;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.inject.Inject;
-
-import io.cucumber.java8.En;
-import io.restassured.path.json.JsonPath;
 
 public class FileStepDef_GetLocation_FileLocation_FileList implements En {
 
@@ -108,7 +101,7 @@ public class FileStepDef_GetLocation_FileLocation_FileList implements En {
                   + actualResponseMessage,
               expectedReponseMessage.equalsIgnoreCase(actualResponseMessage));
         });
-    
+
     Then("service should respond back with {string} and error message {string}",
             (String expectedReponseStatusCode, String expectedReponseMessage) -> {
               String actualStatusCode = String.valueOf(this.context.getHttpResponse().getCode());
@@ -155,7 +148,7 @@ public class FileStepDef_GetLocation_FileLocation_FileList implements En {
 
     Given("I hit File service GetFileList API with {string}", (String inputPayload) -> {
       JsonElement jsonBody = null;
-      String body = this.context.getFileUtils().read(inputPayload);
+      String body = this.context.getFileUtils().readFromLocalFilePath(inputPayload);
       jsonBody = new Gson().fromJson(body, JsonElement.class);
       HttpResponse response = postRequest(TestConstants.GET_FILE_LIST,
           CommonUtility.getHeaderWithVaidAuthorizationForPartiton(TestConstants.PRIVATE_TENANT1), jsonBody);

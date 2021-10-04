@@ -72,6 +72,11 @@
 			<version>5.4.0</version>
 			<scope>test</scope>
 		</dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>5.4.0</version>
+    </dependency>
 
 		<dependency>
 			<groupId>io.cucumber</groupId>
@@ -119,7 +124,7 @@
 			<groupId>org.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
 			<version>3.0.0</version>
-		</dependency>		
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -140,6 +145,7 @@
 							</excludes>
 							<includes>
 								<include>org.opengroup.osdu.file.runner.FileTestsRunner</include>
+                <include>org.opengroup.osdu.file.runner.FileDmsTestsRunner</include>
 							</includes>
 						</configuration>
 					</execution>
