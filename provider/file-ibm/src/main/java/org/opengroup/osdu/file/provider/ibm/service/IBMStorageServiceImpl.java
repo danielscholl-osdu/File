@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
@@ -29,12 +30,14 @@ import org.opengroup.osdu.core.ibm.objectstorage.CloudObjectStorageFactory;
 import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.opengroup.osdu.file.exception.OsduUnauthorizedException;
+import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.ibm.model.file.S3Location;
 import org.opengroup.osdu.file.provider.ibm.model.file.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.opengroup.osdu.file.service.FileDeliveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +54,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 
 import com.ibm.cloud.objectstorage.services.s3.model.GeneratePresignedUrlRequest;
+import com.ibm.cloud.objectstorage.services.s3.model.ResponseHeaderOverrides;
+
 
 @Service
 @Log
@@ -94,6 +99,9 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Inject
 	private CloudObjectStorageFactory cosFactory;
+	
+	@Autowired
+	private FileDeliveryService deliveryService;
 
 	private AmazonS3 s3Client;
 
@@ -225,7 +233,13 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(s3BucketName, s3ObjectKey)
 				.withMethod(HttpMethod.valueOf(httpMethod)).withExpiration(expiration);
-
+		if(StringUtils.isNoneEmpty(signedUrlParameters.getFileName())) {
+				ResponseHeaderOverrides responseHeaders = new ResponseHeaderOverrides();
+				responseHeaders.setContentType(signedUrlParameters.getContentType());
+				responseHeaders.setExpires(signedUrlParameters.getExpiryTime());
+				responseHeaders.setContentDisposition("attachment; filename =\"" + signedUrlParameters.getFileName() + "\"");
+				generatePresignedUrlRequest.setResponseHeaders(responseHeaders);
+		}
 		try {
 			// Attempt to generate the signed S3 URL
 			URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
@@ -285,12 +299,13 @@ public class IBMStorageServiceImpl implements IStorageService {
 				throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Invalid S3 Object Key",
 						"Invalid S3 Object Key - Object key cannot contain trailing '/'");
 			}
+			try {
 			TemporaryCredentials credentials = stsHelper.getRetrievalCredentials(fileLocation, roleArn,
 					this.headers.getUserEmail(), expiration);
 			SignedUrlParameters signedParam=new SignedUrlParameters();
-			SignedUrl signedUrl=createSignedUrlFileLocation(retrivaldata.getUnsignedUrl(), headers.getAuthorization(),signedParam);
+			DownloadUrlResponse signedUrl=deliveryService.getSignedUrlsByRecordId(retrivaldata.getRecordId(), signedParam);
 			retrivalDataSet.put("unsignedUrl", retrivaldata.getUnsignedUrl());
-			retrivalDataSet.put("signedUrl",signedUrl.getUrl().toString());
+			retrivalDataSet.put("signedUrl",signedUrl.getSignedUrl());
 			retrivalDataSet.put("signedUrlExpiration", expiration);
 			retrivalDataSet.put("connectionString", credentials.toConnectionString());
 			retrivalDataSet.put("credentials", credentials);
@@ -302,6 +317,9 @@ public class IBMStorageServiceImpl implements IStorageService {
 			listOfdDataSet.add(dataset);
 			response.setDatasets(listOfdDataSet);
 			response.setProviderKey(providerKey);
+			}catch (Exception e) {
+				throw new NullPointerException("data cannot be null");
+			}
 		}
 		return response;
 	}
