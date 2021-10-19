@@ -18,6 +18,7 @@
 package org.opengroup.osdu.file.stepdefs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.http.HttpStatusCodes;
@@ -83,13 +84,15 @@ public class FileDMSStepdefs {
     this.context.setSignedUrl(storageInstructions.getStorageLocation().get("signedUrl").toString());
   }
 
-  @Then("I should be able to upload file from {string} with provided instruction")
-  public void iShouldBeAbleToUploadFileWithProvidedInstruction(String inputFilePath)
-      throws IOException {
-    int responseCode = this.context.getFileUtils()
-        .uploadFileBySignedUrl(this.context.getSignedUrl(), inputFilePath);
-    assertEquals(HttpStatusCodes.STATUS_CODE_OK, responseCode);
-  }
+    @Then("I should be able to upload file from {string} with provided instruction")
+    public void iShouldBeAbleToUploadFileWithProvidedInstruction(String inputFilePath) throws IOException {
+        int responseCode = this.context.getFileUtils().uploadFileBySignedUrl(this.context.getSignedUrl(),
+                inputFilePath);
+        // Both 200 and 201 response codes indicate success API calls.
+        assertTrue(
+                responseCode == HttpStatusCodes.STATUS_CODE_CREATED || responseCode == HttpStatusCodes.STATUS_CODE_OK);
+
+    }
 
   @Then("I should be able to register metadata with {string} and uploaded file")
   public void iShouldBeAbleToRegisterMetadataWithUploadedFile(String metadataInputPayload)
