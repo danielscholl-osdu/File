@@ -124,6 +124,12 @@
       <artifactId>core-lib-azure</artifactId>
       <version>${os-core-lib-azure.version}</version>
     </dependency>
+
+    <dependency>
+	    <groupId>org.opengroup.osdu</groupId>
+	    <artifactId>os-core-common</artifactId>
+	    <version>0.12.0</version>
+    </dependency>
   </dependencies>
 
   <dependencyManagement>
