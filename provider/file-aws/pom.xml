@@ -21,12 +21,12 @@
     <parent>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>os-file</artifactId>
-        <version>0.12.0-SNAPSHOT</version>
+        <version>0.13.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>file-aws</artifactId>
-    <version>0.12.0-SNAPSHOT</version>
+    <version>0.13.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>File service on AWS</description>
     <groupId>org.opengroup.osdu</groupId>
@@ -54,7 +54,7 @@
     <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>file-core</artifactId>
-        <version>0.12.0-SNAPSHOT</version>
+        <version>0.13.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Internal packages -->
