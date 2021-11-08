@@ -30,30 +30,27 @@
 package org.opengroup.osdu.file.provider.azure.storage;
 
 
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobContainerClientBuilder;
-import com.azure.storage.blob.BlobUrlParts;
-import com.azure.storage.blob.specialized.BlockBlobClient;
-import com.azure.storage.common.StorageSharedKeyCredential;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import java.io.ByteArrayInputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
+import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
 import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
 import org.opengroup.osdu.file.provider.azure.config.PartitionService;
 import org.opengroup.osdu.file.provider.azure.service.AzureTokenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobUrlParts;
+import com.azure.storage.blob.specialized.BlockBlobClient;
 
-import java.util.concurrent.TimeUnit;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -67,23 +64,27 @@ public class StorageImpl implements Storage {
   @Autowired
   private PartitionService partitionService;
 
+  @Autowired
+  private IBlobContainerClientFactory blobContainerClientFactory;
+
   @Inject
   AzureTokenServiceImpl token;
 
   @Override
-  public Blob create(BlobInfo blobInfo, byte[] content) {
+  public Blob create(String dataPartitionId, BlobInfo blobInfo, byte[] content) {
     content = (byte[]) MoreObjects.firstNonNull(content, EMPTY_BYTE_ARRAY);
     log.debug("Creating the blob in container {} for path {}", blobInfo.getContainer(), blobInfo.getName());
-    return this.internalCreate(blobInfo, content);
+    return this.internalCreate(dataPartitionId, blobInfo, content);
   }
 
   @SneakyThrows
-  private Blob internalCreate(BlobInfo info, final byte[] content) {
+  private Blob internalCreate(String dataPartitionId, BlobInfo info, final byte[] content) {
     String blobPath = generateBlobPath(partitionService.getStorageAccount(), info.getContainer(), info.getName());
     BlobUrlParts parts = BlobUrlParts.parse(blobPath);
-    BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
+    BlobContainerClient blobContainerClient = blobContainerClientFactory.getClient(dataPartitionId, parts.getBlobContainerName());
     if (!blobContainerClient.exists()) {
-      createContainer(parts.getBlobContainerName());
+      blobContainerClient.create();
+      log.debug("Created the container {}", parts.getBlobContainerName());
     }
     BlockBlobClient blockBlobClient = blobContainerClient.getBlobClient(parts.getBlobName()).getBlockBlobClient();
     if (!blockBlobClient.exists()) {
@@ -113,42 +114,6 @@ public class StorageImpl implements Storage {
     }
   }
 
-  public static String getStorageAccount() {
-    return System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
-  }
-
-  private static String generateContainerPath(String accountName, String containerName) {
-    return String.format("https://%s.blob.core.windows.net/%s", accountName, containerName);
-  }
-
-  public void createContainer(String containerName)
-  {
-    String containerPath = generateContainerPath(partitionService.getStorageAccount(), containerName);
-    BlobUrlParts parts = BlobUrlParts.parse(containerPath);
-    BlobContainerClient blobContainerClient = getBlobContainerClient(parts.getAccountName(), parts.getBlobContainerName());
-    if(!blobContainerClient.exists()){
-      blobContainerClient.create();
-      log.debug("Created the container {}", containerName);
-    }
-  }
-
-  private BlobContainerClient getBlobContainerClient(String accountName, String containerName) {
-
-    StorageSharedKeyCredential storageSharedKeyCredential = new StorageSharedKeyCredential(
-        partitionService.getStorageAccount(),
-        partitionService.getStorageAccountKey()
-    );
-    BlobContainerClient blobContainerClient = new BlobContainerClientBuilder()
-        .endpoint(getBlobAccountUrl(accountName))
-        .credential(storageSharedKeyCredential)
-        .containerName(containerName)
-        .buildClient();
-    return blobContainerClient;
-  }
-
-  private static String getBlobAccountUrl(String accountName) {
-    return String.format("https://%s.blob.core.windows.net", accountName);
-  }
   private static String generateBlobPath(String accountName, String containerName, String blobName) {
     return String.format("https://%s.blob.core.windows.net/%s/%s", accountName, containerName, blobName);
   }

@@ -1,14 +1,15 @@
 package org.opengroup.osdu.file.provider.azure.config;
 
-import org.opengroup.osdu.azure.partition.PartitionInfoAzure;
-import org.opengroup.osdu.azure.partition.PartitionServiceClient;
+import javax.inject.Inject;
+
+import org.opengroup.osdu.azure.blobstorage.IBlobServiceClientFactory;
 import org.opengroup.osdu.common.Validators;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-import javax.inject.Inject;
+import com.azure.storage.blob.BlobServiceClient;
 
 @Component
 @RequestScope
@@ -16,27 +17,20 @@ public class PartitionService {
 
   private final String storageAccount;
 
-  private final String storageAccountKey;
-
   @Autowired
-  private final PartitionServiceClient partitionServiceClient;
+  private final IBlobServiceClientFactory blobServiceClientFactory;
 
   @Inject
-  public PartitionService(DpsHeaders headers, PartitionServiceClient partitionServiceClient) {
-    this.partitionServiceClient = partitionServiceClient;
+  public PartitionService(DpsHeaders headers, IBlobServiceClientFactory blobServiceClientFactory) {
+    this.blobServiceClientFactory = blobServiceClientFactory;
     String dataPartitionId = headers.getPartitionId();
     Validators.checkNotNullAndNotEmpty(dataPartitionId, "dataPartitionId");
 
-    PartitionInfoAzure partitionInfo = this.partitionServiceClient.getPartition(dataPartitionId);
-    storageAccount = partitionInfo.getStorageAccountName();
-    storageAccountKey = partitionInfo.getStorageAccountKey();
+    BlobServiceClient serviceClient = this.blobServiceClientFactory.getBlobServiceClient(dataPartitionId);
+    storageAccount = serviceClient.getAccountName();
   }
 
   public String getStorageAccount() {
     return storageAccount;
-  }
-
-  public String getStorageAccountKey() {
-    return storageAccountKey;
   }
 }
