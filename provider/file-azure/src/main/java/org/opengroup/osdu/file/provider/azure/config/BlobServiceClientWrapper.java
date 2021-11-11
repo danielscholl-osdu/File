@@ -13,7 +13,7 @@ import com.azure.storage.blob.BlobServiceClient;
 
 @Component
 @RequestScope
-public class PartitionService {
+public class BlobServiceClientWrapper {
 
   private final String storageAccount;
 
@@ -21,7 +21,7 @@ public class PartitionService {
   private final IBlobServiceClientFactory blobServiceClientFactory;
 
   @Inject
-  public PartitionService(DpsHeaders headers, IBlobServiceClientFactory blobServiceClientFactory) {
+  public BlobServiceClientWrapper(DpsHeaders headers, IBlobServiceClientFactory blobServiceClientFactory) {
     this.blobServiceClientFactory = blobServiceClientFactory;
     String dataPartitionId = headers.getPartitionId();
     Validators.checkNotNullAndNotEmpty(dataPartitionId, "dataPartitionId");

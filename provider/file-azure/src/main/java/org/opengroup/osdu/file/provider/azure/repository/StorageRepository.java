@@ -32,7 +32,7 @@ import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
-import org.opengroup.osdu.file.provider.azure.config.PartitionService;
+import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.azure.storage.Blob;
 import org.opengroup.osdu.file.provider.azure.storage.BlobId;
 import org.opengroup.osdu.file.provider.azure.storage.BlobInfo;
@@ -62,7 +62,7 @@ public class StorageRepository implements IStorageRepository {
   BlobStoreConfig blobStoreConfig;
 
   @Autowired
-  private PartitionService partitionService;
+  private BlobServiceClientWrapper blobServiceClientWrapper;
 
   @Autowired
   DpsHeaders dpsHeaders;
@@ -104,6 +104,6 @@ public class StorageRepository implements IStorageRepository {
   }
 
   private String getStorageAccount() {
-    return partitionService.getStorageAccount();
+    return blobServiceClientWrapper.getStorageAccount();
   }
 }

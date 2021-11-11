@@ -16,8 +16,6 @@
 
 package org.opengroup.osdu.file.provider.azure.service;
 
-import com.azure.cosmos.implementation.InternalServerErrorException;
-import io.jsonwebtoken.lang.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
-import org.opengroup.osdu.file.provider.azure.config.PartitionService;
+import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -41,18 +39,19 @@ public class StorageUtilServiceImplTest {
   @Mock
   BlobStoreConfig blobStoreConfig;
 
-  @Mock PartitionService partitionService;
+  @Mock
+  BlobServiceClientWrapper blobServiceClientWrapper;
 
   @BeforeEach
   void init() {
     initMocks(this);
-    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, partitionService);
+    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, blobServiceClientWrapper);
   }
 
   @Test
   void getStagingLocation_ShouldReturnCorrectLocation() {
     // setup
-    Mockito.when(partitionService.getStorageAccount()).thenReturn(TestUtils.STORAGE_NAME);
+    Mockito.when(blobServiceClientWrapper.getStorageAccount()).thenReturn(TestUtils.STORAGE_NAME);
     Mockito.when(blobStoreConfig.getStagingContainer()).thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     String expectedLocation = "https://" + TestUtils.STORAGE_NAME + ".blob.core.windows.net/"
         + TestUtils.STAGING_CONTAINER_NAME + "/" + TestUtils.RELATIVE_FILE_PATH;
@@ -67,7 +66,7 @@ public class StorageUtilServiceImplTest {
   @Test
   void getPersistentLocation_ShouldReturnCorrectLocation() {
     //setup
-    Mockito.when(partitionService.getStorageAccount()).thenReturn(TestUtils.STORAGE_NAME);
+    Mockito.when(blobServiceClientWrapper.getStorageAccount()).thenReturn(TestUtils.STORAGE_NAME);
     Mockito.when(blobStoreConfig.getPersistentContainer()).thenReturn(TestUtils.PERSISTENT_CONTAINER_NAME);
     String expectedLocation = "https://" + TestUtils.STORAGE_NAME + ".blob.core.windows.net/"
         + TestUtils.PERSISTENT_CONTAINER_NAME + "/" + TestUtils.RELATIVE_FILE_PATH;
