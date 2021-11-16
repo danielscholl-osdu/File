@@ -33,7 +33,7 @@
   <description>File service GCP Anthos</description>
 
   <properties>
-    <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+    <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
     <file-core.version>0.13.0-SNAPSHOT</file-core.version>
     <minio.version>7.1.4</minio.version>
     <google-cloud-nio.version>0.120.0-alpha</google-cloud-nio.version>
