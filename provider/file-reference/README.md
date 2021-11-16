@@ -34,24 +34,24 @@ In order to run the service locally, you will need to have the following environ
 | `FILE_LOCATION_USER-ID` | ex `common-user` |  User id which used to define files location in bucket | no | output of infrastructure deployment |
 | `RECORDS_ROOT_URL` | ex `https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2` / Storage API endpoint | no | output of infrastructure deployment |
 | `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
-| `storage.api` | ex `http://localhost:8081/api/storage/v2/` | Storage service endpoint | no | - |
-| `rabbitmq.uri` | ex `amqp://guest:guest@127.0.0.1:5672/%2F` | Rabbit MQ URI | no | - |
-| `rabbitmq.enabled` | `true` or `false` | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs| no | - |
-| `rabbitmq.topic-name` | ex `status-changed` | Pubsub topic for status publishing | no | output of infrastructure deployment |
-| `spring.data.mongodb.host` | ex `127.0.0.1` | MongoDB host | no | - |
-| `spring.data.mongodb.port` | ex `27017` | MongoDB port | no | - |
-| `spring.data.mongodb.authentication-database` | ex `admin` | MongoDB auth database name | no | - |
-| `spring.data.mongodb.username` | ex `${MONGO_INITDB_ROOT_USERNAME}` | MongoDB username | no | - |
-| `spring.data.mongodb.password` | ex `${MONGO_INITDB_ROOT_PASSWORD}` | MongoDB password | no | - |
-| `spring.data.mongodb.database` | ex `${MONGO_INITDB_ROOT_DATABASE}` | MongoDB database | no | - |
-| `minio.endpoint-url` | ex `http://127.0.0.1:9000` | MinIO URL | no | - |
-| `minio.access-key` | ex `${MINIO_ROOT_USER}` | MinIO access key | no | - |
-| `minio.secret-key` | ex `${MINIO_ROOT_PASSWORD}` | MinIO secret key | no | - |
-| `minio.bucket-record-name` | ex `record-bucket` | MinIO bucket record name | no | - |
-| `minio.signed-url.expiration-days` | ex `1` | MinIO signed URL expiration days | no | - |
-| `reference.staging-area` | ex `staging-area` | Staging area bucket name | no | - |
-| `reference.persistent-area` | ex `persistent-area` | Persistent area bucket name | no | - |
-| `reference.data-partition-id` | ex `opendes` | Data partition id | no | - |
+| `STORAGE_API` | ex `http://localhost:8081/api/storage/v2/` | Storage service endpoint | no | - |
+| `RABBITMQ_URI` | ex `amqp://guest:guest@127.0.0.1:5672/%2F` | Rabbit MQ URI | no | - |
+| `RABBITMQ_ENABLED` | `true` or `false` | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs| no | - |
+| `RABBITMQ_TOPIC_NAME` | ex `status-changed` | Pubsub topic for status publishing | no | output of infrastructure deployment |
+| `MONGO_DB_HOST` | ex `127.0.0.1` | MongoDB host | no | - |
+| `MONGO_DB_PORT` | ex `27017` | MongoDB port | no | - |
+| `MONGO_DB_AUTHENTICATION_DATABASE` | ex `admin` | MongoDB auth database name | no | - |
+| `MONGO_DB_USERNAME` | ex `admin` | MongoDB username | no | - |
+| `MONGO_DB_PASSWORD` | ex `password` | MongoDB password | no | - |
+| `MONGO_DB_DATABASE` | ex `database` | MongoDB database | no | - |
+| `MINIO_ENDPOINT_URL` | ex `http://127.0.0.1:9000` | MinIO URL | no | - |
+| `MINIO_ACCESS_KEY` | ex `root` | MinIO access key | no | - |
+| `MINIO_SECRET_KEY` | ex `password` | MinIO secret key | no | - |
+| `MINIO_BUCKET_RECORD_NAME` | ex `record-bucket` | MinIO bucket record name | no | - |
+| `MINIO_SIGNED_URL_EXPIRATION_DAYS` | ex `1` | MinIO signed URL expiration days | no | - |
+| `REFERENCE_STAGING_AREA` | ex `staging-area` | Staging area bucket name | no | - |
+| `REFERENCE_PERSISTENT_AREA` | ex `persistent-area` | Persistent area bucket name | no | - |
+| `REFERENCE_DATA_PARTITION_ID` | ex `anthos` | Data partition id | no | - |
 | `SEARCH_QUERY_RECORD_HOST` | ex `localhost/api/search/v2/query` | Search query record host | no | - |
 | `SEARCH_QUERY_LIMIT` | ex `1000` | Search query limit | no | - |
 | `SEARCH_BATCH_SIZE` | ex `100` | Search batch size | no | - |
