@@ -25,7 +25,7 @@ public class CloudObjectStorageFactory {
             minIoConfigProperties.getSecretKey())
         .region(minIoConfigProperties.getRegion())
         .build();
-    log.info("Minio client initialized");
+    log.info("Minio client initialized on {}", minIoConfigProperties.getEndpointUrl());
   }
 
   public MinioClient getClient() {

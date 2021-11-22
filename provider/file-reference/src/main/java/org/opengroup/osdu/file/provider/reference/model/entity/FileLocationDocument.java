@@ -34,7 +34,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class FileLocationDocument {
 
   @Id
-  Long id;
+  String id;
 
   @Field(name = Fields.FILE_ID)
   String fileID;
