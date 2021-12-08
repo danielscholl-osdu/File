@@ -75,4 +75,19 @@ public class TestFile extends File {
     assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
   }
 
+
+  //service mesh change - 403
+  @Override
+  @Test
+  public void shouldReturnUnauthorized_whenGivenAnonimus() throws Exception {
+	  ClientResponse getLocationResponse = client.send(
+			  getLocation,
+			  "POST",
+			  getHeaders(Config.getDataPartitionId(), null),
+			  "{}");
+	  assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
+  }
+  
+  
+
 }
