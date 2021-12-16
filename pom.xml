@@ -54,6 +54,7 @@
     <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
     <os-core-common.version>0.13.0-rc3</os-core-common.version>
     <lombok.version>1.18.0</lombok.version>
+    <log4j2.version>2.16.0</log4j2.version>
   </properties>
 
   <licenses>
@@ -79,6 +80,16 @@
         <version>${os-core-common.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+	      <groupId>org.apache.logging.log4j</groupId>
+	      <artifactId>log4j-to-slf4j</artifactId>
+	      <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+	      <groupId>org.apache.logging.log4j</groupId>
+	      <artifactId>log4j-api</artifactId>
+	      <version>${log4j2.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
