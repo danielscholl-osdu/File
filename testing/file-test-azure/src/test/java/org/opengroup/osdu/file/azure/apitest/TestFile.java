@@ -95,7 +95,7 @@ public class TestFile extends File {
 
   @Test
   public void getLocationShouldReturnBadrequest_whenGivenAlreadyExistsFileID() throws Exception {
-    String fileID = System.getProperty("EXIST_FILE_ID", System.getenv("EXIST_FILE_ID"));
+    String fileID = java.util.UUID.randomUUID().toString();
     ClientResponse response = client.send(
         getLocation,
         "POST",
@@ -103,9 +103,17 @@ public class TestFile extends File {
         FileUtils.generateFileRequestBody(fileID)
     );
     assertNotNull(response);
+    assertEquals(HttpStatus.SC_ACCEPTED, response.getStatus());
+
+    // The next request with the same file id should fail
+    response = client.send(
+        getLocation,
+        "POST",
+        getCommonHeader(),
+        FileUtils.generateFileRequestBody(fileID)
+    );
+    assertNotNull(response);
     assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatus());
-
-
   }
 
   @Test
