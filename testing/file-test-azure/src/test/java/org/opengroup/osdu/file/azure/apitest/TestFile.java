@@ -103,7 +103,7 @@ public class TestFile extends File {
         FileUtils.generateFileRequestBody(fileID)
     );
     assertNotNull(response);
-    assertEquals(HttpStatus.SC_ACCEPTED, response.getStatus());
+    assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     // The next request with the same file id should fail
     response = client.send(
