@@ -25,7 +25,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
 
-public interface FileLocationDocumentRepository extends MongoRepository<FileLocationDocument, Long> {
+public interface FileLocationDocumentRepository extends MongoRepository<FileLocationDocument, String> {
 
   @Nullable
   FileLocationDocument findByFileID(String fileID);

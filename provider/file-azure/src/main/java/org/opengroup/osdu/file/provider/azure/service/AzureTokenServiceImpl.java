@@ -21,7 +21,7 @@ import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import lombok.extern.java.Log;
-import org.opengroup.osdu.file.provider.azure.config.PartitionService;
+import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,12 +35,12 @@ import java.util.concurrent.TimeUnit;
 public class AzureTokenServiceImpl {
 
   @Autowired
-  private PartitionService partitionService;
+  private BlobServiceClientWrapper blobServiceClientWrapper;
 
   private static final DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
 
   private UserDelegationKey getUserDelegationKey() {
-    String storageAccount = this.partitionService.getStorageAccount();
+    String storageAccount = this.blobServiceClientWrapper.getStorageAccount();
     String endpoint = calcBlobAccountUrl(storageAccount);
     BlobServiceClient rbacKeySource = new BlobServiceClientBuilder()
         .endpoint(endpoint)

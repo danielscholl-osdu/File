@@ -17,22 +17,22 @@
 package org.opengroup.osdu.file.provider.azure.repository;
 
 import static java.lang.String.format;
-import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.*;
+import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.AZURE_PROTOCOL;
+import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.BLOB_RESOURCE_BASE_URI_REGEX;
 
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 
-import com.azure.storage.blob.sas.BlobSasPermission;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
-import org.opengroup.osdu.file.provider.azure.config.PartitionService;
+import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.azure.storage.Blob;
 import org.opengroup.osdu.file.provider.azure.storage.BlobId;
 import org.opengroup.osdu.file.provider.azure.storage.BlobInfo;
@@ -43,7 +43,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriUtils;
 
-import javax.inject.Inject;
+import com.azure.storage.blob.sas.BlobSasPermission;
+
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @Slf4j
@@ -59,7 +62,7 @@ public class StorageRepository implements IStorageRepository {
   BlobStoreConfig blobStoreConfig;
 
   @Autowired
-  private PartitionService partitionService;
+  private BlobServiceClientWrapper blobServiceClientWrapper;
 
   @Autowired
   DpsHeaders dpsHeaders;
@@ -72,7 +75,7 @@ public class StorageRepository implements IStorageRepository {
     BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
         .setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
         .build();
-    Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
+    Blob blob = storage.create(dpsHeaders.getPartitionId(), blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
     log.debug("Created the blob in container {} for path {}", containerName, filepath);
 
     int expiryDays = 7;
@@ -101,6 +104,6 @@ public class StorageRepository implements IStorageRepository {
   }
 
   private String getStorageAccount() {
-    return partitionService.getStorageAccount();
+    return blobServiceClientWrapper.getStorageAccount();
   }
 }

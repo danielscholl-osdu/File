@@ -17,12 +17,13 @@ public class IBMSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER).and()
-				.authorizeRequests()
-				.antMatchers("/", "/index.html", "/v2/api-docs", "/health/**", "/configuration/ui",
-						"/swagger-resources/**", "/configuration/security", "/swagger", "/swagger-ui.html",
-						"/webjars/**","/v2/**", "/v2/info")
-				.permitAll().anyRequest().authenticated().and().oauth2ResourceServer().jwt();
+		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
+		// .and()
+		// 		.authorizeRequests()
+		// 		.antMatchers("/", "/index.html", "/v2/api-docs", "/health/**", "/configuration/ui",
+		// 				"/swagger-resources/**", "/configuration/security", "/swagger", "/swagger-ui.html",
+		// 				"/webjars/**","/v2/**", "/v2/info")
+		// 		.permitAll().anyRequest().authenticated().and().oauth2ResourceServer().jwt();
 	}
 
 }

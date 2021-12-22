@@ -20,6 +20,6 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public interface Storage {
-    Blob create(BlobInfo blobInfo, byte[] content);
+    Blob create(String dataPartitionId, BlobInfo blobInfo, byte[] content);
     URL signUrl(BlobInfo blobInfo, long duration, TimeUnit unit);
 }
