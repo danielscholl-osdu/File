@@ -18,8 +18,13 @@ package org.opengroup.osdu.file.provider.gcp.model.constant;
 
 public final class StorageConstant {
 
-  public static final String GCS_PROTOCOL = "gs://";
   public static final int GCS_MAX_FILEPATH = 1024;
+  public static final String CREATED_AT = "createdAt";
+  public static final String CREATED_BY = "createdBy";
+  public static final String FILE_ID = "fileID";
+  public static final String MALFORMED_URL = "Malformed URL";
+  public static final String INVALID_S3_STORAGE_PATH_REASON =
+      "Unsigned url invalid, needs to be full S3 storage path";
 
   private StorageConstant() {
   }
