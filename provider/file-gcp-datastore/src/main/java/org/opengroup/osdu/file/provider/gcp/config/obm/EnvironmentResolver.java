@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
+ * Copyright 2021 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +15,11 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.file.provider.gcp.config;
+package org.opengroup.osdu.file.provider.gcp.config.obm;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.opengroup.osdu.file.config.SharedAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Import;
+public interface EnvironmentResolver {
 
-@Setter
-@Getter
-@ConfigurationProperties(prefix = "gcp.storage")
-@Import(SharedAutoConfiguration.class)
-public class PropertiesConfiguration {
+  String getProviderKey();
 
-  private String stagingArea;
-
-  private String persistentArea;
-
+  String getTransferProtocol(String partitionId);
 }
