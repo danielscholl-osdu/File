@@ -36,43 +36,43 @@ variables:
 
 include:
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'standard-setup.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'build/maven.yml'
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: "cloud-providers/ibm.yml"
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'scanners/gitlab-ultimate.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'scanners/fossa-maven.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'publishing/pages.yml'
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'cloud-providers/osdu-gcp-gke.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'cloud-providers/azure.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'cloud-providers/aws-global.yml'
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    ref: "ingestion-code-coverage"
+    ref: 'master'
     file: 'cloud-providers/aws-maven.yml'
 
 osdu-gcp-test:
