@@ -16,6 +16,7 @@
 
 package org.opengroup.osdu.file.provider.gcp.validation;
 
+import java.util.Objects;
 import javax.validation.ConstraintValidatorContext;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
@@ -48,7 +49,7 @@ public class GcpFileLocationRequestValidator extends CommonFileLocationRequestVa
     HibernateConstraintValidatorContext hibernateContext =
         context.unwrap(HibernateConstraintValidatorContext.class);
 
-    if (request.getFileID().length() > StorageConstant.GCS_MAX_FILEPATH) {
+    if (Objects.nonNull(request.getFileID()) && request.getFileID().length() > StorageConstant.GCS_MAX_FILEPATH) {
       hibernateContext.disableDefaultConstraintViolation();
       hibernateContext
           .addExpressionVariable("max_length", StorageConstant.GCS_MAX_FILEPATH)

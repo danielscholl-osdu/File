@@ -8,6 +8,7 @@ data:
   file_location_user_id: ""
   storage_api: ""
   gcp_records_url: ""
+  spring_profile: "gcp"
 
 conf:
   configmap: "file-config"

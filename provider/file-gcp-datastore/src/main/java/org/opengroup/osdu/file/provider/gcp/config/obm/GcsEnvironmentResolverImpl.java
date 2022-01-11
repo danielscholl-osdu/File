@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
+ * Copyright 2021 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.file.provider.gcp.config;
+package org.opengroup.osdu.file.provider.gcp.config.obm;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.opengroup.osdu.file.config.SharedAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
-@Setter
-@Getter
-@ConfigurationProperties(prefix = "gcp.storage")
-@Import(SharedAutoConfiguration.class)
-public class PropertiesConfiguration {
+@Service
+@ConditionalOnProperty(name = "obmDriver", havingValue = "gcs")
+public class GcsEnvironmentResolverImpl implements EnvironmentResolver {
 
-  private String stagingArea;
+  @Override
+  public String getProviderKey() {
+    return "GCP";
+  }
 
-  private String persistentArea;
-
+  @Override
+  public String getTransferProtocol(String partitionId) {
+    return "gs://";
+  }
 }

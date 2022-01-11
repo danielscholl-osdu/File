@@ -27,10 +27,17 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class GcpConfigurationProperties {
-    private SignedUrl signedUrl = new SignedUrl();
-    @Getter
-    @Setter
-    public static class SignedUrl {
-        private int expirationDays = 1;
-    }
+
+  private String fileLocationKind;
+
+  private String statusChangedTopic;
+
+  private SignedUrl signedUrl = new SignedUrl();
+
+  @Getter
+  @Setter
+  public static class SignedUrl {
+
+    private int expirationDays = 1;
+  }
 }
