@@ -58,7 +58,7 @@ import java.util.Map;
 import static java.lang.String.format;
 
 
-@Service("DirectoryService")
+@Service("FileCollectionStorageService")
 @Slf4j
 @AllArgsConstructor
 public class FileCollectionStorageServiceImpl implements IStorageService {
