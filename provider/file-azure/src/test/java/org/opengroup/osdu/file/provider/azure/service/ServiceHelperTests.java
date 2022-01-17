@@ -51,7 +51,8 @@ public class ServiceHelperTests {
     Throwable thrown = catchThrowable(() -> serviceHelper.getContainerNameFromAbsoluteFilePath(TestUtils.RELATIVE_FILE_PATH));
     then(thrown)
         .isInstanceOf(InternalServerErrorException.class)
-        .hasMessageContaining(String.format("Could not parse container name from file path provided {%s}", TestUtils.RELATIVE_FILE_PATH));
+        .hasMessageContaining(String.format("Could not parse {%s} from file path provided {%s}",
+            TestUtils.CONTAINER_NAME, TestUtils.RELATIVE_FILE_PATH));
   }
 
   @Test
@@ -66,6 +67,7 @@ public class ServiceHelperTests {
     Throwable thrown = catchThrowable(() -> serviceHelper.getRelativeFilePathFromAbsoluteFilePath(TestUtils.RELATIVE_FILE_PATH));
     then(thrown)
         .isInstanceOf(InternalServerErrorException.class)
-        .hasMessageContaining(String.format("Could not parse relative file path from file path provided {%s}", TestUtils.RELATIVE_FILE_PATH));
+        .hasMessageContaining(String.format("Could not parse {%s} from file path provided {%s}",
+            TestUtils.FILE_PATH ,TestUtils.RELATIVE_FILE_PATH));
   }
 }
