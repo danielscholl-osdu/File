@@ -1,5 +1,7 @@
 # file-azure
 
+[![coverage report](https://community.opengroup.org/osdu/platform/system/file/badges/master/coverage.svg)](https://community.opengroup.org/osdu/platform/system/file/-/commits/master)
+
 file-azure is a [Spring Boot](https://spring.io/projects/spring-boot) service that  provides internal and external API endpoints to let the application or user fetch any records from the system or request file location data.
 For example, users can request generation of an individual signed URL per file. Using a signed URL, OSDU R2 users will be able to upload their files to the system.
 
