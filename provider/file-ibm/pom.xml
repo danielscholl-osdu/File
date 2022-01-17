@@ -35,8 +35,28 @@
 			<groupId>org.opengroup.osdu</groupId>
 			<artifactId>file-core</artifactId>
 			<version>0.13.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>9.0.54</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+	 			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.opengroup.osdu</groupId>
 			<artifactId>os-core-lib-ibm</artifactId>
@@ -82,6 +102,26 @@
 			<version>2.5.8</version>
 			<type>pom</type>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opengroup.osdu</groupId>
+			<artifactId>os-core-common</artifactId>
+			<version>${os-core-common.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>8.10.0</version>
 		</dependency>
 	</dependencies>
   <repositories>
