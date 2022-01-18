@@ -18,6 +18,7 @@ package org.opengroup.osdu.file.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -49,24 +50,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service("FileCollectionDmsService")
-@Data
 @Slf4j
+@RequiredArgsConstructor
 public class FileCollectionDmsServiceImpl implements IDmsService {
 
-  @Autowired
   @Qualifier("FileCollectionStorageService")
   final IStorageService storageService;
-
-  @Autowired
   final DpsHeaders headers;
-
-  @Autowired
   final DataLakeStorageFactory storageFactory;
-
-  @Autowired
   final ICloudStorageOperation cloudStorageOperation;
-
-  @Autowired
   @Qualifier("FileCollectionUtilService")
   final IStorageUtilService storageUtilService;
 
@@ -150,7 +142,7 @@ public class FileCollectionDmsServiceImpl implements IDmsService {
   /**
    *  "data": {
    *             "DatasetProperties": {
-   *                     "FileCollectionPath" : "/abc
+   *                     "FileCollectionPath" : "/abc"
    *                 }
    *             }
    */

@@ -15,6 +15,7 @@
  */
 package org.opengroup.osdu.file.model.filecollection;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,10 +33,11 @@ import javax.validation.constraints.NotNull;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetProperties {
 
   @JsonProperty("FileCollectionPath")
-  @NotNull(message = "FileSourceInfo cannot be null")
+  @NotNull(message = "FileCollectionPath cannot be null")
   @Valid
   private String fileCollectionPath;
 }
