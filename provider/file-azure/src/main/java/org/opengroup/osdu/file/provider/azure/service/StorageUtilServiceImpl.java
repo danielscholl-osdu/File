@@ -25,12 +25,13 @@ import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Primary
 public class StorageUtilServiceImpl implements IStorageUtilService  {
   private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
 
