@@ -104,13 +104,13 @@ public class FileCollectionStorageServiceImpl implements IStorageService {
    */
   @Override
   public SignedUrl createSignedUrl(String directoryId, String authorizationToken, String partitionID) {
-    log.debug("Creating the signed url for directoryId : {}. Authorization : {}, partitionID : {}",
-        directoryId, authorizationToken, partitionID);
+    log.debug("Creating the signed url for directoryId : {}, partitionID : {}",
+        directoryId, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
 
-    String fileSystemName = dataLakeConfig.getStagingFileSystem();
+    String containerName = dataLakeConfig.getStagingFileSystem();
 
-    String userDesID = getUserDesID(authorizationToken);
+    String userDesID = getUserDesID();
     String directoryName = getDirectoryName(now, directoryId, userDesID);
 
     if (directoryName.length() > StorageConstant.AZURE_MAX_FILEPATH) {
@@ -119,7 +119,7 @@ public class FileCollectionStorageServiceImpl implements IStorageService {
           StorageConstant.AZURE_MAX_FILEPATH, directoryName.length()));
     }
 
-    SignedObject signedObject = storageRepository.createSignedObject(fileSystemName, directoryName);
+    SignedObject signedObject = storageRepository.createSignedObject(containerName, directoryName);
 
     return SignedUrl.builder()
         .url(signedObject.getUrl())
@@ -197,7 +197,7 @@ public class FileCollectionStorageServiceImpl implements IStorageService {
     return SignedUrl.builder()
         .url(new URL(signedUrlString))
         .uri(URI.create(unsignedUrl))
-        .createdBy(getUserDesID(authorizationToken))
+        .createdBy(getUserDesID())
         .createdAt(Instant.now(Clock.systemUTC()))
         .build();
   }
@@ -237,7 +237,7 @@ public class FileCollectionStorageServiceImpl implements IStorageService {
         .build();
   }
 
-  private String getUserDesID(String authorizationToken) {
+  private String getUserDesID() {
     return fileLocationProperties.getUserId();
   }
 

@@ -41,6 +41,7 @@ public final class TestUtils {
   public static final String PROVIDER_KEY = "AZURE";
   public static final String STORAGE_NAME = "adotestfqofqosn0o4sa";
   public static final String RELATIVE_FILE_PATH = "osdu/file1";
+  public static final String RELATIVE_DIRECTORY_PATH = "osdu";
   public static final String ABSOLUTE_FILE_PATH = "https://" + TestUtils.STORAGE_NAME +
       ".blob.core.windows.net/" + TestUtils.STAGING_CONTAINER_NAME + "/" + TestUtils.RELATIVE_FILE_PATH;
   public static final String ABSOLUTE_DIRECTORY_PATH = "https://" + TestUtils.STORAGE_NAME +
@@ -56,8 +57,10 @@ public final class TestUtils {
   public static final String FILE_NAME = "test-file-name.pdf";
   public static final String FILE_CONTENT_TYPE = "application/pdf";
   public static final String CONTAINER_NAME = "containerName";
+  public static final String FILE_SYSTEM_NAME = "fileSystemName";
   public static final String FILE_PATH = "filePath";
   public static final String DIRECTORY_NAME = "directoryName";
+  public static final String DIRECTORY_PATH = "directoryPath";
   public static final String FILE_COLLECTION_RECORD_ID = "opendes:dataset--FileCollection.Generic:2ff8ce4822a344c38d611c2d831e3dcd";
 
   private TestUtils() {

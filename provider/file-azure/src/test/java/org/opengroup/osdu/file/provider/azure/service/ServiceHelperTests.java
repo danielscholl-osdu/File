@@ -70,4 +70,36 @@ public class ServiceHelperTests {
         .hasMessageContaining(String.format("Could not parse {%s} from file path provided {%s}",
             TestUtils.FILE_PATH ,TestUtils.RELATIVE_FILE_PATH));
   }
+
+  @Test
+  void getFileSystemNameFromAbsoluteFilePath_ShouldReturnFileSystemName() {
+    String expectedContainerName = TestUtils.STAGING_FILE_SYSTEM_NAME;
+    String actualContainerName = serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    Assertions.assertEquals(expectedContainerName, actualContainerName);
+  }
+
+  @Test
+  void getFileSystemFromAbsoluteFilePath_ShouldThrow_IfNotAbleToParseContainerNameFromFilePath() {
+    Throwable thrown = catchThrowable(() -> serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.RELATIVE_DIRECTORY_PATH));
+    then(thrown)
+        .isInstanceOf(InternalServerErrorException.class)
+        .hasMessageContaining(String.format("Could not parse {%s} from file path provided {%s}",
+            TestUtils.FILE_SYSTEM_NAME, TestUtils.RELATIVE_DIRECTORY_PATH));
+  }
+
+  @Test
+  void getRelativeDirectoryPathFromAbsoluteFilePath_ShouldReturnContainerName() {
+    String expectedFilePath = TestUtils.DIRECTORY_NAME;
+    String actualActualFilePath = serviceHelper.getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    Assertions.assertEquals(expectedFilePath, actualActualFilePath);
+  }
+
+  @Test
+  void getRelativeDirectoryPathFromAbsoluteFilePath_ShouldThrow_IfNotAbleToParseContainerNameFromFilePath() {
+    Throwable thrown = catchThrowable(() -> serviceHelper.getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.DIRECTORY_NAME));
+    then(thrown)
+        .isInstanceOf(InternalServerErrorException.class)
+        .hasMessageContaining(String.format("Could not parse {%s} from file path provided {%s}",
+            TestUtils.DIRECTORY_PATH , TestUtils.DIRECTORY_NAME));
+  }
 }

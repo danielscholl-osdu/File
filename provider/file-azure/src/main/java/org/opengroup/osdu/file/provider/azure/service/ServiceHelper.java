@@ -32,7 +32,7 @@ public class ServiceHelper {
 
   // refer https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftstorage for naming convention
   private final String absoluteFilePathPattern = "https://[a-z0-9][a-z0-9^-]*.blob.core.windows.net/(?<containerName>[^/]*)/(?<filePath>.*)";
-  private final String absoluteDirectoryPathPattern = "https://[a-z0-9][a-z0-9^-]*..dfs.core.windows.net/(?<fileSystemName>[^/]*)/(?<directoryPath>.*)";
+  private final String absoluteDirectoryPathPattern = "https://[a-z0-9][a-z0-9^-]*.dfs.core.windows.net/(?<fileSystemName>[^/]*)/(?<directoryPath>.*)";
 
   public String getContainerNameFromAbsoluteFilePath(String absoluteFilePath) {
     return match(absoluteFilePathPattern, absoluteFilePath, CONTAINER_NAME);

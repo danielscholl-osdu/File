@@ -47,10 +47,10 @@ public class DataLakeRepository implements IStorageRepository {
    */
   @Override
   @SneakyThrows
-  public SignedObject createSignedObject(String fileSystemName, String directoryName) {
-    log.info("Creating the directory in FileSystem {} for path {}", fileSystemName, directoryName);
-    dataLakeStore.createDirectory(dpsHeaders.getPartitionId(), fileSystemName, directoryName);
-    log.debug("Created the directory in FileSystem {}", fileSystemName);
+  public SignedObject createSignedObject(String containerName, String directoryName) {
+    log.info("Creating the directory in FileSystem {} for path {}", containerName, directoryName);
+    dataLakeStore.createDirectory(dpsHeaders.getPartitionId(), containerName, directoryName);
+    log.debug("Created the directory in FileSystem {}", containerName);
 
     int expiryDays = 7;
     OffsetDateTime expiryTime = OffsetDateTime.now().plusDays(expiryDays);
@@ -62,7 +62,7 @@ public class DataLakeRepository implements IStorageRepository {
         .setListPermission(true);
 
     String signedUrlStr = dataLakeStore.generatePreSignedURL(dpsHeaders.getPartitionId(),
-        fileSystemName, directoryName, expiryTime, permission);
+        containerName, directoryName, expiryTime, permission);
 
     URL signedUrl = new URL(signedUrlStr);
     return SignedObject.builder()

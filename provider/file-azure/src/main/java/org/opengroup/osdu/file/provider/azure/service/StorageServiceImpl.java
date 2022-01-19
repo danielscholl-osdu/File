@@ -92,8 +92,8 @@ public class StorageServiceImpl implements IStorageService {
 
   @Override
   public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
-    log.debug("Creating the signed blob for fileID : {}. Authorization : {}, partitionID : {}",
-        fileID, authorizationToken, partitionID);
+    log.debug("Creating the signed blob for fileID : {} : {}, partitionID : {}",
+        fileID, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
 
     String containerName = getContainerName(partitionID);

@@ -32,16 +32,15 @@ public class DataLakeClientWrapper {
 
   private final String storageAccount;
 
-  @Autowired
   private IDataLakeClientFactory dataLakeClientFactory;
 
-  @Inject
+  @Autowired
   public DataLakeClientWrapper(DpsHeaders headers, IDataLakeClientFactory dataLakeClientFactory) {
     this.dataLakeClientFactory = dataLakeClientFactory;
     String dataPartitionId = headers.getPartitionId();
     Validators.checkNotNullAndNotEmpty(dataPartitionId, "dataPartitionId");
 
-     DataLakeServiceClient dataLakeServiceClient = this.dataLakeClientFactory.getDataLakeServiceClient(dataPartitionId);
+    DataLakeServiceClient dataLakeServiceClient = this.dataLakeClientFactory.getDataLakeServiceClient(dataPartitionId);
     storageAccount = dataLakeServiceClient.getAccountName();
   }
 
