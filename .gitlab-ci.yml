@@ -58,7 +58,7 @@ include:
     file: "publishing/pages.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "gcp-fix-hardcoded-values"
+    ref: "master"
     file: "cloud-providers/osdu-gcp-gke.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
