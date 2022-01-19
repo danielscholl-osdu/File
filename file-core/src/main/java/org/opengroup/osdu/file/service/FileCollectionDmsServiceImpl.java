@@ -40,6 +40,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -52,11 +53,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileCollectionDmsServiceImpl implements IDmsService {
 
+  @Autowired
   @Qualifier("FileCollectionStorageService")
   final IStorageService storageService;
   final DpsHeaders headers;
   final DataLakeStorageFactory storageFactory;
   final ICloudStorageOperation cloudStorageOperation;
+
+  @Autowired
   @Qualifier("FileCollectionUtilService")
   final IStorageUtilService storageUtilService;
 
