@@ -17,7 +17,6 @@
 package org.opengroup.osdu.file.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +40,6 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +121,7 @@ public class FileCollectionDmsServiceImpl implements IDmsService {
     }
 
     List<FileCollectionOperationResponse> fileCollectionOperationResponses
-        = cloudStorageOperation.copyDirectory(copyOperations);
+        = cloudStorageOperation.copyDirectories(copyOperations);
 
     for (int i = 0; i< datasetSources.size(); i++) {
       copyDmsResponseList.add(CopyDmsResponse.builder()

@@ -59,7 +59,7 @@ public interface ICloudStorageOperation {
    * @param fileCopyOperationList List of files to be copied
    * @return Copy Operation result along with complete path of copied file.
    */
-  default List<FileCollectionOperationResponse> copyDirectory(List<FileCopyOperation> fileCopyOperationList) {
+  default List<FileCollectionOperationResponse> copyDirectories(List<FileCopyOperation> fileCopyOperationList) {
     return null;
   }
 }
