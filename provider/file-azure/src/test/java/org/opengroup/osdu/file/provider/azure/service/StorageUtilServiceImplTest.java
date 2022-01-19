@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
+import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
@@ -40,12 +41,15 @@ public class StorageUtilServiceImplTest {
   BlobStoreConfig blobStoreConfig;
 
   @Mock
+  FilePathUtil filePathUtil;
+
+  @Mock
   BlobServiceClientWrapper blobServiceClientWrapper;
 
   @BeforeEach
   void init() {
     initMocks(this);
-    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, blobServiceClientWrapper);
+    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, filePathUtil, blobServiceClientWrapper);
   }
 
   @Test
@@ -53,6 +57,7 @@ public class StorageUtilServiceImplTest {
     // setup
     Mockito.when(blobServiceClientWrapper.getStorageAccount()).thenReturn(TestUtils.STORAGE_NAME);
     Mockito.when(blobStoreConfig.getStagingContainer()).thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    Mockito.when(filePathUtil.normalizeFilePath(TestUtils.RELATIVE_FILE_PATH)).thenReturn(TestUtils.RELATIVE_FILE_PATH);
     String expectedLocation = "https://" + TestUtils.STORAGE_NAME + ".blob.core.windows.net/"
         + TestUtils.STAGING_CONTAINER_NAME + "/" + TestUtils.RELATIVE_FILE_PATH;
 
@@ -68,6 +73,7 @@ public class StorageUtilServiceImplTest {
     //setup
     Mockito.when(blobServiceClientWrapper.getStorageAccount()).thenReturn(TestUtils.STORAGE_NAME);
     Mockito.when(blobStoreConfig.getPersistentContainer()).thenReturn(TestUtils.PERSISTENT_CONTAINER_NAME);
+    Mockito.when(filePathUtil.normalizeFilePath(TestUtils.RELATIVE_FILE_PATH)).thenReturn(TestUtils.RELATIVE_FILE_PATH);
     String expectedLocation = "https://" + TestUtils.STORAGE_NAME + ".blob.core.windows.net/"
         + TestUtils.PERSISTENT_CONTAINER_NAME + "/" + TestUtils.RELATIVE_FILE_PATH;
 
@@ -76,45 +82,5 @@ public class StorageUtilServiceImplTest {
 
     // verify
     Assertions.assertEquals(expectedLocation, location);
-  }
-
-  @Test
-  void normalizeFilePath_ShouldThrow_ForBlankFilePath() {
-    // given
-    String[] invalidFilePaths = {"", "    ", null};
-    for(String filePath: invalidFilePaths) {
-      // when
-      Throwable thrown = catchThrowable(()->storageUtilService.normalizeFilePath(filePath));
-      // then
-      then(thrown)
-          .isInstanceOf(IllegalArgumentException.class)
-          .hasMessageContaining(String.format("Relative file path received %s", filePath));
-    }
-  }
-
-  @Test
-  void normalizeFilePath_ShouldRemove_LeadingAndTrailingSlashes() {
-    String filePathWithLeadingAndTrailingSlash = "/osdu/file/";
-    String expectedFilePath = "osdu/file";
-    String actualFilePath = storageUtilService.normalizeFilePath(filePathWithLeadingAndTrailingSlash);
-    Assertions.assertEquals(expectedFilePath, actualFilePath);
-  }
-
-  @Test
-  void normalizeFilePath_ShouldRemove_DuplicateSlashes() {
-    String filePathWithDuplicateSlash = "osdu//file";
-    String expectedFilePath = "osdu/file";
-    String actualFilePath = storageUtilService.normalizeFilePath(filePathWithDuplicateSlash);
-    Assertions.assertEquals(expectedFilePath, actualFilePath);
-  }
-
-  @Test
-  void normalizeFilePath_ShouldRemove_DuplicateSlashes_And_TrailingOrLeadingSlashes() {
-    String[] testFilePaths = {"//osdu//file/////", "osdu///file//", "//osdu/file"};
-    for(String filePath: testFilePaths) {
-      String expectedFilePath = "osdu/file";
-      String actualFilePath = storageUtilService.normalizeFilePath(filePath);
-      Assertions.assertEquals(expectedFilePath, actualFilePath);
-    }
   }
 }

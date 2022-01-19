@@ -17,14 +17,18 @@
 package org.opengroup.osdu.file.provider.azure.service;
 
 import com.azure.storage.blob.models.BlobStorageException;
+import com.azure.storage.file.datalake.models.DataLakeStorageException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
+import org.opengroup.osdu.file.model.filecollection.FileCollectionOperationResponse;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import com.azure.storage.blob.models.BlobCopyInfo;
@@ -39,6 +43,9 @@ import java.util.List;
 public class CloudStorageOperationImpl implements ICloudStorageOperation {
   @Autowired
   BlobStore blobStore;
+
+  @Autowired
+  DataLakeStore dataLakeStore;
 
   @Autowired
   JaxRsDpsLog logger;
@@ -106,5 +113,48 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     String filepath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(location);
     String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(location);
     return blobStore.deleteFromStorageContainer(dpsHeaders.getPartitionId(), filepath, containerName);
+  }
+
+  public List<FileCollectionOperationResponse> copyDirectory(List<FileCopyOperation> fileCollectionPathList) {
+
+    List<FileCollectionOperationResponse> operationResponses = new ArrayList<>();
+    for (FileCopyOperation fileCopyOperation: fileCollectionPathList) {
+      FileCollectionOperationResponse response;
+      try {
+        this.move(dpsHeaders.getPartitionId(), fileCopyOperation.getSourcePath(),
+            fileCopyOperation.getDestinationPath());
+        response = FileCollectionOperationResponse.builder()
+            .fileCopyOperation(fileCopyOperation)
+            .success(true)
+            .build();
+      } catch (Exception e) {
+        logger.error("Error in performing file copy operation", e);
+        response = FileCollectionOperationResponse.builder()
+            .fileCopyOperation(fileCopyOperation)
+            .success(false)
+            .build();
+      }
+      operationResponses.add(response);
+    }
+    return operationResponses;
+  }
+
+  private void move(String partitionId, String sourcePath, String destinationPath) {
+
+    if(StringUtils.isEmpty(sourcePath) || Strings.isBlank(destinationPath)) {
+      throw new OsduBadRequestException(
+          String.format("Illegal argument for source { %s } or destination { %s } file collection path",
+              sourcePath, destinationPath));
+    }
+    String stagingFileSystem = serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(sourcePath);
+    String persistentFileSystem = serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(destinationPath);
+    String fileCollectionPath = serviceHelper.getRelativeDirectoryPathFromAbsoluteDirectoryPath(sourcePath);
+
+    try {
+      dataLakeStore.moveDirectory(partitionId, stagingFileSystem, fileCollectionPath, persistentFileSystem);
+    } catch (DataLakeStorageException ex) {
+      String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH +  fileCollectionPath;
+      throw new OsduBadRequestException(message, ex);
+    }
   }
 }
