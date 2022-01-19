@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 public class DatasetProperties {
 
   @JsonProperty("FileCollectionPath")
-  @NotNull(message = "FileSourceInfo cannot be null")
+  @NotNull(message = "FileCollectionPath cannot be null")
   @Valid
   private String fileCollectionPath;
 }
