@@ -17,7 +17,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
     <parent>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>os-file</artifactId>
@@ -36,6 +36,7 @@
         <aws.version>1.11.1018</aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+        <log4j2.version>2.16.0</log4j2.version>
     </properties>
 
     <dependencyManagement>
@@ -46,6 +47,27 @@
                 <version>${aws.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.opengroup.osdu</groupId>
+              <artifactId>os-core-common</artifactId>
+              <version>${os-core-common.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.logging.log4j</groupId>
+              <artifactId>log4j-to-slf4j</artifactId>
+              <version>${log4j2.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.logging.log4j</groupId>
+              <artifactId>log4j-api</artifactId>
+              <version>${log4j2.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -66,7 +88,7 @@
         <dependency>
         <groupId>org.opengroup.osdu.core.aws</groupId>
         <artifactId>os-core-lib-aws</artifactId>
-        <version>0.10.0</version>
+        <version>0.13.0-rc4</version>
     </dependency>
     <!-- AWS managed packages -->
     <dependency>
