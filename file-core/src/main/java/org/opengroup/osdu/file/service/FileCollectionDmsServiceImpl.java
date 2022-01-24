@@ -35,6 +35,8 @@ import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.filecollection.DatasetProperties;
 import org.opengroup.osdu.file.model.filecollection.FileCollectionOperationResponse;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
@@ -53,16 +55,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileCollectionDmsServiceImpl implements IDmsService {
 
-  @Autowired
-  @Qualifier("FileCollectionStorageService")
-  final IStorageService storageService;
+  final IFileCollectionStorageService storageService;
   final DpsHeaders headers;
   final DataLakeStorageFactory storageFactory;
   final ICloudStorageOperation cloudStorageOperation;
-
-  @Autowired
-  @Qualifier("FileCollectionUtilService")
-  final IStorageUtilService storageUtilService;
+  final IFileCollectionStorageUtilService storageUtilService;
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

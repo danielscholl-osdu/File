@@ -31,6 +31,8 @@ import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.filecollection.DatasetProperties;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
@@ -66,8 +68,7 @@ public class FileCollectionDmsServiceImplTest {
   private static final String TEST_UNSIGNED_URL = "https://datalakestore/fileSystemName/osdu-user-1641762126717";
 
   @Mock
-  @Qualifier("FileCollectionStorageService")
-  IStorageService storageService;
+  IFileCollectionStorageService storageService;
 
   @Mock
   DpsHeaders headers;
@@ -79,8 +80,7 @@ public class FileCollectionDmsServiceImplTest {
   ICloudStorageOperation cloudStorageOperation;
 
   @Mock
-  @Qualifier("FileCollectionUtilService")
-  IStorageUtilService storageUtilService;
+  IFileCollectionStorageUtilService storageUtilService;
 
   @Mock
   DataLakeStorageService dataLakeStorageService;
