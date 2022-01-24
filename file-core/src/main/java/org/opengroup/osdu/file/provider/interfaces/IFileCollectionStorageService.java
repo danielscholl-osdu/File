@@ -11,6 +11,19 @@ import java.util.List;
 public interface IFileCollectionStorageService {
 
   /**
+   * Gets a signed url from an unsigned url
+   *
+   * @param unsignedUrl
+   * @param authorizationToken
+   * @param signedUrlParameters
+   * @return
+   */
+
+  default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, SignedUrlParameters signedUrlParameters) {
+    return null;
+  }
+
+  /**
    * Creates the empty directory in storage.
    * and get signed url for uploading the files.
    *
