@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.file.provider.azure.config.DataLakeClientWrapper;
 import org.opengroup.osdu.file.provider.azure.config.DataLakeConfig;
 import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Service;
 @Service("FileCollectionUtilService")
 @Slf4j
 @RequiredArgsConstructor
-public class FileCollectionUtilServiceImpl implements IStorageUtilService {
+public class FileCollectionUtilServiceImpl implements IFileCollectionStorageUtilService {
   private final String absolutePathFormat = "https://%s.dfs.core.windows.net/%s/%s";
 
   @Autowired

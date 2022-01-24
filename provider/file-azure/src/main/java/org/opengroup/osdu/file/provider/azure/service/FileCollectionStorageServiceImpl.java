@@ -37,6 +37,7 @@ import org.opengroup.osdu.file.provider.azure.config.DataLakeConfig;
 import org.opengroup.osdu.file.provider.azure.model.AzureFileCollectionDmsUploadLocation;
 import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
@@ -57,11 +58,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
-
-@Service("FileCollectionStorageService")
 @Slf4j
 @AllArgsConstructor
-public class FileCollectionStorageServiceImpl implements IStorageService {
+public class FileCollectionStorageServiceImpl implements IFileCollectionStorageService {
 
   @Autowired
   DpsHeaders dpsHeaders;
