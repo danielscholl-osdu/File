@@ -1,13 +1,16 @@
 package org.opengroup.osdu.file.provider.interfaces;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+@Configuration
 public interface IFileCollectionStorageService {
 
   /**
@@ -20,7 +23,7 @@ public interface IFileCollectionStorageService {
    */
 
   default SignedUrl createSignedUrlFileLocation(String unsignedUrl, String authorizationToken, SignedUrlParameters signedUrlParameters) {
-    return null;
+    throw new NotImplementedException("Not implemented");
   }
 
   /**
@@ -32,7 +35,9 @@ public interface IFileCollectionStorageService {
    * @param partitionID partition ID
    * @return info about object URI, signed URL and when and who created blob.
    */
-  SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID);
+  default SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
+    throw new NotImplementedException("Not implemented");
+  }
 
   // stub implementation
   /**
@@ -42,7 +47,7 @@ public interface IFileCollectionStorageService {
    * @return info about object URI, upload signed URL etc.
    */
   default StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionID) {
-    return null;
+    throw new NotImplementedException("Not implemented");
   }
 
   /**
@@ -51,6 +56,6 @@ public interface IFileCollectionStorageService {
    * @return info about object URI, download signed URL etc.
    */
   default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
-    return null;
+    throw new NotImplementedException("Not implemented");
   }
 }
