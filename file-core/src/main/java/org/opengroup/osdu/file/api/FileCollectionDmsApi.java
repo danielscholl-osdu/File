@@ -24,10 +24,12 @@ import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,12 +52,14 @@ public class FileCollectionDmsApi {
   IDmsService fileCollectionDmsService;
 
   @PostMapping("/storageInstructions")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
     StorageInstructionsResponse storageInstructionsResp = fileCollectionDmsService.getStorageInstructions();
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
   @PostMapping("/retrievalInstructions")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
     RetrievalInstructionsResponse retrievalInstructionsResp = fileCollectionDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
@@ -63,6 +67,7 @@ public class FileCollectionDmsApi {
   }
 
   @PostMapping("/copy")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public ResponseEntity<List<CopyDmsResponse>> copyDms(
       @RequestBody CopyDmsRequest copyDmsRequest) {
     List<CopyDmsResponse> copyOpResponse = fileCollectionDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());

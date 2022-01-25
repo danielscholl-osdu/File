@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Lazy
 @Service("FileCollectionDmsService")
 @Slf4j
 @RequiredArgsConstructor
