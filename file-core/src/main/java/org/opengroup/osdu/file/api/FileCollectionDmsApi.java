@@ -52,7 +52,7 @@ public class FileCollectionDmsApi {
   IDmsService fileCollectionDmsService;
 
   @PostMapping("/storageInstructions")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
     StorageInstructionsResponse storageInstructionsResp = fileCollectionDmsService.getStorageInstructions();
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
@@ -67,7 +67,7 @@ public class FileCollectionDmsApi {
   }
 
   @PostMapping("/copy")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.VIEWERS + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS + "')")
   public ResponseEntity<List<CopyDmsResponse>> copyDms(
       @RequestBody CopyDmsRequest copyDmsRequest) {
     List<CopyDmsResponse> copyOpResponse = fileCollectionDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
