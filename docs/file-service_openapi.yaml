@@ -584,6 +584,83 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VersionInfo"
+  /v2/file-collections/storageInstructions:
+    post:
+      tags:
+        - file-collection-dms
+      description: "get storage/upload location file-collection datasets"
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: Specifies the data partition to use. This should either be the
+            partition name or crm account ID associated with the partition.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: opendes
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageInstructionsResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+  /v2/file-collections/retrievalInstructions:
+    post:
+      tags:
+        - file-collection-dms
+      description: "Generate retrieval instructions (Eg - Signed URLs) for datasets"
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: Specifies the data partition to use. This should either be the
+            partition name or crm account ID associated with the partition.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: opendes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                datasetRegistryIds:
+                  description: array of Dataset registry ids
+                  type: array
+                  items:
+                    type: string
+                  example:
+                      - "opendes:dataset--FileCollection.Generic:7fcadc9b0944422ba5b56b51548b5a15"
+                      - "opendes:dataset--FileCollection.Generic:7fcadc9b09444223vb2bb3bbb1bb4bb2"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrievalInstructionsResponse'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
 components:
   schemas:
     LocationRequest:
@@ -1213,6 +1290,44 @@ components:
           type: "string"
           description: "Connected outer service version."
       description: "Connected outer service information."
+    StorageInstructionsResponse:
+      type: object
+      properties:
+        providerKey:
+          type: string
+          example: "AZURE"
+        storageLocation:
+          type: object
+          properties:
+            CSP_SPECIFIC_PROPERTY_1:
+              type: string
+            CSP_SPECIFIC_PROPERTY_2:
+              type: string
+            CSP_SPECIFIC_PROPERTY_3:
+              type: string
+    RetrievalInstructionsResponse:
+      type: object
+      properties:
+        providerKey:
+          type: string
+          example: "AZURE"
+        datasets:
+          type: array
+          items:
+            type: object
+            properties:
+              datasetRegistryId:
+                type: string
+                example: "opendes:dataset--FileCollection.Generic:8118591ee2a24eada7152e54b369e99a"
+              retrievalProperties:
+                type: object
+                properties:
+                  CSP_SPECIFIC_PROPERTY_1:
+                    type: string
+                  CSP_SPECIFIC_PROPERTY_2:
+                    type: string
+                  CSP_SPECIFIC_PROPERTY_3:
+                    type: string
   securitySchemes:
     bearer:
       type: apiKey
