@@ -18,7 +18,6 @@ package org.opengroup.osdu.file.provider.azure.service;
 
 import com.azure.storage.blob.models.BlobCopyInfo;
 import com.azure.storage.blob.models.CopyStatusType;
-import org.elasticsearch.common.blobstore.BlobStoreException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
