@@ -19,6 +19,7 @@ package org.opengroup.osdu.file.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.IDmsService;
+import org.opengroup.osdu.core.common.dms.constants.DatasetConstants;
 import org.opengroup.osdu.core.common.dms.model.CopyDmsRequest;
 import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
@@ -53,14 +54,14 @@ public class FileCollectionDmsApi {
   IDmsService fileCollectionDmsService;
 
   @PostMapping("/storageInstructions")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.DATASET_EDITOR_ROLE + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_EDITOR_ROLE + "')")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
     StorageInstructionsResponse storageInstructionsResp = fileCollectionDmsService.getStorageInstructions();
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
   @PostMapping("/retrievalInstructions")
-  @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.DATASET_VIEWER_ROLE + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
     RetrievalInstructionsResponse retrievalInstructionsResp = fileCollectionDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
