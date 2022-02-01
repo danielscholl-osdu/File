@@ -10,7 +10,7 @@ import org.opengroup.osdu.file.model.file.FileCopyOperation;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileCollectionOperationResponse {
+public class DatasetCopyOperation {
   private FileCopyOperation fileCopyOperation;
   private boolean success;
 }

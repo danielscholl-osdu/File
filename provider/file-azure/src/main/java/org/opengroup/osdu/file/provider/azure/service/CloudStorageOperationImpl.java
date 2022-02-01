@@ -18,7 +18,6 @@ package org.opengroup.osdu.file.provider.azure.service;
 
 import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.file.datalake.models.DataLakeStorageException;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
@@ -28,14 +27,13 @@ import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
-import org.opengroup.osdu.file.model.filecollection.FileCollectionOperationResponse;
+import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import com.azure.storage.blob.models.BlobCopyInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,21 +113,21 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     return blobStore.deleteFromStorageContainer(dpsHeaders.getPartitionId(), filepath, containerName);
   }
 
-  public List<FileCollectionOperationResponse> copyDirectory(List<FileCopyOperation> fileCollectionPathList) {
+  public List<DatasetCopyOperation> copyDirectory(List<FileCopyOperation> fileCollectionPathList) {
 
-    List<FileCollectionOperationResponse> operationResponses = new ArrayList<>();
+    List<DatasetCopyOperation> operationResponses = new ArrayList<>();
     for (FileCopyOperation fileCopyOperation: fileCollectionPathList) {
-      FileCollectionOperationResponse response;
+      DatasetCopyOperation response;
       try {
         this.move(dpsHeaders.getPartitionId(), fileCopyOperation.getSourcePath(),
             fileCopyOperation.getDestinationPath());
-        response = FileCollectionOperationResponse.builder()
+        response = DatasetCopyOperation.builder()
             .fileCopyOperation(fileCopyOperation)
             .success(true)
             .build();
       } catch (Exception e) {
         logger.error("Error in performing file copy operation", e);
-        response = FileCollectionOperationResponse.builder()
+        response = DatasetCopyOperation.builder()
             .fileCopyOperation(fileCopyOperation)
             .success(false)
             .build();
