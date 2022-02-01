@@ -36,6 +36,7 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetProperties {
 
+  // schema - https://community.opengroup.org/osdu/platform/system/schema-service/-/blob/master/deployments/shared-schemas/osdu/abstract/AbstractFileCollection.1.0.0.json#L31
   @JsonProperty("FileCollectionPath")
   @NotNull(message = "FileCollectionPath cannot be null")
   @Valid

@@ -33,18 +33,13 @@ import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.filecollection.DatasetProperties;
-import org.opengroup.osdu.file.model.filecollection.FileCollectionOperationResponse;
+import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
-import org.opengroup.osdu.file.provider.interfaces.IStorageService;
-import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -122,12 +117,12 @@ public class FileCollectionDmsServiceImpl implements IDmsService {
       copyOperations.add(FileCopyOperation.builder().sourcePath(stagingLocation).destinationPath(persistentLocation).build());
     }
 
-    List<FileCollectionOperationResponse> fileCollectionOperationResponses
+    List<DatasetCopyOperation> datasetCopyOperationRespons
         = cloudStorageOperation.copyDirectories(copyOperations);
 
     for (int i = 0; i< datasetSources.size(); i++) {
       copyDmsResponseList.add(CopyDmsResponse.builder()
-          .success(fileCollectionOperationResponses.get(i).isSuccess())
+          .success(datasetCopyOperationRespons.get(i).isSuccess())
           .datasetBlobStoragePath(this.getFileCollectionPath(datasetSources.get(i)))
           .build());
     }

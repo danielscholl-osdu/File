@@ -19,7 +19,7 @@ package org.opengroup.osdu.file.provider.interfaces;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
-import org.opengroup.osdu.file.model.filecollection.FileCollectionOperationResponse;
+import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public interface ICloudStorageOperation {
    * @param fileCopyOperationList List of files to be copied
    * @return Copy Operation result along with complete path of copied file.
    */
-  default List<FileCollectionOperationResponse> copyDirectories(List<FileCopyOperation> fileCopyOperationList) {
+  default List<DatasetCopyOperation> copyDirectories(List<FileCopyOperation> fileCopyOperationList) {
     return null;
   }
 }
