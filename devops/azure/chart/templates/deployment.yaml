@@ -127,9 +127,22 @@ spec:
           value: "100"
         - name: SEARCH_QUERY_LIMIT
           value: "1000"
-        - name: event_grid_enabled_status
-          value: "true"
-        - name: event_grid_topic_status
-          value: "statuschangedtopic"
         - name: SPRING_CONFIG_NAME
           value: "common,application"
+        - name: event_grid_topic_status
+          value: "statuschangedtopic"
+        - name: service_bus_topic_status
+          value: "statuschangedtopic"
+        - name: azure_pubsub_publish
+          value: "true"
+        {{- if has .Values.env .Values.featureFlag.notificationv2.enabledEnvs }}
+        - name: service_bus_enabled_status
+          value: "true"
+        - name: event_grid_enabled_status
+          value: "false"
+        {{- else }}
+        - name: service_bus_enabled_status
+          value: "false"
+        - name: event_grid_enabled_status
+          value: "true"
+        {{- end }}

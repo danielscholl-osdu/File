@@ -1,22 +1,19 @@
 package org.opengroup.osdu.file.provider.azure.status;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.UUID;
 
-import org.joda.time.DateTime;
-import org.opengroup.osdu.azure.eventgrid.EventGridTopicStore;
+import org.opengroup.osdu.azure.publisherFacade.MessagePublisher;
+import org.opengroup.osdu.azure.publisherFacade.PublisherInfo;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.status.Message;
 import org.opengroup.osdu.core.common.status.IEventPublisher;
 import org.opengroup.osdu.file.provider.azure.config.EventGridConfig;
+import org.opengroup.osdu.file.provider.azure.config.PublisherConfig;
+import org.opengroup.osdu.file.provider.azure.config.ServiceBusConfig;
 import org.springframework.stereotype.Service;
-
-import com.microsoft.azure.eventgrid.models.EventGridEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,50 +24,39 @@ public class StatusEventPublisher implements IEventPublisher {
     private static final String STATUS_CHANGED = "status-changed";
     private static final String EVENT_DATA_VERSION = "1.0";
 
-    private final EventGridTopicStore eventGridTopicStore;
+    private final MessagePublisher messagePublisher;
     private final EventGridConfig eventGridConfig;
+    private final ServiceBusConfig serviceBusConfig;
+    private final PublisherConfig publisherConfig;
+    private final DpsHeaders dpsHeaders;
     private final JaxRsDpsLog log;
 
     @Override
     public void publish(Message[] messages, Map<String, String> attributesMap) throws CoreException {
-		if (!eventGridConfig.isStatusEventGridEnabled()) {
-			log.warning("Status event grid is disabled");
-			return;
-		}
-    	
-        validateInput(messages, attributesMap);
-
-        HashMap<String, Object> message = createMessageMap(messages, attributesMap);
-        List<EventGridEvent> eventsList = createEventGridEventList(message);
-
-        eventGridTopicStore.publishToEventGridTopic(attributesMap.get(DpsHeaders.DATA_PARTITION_ID),
-                eventGridConfig.getStatusTopicName(), eventsList);
+        validateInput(dpsHeaders, messages);
+        publishMessage(dpsHeaders, messages);
         log.info("Status event generated successfully");
-        
     }
 
-    private List<EventGridEvent> createEventGridEventList(HashMap<String, Object> message) {
-        String messageId = UUID.randomUUID().toString();
-        List<EventGridEvent> eventsList = new ArrayList<>();
-        EventGridEvent eventGridEvent = new EventGridEvent(messageId, STATUS_CHANGED, message, STATUS_CHANGED,
-                DateTime.now(), EVENT_DATA_VERSION);
-        eventsList.add(eventGridEvent);
-        return eventsList;
+    public void publishMessage(DpsHeaders dpsHeaders, Message[] messages) {
+        final int BATCH_SIZE = Integer.parseInt(publisherConfig.getPubSubBatchSize());
+        for (int i = 0; i < messages.length; i += BATCH_SIZE) {
+            Message[] batch = Arrays.copyOfRange(messages, i, Math.min(messages.length, i + BATCH_SIZE));
+            PublisherInfo publisherInfo = PublisherInfo.builder()
+                .batch(batch)
+                .eventGridTopicName(eventGridConfig.getStatusTopicName())
+                .eventGridEventSubject(STATUS_CHANGED)
+                .eventGridEventType(STATUS_CHANGED)
+                .eventGridEventDataVersion(EVENT_DATA_VERSION)
+                .serviceBusTopicName(serviceBusConfig.getServiceBusTopic())
+                .build();
+            messagePublisher.publishMessage(dpsHeaders, publisherInfo);
+        }
     }
 
-    private HashMap<String, Object> createMessageMap(Message[] messages, Map<String, String> attributesMap) {
-        String dataPartitionId = attributesMap.get(DpsHeaders.DATA_PARTITION_ID);
-        String correlationId = attributesMap.get(DpsHeaders.CORRELATION_ID);
-        HashMap<String, Object> message = new HashMap<>();
-        message.put("data", messages);
-        message.put(DpsHeaders.DATA_PARTITION_ID, dataPartitionId);
-        message.put(DpsHeaders.CORRELATION_ID, correlationId);
-        return message;
-    }
-
-    private void validateInput(Message[] messages, Map<String, String> attributesMap) throws CoreException {
+    private void validateInput(DpsHeaders dpsHeaders, Message[] messages) throws CoreException {
         validateMsg(messages);
-        validateAttributesMap(attributesMap);
+        validateDpsHeaders(dpsHeaders);
     }
 
     private void validateMsg(Message[] messages) throws CoreException {
@@ -79,13 +65,13 @@ public class StatusEventPublisher implements IEventPublisher {
         }
     }
 
-    private void validateAttributesMap(Map<String, String> attributesMap) throws CoreException {
-        if (attributesMap == null || attributesMap.isEmpty()) {
-            throw new CoreException("data-partition-id and correlation-id are required to publish status event");
-        } else if (attributesMap.get(DpsHeaders.DATA_PARTITION_ID) == null) {
-            throw new CoreException("data-partition-id is required to publish status event");
-        } else if (attributesMap.get(DpsHeaders.CORRELATION_ID) == null) {
-            throw new CoreException("correlation-id is required to publish status event");
+    private void validateDpsHeaders(DpsHeaders dpsHeaders) throws CoreException {
+        if (dpsHeaders == null) {
+          throw new CoreException("data-partition-id and correlation-id are required to publish status event");
+        } else if (dpsHeaders.getPartitionId() == null) {
+          throw new CoreException("data-partition-id is required to publish status event");
+        } else if (dpsHeaders.getCorrelationId() == null) {
+          throw new CoreException("correlation-id is required to publish status event");
         }
     }
 }
