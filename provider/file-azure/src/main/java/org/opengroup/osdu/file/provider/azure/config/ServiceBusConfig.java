@@ -9,6 +9,6 @@ import lombok.Getter;
 @Getter
 public class ServiceBusConfig {
 
-    @Value("${azure.serviceBus.topic-name}")
+    @Value("${azure.serviceBus.topicName}")
     private String serviceBusTopic;
 }
