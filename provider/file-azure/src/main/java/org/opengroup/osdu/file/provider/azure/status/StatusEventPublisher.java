@@ -68,9 +68,9 @@ public class StatusEventPublisher implements IEventPublisher {
     private void validateDpsHeaders(DpsHeaders dpsHeaders) throws CoreException {
         if (dpsHeaders == null) {
           throw new CoreException("data-partition-id and correlation-id are required to publish status event");
-        } else if (dpsHeaders.getPartitionId() == null) {
+        } else if (dpsHeaders.getPartitionId() == null || dpsHeaders.getPartitionId().isEmpty()) {
           throw new CoreException("data-partition-id is required to publish status event");
-        } else if (dpsHeaders.getCorrelationId() == null) {
+        } else if (dpsHeaders.getCorrelationId() == null || dpsHeaders.getCorrelationId().isEmpty()) {
           throw new CoreException("correlation-id is required to publish status event");
         }
     }
