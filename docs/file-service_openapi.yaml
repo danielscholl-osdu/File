@@ -1199,10 +1199,7 @@ components:
       description: Legal meta data like legal tags, relevant other countries, legal
         status.
     fileSourceInfoObject:
-      title: Frame of Reference Meta Data Item (FoR of File)
       type: object
-      required:
-        - FileSource
       properties:
         Name:
           type: string
