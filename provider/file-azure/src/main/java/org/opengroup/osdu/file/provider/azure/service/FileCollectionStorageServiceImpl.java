@@ -43,6 +43,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -58,8 +59,10 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
+@Service
 @Slf4j
 @AllArgsConstructor
+@Primary
 public class FileCollectionStorageServiceImpl implements IFileCollectionStorageService {
 
   @Autowired
@@ -101,7 +104,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * @param partitionID        partition ID
    * @return info about object URI, signed URL and when and who created blob.
    */
-  @Override
   public SignedUrl createSignedUrl(String directoryId, String authorizationToken, String partitionID) {
     log.debug("Creating the signed url for directoryId : {}, partitionID : {}",
         directoryId, partitionID);
@@ -165,7 +167,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * @param signedUrlParameters
    * @return
    */
-  @Override
   @SneakyThrows
   public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
                                                String authorizationToken,

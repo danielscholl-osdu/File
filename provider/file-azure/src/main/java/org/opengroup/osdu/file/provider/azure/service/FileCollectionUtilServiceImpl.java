@@ -24,11 +24,13 @@ import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-@Service("FileCollectionUtilService")
+@Service
 @Slf4j
 @RequiredArgsConstructor
+@Primary
 public class FileCollectionUtilServiceImpl implements IFileCollectionStorageUtilService {
   private final String absolutePathFormat = "https://%s.dfs.core.windows.net/%s/%s";
 
