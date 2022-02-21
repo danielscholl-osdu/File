@@ -113,12 +113,14 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     return blobStore.deleteFromStorageContainer(dpsHeaders.getPartitionId(), filepath, containerName);
   }
 
-  public List<DatasetCopyOperation> copyDirectory(List<FileCopyOperation> fileCollectionPathList) {
+  @Override
+  public List<DatasetCopyOperation> copyDirectories(List<FileCopyOperation> fileCollectionPathList) {
 
     List<DatasetCopyOperation> operationResponses = new ArrayList<>();
     for (FileCopyOperation fileCopyOperation: fileCollectionPathList) {
       DatasetCopyOperation response;
       try {
+        // moving file from staging to persistent location due to limitation of Azure DataLake
         this.move(dpsHeaders.getPartitionId(), fileCopyOperation.getSourcePath(),
             fileCopyOperation.getDestinationPath());
         response = DatasetCopyOperation.builder()
@@ -137,6 +139,7 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     return operationResponses;
   }
 
+  //
   private void move(String partitionId, String sourcePath, String destinationPath) {
 
     if(StringUtils.isEmpty(sourcePath) || Strings.isBlank(destinationPath)) {

@@ -89,42 +89,6 @@ public class FileCollectionStorageServiceImplTest {
   FileCollectionStorageServiceImpl fileCollectionStorageServiceImpl;
 
   @Test
-  void shouldCreateObjectSignedUrl() {
-    SignedObject signedObject = getSignedObject();
-    prepareMockForSignedUrl(signedObject);
-
-    SignedUrl signedUrl = fileCollectionStorageServiceImpl.createSignedUrl(TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.AUTHORIZATION_TOKEN,
-        TestUtils.PARTITION);
-
-    then(signedUrl).satisfies(url -> {
-      then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
-      then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
-      then(url.getCreatedAt()).isBefore(now());
-      then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
-    });
-
-    verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_FILE_SYSTEM_NAME), directoryNameCaptor.capture());
-    then(directoryNameCaptor.getValue()).matches(".*?");
-  }
-
-  @Test
-  public void shouldCreateSignedUrlFileLocation() throws MalformedURLException {
-    OffsetDateTime offsetDateTime = OffsetDateTime.now();
-    URL mockSignedUrl = TestUtils.getAzureObjectUrl(TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.DIRECTORY_NAME);
-    prepareCreateSignedUrlFileLocationMocks(offsetDateTime, mockSignedUrl);
-
-    SignedUrl signedUrl = fileCollectionStorageServiceImpl.createSignedUrlFileLocation(
-        TestUtils.ABSOLUTE_DIRECTORY_PATH, TestUtils.AUTHORIZATION_TOKEN, new SignedUrlParameters());
-
-    then(signedUrl).satisfies(url -> {
-      then(url.getUrl()).isEqualTo(mockSignedUrl);
-      then(url.getUri()).isEqualTo(URI.create(TestUtils.ABSOLUTE_DIRECTORY_PATH));
-      then(url.getCreatedAt()).isBefore(now());
-      then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
-  });
-  }
-
-  @Test
   public void shouldCreateStorageInstructions() {
     SignedObject signedObject = getSignedObject();
     prepareMockForSignedUrl(signedObject);
@@ -140,9 +104,8 @@ public class FileCollectionStorageServiceImplTest {
   public void shouldThrowExceptionWhenResultFilepathIsMoreThan1024Characters() {
     String directoryId = RandomStringUtils.randomAlphanumeric(1024);
 
-    Throwable thrown = catchThrowable(() -> fileCollectionStorageServiceImpl.createSignedUrl(directoryId,
-        TestUtils.AUTHORIZATION_TOKEN, TestUtils.PARTITION));
-
+    Throwable thrown = catchThrowable(() -> fileCollectionStorageServiceImpl.
+        createStorageInstructions(directoryId, TestUtils.PARTITION));
     then(thrown)
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("The maximum directoryName length is 1024 characters");

@@ -39,7 +39,6 @@ import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.model.property.FileLocationProperties;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
-import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -95,6 +94,65 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
   DataLakeConfig dataLakeConfig;
 
   /**
+   * Generates Signed URL for File Upload Operations in DMS API Context.
+   *
+   * @param directoryID  directoryID
+   * @param partitionID partition ID
+   * @return info about object URI, upload signed URL etc.
+   */
+  @Override
+  public StorageInstructionsResponse createStorageInstructions(String directoryID, String partitionID) {
+    SignedUrl signedUrl = this.createSignedUrl(directoryID, dpsHeaders.getAuthorization(), partitionID);
+
+    AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
+        .signedUrl(signedUrl.getUrl().toString())
+        .createdBy(signedUrl.getCreatedBy())
+        .fileCollectionSource(signedUrl.getFileSource()).build();
+
+    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+    StorageInstructionsResponse response = StorageInstructionsResponse.builder()
+        .providerKey(PROVIDER_KEY)
+        .storageLocation(uploadLocation).build();
+
+    return response;
+  }
+
+  /**
+   * Generates Signed URL for File Download Operations in DMS API Context.
+   *
+   * @param fileRetrievalDataList List of Unsigned URLs for which Signed URL / Temporary credentials should be generated.
+   * @return info about object URI, download signed URL etc.
+   */
+  @Override
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList) {
+
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
+
+    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
+      SignedUrl signedUrl = this.createSignedUrlDirectoryLocation(fileRetrievalData.getUnsignedUrl(),
+          dpsHeaders.getAuthorization(), new SignedUrlParameters());
+
+      AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
+          .signedUrl(signedUrl.getUrl().toString())
+          .fileCollectionSource(signedUrl.getFileSource())
+          .createdBy(signedUrl.getCreatedBy()).build();
+
+      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
+          .retrievalProperties(downloadLocation)
+          .datasetRegistryId(fileRetrievalData.getRecordId())
+          .build();
+
+      datasetRetrievalProperties.add(datasetRetrievalProperty);
+    }
+
+    return RetrievalInstructionsResponse.builder()
+        .datasets(datasetRetrievalProperties)
+        .providerKey(PROVIDER_KEY)
+        .build();
+  }
+
+  /**
    * Creates the empty object blob in storage.
    * Bucket name is determined by tenant using {@code partitionID}.
    * Object name is concat of a filepath and a fileID. Filepath is determined by user.
@@ -104,7 +162,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * @param partitionID        partition ID
    * @return info about object URI, signed URL and when and who created blob.
    */
-  public SignedUrl createSignedUrl(String directoryId, String authorizationToken, String partitionID) {
+  private SignedUrl createSignedUrl(String directoryId, String authorizationToken, String partitionID) {
     log.debug("Creating the signed url for directoryId : {}, partitionID : {}",
         directoryId, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
@@ -136,30 +194,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
   }
 
   /**
-   * Generates Signed URL for File Upload Operations in DMS API Context.
-   *
-   * @param directoryID  directoryID
-   * @param partitionID partition ID
-   * @return info about object URI, upload signed URL etc.
-   */
-  @Override
-  public StorageInstructionsResponse createStorageInstructions(String directoryID, String partitionID) {
-    SignedUrl signedUrl = this.createSignedUrl(directoryID, dpsHeaders.getAuthorization(), partitionID);
-
-    AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
-        .signedUrl(signedUrl.getUrl().toString())
-        .createdBy(signedUrl.getCreatedBy())
-        .fileCollectionSource(signedUrl.getFileSource()).build();
-
-    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
-    StorageInstructionsResponse response = StorageInstructionsResponse.builder()
-        .providerKey(PROVIDER_KEY)
-        .storageLocation(uploadLocation).build();
-
-    return response;
-  }
-
-  /**
    * Gets a signed url from an unsigned url
    *
    * @param unsignedUrl
@@ -168,9 +202,9 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * @return
    */
   @SneakyThrows
-  public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
-                                               String authorizationToken,
-                                               SignedUrlParameters signedUrlParameters) {
+  private SignedUrl createSignedUrlDirectoryLocation(String unsignedUrl,
+                                                     String authorizationToken,
+                                                     SignedUrlParameters signedUrlParameters) {
     if (StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
           String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
@@ -199,41 +233,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         .uri(URI.create(unsignedUrl))
         .createdBy(getUserDesID())
         .createdAt(Instant.now(Clock.systemUTC()))
-        .build();
-  }
-
-  /**
-   * Generates Signed URL for File Download Operations in DMS API Context.
-   *
-   * @param fileRetrievalDataList List of Unsigned URLs for which Signed URL / Temporary credentials should be generated.
-   * @return info about object URI, download signed URL etc.
-   */
-  @Override
-  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList) {
-
-    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
-
-    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
-          dpsHeaders.getAuthorization(), new SignedUrlParameters());
-
-      AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
-          .signedUrl(signedUrl.getUrl().toString())
-          .fileCollectionSource(signedUrl.getFileSource())
-          .createdBy(signedUrl.getCreatedBy()).build();
-
-      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
-      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
-          .retrievalProperties(downloadLocation)
-          .datasetRegistryId(fileRetrievalData.getRecordId())
-          .build();
-
-      datasetRetrievalProperties.add(datasetRetrievalProperty);
-    }
-
-    return RetrievalInstructionsResponse.builder()
-        .datasets(datasetRetrievalProperties)
-        .providerKey(PROVIDER_KEY)
         .build();
   }
 

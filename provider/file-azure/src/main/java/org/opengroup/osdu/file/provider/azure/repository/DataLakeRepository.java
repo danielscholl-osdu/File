@@ -48,7 +48,7 @@ public class DataLakeRepository implements IStorageRepository {
   @Override
   @SneakyThrows
   public SignedObject createSignedObject(String containerName, String directoryName) {
-    log.info("Creating the directory in FileSystem {} for path {}", containerName, directoryName);
+    log.debug("Creating the directory in FileSystem {} for path {}", containerName, directoryName);
     dataLakeStore.createDirectory(dpsHeaders.getPartitionId(), containerName, directoryName);
     log.debug("Created the directory in FileSystem {}", containerName);
 
