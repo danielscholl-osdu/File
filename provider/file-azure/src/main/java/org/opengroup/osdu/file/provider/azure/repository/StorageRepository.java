@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
@@ -65,6 +66,9 @@ public class StorageRepository implements IStorageRepository {
   private BlobServiceClientWrapper blobServiceClientWrapper;
 
   @Autowired
+  private MSIConfiguration msiConfiguration;
+
+  @Autowired
   DpsHeaders dpsHeaders;
 
   @Override
@@ -83,7 +87,13 @@ public class StorageRepository implements IStorageRepository {
     BlobSasPermission permissions = (new BlobSasPermission())
         .setWritePermission(true)
         .setCreatePermission(true);
-    String signedUrlStr =  blobStore.generatePreSignedURL(dpsHeaders.getPartitionId(), filepath, containerName, expiryTime, permissions);
+
+    String signedUrlStr;
+    if(!msiConfiguration.getIsEnabled()) {
+      signedUrlStr =  blobStore.generatePreSignedURL(dpsHeaders.getPartitionId(), filepath, containerName, expiryTime, permissions);
+    } else {
+      signedUrlStr =  blobStore.generatePreSignedUrlWithUserDelegationSas(dpsHeaders.getPartitionId(), containerName, filepath, expiryTime, permissions);
+    }
 
     URL signedUrl = new URL(signedUrlStr);
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
