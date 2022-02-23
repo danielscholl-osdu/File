@@ -19,9 +19,11 @@ package org.opengroup.osdu.file.provider.azure.service;
 import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.file.datalake.models.DataLakeStorageException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.util.Strings;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
@@ -58,10 +60,10 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
 
   @Override
   public String copyFile(String sourceFilePath, String destinationFilePath) throws OsduBadRequestException {
-    if(Strings.isBlank(sourceFilePath) || Strings.isBlank(destinationFilePath)) {
+    if (Strings.isBlank(sourceFilePath) || Strings.isBlank(destinationFilePath)) {
       throw new OsduBadRequestException(
           String.format("Illegal argument for source { %s } or destination { %s } file path",
-              sourceFilePath,destinationFilePath));
+              sourceFilePath, destinationFilePath));
     }
 
     String filePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(destinationFilePath);
@@ -71,9 +73,8 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
       BlobCopyInfo copyInfo = blobStore.copyFile(dpsHeaders.getPartitionId(), filePath, containerName, sourceFilePath);
       logger.info(loggerName, copyInfo.getCopyStatus().toString());
       return copyInfo.getCopyId();
-    }
-    catch (BlobStorageException ex) {
-      String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH +  filePath;
+    } catch (BlobStorageException ex) {
+      String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH + filePath;
       throw new OsduBadRequestException(message, ex);
     }
   }
@@ -83,7 +84,7 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     // TODO: Investigate if files can be copied in parallel with batch.
     List<FileCopyOperationResponse> operationResponses = new ArrayList<>();
 
-    for (FileCopyOperation fileCopyOperation: fileCopyOperationList) {
+    for (FileCopyOperation fileCopyOperation : fileCopyOperationList) {
       FileCopyOperationResponse response;
       try {
         String copyId = this.copyFile(fileCopyOperation.getSourcePath(),
@@ -104,8 +105,8 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
 
   @Override
   public Boolean deleteFile(String location) {
-    if(Strings.isBlank(location)) {
-      throw new IllegalArgumentException(String.format("invalid location received %s",location));
+    if (Strings.isBlank(location)) {
+      throw new IllegalArgumentException(String.format("invalid location received %s", location));
     }
 
     String filepath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(location);
@@ -117,7 +118,7 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
   public List<DatasetCopyOperation> copyDirectories(List<FileCopyOperation> fileCollectionPathList) {
 
     List<DatasetCopyOperation> operationResponses = new ArrayList<>();
-    for (FileCopyOperation fileCopyOperation: fileCollectionPathList) {
+    for (FileCopyOperation fileCopyOperation : fileCollectionPathList) {
       DatasetCopyOperation response;
       try {
         // moving file from staging to persistent location due to limitation of Azure DataLake
@@ -139,10 +140,9 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     return operationResponses;
   }
 
-  //
   private void move(String partitionId, String sourcePath, String destinationPath) {
 
-    if(StringUtils.isEmpty(sourcePath) || Strings.isBlank(destinationPath)) {
+    if (StringUtils.isBlank(sourcePath) || Strings.isBlank(destinationPath)) {
       throw new OsduBadRequestException(
           String.format("Illegal argument for source { %s } or destination { %s } file collection path",
               sourcePath, destinationPath));
@@ -154,8 +154,12 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     try {
       dataLakeStore.moveDirectory(partitionId, stagingFileSystem, fileCollectionPath, persistentFileSystem);
     } catch (DataLakeStorageException ex) {
-      String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH +  fileCollectionPath;
-      throw new OsduBadRequestException(message, ex);
+      if (ex.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+        String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH + fileCollectionPath;
+        throw new AppException(ex.getStatusCode(), "Bad Request", message, ex);
+      } else {
+        throw new AppException(ex.getStatusCode(), "Internal Server Error", ex.getMessage(), ex);
+      }
     }
   }
 }

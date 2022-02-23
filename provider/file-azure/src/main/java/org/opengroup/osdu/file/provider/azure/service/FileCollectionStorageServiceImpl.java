@@ -24,10 +24,12 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.S
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
@@ -102,7 +104,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    */
   @Override
   public StorageInstructionsResponse createStorageInstructions(String directoryID, String partitionID) {
-    SignedUrl signedUrl = this.createSignedUrl(directoryID, dpsHeaders.getAuthorization(), partitionID);
+    SignedUrl signedUrl = this.createSignedUrl(directoryID, partitionID);
 
     AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
         .signedUrl(signedUrl.getUrl().toString())
@@ -130,7 +132,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
       SignedUrl signedUrl = this.createSignedUrlDirectoryLocation(fileRetrievalData.getUnsignedUrl(),
-          dpsHeaders.getAuthorization(), new SignedUrlParameters());
+           new SignedUrlParameters());
 
       AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())
@@ -158,11 +160,10 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * Object name is concat of a filepath and a fileID. Filepath is determined by user.
    *
    * @param directoryId        directory ID
-   * @param authorizationToken authorization token
    * @param partitionID        partition ID
    * @return info about object URI, signed URL and when and who created blob.
    */
-  private SignedUrl createSignedUrl(String directoryId, String authorizationToken, String partitionID) {
+  private SignedUrl createSignedUrl(String directoryId, String partitionID) {
     log.debug("Creating the signed url for directoryId : {}, partitionID : {}",
         directoryId, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
@@ -197,18 +198,16 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * Gets a signed url from an unsigned url
    *
    * @param unsignedUrl
-   * @param authorizationToken
    * @param signedUrlParameters
    * @return
    */
   @SneakyThrows
   private SignedUrl createSignedUrlDirectoryLocation(String unsignedUrl,
-                                                     String authorizationToken,
                                                      SignedUrlParameters signedUrlParameters) {
-    if (StringUtils.isBlank(authorizationToken) || StringUtils.isBlank(unsignedUrl)) {
+    if (StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
           String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
-              authorizationToken, unsignedUrl));
+               unsignedUrl));
     }
 
     String fileSystemName = serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(unsignedUrl);
@@ -225,7 +224,8 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
             expiryTime, permission);
 
     if(StringUtils.isBlank(signedUrlString)) {
-      throw new InternalServerErrorException(String.format("Could not generate signed URL for directory location %s", unsignedUrl));
+      throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error",
+          String.format("Could not generate signed URL for directory location %s", unsignedUrl));
     }
 
     return SignedUrl.builder()

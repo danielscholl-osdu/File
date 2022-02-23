@@ -117,7 +117,6 @@ public class FileCollectionStorageServiceImplTest {
     OffsetDateTime offsetDateTime = OffsetDateTime.now();
     URL mockSignedUrl = TestUtils.getAzureObjectUrl(TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.DIRECTORY_NAME);
     prepareCreateSignedUrlFileLocationMocks(offsetDateTime, mockSignedUrl);
-    when(dpsHeaders.getAuthorization()).thenReturn(TestUtils.AUTHORIZATION_TOKEN);
 
     RetrievalInstructionsResponse response = fileCollectionStorageServiceImpl.
         createRetrievalInstructions(getFileRetrievalDataList());
