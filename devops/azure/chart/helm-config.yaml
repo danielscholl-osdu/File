@@ -14,3 +14,11 @@ image:
   repository: #{container-registry}#.azurecr.io
   branch: #{ENVIRONMENT_NAME}#
   tag: #{Build.SourceVersion}#
+
+env: #{ENVIRONMENT_NAME}#
+
+featureFlag:
+  notificationv2:
+    enabledEnvs:
+    - dev
+    - qa
