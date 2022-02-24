@@ -129,7 +129,8 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
             .success(true)
             .build();
       } catch (Exception e) {
-        logger.error("Error in performing file copy operation", e);
+        logger.error(String.format("Error in performing file copy operation for source path %s",
+            fileCopyOperation.getSourcePath()), e);
         response = DatasetCopyOperation.builder()
             .fileCopyOperation(fileCopyOperation)
             .success(false)
@@ -158,7 +159,7 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
         String message = FileMetadataConstant.INVALID_SOURCE_EXCEPTION + FileMetadataConstant.FORWARD_SLASH + fileCollectionPath;
         throw new AppException(ex.getStatusCode(), "Bad Request", message, ex);
       } else {
-        throw new AppException(ex.getStatusCode(), "Internal Server Error", ex.getMessage(), ex);
+        throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage(), ex);
       }
     }
   }
