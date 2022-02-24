@@ -26,7 +26,6 @@ import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
-import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -69,7 +68,7 @@ public class FileCollectionDmsApi {
   }
 
   @PostMapping("/copy")
-  @PreAuthorize("@authorizationFilter.hasRole('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
   public ResponseEntity<List<CopyDmsResponse>> copyDms(
       @RequestBody CopyDmsRequest copyDmsRequest) {
     List<CopyDmsResponse> copyOpResponse = fileCollectionDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());

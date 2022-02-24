@@ -18,37 +18,37 @@ package org.opengroup.osdu.file.provider.azure.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
-import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
+import org.opengroup.osdu.file.provider.azure.config.DataLakeClientWrapper;
+import org.opengroup.osdu.file.provider.azure.config.DataLakeConfig;
 import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
+import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Primary
-public class StorageUtilServiceImpl implements IStorageUtilService  {
-  private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
+public class FileCollectionUtilServiceImpl implements IFileCollectionStorageUtilService {
+  private final String absolutePathFormat = "https://%s.dfs.core.windows.net/%s/%s";
 
   @Autowired
-  final BlobStoreConfig blobStoreConfig;
+  final DataLakeConfig dataLakeConfig;
+
+  @Autowired
+  final DataLakeClientWrapper dataLakeClientWrapper;
 
   @Autowired
   final FilePathUtil filePathUtil;
-
-  @Autowired
-  final BlobServiceClientWrapper blobServiceClientWrapper;
 
   @Override
   public String getPersistentLocation(String relativePath, String partitionId) {
     return String.format(
         absolutePathFormat,
-        blobServiceClientWrapper.getStorageAccount(),
-        blobStoreConfig.getPersistentContainer(),
+        dataLakeClientWrapper.getStorageAccount(),
+        dataLakeConfig.getPersistentFileSystem(),
         filePathUtil.normalizeFilePath(relativePath)
     );
   }
@@ -57,8 +57,8 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
   public String getStagingLocation(String relativePath, String partitionId) {
     return String.format(
         absolutePathFormat,
-        blobServiceClientWrapper.getStorageAccount(),
-        blobStoreConfig.getStagingContainer(),
+        dataLakeClientWrapper.getStorageAccount(),
+        dataLakeConfig.getStagingFileSystem(),
         filePathUtil.normalizeFilePath(relativePath)
     );
   }

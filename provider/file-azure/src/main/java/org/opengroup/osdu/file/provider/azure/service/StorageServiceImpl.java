@@ -42,6 +42,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
 
@@ -60,6 +61,7 @@ import static java.lang.String.format;
 @Service
 @Slf4j
 @AllArgsConstructor
+@Primary
 public class StorageServiceImpl implements IStorageService {
   @Autowired
   BlobStore blobStore;
@@ -90,8 +92,8 @@ public class StorageServiceImpl implements IStorageService {
 
   @Override
   public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
-    log.debug("Creating the signed blob for fileID : {}. Authorization : {}, partitionID : {}",
-        fileID, authorizationToken, partitionID);
+    log.debug("Creating the signed blob for fileID : {} : {}, partitionID : {}",
+        fileID, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
 
     String containerName = getContainerName(partitionID);
@@ -205,7 +207,7 @@ public class StorageServiceImpl implements IStorageService {
     OffsetDateTime expiryTime = expiryTimeUtil
             .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
 
-    
+
     String signedUrlString = null;
     if (StringUtils.isEmpty(signedUrlParameters.getFileName())) {
          signedUrlString = blobStore.generatePreSignedURL(
@@ -214,7 +216,7 @@ public class StorageServiceImpl implements IStorageService {
                 containerName,
                 expiryTime,
                 permission);
-    
+
     }else {
          signedUrlString = blobStore.generatePreSignedURL(
                  dpsHeaders.getPartitionId(),
@@ -225,11 +227,11 @@ public class StorageServiceImpl implements IStorageService {
                  UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
                  signedUrlParameters.getContentType());
     }
-    
+
    if(StringUtils.isBlank(signedUrlString)) {
       throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
     }
-    
+
     return SignedUrl.builder()
           .url(new URL(signedUrlString))
           .uri(URI.create(UriUtils.encodePath(unsignedUrl, StandardCharsets.UTF_8)))

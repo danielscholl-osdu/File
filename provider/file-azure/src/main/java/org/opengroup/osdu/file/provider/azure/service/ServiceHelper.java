@@ -25,33 +25,40 @@ import java.util.regex.Pattern;
 @Component
 public class ServiceHelper {
 
+  private static final String CONTAINER_NAME = "containerName";
+  private static final String FILE_SYSTEM_NAME = "fileSystemName";
+  private static final String FILE_PATH = "filePath";
+  private static final String DIRECTORY_PATH = "directoryPath";
+
   // refer https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules#microsoftstorage for naming convention
   private final String absoluteFilePathPattern = "https://[a-z0-9][a-z0-9^-]*.blob.core.windows.net/(?<containerName>[^/]*)/(?<filePath>.*)";
+  private final String absoluteDirectoryPathPattern = "https://[a-z0-9][a-z0-9^-]*.dfs.core.windows.net/(?<fileSystemName>[^/]*)/(?<directoryPath>.*)";
 
   public String getContainerNameFromAbsoluteFilePath(String absoluteFilePath) {
-    Pattern pattern = Pattern.compile(absoluteFilePathPattern);
-    Matcher matcher = pattern.matcher(absoluteFilePath);
-    try {
-      matcher.matches();
-      return matcher.group("containerName");
-    }
-    catch (Exception e) {
-      throw new InternalServerErrorException(
-          String.format("Could not parse container name from file path provided {%s}\n %s", absoluteFilePath, e));
-    }
+    return match(absoluteFilePathPattern, absoluteFilePath, CONTAINER_NAME);
   }
 
   public String getRelativeFilePathFromAbsoluteFilePath(String absoluteFilePath) {
+    return match(absoluteFilePathPattern, absoluteFilePath, FILE_PATH);
+  }
+
+  public String getFileSystemNameFromAbsoluteDirectoryPath(String absoluteFilePath) {
+    return match(absoluteDirectoryPathPattern, absoluteFilePath, FILE_SYSTEM_NAME);
+  }
+  public String getRelativeDirectoryPathFromAbsoluteDirectoryPath(String absoluteFilePath) {
+    return match(absoluteDirectoryPathPattern, absoluteFilePath, DIRECTORY_PATH);
+  }
+
+  private String match(String absoluteFilePathPattern, String input,String matchingString) {
     Pattern pattern = Pattern.compile(absoluteFilePathPattern);
-    Matcher matcher = pattern.matcher(absoluteFilePath);
+    Matcher matcher = pattern.matcher(input);
     try {
       matcher.matches();
-      return matcher.group("filePath");
+      return matcher.group(matchingString);
     }
     catch (Exception e) {
       throw new InternalServerErrorException(
-          String.format("Could not parse relative file path from file path provided {%s}\n %s", absoluteFilePath, e));
+          String.format("Could not parse {%s} from file path provided {%s}\n %s",matchingString, input, e));
     }
   }
-
 }
