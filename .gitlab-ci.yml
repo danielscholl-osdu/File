@@ -23,7 +23,7 @@ variables:
   AZURE_TEST_SUBDIR: testing/file-test-azure
   STAGING_CONTAINER_NAME: file-staging-area
   PERSISTENCE_CONTAINER_NAME: file-persistent-area
-  AZURE_COVERAGE_THRESHOLD: 70
+  AZURE_COVERAGE_THRESHOLD: 30
 
   #AWS
   AWS_BUILD_SUBDIR: provider/file-aws/build-aws
