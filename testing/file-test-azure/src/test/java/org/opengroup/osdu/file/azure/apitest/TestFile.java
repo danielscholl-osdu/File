@@ -20,6 +20,7 @@ import org.opengroup.osdu.file.azure.HttpClientAzure;
 import org.opengroup.osdu.file.util.FileUtils;
 import org.opengroup.osdu.file.util.LegalTagUtils;
 import org.opengroup.osdu.file.util.StorageRecordUtils;
+import org.opengroup.osdu.file.util.TestUtils;
 import util.DummyRecordsHelper;
 import util.FileUtilsAzure;
 import util.StorageUtilAzure;
@@ -269,10 +270,10 @@ public class TestFile extends File {
 
     assertEquals(HttpStatus.SC_CREATED, legalTagCreateResponse.getStatus());
 
-    final String fileMetadataRecord = StorageRecordUtils.createFileMetadataRecord(
-        storageInstructions.getStorageLocation().get("fileSource").toString(), legalTagName);
+    final String fileMetadataRecord = StorageRecordUtils.prepareFileMetadataRecord(
+        storageInstructions.getStorageLocation().get("fileSource").toString(), legalTagName, TestUtils.FILE_KIND);
 
-    ClientResponse storageMetadataUpdateResponse = StorageRecordUtils.sendMetadataRecord(client,
+    ClientResponse storageMetadataUpdateResponse = StorageRecordUtils.createMetadataRecord(client,
         getCommonHeader(), fileMetadataRecord);
 
     assertEquals(HttpStatus.SC_CREATED, storageMetadataUpdateResponse.getStatus());
@@ -285,7 +286,7 @@ public class TestFile extends File {
         copyDmsApi,
         "POST",
         getCommonHeader(),
-        StorageRecordUtils.convertStorageMetadatRecordToCopyDmsRequest(fileMetadataRecord));
+        StorageRecordUtils.convertStorageMetadataRecordToCopyDmsRequest(fileMetadataRecord));
 
     assertEquals(HttpStatus.SC_OK, copyDmsResponse.getStatus());
 

@@ -17,6 +17,10 @@
 package org.opengroup.osdu.file.util;
 
 public class TestUtils {
+
+  public static final String FILE_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
+  public static final String FILE_COLLECTION_KIND = "osdu:wks:dataset--FileCollection.Generic:1.0.0";
+
   public static String getTenantName() {
     return System.getProperty("TENANT_NAME", System.getenv("TENANT_NAME"));
   }
