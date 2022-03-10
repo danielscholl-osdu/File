@@ -29,20 +29,23 @@ import static org.opengroup.osdu.file.util.TestUtils.*;
 
 public class StorageRecordUtils {
 
-  public static String createFileMetadataRecord(String fileSource, String legalTag) {
-    JsonObject record = getDefaultRecordWithDefaultData(fileSource, legalTag);
+  // create metadata for registerDataSetId call
+  public static String prepareFileMetadataRecord(String fileSource, String legalTag, String kind) {
+    JsonObject record = getDefaultRecordWithDefaultData(fileSource, legalTag, kind);
     JsonArray records = new JsonArray();
     records.add(record);
     return records.toString();
   }
 
-  public static ClientResponse sendMetadataRecord(HttpClient client, Map<String, String> headers, String recordMetadataBody) throws Exception {
+  // Send create record in storage.
+  public static ClientResponse createMetadataRecord(HttpClient client, Map<String, String> headers, String recordMetadataBody) throws Exception {
     return client.sendExt(
         (new URL(getStorageUrl() + "records")).toString(),
         "PUT", headers, recordMetadataBody);
   }
 
-  public static String convertStorageMetadatRecordToCopyDmsRequest(String recordMetadataBody) {
+  // create metadata for copy DMS call
+  public static String convertStorageMetadataRecordToCopyDmsRequest(String recordMetadataBody) {
     JsonParser jsonParser = new JsonParser();
     JsonArray records = (JsonArray)jsonParser.parse(recordMetadataBody);
 
@@ -52,17 +55,27 @@ public class StorageRecordUtils {
     return copyRequest.toString();
   }
 
-  /*
-    // Metadata expected for Files.
-    "data": {
-      "DatasetProperties": {
-          "FileSourceInfo": {
-              "FileSource": "{{fileSource}}"
-          }
-      }
+  private static JsonObject getDefaultRecordWithDefaultData(String fileSource, String legalTag, String kind) {
+
+    if(FILE_KIND.equals(kind)) {
+      return getDefaultRecordForFileKind(fileSource, legalTag, kind);
+    } else if(FILE_COLLECTION_KIND.equals(kind)) {
+      return getDefaultRecordForFileCollectionKind(fileSource, legalTag, kind);
     }
- */
-  private static JsonObject getDefaultRecordWithDefaultData(String fileSource, String legalTag) {
+    return null;
+  }
+
+  /*
+  // Metadata expected for Files.
+  "data": {
+    "DatasetProperties": {
+        "FileSourceInfo": {
+            "FileSource": "{{fileSource}}"
+        }
+    }
+  }
+*/
+  private static JsonObject getDefaultRecordForFileKind(String fileSource, String legalTag, String kind) {
     JsonObject data = new JsonObject();
     JsonObject datasetProperties = new JsonObject();
     JsonObject fileSourceInfo = new JsonObject();
@@ -71,16 +84,36 @@ public class StorageRecordUtils {
     datasetProperties.add("FileSourceInfo", fileSourceInfo);
     data.add("DatasetProperties", datasetProperties);
 
-    return getRecordWithInputData(legalTag, data);
+    return getRecordWithInputData(legalTag, data, kind);
   }
 
-  private static JsonObject getRecordWithInputData(String legalTag, JsonObject data) {
-    JsonObject record = getDefaultRecord(legalTag);
+  /*
+  // Metadata expected for File Collection.
+  "data": {
+    "DatasetProperties": {
+        "FileCollectionPath": ""
+    }
+  }
+*/
+  private static JsonObject getDefaultRecordForFileCollectionKind(String fileSource, String legalTag, String kind) {
+    JsonObject data = new JsonObject();
+    JsonObject datasetProperties = new JsonObject();
+
+    data.add("DatasetProperties", datasetProperties);
+    datasetProperties.addProperty("FileCollectionPath", fileSource);
+
+
+    return getRecordWithInputData(legalTag, data, kind);
+  }
+
+  // add acl, legalTags and kind to record.
+  private static JsonObject getRecordWithInputData(String legalTag, JsonObject data, String kind) {
+    JsonObject record = getDefaultRecord(legalTag, kind);
     record.add("data", data);
     return record;
   }
 
-  private static JsonObject getDefaultRecord(String legalTag) {
+  private static JsonObject getDefaultRecord(String legalTag, String kind) {
     JsonObject acl = new JsonObject();
     JsonArray acls = new JsonArray();
     acls.add(getAcl());
@@ -98,8 +131,6 @@ public class StorageRecordUtils {
     legal.add("otherRelevantDataCountries", ordcJson);
 
     JsonObject record = new JsonObject();
-
-    final String kind = "osdu:wks:dataset--File.Generic:1.0.0";
 
     record.addProperty("kind", kind);
     record.add("acl", acl);
