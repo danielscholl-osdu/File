@@ -34,6 +34,7 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
+    <core.lib.gcp.version>0.14.0-rc2</core.lib.gcp.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -84,25 +85,11 @@
       <artifactId>file-core</artifactId>
       <version>0.14.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>obm</artifactId>
-      <version>0.13.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>osm</artifactId>
-      <version>0.13.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>oqm</artifactId>
-      <version>0.13.0</version>
-    </dependency>
+   
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-gcp</artifactId>
-      <version>0.13.0</version>
+      <version>${core.lib.gcp.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud</groupId>

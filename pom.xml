@@ -37,11 +37,9 @@
   <modules>
     <module>file-core</module>
     <module>provider/file-aws</module>
-    <module>provider/file-gcp</module>
     <module>provider/file-ibm</module>
     <module>provider/file-gcp-datastore</module>
     <module>provider/file-azure</module>
-    <module>provider/file-reference</module>
   </modules>
 
   <properties>
@@ -119,14 +117,14 @@
       <artifactId>os-core-common</artifactId>
       <version>${os-core-common.version}</version>
     </dependency>
-    
+
      <!--Swagger-->
     <dependency>
       <groupId>io.springfox</groupId>
       <artifactId>springfox-boot-starter</artifactId>
       <version>${springfox.version}</version>
     </dependency>
-    
+
 
     <!-- Spring Boot-->
     <dependency>
