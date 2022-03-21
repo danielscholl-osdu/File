@@ -199,24 +199,34 @@ curl -L -X PATCH 'https:///api/partition/v1/partitions/opendes' -H 'data-partiti
 
 </details>
 
-#### Bucket configuration
+### Object store configuration <a name="ObjectStoreConfig"></a>
 
-At Minio should be created bucket:
+#### Used Technology
+MinIO (or any other supported by OBM)
 
-**name:** `staging-area`
+#### Per-tenant buckets configuration
+These buckets must be defined in tenants’ dedicated object store servers. OBM connection properties of these servers (url, etc.) are defined as specific properties in tenants’ PartitionInfo registration objects at the Partition service as described in accordant sections of this document.
 
-It can be overridden by:
-
-- through the Spring Boot property `gcp.storage.staging-area`
-- environment variable `GCP_STORAGE_STAGING_AREA`
-
-**name:** `persistent-area`
-
-It can be overridden by:
-
-- through the Spring Boot property `gcp.storage.persistent-area`
-- environment variable `GCP_STORAGE_PERSISTENT_AREA`
-
+<table>
+  <tr>
+   <td>Bucket Naming template
+   </td>
+   <td>Permissions required
+   </td>
+  </tr>
+  <tr>
+   <td>&lt;PartitionInfo.projectId>-$GCP_STORAGE_STAGING_AREA:<strong>staging-area</strong>
+   </td>
+   <td>ListObjects, CRUDObject
+   </td>
+  </tr>
+  <tr>
+   <td>&lt;PartitionInfo.projectId>-$GCP_STORAGE_PERSISTENT_AREA:<strong>persistent-area</strong>
+   </td>
+   <td>ListObjects, CRUDObject
+   </td>
+  </tr>
+</table>
 
 ### For OQM RabbitMQ
 
