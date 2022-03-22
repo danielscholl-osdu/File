@@ -64,13 +64,13 @@ These buckets must be defined in tenants’ “data” GCP projects that names a
   <tr>
    <td>&lt;PartitionInfo.projectId>-$GCP_STORAGE_STAGING_AREA:<strong>staging-area</strong>
    </td>
-   <td>ListObjects, CRUDObject
+   <td>ListObjects, CRUDObject, SignedURLs, DownscopedCreds
    </td>
   </tr>
   <tr>
    <td>&lt;PartitionInfo.projectId>-$GCP_STORAGE_PERSISTENT_AREA:<strong>persistent-area</strong>
    </td>
-   <td>ListObjects, CRUDObject
+   <td>ListObjects, CRUDObject, SignedURLs, DownscopedCreds
    </td>
   </tr>
 </table>
