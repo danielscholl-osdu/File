@@ -60,12 +60,18 @@
 		<groupId>org.projectlombok</groupId>
 		<artifactId>lombok</artifactId>
 	</dependency>
-  
+
 	<dependency>
 		<groupId>io.rest-assured</groupId>
 		<artifactId>rest-assured</artifactId>
     <version>${io.rest-assured.version}</version>
 	</dependency>
+    <!-- Overriding version due to CVE-2016-6798   -->
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.javax.activation</artifactId>
+      <version>0.3.0</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

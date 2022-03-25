@@ -34,6 +34,7 @@
 
     <properties>
         <aws.version>1.11.1018</aws.version>
+        <os-core-lib-aws.version>0.14.0-rc2</os-core-lib-aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
         <log4j2.version>2.17.1</log4j2.version>
@@ -78,7 +79,6 @@
         <artifactId>file-core</artifactId>
         <version>0.14.0-SNAPSHOT</version>
     </dependency>
-
     <!-- Internal packages -->
     <dependency>
         <groupId>org.opengroup.osdu</groupId>
@@ -88,7 +88,7 @@
         <dependency>
         <groupId>org.opengroup.osdu.core.aws</groupId>
         <artifactId>os-core-lib-aws</artifactId>
-        <version>0.13.0</version>
+        <version>${os-core-lib-aws.version}</version>
     </dependency>
     <!-- AWS managed packages -->
     <dependency>
