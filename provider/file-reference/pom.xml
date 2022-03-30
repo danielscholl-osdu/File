@@ -21,19 +21,19 @@
   <parent>
     <groupId>org.opengroup.osdu</groupId>
     <artifactId>os-file</artifactId>
-    <version>0.14.0-SNAPSHOT</version>
+    <version>0.15.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>file-reference</artifactId>
-  <version>0.14.0-SNAPSHOT</version>
+  <version>0.15.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>file-reference</name>
   <description>File service GCP Anthos</description>
 
   <properties>
-    <file-core.version>0.14.0-SNAPSHOT</file-core.version>
+    <file-core.version>0.15.0-SNAPSHOT</file-core.version>
     <minio.version>7.1.4</minio.version>
     <google-cloud-nio.version>0.120.0-alpha</google-cloud-nio.version>
     <logback-json-classic.version>0.1.5</logback-json-classic.version>

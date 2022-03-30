@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
@@ -86,6 +87,9 @@ public class StorageServiceImpl implements IStorageService {
 
   @Autowired
   private final ExpiryTimeUtil expiryTimeUtil;
+
+  @Autowired
+  private MSIConfiguration msiConfiguration;
 
   @Autowired
   ServiceHelper serviceHelper;
@@ -210,22 +214,42 @@ public class StorageServiceImpl implements IStorageService {
 
     String signedUrlString = null;
     if (StringUtils.isEmpty(signedUrlParameters.getFileName())) {
-         signedUrlString = blobStore.generatePreSignedURL(
-                dpsHeaders.getPartitionId(),
-                filePath.toString(),
-                containerName,
-                expiryTime,
-                permission);
-
+      if(!msiConfiguration.getIsEnabled()) {
+        signedUrlString = blobStore.generatePreSignedURL(
+            dpsHeaders.getPartitionId(),
+            filePath.toString(),
+            containerName,
+            expiryTime,
+            permission);
+      } else {
+        signedUrlString = blobStore.generatePreSignedUrlWithUserDelegationSas(
+            dpsHeaders.getPartitionId(),
+            filePath.toString(),
+            containerName,
+            expiryTime,
+            permission);
+      }
     }else {
-         signedUrlString = blobStore.generatePreSignedURL(
-                 dpsHeaders.getPartitionId(),
-                 filePath.toString(),
-                 containerName,
-                 expiryTime,
-                 permission,
-                 UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
-                 signedUrlParameters.getContentType());
+
+      if(!msiConfiguration.getIsEnabled()) {
+        signedUrlString = blobStore.generatePreSignedURL(
+            dpsHeaders.getPartitionId(),
+            filePath.toString(),
+            containerName,
+            expiryTime,
+            permission,
+            UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
+            signedUrlParameters.getContentType());
+      } else {
+        signedUrlString = blobStore.generatePreSignedUrlWithUserDelegationSas(
+            dpsHeaders.getPartitionId(),
+            filePath.toString(),
+            containerName,
+            expiryTime,
+            permission,
+            UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
+            signedUrlParameters.getContentType());
+      }
     }
 
    if(StringUtils.isBlank(signedUrlString)) {

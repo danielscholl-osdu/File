@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.ReplaceCamelCase;
@@ -78,6 +79,9 @@ class StorageServiceImplTest {
   @Mock
   private BlobStoreConfig blobStoreConfig;
 
+  @Mock
+  private MSIConfiguration msiConfiguration;
+
   private ExpiryTimeUtil expiryTimeUtil;
 
   @Captor
@@ -93,7 +97,9 @@ class StorageServiceImplTest {
 
     expiryTimeUtil = new ExpiryTimeUtil();
     storageService = new StorageServiceImpl(blobStore, dpsHeaders, fileLocationProperties,
-        storageRepository, blobStoreConfig, expiryTimeUtil, serviceHelper);
+        storageRepository, blobStoreConfig, expiryTimeUtil, msiConfiguration, serviceHelper);
+
+    lenient().when(msiConfiguration.getIsEnabled()).thenReturn(false);
 
   }
 
@@ -230,7 +236,7 @@ class StorageServiceImplTest {
         anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class), anyString(), anyString());
   }
 
-  
+
   private SignedObject getSignedObject() {
     String containerName = RandomStringUtils.randomAlphanumeric(4);
     String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);
