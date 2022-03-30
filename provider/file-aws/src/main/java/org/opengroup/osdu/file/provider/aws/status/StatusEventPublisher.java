@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opengroup.osdu.core.aws.ssm.ParameterStorePropertySource;
+import org.opengroup.osdu.core.aws.ssm.SSMConfig;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -36,6 +38,9 @@ public class StatusEventPublisher implements IEventPublisher {
 	@Value("${aws.sns.region}")
 	private String amazonSNSRegion;
 
+	@Value("${aws.sns.topic.arn}")
+	private String snsTopicArn;
+
 	private AmazonSNS snsClient;
 	private String amazonSNSTopic;
 
@@ -45,8 +50,8 @@ public class StatusEventPublisher implements IEventPublisher {
 	public void init() throws K8sParameterNotFoundException {
 		AmazonSNSConfig snsConfig = new AmazonSNSConfig(amazonSNSRegion);
 		snsClient = snsConfig.AmazonSNS();
-		K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
-		amazonSNSTopic = provider.getParameterAsString("file-sns-topic-arn");
+		SSMConfig ssmConfig = new SSMConfig();
+		amazonSNSTopic = ssmConfig.amazonSSM().getProperty(snsTopicArn).toString();
 	}
 
 	@Override
