@@ -27,7 +27,7 @@ In order to run the service locally, you will need to have the following environ
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
 | `LOG_PREFIX` | `file` | Logging prefix | no | - |
-| `OSDU_ENTITLEMENTS_URL` | `/https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
+| `OSDU_ENTITLEMENTS_URL` | `https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
 | `RECORDS_ROOT_URL` | ex `https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2` / Storage API endpoint | no | output of infrastructure deployment |
 | `GCP_STORAGE_STAGING_AREA` | ex `staging-area` | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`) |no | output of infrastructure deployment |
 | `GCP_STORAGE_PERSISTENT_AREA` | ex `persistent-area` | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area` | no | output of infrastructure deployment |
@@ -150,13 +150,13 @@ As a quick shortcut, this example snippet can be used by DevOps DBA:
 
 ```postgres-psql
 --CREATE SCHEMA "osdu";
-CREATE TABLE osdu."file-locations-osm"(
+CREATE TABLE osdu."file_locations_osm"(
     id text COLLATE pg_catalog."default" NOT NULL,
     pk bigint NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     data jsonb NOT NULL,
-    CONSTRAINT ExampleKind_id UNIQUE (id)
+    CONSTRAINT file_locations_osm_id UNIQUE (id)
 );
-CREATE INDEX FileLocationsOsm_datagin ON osdu."file-locations-osm" USING GIN (data);
+CREATE INDEX file_locations_osm_datagin ON osdu."file_locations_osm" USING GIN (data);
 ```
 
 
