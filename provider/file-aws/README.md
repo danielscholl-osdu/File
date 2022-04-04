@@ -15,28 +15,28 @@ These instructions will get you a copy of the project up and running on your loc
 **In order to run the service locally or remotely, you will need to have the following environment variables defined.**
 The environment variables need to be tied to the `FileApplicationAWS.java` file within the `file-aws` directory tree.
 
-| name | example value | required | description | sensitive? |
-| ---  | ---   | ---         | ---        | ---    |
-| `AWS_REGION` | `us-east-1` | yes | The region where resources needed by the service are deployed | no |
-| `AWS_ACCESS_KEY_ID` | `ASIAXXXXXXXXXXXXXX` | yes | The AWS Access Key for a user with access to Backend Resources required by the service | yes |
-| `AWS_SECRET_ACCESS_KEY` | `super-secret-key==` | yes | The AWS Secret Key for a user with access to Backend Resources required by the service | yes |
-| `AWS_SESSION_TOKEN` | `session-token-xxxxxxxxxx` | no | AWS Session token needed if using an SSO user session to authenticate | yes |
-| `ENVIRONMENT` | `osdu-prefix` | yes | The Resource Prefix defined during deployment | no |
-| `APPLICATION_PORT`  | `8080`   | yes         | HTTP Port the application uses to listen for incoming requests        | no    |
-| `JAVA_OPTS`  | `-Xms538M -Xmx900M`   | no         |         | no    |
-| `LOG_LEVEL`  | `DEBUG`   | no         | Defines the level of logging information outputted to the log file        | no    |
-| `SSM_ENABLED`  | `false`   | no         |         | no    |
-| `SSL_ENABLED`  | `false`   | no         |        | no    |
-| `CACHE_CLUSTER_ENDPOINT`  | `some.cache.cluster.endpoint.url`   | yes         |         | yes    |
-| `CACHE_CLUSTER_PORT`  | `6469`   | yes         |         | no    |
-| `ENTITLEMENTS_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}`   | yes         |         | no    |
-| `PARTITION_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}`   | yes         |         | no    |
-| `STORAGE_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}`   | yes         |         | no    |
-| `SEARCH_HOST`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}`   | yes         |         | no    |
-| `DATASET_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}`   | yes         |         | no    |
-| `CACHE_CLUSTER_KEY`  | `SecretClusterKeyValue`   | yes         |         | yes    |
-| `AWS_ROLE_ARN`  | `IAM service role`   | yes         |         | yes    |
-| `AWS_WEB_IDENTITY_TOKEN_FILE`  | `/path/to/secret/token/file`   | yes         |         | yes    |
+| name | example value        | required | description | sensitive? |
+| ---  |-------------------------------------------------------------------| ---         |----------------------------------------------------------------------------------------|------------|
+| `AWS_REGION` | `us-east-1`          | yes | The region where resources needed by the service are deployed           | no         |
+| `AWS_ACCESS_KEY_ID` | `ASIAXXXXXXXXXXXXXX`            | yes | The AWS Access Key for a user with access to Backend Resources required by the service | yes        |
+| `AWS_SECRET_ACCESS_KEY` | `super-secret-key==`     | yes | The AWS Secret Key for a user with access to Backend Resources required by the service | yes        |
+| `AWS_SESSION_TOKEN` | `session-token-xxxxxxxxxx`   | no | AWS Session token needed if using an SSO user session to authenticate   | yes        |
+| `ENVIRONMENT` | `osdu-prefix`            | yes | The Resource Prefix defined during deployment            | no         |
+| `APPLICATION_PORT`  | `8080`       | yes         | HTTP Port the application uses to listen for incoming requests          | no         |
+| `LOG_LEVEL`  | `DEBUG`| no         | Defines the level of logging information outputted to the log file      | no         |
+| `SSM_ENABLED`  | `false` | no         |             | no         |
+| `SSL_ENABLED`  | `false`              | no         |             | no         |
+| `CACHE_CLUSTER_ENDPOINT`  | `some.cache.cluster.endpoint.url`        | yes         |             | yes        |
+| `CACHE_CLUSTER_PORT`  | `6469`   | yes         |             | no         |
+| `ENTITLEMENTS_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}` | yes         |             | no         |
+| `PARTITION_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}` | yes         |             | no         |
+| `STORAGE_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}` | yes         |             | no         |
+| `SEARCH_HOST`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}` | yes         |             | no         |
+| `DATASET_BASE_URL`  | `https://{prefix}.hosted.url` or `http://localhost:{port number}` | yes         |             | no         |
+| `CACHE_CLUSTER_KEY`  | `SecretClusterKeyValue`      | yes         |             | yes        |
+| `AWS_ROLE_ARN`  | `IAM service role`         | yes         |             | yes        |
+| `AWS_WEB_IDENTITY_TOKEN_FILE`  | `/path/to/secret/token/file`            | yes         |             | yes        |
+| `file-sns-topic-arn`  | `sns:topic:arn` | yes         | ARN of the SNS topic to publish messages to              | no         |
 
 ### Run Locally
 Check that maven is installed:
@@ -86,42 +86,42 @@ This section describes how to run OSDU Integration tests (testing/file-test-aws)
 
 You will need to have the following environment variables defined.
 
-| name | example value                                  | description | sensitive? 
+| name | example value    | description | sensitive? 
  |------------------------------------------------| ---   |------------| ---        |
-| `AWS_ACCESS_KEY_ID` | `ASIAXXXXXXXXXXXXXX`                           | The AWS Access Key for a user with access to Backend Resources required by the service | yes        |
-| `AWS_SECRET_ACCESS_KEY` | `super-secret-key==`                           | The AWS Secret Key for a user with access to Backend Resources required by the service | yes        |
-| `AWS_SESSION_TOKEN` | `session-token-xxxxxxxxx`                      | AWS Session token needed if using an SSO user session to authenticate | yes        |
-| `ADMIN_USER`  | `user@name`                                    |          | yes        |
-| `SERVICE_PRINCIPAL_USER`  | `serviceprincipal@user`                        |          | yes        |
-| `AWS_COGNITO_AUTH_FLOW` | `USER_PASSWORD_AUTH`                           | Auth flow used by reference cognito deployment | no         |
-| `AWS_COGNITO_CLIENT_ID` | `xxxxxxxxxxxx`                                 | Client ID for the Auth Flow integrated with the Cognito User Pool | no         |
-| `AWS_COGNITO_USER_POOL_ID` | `us-east-1_xxxxxxxx`                           | User Pool Id for the reference cognito | no         |
-| `AWS_COGNITO_AUTH_PARAMS_USER` | `int-test-user@testing.com`                    | Int Test Username | no         |
-| `AWS_COGNITO_AUTH_PARAMS_PASSWORD` | `some-secure-password`                         | Int Test User/NoAccessUser Password | yes        |
-| `AWS_BASE_URL`  | `https://some.hosted.url`                      |          | no         |
-| `ELASTIC_HOST`  | `elastic.host.url`                             |          | no         |
-| `ELASTIC_PORT`  | `9200`                                         |          | no         |
-| `ELASTIC_USERNAME`  | `username`                                     |          | no         |
-| `ELASTIC_PASSWORD`  | `super-secret-password`                        |          | yes        |
+| `AWS_ACCESS_KEY_ID` | `ASIAXXXXXXXXXXXXXX`            | The AWS Access Key for a user with access to Backend Resources required by the service | yes        |
+| `AWS_SECRET_ACCESS_KEY` | `super-secret-key==`            | The AWS Secret Key for a user with access to Backend Resources required by the service | yes        |
+| `AWS_SESSION_TOKEN` | `session-token-xxxxxxxxx`       | AWS Session token needed if using an SSO user session to authenticate | yes        |
+| `ADMIN_USER`  | `user@name`      |          | yes        |
+| `SERVICE_PRINCIPAL_USER`  | `serviceprincipal@user`         |          | yes        |
+| `AWS_COGNITO_AUTH_FLOW` | `USER_PASSWORD_AUTH`            | Auth flow used by reference cognito deployment | no         |
+| `AWS_COGNITO_CLIENT_ID` | `xxxxxxxxxxxx`   | Client ID for the Auth Flow integrated with the Cognito User Pool | no         |
+| `AWS_COGNITO_USER_POOL_ID` | `us-east-1_xxxxxxxx`            | User Pool Id for the reference cognito | no         |
+| `AWS_COGNITO_AUTH_PARAMS_USER` | `int-test-user@testing.com`     | Int Test Username | no         |
+| `AWS_COGNITO_AUTH_PARAMS_PASSWORD` | `some-secure-password`          | Int Test User/NoAccessUser Password | yes        |
+| `AWS_BASE_URL`  | `https://some.hosted.url`       |          | no         |
+| `ELASTIC_HOST`  | `elastic.host.url`              |          | no         |
+| `ELASTIC_PORT`  | `9200`           |          | no         |
+| `ELASTIC_USERNAME`  | `username`       |          | no         |
+| `ELASTIC_PASSWORD`  | `super-secret-password`         |          | yes        |
 | `FILE_URL`  | `https://some.hosted.url/api/file/v2`          |          | no         |
 | `INDEXER_URL`  | `https://some.hosted.url/api/indexer/v2/`      |          | no         |
 | `INDEXER_HOST`  | `https://some.hosted.url/api/indexer/v2/`      |          | no         |
 | `LEGAL_QUEUE`  | `https://sqs.legal.queue.url/123456/endpoint`  |          | no         |
-| `LEGAL_S3_BUCKET`  | `s3-bucket-name`                               |          | no         |
+| `LEGAL_S3_BUCKET`  | `s3-bucket-name` |          | no         |
 | `LEGAL_URL`  | `https://some.hosted.url/api/legal/v1/`        |          | no         |
-| `RESOURCE_PREFIX`  | `osdu-prefix`                                  |          | no         |
+| `RESOURCE_PREFIX`  | `osdu-prefix`    |          | no         |
 | `SEARCH_URL`  | `https://some.hosted.url/api/search/v2/`       |          | no         |
 | `STORAGE_URL`  | `https://some.hosted.url/api/storage/v2/`      |          | no         |
 | `ENTITLEMENTS_URL`  | `https://some.hosted.url/api/entitlements/v2/` | ---         | no         |
-| `SCHEMA_URL`  | `https://some.hosted.url`                      | ---         | no         |
-| `UNIT_HOST`  | `some.hosted.url`                              | ---         | no         |
+| `SCHEMA_URL`  | `https://some.hosted.url`       | ---         | no         |
+| `UNIT_HOST`  | `some.hosted.url`| ---         | no         |
 | `DATA_WORKFLOW_URL`  | `https://some.hosted.url/api/data-workflow/v1` | ---         | no         |
 | `WORKFLOW_URL`  | `https://some.hosted.url/api/workflow/`        | ---         | no         |
-| `PARTITION_BASE_URL`  | `https://some.hosted.url/`                     | ---         | no         |
-| `CRS_CATALOG_HOST`  | `some.hosted.url`                                          | ---         | no         |
-| `CRS_CONVERTER_HOST`  | `some.hosted.url`                                          | ---         | no         |
-| `REGISTER_BASE_URL`  | `https://some.hosted.url/`                                          | ---         | no         |
-| `DATASET_BASE_URL`  | `https://some.hosted.url/api/dataset/v1/`                                          | ---         | no         |
+| `PARTITION_BASE_URL`  | `https://some.hosted.url/`      | ---         | no         |
+| `CRS_CATALOG_HOST`  | `some.hosted.url`            | ---         | no         |
+| `CRS_CONVERTER_HOST`  | `some.hosted.url`            | ---         | no         |
+| `REGISTER_BASE_URL`  | `https://some.hosted.url/`            | ---         | no         |
+| `DATASET_BASE_URL`  | `https://some.hosted.url/api/dataset/v1/`            | ---         | no         |
 | `FILEDMS_BASE_URL`  | `https://some.hosted.url/api/dms/file/v1/`  | ---         | no         |
 | `NOTIFICATION_BASE_URL`  | `https://some.hosted.url/api/notification/v1/`  | ---         | no         |
 | `NOTIFICATION_REGISTER_BASE_URL`  | `https://some.hosted.url`  | ---         | no         |
