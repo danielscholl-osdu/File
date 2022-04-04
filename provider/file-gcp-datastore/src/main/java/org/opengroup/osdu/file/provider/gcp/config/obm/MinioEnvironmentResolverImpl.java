@@ -56,6 +56,6 @@ public class MinioEnvironmentResolverImpl implements EnvironmentResolver {
         });
     Property minioUrl = partitionInfo.getProperties().get(
         properties.getPartitionPropertiesPrefix() + ENDPOINT);
-    return minioUrl.getValue().toString() + "/";
+    return minioUrl.getValue().toString();
   }
 }
