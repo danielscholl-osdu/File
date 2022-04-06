@@ -8,12 +8,14 @@ metadata:
 data:
   LOG_LEVEL: "{{ .Values.data.log_level }}"
   OSDU_ENTITLEMENTS_URL: "{{ .Values.data.osdu_entitlements_url }}"
-  FILE_LOCATION_BUCKET_NAME: "{{ .Values.data.file_location_bucket_name }}"
   PARTITION_API: "{{ .Values.data.partition_api }}"
+  STORAGE_API: "{{ .Values.data.storage_api }}"
+  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profile }}"
+  {{- if not .Values.conf.on_prem_enabled }}
+  FILE_LOCATION_BUCKET_NAME: "{{ .Values.data.file_location_bucket_name }}"
   GOOGLE_AUDIENCES: "{{ .Values.data.audiences }}"
   SPRING_CLOUD_GCP_DATASTORE_NAMESPACE: "{{ .Values.data.spring_cloud_gcp_datastore_namespace }}"
   FILE_LOCATION_USER_ID: "{{ .Values.data.file_location_user_id }}"
-  STORAGE_API: "{{ .Values.data.storage_api }}"
   GCP_RECORDS_URL: "{{ .Values.data.gcp_records_url }}"
   SERVER_SERVLET_CONTEXTPATH: "/api/file/"
-  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profile }}"
+  {{- end }}

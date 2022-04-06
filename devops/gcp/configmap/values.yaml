@@ -13,3 +13,4 @@ data:
 conf:
   configmap: "file-config"
   app_name: "file"
+  on_prem_enabled: false
