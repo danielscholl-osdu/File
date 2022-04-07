@@ -38,7 +38,7 @@ import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
+@Component("ObmStorageRepository")
 @RequiredArgsConstructor
 public class ObmStorageRepository implements IStorageRepository {
 

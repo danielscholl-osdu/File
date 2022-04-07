@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2021-2022 Google LLC
+ * Copyright 2021-2022 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,13 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.core.gcp.obm.driver.ObmDriverRuntimeException;
 import org.opengroup.osdu.core.gcp.obm.model.Blob;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
+import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
 import org.opengroup.osdu.file.provider.gcp.util.obm.ObmStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
@@ -102,6 +104,58 @@ public class ObmCloudStorageOperationImpl implements ICloudStorageOperation {
                 .build();
           }
         }).collect(Collectors.toList());
+  }
+
+  @Override
+  public List<DatasetCopyOperation> copyDirectories(List<FileCopyOperation> fileCopyOperationList) {
+    return fileCopyOperationList.stream()
+        .map(operation -> {
+          try {
+            this.copyDirectory(operation.getSourcePath(), operation.getDestinationPath());
+            return DatasetCopyOperation.builder()
+                .fileCopyOperation(operation)
+                .success(Boolean.TRUE)
+                .build();
+          } catch (OsduBadRequestException | ObmDriverRuntimeException e) {
+            log.error("Error in performing file copy operation", e);
+            return DatasetCopyOperation.builder()
+                .fileCopyOperation(operation)
+                .success(Boolean.FALSE)
+                .build();
+          }
+        }).collect(Collectors.toList());
+  }
+
+  private List<String> copyDirectory(String sourcePath, String destinationPath)
+      throws OsduBadRequestException {
+    TenantInfo tenantInfo = tenantFactory.getTenantInfo(dpsHeaders.getPartitionId());
+    String fromBucket = obmStorageUtil.getBucketName(sourcePath, tenantInfo);
+    String fromPath = obmStorageUtil.getDirectoryPath(sourcePath, tenantInfo);
+    String destinationBucket = obmStorageUtil.getBucketName(destinationPath, tenantInfo);
+    String destinationFilePath = obmStorageUtil.getDirectoryPath(destinationPath, tenantInfo);
+
+    if (Stream.of(fromBucket, fromPath, destinationBucket, destinationFilePath)
+        .anyMatch(StringUtils::isEmpty)) {
+      throwBadRequest(INVALID_RESOURCE_PATH);
+    }
+
+    Iterable<Blob> sourceBlobs = obmStorageDriver.listBlobsByPrefix(fromBucket,
+        obmStorageUtil.getDestination(tenantInfo.getDataPartitionId()), fromPath);
+
+    if (!sourceBlobs.iterator().hasNext()) {
+      throwBadRequest(getErrorMessageFileNotPresent(fromPath),
+          FileMetadataConstant.INVALID_SOURCE_EXCEPTION + sourcePath);
+    }
+
+    String transferProtocol =
+        environmentResolver.getTransferProtocol(tenantInfo.getDataPartitionId());
+
+    return obmStorageDriver.copyBlobs(obmStorageUtil.getDestination(tenantInfo.getDataPartitionId()),
+          fromBucket, fromPath, destinationBucket,
+          destinationFilePath)
+        .stream()
+        .map(filePath -> transferProtocol + filePath)
+        .collect(Collectors.toList());
   }
 
   @Override
