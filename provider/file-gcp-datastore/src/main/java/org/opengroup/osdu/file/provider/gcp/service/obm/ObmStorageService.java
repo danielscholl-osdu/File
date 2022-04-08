@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
@@ -48,14 +47,18 @@ import org.opengroup.osdu.file.provider.gcp.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.gcp.util.obm.ObmStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class ObmStorageService implements IStorageService {
+
+  private static final String INVALID_GS_PATH_REASON =
+      "Unsigned url invalid, needs to be full S3 storage path";
 
   private final IStorageRepository storageRepository;
   private final ObmStorageUtil obmStorageUtil;
@@ -63,8 +66,19 @@ public class ObmStorageService implements IStorageService {
   private final DpsHeaders dpsHeaders;
   private final ObjectMapper objectMapper;
   private final EnvironmentResolver environmentResolver;
-  private static final String INVALID_GS_PATH_REASON =
-      "Unsigned url invalid, needs to be full S3 storage path";
+
+  @Autowired
+  public ObmStorageService(@Qualifier("ObmStorageRepository") IStorageRepository storageRepository,
+      ObmStorageUtil obmStorageUtil, ITenantFactory tenantFactory,
+      DpsHeaders dpsHeaders, ObjectMapper objectMapper,
+      EnvironmentResolver environmentResolver) {
+    this.storageRepository = storageRepository;
+    this.obmStorageUtil = obmStorageUtil;
+    this.tenantFactory = tenantFactory;
+    this.dpsHeaders = dpsHeaders;
+    this.objectMapper = objectMapper;
+    this.environmentResolver = environmentResolver;
+  }
 
   @Override
   public SignedUrl createSignedUrl(String fileName, String authorizationToken, String partitionID) {
