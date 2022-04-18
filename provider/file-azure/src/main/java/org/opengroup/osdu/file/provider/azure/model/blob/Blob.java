@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.file.provider.azure.storage;
+package org.opengroup.osdu.file.provider.azure.model.blob;
 
 
 import org.opengroup.osdu.file.provider.azure.common.base.Preconditions;
+import org.opengroup.osdu.file.provider.azure.storage.Storage;
 
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +27,7 @@ public class Blob extends BlobInfo {
   private static final long serialVersionUID = -6806832496757441434L;
   private transient Storage storage;
 
-  Blob(Storage storage, BlobInfo.BuilderImpl infoBuilder) {
+  public Blob(Storage storage, BlobInfo.BuilderImpl infoBuilder) {
     super(infoBuilder);
     this.storage = (Storage) Preconditions.checkNotNull(storage);
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.file.provider.azure.storage;
+package org.opengroup.osdu.file.provider.azure.model.blob;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;

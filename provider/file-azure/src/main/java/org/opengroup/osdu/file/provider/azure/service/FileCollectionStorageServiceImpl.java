@@ -206,7 +206,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
                                                      SignedUrlParameters signedUrlParameters) {
     if (StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
-          String.format("invalid received for authorizationToken (value: %s) or unsignedURL (value: %s)",
+          String.format("invalid received for unsignedURL (value: %s)",
                unsignedUrl));
     }
 

@@ -16,6 +16,9 @@
 
 package org.opengroup.osdu.file.provider.azure.storage;
 
+import org.opengroup.osdu.file.provider.azure.model.blob.Blob;
+import org.opengroup.osdu.file.provider.azure.model.blob.BlobInfo;
+
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
