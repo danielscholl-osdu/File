@@ -72,7 +72,7 @@ public class StorageServiceImpl implements IStorageService {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  private static final String PROVIDER_KEY = "AZURE";
+  static final String PROVIDER_KEY = "AZURE";
 
   @Autowired
   DpsHeaders dpsHeaders;

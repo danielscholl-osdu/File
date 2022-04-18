@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.file.provider.azure.storage;
+package org.opengroup.osdu.file.provider.azure.model.blob;
 
 
 import com.google.api.client.util.Data;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+
 import java.io.Serializable;
 
 
@@ -55,16 +56,16 @@ public class BlobInfo implements Serializable {
     return new BuilderImpl(blobId);
   }
 
-  static final class BuilderImpl extends Builder {
+  public static final class BuilderImpl extends Builder {
     private BlobId blobId;
     private String generatedId;
     private String contentType;
 
-    BuilderImpl(BlobId blobId) {
+    public BuilderImpl(BlobId blobId) {
       this.blobId = blobId;
     }
 
-    BuilderImpl(BlobInfo blobInfo) {
+    public BuilderImpl(BlobInfo blobInfo) {
       this.blobId = blobInfo.blobId;
       this.generatedId = blobInfo.generatedId;
       this.contentType = blobInfo.contentType;

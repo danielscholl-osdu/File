@@ -28,6 +28,9 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Condition;
+import org.opengroup.osdu.file.provider.azure.model.blob.BlobId;
+import org.opengroup.osdu.file.provider.azure.model.blob.BlobInfo;
+import org.springframework.http.MediaType;
 
 public final class TestUtils {
 
@@ -62,6 +65,12 @@ public final class TestUtils {
   public static final String DIRECTORY_NAME = "directoryName";
   public static final String DIRECTORY_PATH = "directoryPath";
   public static final String FILE_COLLECTION_RECORD_ID = "opendes:dataset--FileCollection.Generic:2ff8ce4822a344c38d611c2d831e3dcd";
+  public static final String FILE_RECORD_ID = "opendes:dataset--File.Generic:2ff8ce4822a344c38d611c2d831e3dcd";
+  public static final String BLOB_NAME = "blobName";
+  public static final String CONTENT_TYPE = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+  public static final String GENERATED_ID = "blobName";
+  public static final String INVALID_URL = "invalidURL";
+  public static final String EMPTY_STRING = "";
 
   private TestUtils() {
   }
@@ -115,4 +124,22 @@ public final class TestUtils {
     return UUID.randomUUID().toString().replace("-", "");
   }
 
+  public static BlobId getBlobId() {
+    BlobId blobId = BlobId.of(STAGING_CONTAINER_NAME, BLOB_NAME);
+    return blobId;
+  }
+
+  public static BlobInfo getBlobInfo() {
+    BlobInfo.BuilderImpl builder = new BlobInfo.BuilderImpl(getBlobId());
+    builder.setContentType(CONTENT_TYPE);
+    builder.setGeneratedId(GENERATED_ID);
+
+    return new BlobInfo(builder);
+  }
+
+  public static String getSignedURL(String containerName, String filename) {
+    return format(
+        "%s%stest/%s/%s?sv=2019-07-07&se=2020-08-08T13A36A49Z&skoid=0fa47244-83d8-4311-b05c-fefb49d8b0a9&sktid=58975fd3-4977-44d0-bea8-37af0baac100&skt=2020-08-08T013A3649Z&ske=2020-08-08T133649Z&sks=b&skv=2019-07-07&sr=b&sp=r&sig=Hh5xGUpvTkEDeArXaWmV6FnSOMbYLRdHSfGlOlsC7wD2020-08-07",
+        AZURE_PROTOCOL, STORAGE_NAME, containerName, filename);
+  }
 }

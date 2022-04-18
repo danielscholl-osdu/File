@@ -41,6 +41,8 @@ import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;
 import org.opengroup.osdu.file.provider.azure.config.AzureBootstrapConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
+import org.opengroup.osdu.file.provider.azure.model.blob.Blob;
+import org.opengroup.osdu.file.provider.azure.model.blob.BlobInfo;
 import org.opengroup.osdu.file.provider.azure.service.AzureTokenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
