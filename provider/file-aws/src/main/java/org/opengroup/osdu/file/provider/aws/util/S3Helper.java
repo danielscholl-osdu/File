@@ -20,45 +20,50 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import org.opengroup.osdu.file.provider.aws.config.AwsServiceConfig;
+import com.amazonaws.services.s3.model.Region;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentialsProvider;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.net.URL;
 import java.util.Date;
 
 @Component
 public class S3Helper {
 
-  @Inject
-  private AwsServiceConfig awsServiceConfig;
+    /**
+     * Generates a presigned URL for the S3 location
+     */
+    public URL generatePresignedUrl(S3Location location,
+                                    HttpMethod httpMethod,
+                                    Date expiration,
+                                    TemporaryCredentials credentials) throws SdkClientException {
+        AmazonS3 s3 = generateS3ClientWithCredentials(location.bucket, credentials);
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+            new GeneratePresignedUrlRequest(location.getBucket(), location.getKey(), httpMethod)
+                .withExpiration(expiration);
 
-  private AmazonS3 s3;
+        return s3.generatePresignedUrl(generatePresignedUrlRequest);
+    }
 
-  @PostConstruct
-  public void init() {
-    s3 = AmazonS3ClientBuilder
+    public String getBucketRegion(String bucket, TemporaryCredentials credentials) {
+        AmazonS3 simpleS3Client = AmazonS3ClientBuilder.standard()
+                                                       .withCredentials(new TemporaryCredentialsProvider(credentials))
+                                                       .build();
+        String bucketLocation = simpleS3Client.getBucketLocation(bucket);
+        Region s3Region = Region.fromValue(bucketLocation);
+
+        return s3Region.toAWSRegion().getName();
+    }
+
+    private AmazonS3 generateS3ClientWithCredentials(String bucket, TemporaryCredentials credentials) {
+        String region = getBucketRegion(bucket, credentials);
+
+        return AmazonS3ClientBuilder
             .standard()
-            .withRegion(Regions.fromName(awsServiceConfig.amazonRegion))
+            .withRegion(Regions.fromName(region))
+            .withCredentials(new TemporaryCredentialsProvider(credentials))
             .build();
-  }
-
-  /**
-   * Generates a presignedurl for the S3location
-   * @param location
-   * @param httpMethod
-   * @param expiration
-   * @return
-   * @throws SdkClientException
-   */
-  public URL generatePresignedUrl(S3Location location, HttpMethod httpMethod, Date expiration) throws SdkClientException {
-
-    GeneratePresignedUrlRequest generatePresignedUrlRequest =
-            new GeneratePresignedUrlRequest(location.bucket, location.key, httpMethod)
-                    .withExpiration(expiration);
-
-    return s3.generatePresignedUrl(generatePresignedUrlRequest);
-  }
+    }
 }

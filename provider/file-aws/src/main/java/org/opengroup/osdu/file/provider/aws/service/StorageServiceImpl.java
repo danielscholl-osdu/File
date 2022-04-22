@@ -14,97 +14,95 @@
 
 package org.opengroup.osdu.file.provider.aws.service;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.inject.Inject;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
-import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
-import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
-import org.opengroup.osdu.file.provider.aws.di.DatasetException;
-import org.opengroup.osdu.file.provider.aws.di.IDatasetFactory;
-import org.opengroup.osdu.file.provider.aws.di.IDatasetService;
-import org.opengroup.osdu.file.provider.aws.di.model.DatasetExceptionResponse;
-import org.opengroup.osdu.file.provider.aws.di.model.FileUploadLocationAWSImpl;
-import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetStorageInstructionsResponse;
+import org.opengroup.osdu.file.provider.aws.di.IFileLocationProvider;
+import org.opengroup.osdu.file.provider.aws.model.FileDmsUploadLocation;
+import org.opengroup.osdu.file.provider.aws.model.FileUploadLocation;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
-import lombok.extern.slf4j.Slf4j;
+import java.net.MalformedURLException;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.Map;
 
+@Slf4j
 @Service
 @RequestScope
-@Slf4j
 public class StorageServiceImpl implements IStorageService {
 
-    @Inject
-    IDatasetFactory datasetFactory;
+    private final IFileLocationProvider fileLocationProvider;
+    private final DpsHeaders headers;
+    private final ObjectMapper objectMapper;
 
-    @Inject
-    DpsHeaders headers;
-
-    private final ObjectMapper objectMapper = new ObjectMapper()
-                                                    .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
-                                                    .findAndRegisterModules();
-    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
-
+    @Autowired
+    public StorageServiceImpl(IFileLocationProvider fileLocationProvider,
+                              DpsHeaders headers,
+                              ObjectMapper objectMapper,
+                              @Value("${PROVIDER_KEY}") String PROVIDER_KEY) {
+        this.fileLocationProvider = fileLocationProvider;
+        this.headers = headers;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
+        log.debug("Creating the signed URL for file ID: {}, authorization: {}, partition ID: {}", fileID, authorizationToken, partitionID);
 
-        IDatasetService datasetService = datasetFactory.create(headers);
+        final FileUploadLocation fileUploadLocation = fileLocationProvider.getUploadLocation(fileID, partitionID);
 
-        GetDatasetStorageInstructionsResponse response;
-
-        try {
-            response = datasetService.getStorageInstructions("dataset--File.Generic");
-        } catch (DatasetException e) {
-            try {
-                DatasetExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), DatasetExceptionResponse.class);
-                throw new AppException(body.getCode(), "Dataset Service: " + body.getReason(), body.getMessage());
-            } catch (HttpResponseBodyParsingException e1) {
-                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                        "Failed to parse error from Dataset Service");
-            }
-        }
-
-        FileUploadLocationAWSImpl fileUploadProperties = response.getStorageLocation();
+        String userEmail = this.headers.getUserEmail();
+        Instant now = Instant.now(Clock.systemUTC());
 
         try {
             return SignedUrl.builder()
-                            .uri(fileUploadProperties.getSignedUrl())
-                            .url(fileUploadProperties.getSignedUrl().toURL())
-                            .fileSource(fileUploadProperties.getUnsignedUrl() + fileUploadProperties.getSignedUploadFileName())
-                            .connectionString(fileUploadProperties.getConnectionString())
-                            .createdBy(headers.getUserEmail())
-                            .createdAt(fileUploadProperties.getCreatedAt())
+                            .uri(fileUploadLocation.getSignedUrl())
+                            .url(fileUploadLocation.getSignedUrl().toURL())
+                            .fileSource(fileUploadLocation.getUnsignedUrl() + fileUploadLocation.getSignedUploadFileName())
+                            .connectionString(fileUploadLocation.getConnectionString())
+                            .createdBy(userEmail)
+                            .createdAt(now)
                             .build();
         } catch (MalformedURLException e) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                        "Failed to parse URI into URL for File Signed Url Path");
+                                   HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                                   "Failed to parse URI into URL for File Signed Url Path");
         }
+    }
 
+    @Override
+    public StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionID) {
+        SignedUrl signedUrl = this.createSignedUrl(datasetId, headers.getAuthorization(), partitionID);
 
+        FileDmsUploadLocation dmsLocation = FileDmsUploadLocation.builder()
+                                                                 .signedUrl(signedUrl.getUrl().toString())
+                                                                 .createdBy(signedUrl.getCreatedBy())
+                                                                 .fileSource(signedUrl.getFileSource()).build();
 
+        Map<String, Object> uploadLocation = objectMapper.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+
+        return StorageInstructionsResponse.builder()
+                                          .providerKey(environmentResolver.getProviderKey())
+                                          .storageLocation(uploadLocation)
+                                          .build();
     }
 
     @Override
     public SignedUrl createSignedUrlFileLocation(String unsignedUrl,
-        String authorizationToken, SignedUrlParameters signedUrlParameters) {
-
+                                                 String authorizationToken,
+                                                 SignedUrlParameters signedUrlParameters) {
         throw new NotImplementedException("Not implemented. Use createSignedUrl(fileId, ...) instead");
     }
-
 }

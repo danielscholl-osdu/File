@@ -14,14 +14,13 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -29,7 +28,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GetDatasetRetrievalInstructionsResponse {
- 
+
     private List<DatasetRetrievalDeliveryItem> delivery;
-    
 }

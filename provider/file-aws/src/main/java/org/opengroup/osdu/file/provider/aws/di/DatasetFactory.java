@@ -43,5 +43,4 @@ public class DatasetFactory implements IDatasetFactory {
 
         return new DatasetService(this.config, new HttpClient(), headers, bodyMapper);
     }
-    
 }

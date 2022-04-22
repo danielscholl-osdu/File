@@ -14,9 +14,6 @@
 
 package org.opengroup.osdu.file.provider.aws.di;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.opengroup.osdu.core.common.http.HttpClient;
 import org.opengroup.osdu.core.common.http.HttpRequest;
 import org.opengroup.osdu.core.common.http.HttpResponse;
@@ -32,6 +29,8 @@ import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetRegistryRequest;
 import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetStorageInstructionsResponse;
 
+import java.util.ArrayList;
+
 public class DatasetService implements IDatasetService {
 
     private final String rootUrl;
@@ -39,41 +38,33 @@ public class DatasetService implements IDatasetService {
     private final DpsHeaders headers;
     private final HttpResponseBodyMapper bodyMapper;
 
-    public DatasetService(DatasetAPIConfig config, HttpClient httpClient, DpsHeaders headers,
-            HttpResponseBodyMapper bodyMapper) {
-
+    public DatasetService(DatasetAPIConfig config, HttpClient httpClient, DpsHeaders headers, HttpResponseBodyMapper bodyMapper) {
         this.rootUrl = config.getRootUrl();
         this.httpClient = httpClient;
         this.headers = headers;
         this.bodyMapper = bodyMapper;
+
         if (config.apiKey != null) {
             headers.put("AppKey", config.getApiKey());
         }
-
     }
 
     @Override
-    public GetCreateUpdateDatasetRegistryResponse getDatasetRegistry(String datasetRegistryId) throws DatasetException { 
-
+    public GetCreateUpdateDatasetRegistryResponse getDatasetRegistry(String datasetRegistryId) throws DatasetException {
         ArrayList<String> datasetRegistryIds = new ArrayList<>();
         datasetRegistryIds.add(datasetRegistryId);
 
         return getDatasetRegistry(datasetRegistryIds);
-    
     }
 
     @Override
-    public GetCreateUpdateDatasetRegistryResponse getDatasetRegistry(ArrayList<String> datasetRegistryIds) throws DatasetException { 
-
+    public GetCreateUpdateDatasetRegistryResponse getDatasetRegistry(ArrayList<String> datasetRegistryIds) throws DatasetException {
         String url = this.createUrl("/getDatasetRegistry");
 
         GetDatasetRegistryRequest request = new GetDatasetRegistryRequest(datasetRegistryIds);
+        HttpResponse result = this.httpClient.send(HttpRequest.post(request).url(url).headers(this.headers.getHeaders()).build());
 
-        HttpResponse result = this.httpClient.send(
-                HttpRequest.post(request).url(url).headers(this.headers.getHeaders()).build());
-        
         return this.getResult(result, GetCreateUpdateDatasetRegistryResponse.class);
-    
     }
 
     @Override
@@ -86,51 +77,41 @@ public class DatasetService implements IDatasetService {
 
     @Override
     public GetCreateUpdateDatasetRegistryResponse registerDataset(ArrayList<Record> datasetRecords) throws DatasetException {
-        
         String url = this.createUrl("/registerDataset");
+
         CreateDatasetRegistryRequest request = new CreateDatasetRegistryRequest(datasetRecords);
-        
-        HttpResponse result = this.httpClient.send(
-                HttpRequest.put(request).url(url).headers(this.headers.getHeaders()).build());
-        
+        HttpResponse result = this.httpClient.send(HttpRequest.put(request).url(url).headers(this.headers.getHeaders()).build());
+
         return this.getResult(result, GetCreateUpdateDatasetRegistryResponse.class);
     }
 
     @Override
     public GetDatasetStorageInstructionsResponse getStorageInstructions(String kindSubType) throws DatasetException {
-        
         String url = this.createUrl("/getStorageInstructions");
         // HashMap<String, String> queryParams = new HashMap<>();
         // queryParams.put("kindSubType", kindSubType);
 
         String urlWithQuery = String.format("%s?kindSubType=%s", url, kindSubType);
+        HttpResponse result = this.httpClient.send(HttpRequest.get().url(urlWithQuery).headers(this.headers.getHeaders()).build());
 
-        HttpResponse result = this.httpClient
-                .send(HttpRequest.get().url(urlWithQuery).headers(this.headers.getHeaders()).build());
-        
         return this.getResult(result, GetDatasetStorageInstructionsResponse.class);
     }
 
     @Override
     public GetDatasetRetrievalInstructionsResponse getRetrievalInstructions(String datasetRegistryId) throws DatasetException {
-        
         ArrayList<String> datasetRegistryIds = new ArrayList<>();
         datasetRegistryIds.add(datasetRegistryId);
 
         return getRetrievalInstructions(datasetRegistryIds);
-
     }
 
     @Override
     public GetDatasetRetrievalInstructionsResponse getRetrievalInstructions(ArrayList<String> datasetRegistryIds) throws DatasetException {
-        
         String url = this.createUrl("/getRetrievalInstructions");
 
         GetDatasetRegistryRequest request = new GetDatasetRegistryRequest(datasetRegistryIds);
-        
-        HttpResponse result = this.httpClient.send(
-                HttpRequest.post(request).url(url).headers(this.headers.getHeaders()).build());
-        
+        HttpResponse result = this.httpClient.send(HttpRequest.post(request).url(url).headers(this.headers.getHeaders()).build());
+
         return this.getResult(result, GetDatasetRetrievalInstructionsResponse.class);
     }
 
@@ -139,8 +120,7 @@ public class DatasetService implements IDatasetService {
             try {
                 return bodyMapper.parseBody(result, type);
             } catch (HttpResponseBodyParsingException e) {
-                throw new DatasetException("Error parsing Dataset Service response. Check the inner HttpResponse for more info.",
-                        result);
+                throw new DatasetException("Error parsing Dataset Service response. Check the inner HttpResponse for more info.", result);
             }
         } else {
             throw this.generateException(result);
@@ -148,12 +128,10 @@ public class DatasetService implements IDatasetService {
     }
 
     private DatasetException generateException(HttpResponse result) {
-        return new DatasetException(
-                "Error making request to Dataset service. Check the inner HttpResponse for more info.", result);
+        return new DatasetException("Error making request to Dataset service. Check the inner HttpResponse for more info.", result);
     }
 
     private String createUrl(String pathAndQuery) {
-        return UrlNormalizationUtil.normalizeStringUrl(this.rootUrl,pathAndQuery);
+        return UrlNormalizationUtil.normalizeStringUrl(this.rootUrl, pathAndQuery);
     }
-    
 }

@@ -14,8 +14,6 @@
 
 package org.opengroup.osdu.file.provider.aws.config;
 
-import org.opengroup.osdu.core.aws.ssm.ParameterStorePropertySource;
-import org.opengroup.osdu.core.aws.ssm.SSMConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,49 +22,40 @@ import javax.annotation.PostConstruct;
 @Component
 public class AwsServiceConfig {
 
-  @Value("${aws.s3.signed-url.expiration-days}")
-  public int s3SignedUrlExpirationTimeInDays;
+    @Value("${aws.region}")
+    public String amazonRegion;
 
-  @Value("${aws.region}")
-  public String amazonRegion;
+    @Value("${aws.resource.prefix}")
+    public String environment;
 
-  @Value("${aws.resource.prefix}")
-  public String environment;
+    @Value("${aws.s3.signed-url.expiration-days}")
+    public int s3SignedUrlExpirationTimeInDays;
 
-  @Value("${aws.s3.endpoint}")
-  public String s3Endpoint;
-  
-  @Value("${aws.s3.datafiles.path-prefix}")
-  public String s3DataFilePathPrefix;
+    @Value("${aws.s3.endpoint}")
+    public String s3Endpoint;
 
-  @Value("${aws.s3.datafiles.staging-bucket}")
-  public String s3DataFileStagingBucket;
+    @Value("${aws.s3.datafiles.path-prefix}")
+    public String s3DataFilePathPrefix;
 
-  @Value("${aws.s3.datafiles.persistent-bucket}")
-  public String s3DataFilesPersistentBucket;
+    @Value("${aws.s3.datafiles.staging-bucket}")
+    public String s3DataFileStagingBucket;
 
-  // @Value("${aws.sts-role-arn}")
-  // public String stsRoleArn;
+    @Value("${aws.s3.datafiles.persistent-bucket}")
+    public String s3DataFilesPersistentBucket;
 
-  @Value("${aws.ssm}")
-  public Boolean ssmEnabled;
+    @Value("${aws.ssm}")
+    public Boolean ssmEnabled;
 
-  @PostConstruct
-  public void init() {
-    if (ssmEnabled) {
-      SSMConfig ssmConfig = new SSMConfig();
-      ParameterStorePropertySource ssm = ssmConfig.amazonSSM();
-      // String parameter = "/osdu/" + environment + "/file/iam/arn";
-      try {
-        // stsRoleArn = ssm.getProperty(parameter).toString();
-      } catch (Exception e) {
-        Exception r = e;
-      }
+    @Value("${aws.iam.s3-access-credentials-role.ssm.relativePath}")
+    public String stsRoleIamParameterRelativePath;
+
+    @Value("${aws.s3.fileBucket.ssm.relativePath}")
+    public String bucketParameterRelativePath;
+
+    @PostConstruct
+    public void init() {
+        if (s3SignedUrlExpirationTimeInDays == 0) {
+            s3SignedUrlExpirationTimeInDays = 1; //default to 1 if unset
+        }
     }
-
-    if (s3SignedUrlExpirationTimeInDays == 0) {
-      s3SignedUrlExpirationTimeInDays = 1; //default to 1 if unset
-    }
-  }
-
 }

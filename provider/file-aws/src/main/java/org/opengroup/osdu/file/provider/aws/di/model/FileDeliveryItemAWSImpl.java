@@ -16,13 +16,14 @@ package org.opengroup.osdu.file.provider.aws.di.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 
 import java.net.URI;
 import java.time.Instant;
 import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @NoArgsConstructor
@@ -51,5 +52,4 @@ public class FileDeliveryItemAWSImpl implements FileDeliveryItem {
 
     @JsonProperty("region")
     private String region;
-
 }

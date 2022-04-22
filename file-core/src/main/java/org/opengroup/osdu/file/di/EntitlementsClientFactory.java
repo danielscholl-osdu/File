@@ -33,7 +33,7 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 
   final EntitlementProperties entitlementProperties;
 
-	private final HttpResponseBodyMapper bodyMapper;
+  private final HttpResponseBodyMapper bodyMapper;
 
   @Override
   protected IEntitlementsFactory createInstance() {

@@ -15,7 +15,6 @@
 package org.opengroup.osdu.file.provider.aws.di.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Data;
 
 @Data
@@ -25,5 +24,4 @@ public class DatasetExceptionResponse {
     private Integer code;
     private String reason;
     private String message;
-    
 }

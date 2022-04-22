@@ -16,7 +16,7 @@ package org.opengroup.osdu.file.provider.aws.di;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.jetbrains.annotations.NotNull;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
@@ -25,25 +25,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatasetClientFactory extends AbstractFactoryBean<IDatasetFactory> {
 
-	private final ObjectMapper objectMapper = new ObjectMapper()
-					.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
-					.findAndRegisterModules();
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+    private final ObjectMapper objectMapper = new ObjectMapper()
+        .configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false)
+        .findAndRegisterModules();
+    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
-	@Value("${dataset.api}")
-	private String DATASET_API;
+    @Value("${dataset.api}")
+    private String DATASET_API;
 
-	@Override
-	public Class<?> getObjectType() {
-		return IDatasetFactory.class;
-	}
+    @Override
+    public Class<?> getObjectType() {
+        return IDatasetFactory.class;
+    }
 
-	@Override
-	protected IDatasetFactory createInstance() throws Exception {
-		return new DatasetFactory(DatasetAPIConfig
-				.builder()
-				.rootUrl(DATASET_API)				
-				.build(),
-				bodyMapper);
-	}
+    @Override
+    protected @NotNull IDatasetFactory createInstance() {
+        DatasetAPIConfig datasetAPIConfig = DatasetAPIConfig
+            .builder()
+            .rootUrl(DATASET_API)
+            .build();
+        return new DatasetFactory(datasetAPIConfig, bodyMapper);
+    }
 }

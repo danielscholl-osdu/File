@@ -12,28 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.di.model;
+package org.opengroup.osdu.file.provider.aws.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.core.common.model.storage.validation.ValidNotNullCollection;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class CreateDatasetRegistryRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+public class FileDmsUploadLocation {
 
-    @ValidNotNullCollection
-    @NotEmpty(message = DatasetRegistryValidationDoc.MISSING_DATASET_REGISTRIES_ARRAY)
-    @Size(min = 1, max = 20, message = DatasetRegistryValidationDoc.MAX_DATASET_REGISTRIES_EXCEEDED)
-    //TODO: need to support pagination of storage record get and then extend this back to 500
-    private List<Record> datasetRegistries;
+    private String signedUrl;
+    private String fileSource;
+    private String createdBy;
 }

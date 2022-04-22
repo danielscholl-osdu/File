@@ -16,8 +16,8 @@ package org.opengroup.osdu.file.provider.aws.mapper;
 
 import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.file.LocationResponse;
-import org.opengroup.osdu.file.provider.interfaces.ILocationMapper;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.provider.interfaces.ILocationMapper;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -28,18 +28,18 @@ import java.util.Map;
 @Primary
 public class AwsLocationMapper implements ILocationMapper {
 
-  private static final String SIGNED_URL_KEY = "SignedURL";
-  private static final String FILE_KIND_SOURCE = "FileSource";
+    private static final String SIGNED_URL_KEY = "SignedURL";
+    private static final String FILE_KIND_SOURCE = "FileSource";
 
-  @Override
-  public LocationResponse buildLocationResponse(SignedUrl signedUrl, FileLocation fileLocation) {
+    @Override
+    public LocationResponse buildLocationResponse(SignedUrl signedUrl, FileLocation fileLocation) {
 
-    Map<String, String> location = new HashMap<>();
-    location.put(SIGNED_URL_KEY, signedUrl.getUrl().toString());
-    location.put(FILE_KIND_SOURCE, signedUrl.getFileSource());
-    return LocationResponse.builder()
-        .fileID(fileLocation.getFileID())
-        .location(location)
-        .build();
-  }
+        Map<String, String> location = new HashMap<>();
+        location.put(SIGNED_URL_KEY, signedUrl.getUrl().toString());
+        location.put(FILE_KIND_SOURCE, signedUrl.getFileSource());
+        return LocationResponse.builder()
+                               .fileID(fileLocation.getFileID())
+                               .location(location)
+                               .build();
+    }
 }

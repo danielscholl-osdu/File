@@ -16,34 +16,35 @@ package org.opengroup.osdu.file.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.*;
-import java.util.Date;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.aws.util.ExpirationDateHelper;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @ExtendWith(MockitoExtension.class)
 public class ExpirationDateHelperTest {
 
-  @Test
-  public void should_offset_time_by_duration() throws ParseException {
-    ExpirationDateHelper CUT = new ExpirationDateHelper();
-    long offSetInDays = 1;
-    DateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    Date start = dt.parse("01/01/2020 00:00:00");
-    Duration span = Duration.ofDays(offSetInDays);
+    @Test
+    public void should_offset_time_by_duration() throws ParseException {
+        ExpirationDateHelper CUT = new ExpirationDateHelper();
+        long offSetInDays = 1;
+        DateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date start = dt.parse("01/01/2020 00:00:00");
+        Duration span = Duration.ofDays(offSetInDays);
 
-    LocalDateTime newDateTime =  start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime newDateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-    Date actual = CUT.getExpiration(start.toInstant(), span);
-    Date expected = dt.parse("02/01/2020 00:00:00");
+        Date actual = CUT.getExpiration(start.toInstant(), span);
+        Date expected = dt.parse("02/01/2020 00:00:00");
 
-    assertEquals(expected, actual);
-  }
-
+        assertEquals(expected, actual);
+    }
 }

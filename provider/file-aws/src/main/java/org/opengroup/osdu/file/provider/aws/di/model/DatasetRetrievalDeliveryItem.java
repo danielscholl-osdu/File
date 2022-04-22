@@ -15,7 +15,6 @@
 package org.opengroup.osdu.file.provider.aws.di.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,9 +28,6 @@ import lombok.NoArgsConstructor;
 public class DatasetRetrievalDeliveryItem {
 
     private String datasetRegistryId;
-
     private FileDeliveryItemAWSImpl retrievalProperties;
-
     private String providerKey;
-
 }

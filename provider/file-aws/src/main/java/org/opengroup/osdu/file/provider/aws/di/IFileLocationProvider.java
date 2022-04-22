@@ -12,30 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.util;
+package org.opengroup.osdu.file.provider.aws.di;
 
-import org.springframework.stereotype.Component;
+import org.opengroup.osdu.file.provider.aws.model.FileUploadLocation;
 
-import java.time.Instant;
+public interface IFileLocationProvider {
 
-// TODO (dfisenko@amazon.com): delete it
-/**
- * A non static implementation of the Instant.now() method that's unit testable.
- */
-@Component
-public class InstantHelper {
+    FileUploadLocation getUploadLocation(String fileID, String partitionID);
 
-    @Deprecated
-    public Instant getCurrentInstant() {
-        return Instant.now();
-    }
-
-    /**
-     * Returns Instant.now()
-     *
-     * @return Instant
-     */
-    public Instant now() {
-        return Instant.now();
-    }
+    String getProviderKey();
 }

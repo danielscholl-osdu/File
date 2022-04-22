@@ -14,14 +14,12 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opengroup.osdu.file.provider.aws.model.FileUploadLocation;
 
 @Data
 @Builder
@@ -29,8 +27,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GetDatasetStorageInstructionsResponse {
-    
-    private FileUploadLocationAWSImpl storageLocation;
 
-    private String providerKey;   
+    private FileUploadLocation storageLocation;
+
+    private String providerKey;
 }

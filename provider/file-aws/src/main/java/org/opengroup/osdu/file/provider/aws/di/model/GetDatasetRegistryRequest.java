@@ -16,19 +16,16 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
-import java.util.List;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import org.opengroup.osdu.core.common.model.storage.validation.ValidNotNullCollection;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opengroup.osdu.core.common.model.storage.validation.ValidNotNullCollection;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -36,10 +33,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GetDatasetRegistryRequest {
-    
-    @ValidNotNullCollection
-	@NotEmpty(message = DatasetRegistryValidationDoc.MISSING_DATASET_REGISTRIES_ARRAY)
-	@Size(min = 1, max = 20, message = DatasetRegistryValidationDoc.MAX_DATASET_REGISTRIES_EXCEEDED) //TODO: need to support pagination of storage record get and then extend this back to 500
-    private List<String> datasetRegistryIds;
 
+    @ValidNotNullCollection
+    @NotEmpty(message = DatasetRegistryValidationDoc.MISSING_DATASET_REGISTRIES_ARRAY)
+    @Size(min = 1, max = 20, message = DatasetRegistryValidationDoc.MAX_DATASET_REGISTRIES_EXCEEDED)
+    //TODO: need to support pagination of storage record get and then extend this back to 500
+    private List<String> datasetRegistryIds;
 }

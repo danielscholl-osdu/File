@@ -12,30 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.util;
+package org.opengroup.osdu.file.provider.aws.cache;
 
+import org.opengroup.osdu.core.aws.s3.util.S3ClientConnectionInfo;
+import org.opengroup.osdu.core.common.cache.VmCache;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
-// TODO (dfisenko@amazon.com): delete it
-/**
- * A non static implementation of the Instant.now() method that's unit testable.
- */
+@Lazy
 @Component
-public class InstantHelper {
+public class S3ConnectionInfoCache extends VmCache<String, S3ClientConnectionInfo> {
 
-    @Deprecated
-    public Instant getCurrentInstant() {
-        return Instant.now();
-    }
-
-    /**
-     * Returns Instant.now()
-     *
-     * @return Instant
-     */
-    public Instant now() {
-        return Instant.now();
+    public S3ConnectionInfoCache() {
+        super(3_600, 1_000);
     }
 }

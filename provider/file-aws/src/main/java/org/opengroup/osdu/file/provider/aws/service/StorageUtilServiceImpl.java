@@ -22,16 +22,13 @@ public class StorageUtilServiceImpl implements IStorageUtilService {
 
     @Override
     public String getStagingLocation(String relativePath, String partitionID) {
-       
         //right now, all AWS impl expect a full S3 path
         return relativePath;
     }
 
     @Override
     public String getPersistentLocation(String relativePath, String partitionID) {
-       
         //right now, all AWS impl expect a full S3 path. We are not moving files to a 'persistent' location, return original location.
         return relativePath;
     }
-    
 }

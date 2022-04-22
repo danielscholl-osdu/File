@@ -14,12 +14,12 @@
 
 package org.opengroup.osdu.file.provider.aws.di;
 
-import java.util.ArrayList;
-
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.provider.aws.di.model.GetCreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.file.provider.aws.di.model.GetDatasetStorageInstructionsResponse;
+
+import java.util.ArrayList;
 
 public interface IDatasetService {
 
@@ -36,5 +36,4 @@ public interface IDatasetService {
     GetDatasetRetrievalInstructionsResponse getRetrievalInstructions(String datasetRegistryId) throws DatasetException;
 
     GetDatasetRetrievalInstructionsResponse getRetrievalInstructions(ArrayList<String> datasetRegistryIds) throws DatasetException;
-
 }

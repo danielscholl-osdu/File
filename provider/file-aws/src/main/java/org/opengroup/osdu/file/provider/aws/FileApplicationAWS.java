@@ -14,7 +14,6 @@
 
 package org.opengroup.osdu.file.provider.aws;
 
-import org.opengroup.osdu.file.service.FileDeliveryService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -22,8 +21,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file", exclude = { FileDeliveryService.class})
 public class FileApplicationAWS {
 
-  public static void main(String[] args) {
-    SpringApplication.run(FileApplicationAWS.class, args);
-  }
-
+    public static void main(String[] args) {
+        SpringApplication.run(FileApplicationAWS.class, args);
+    }
 }

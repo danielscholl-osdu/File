@@ -12,38 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.di.model;
-
-import java.net.URI;
-import java.time.Instant;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+package org.opengroup.osdu.file.provider.aws.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
+
+import java.net.URI;
+import java.time.Instant;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class FileUploadLocationAWSImpl implements FileUploadLocation {
+public class FileUploadLocation {
 
-    private String unsignedUrl;    
-
+    private String unsignedUrl;
     private URI signedUrl;
-
     private String signedUploadFileName;
-
-    private Instant createdAt;    
-
+    private Instant createdAt;
     private String connectionString;
-
     private TemporaryCredentials credentials;
-
     private String region;
-
-
 }

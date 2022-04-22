@@ -14,6 +14,8 @@
 
 package org.opengroup.osdu.file.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
@@ -23,16 +25,17 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.config.AwsServiceConfig;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
-import org.opengroup.osdu.file.provider.aws.model.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.util.InstantHelper;
-import org.opengroup.osdu.file.provider.aws.util.STSHelper;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.opengroup.osdu.file.provider.aws.util.STSCredentialsHelper;
 
 import java.time.Instant;
 import java.util.Date;
@@ -41,7 +44,7 @@ import java.util.Date;
 public class STSHelperTest {
 
     @InjectMocks
-    private STSHelper CUT;
+    private STSCredentialsHelper CUT;
 
     @Mock
     private AwsServiceConfig awsServiceConfig;
@@ -57,7 +60,7 @@ public class STSHelperTest {
     private S3Location fileLocation = new S3Location("s3://bucket/path/key");
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         awsServiceConfig.amazonRegion = "us-east-1";
     }
 
@@ -72,13 +75,13 @@ public class STSHelperTest {
         Mockito.when(instantHelper.now()).thenReturn(now);
         AssumeRoleResult mockAssumeRoleResult = Mockito.mock(AssumeRoleResult.class);
         Credentials mockCredentials = new Credentials().withAccessKeyId("AccessKeyId")
-                .withSessionToken("SessionToken")
-                .withSecretAccessKey("SecretAccessKey")
-                .withExpiration(expirationDate);
+                                                       .withSessionToken("SessionToken")
+                                                       .withSecretAccessKey("SecretAccessKey")
+                                                       .withExpiration(expirationDate);
         Mockito.when(mockAssumeRoleResult.getCredentials()).thenReturn(mockCredentials);
         Mockito.when(sts.assumeRole(Mockito.any())).thenReturn(mockAssumeRoleResult);
 
-        TemporaryCredentials credentials =  CUT.getGetCredentials(srn, fileLocation, roleArn, user, expirationDate);
+        TemporaryCredentials credentials = CUT.getRetrievalCredentials(fileLocation, roleArn, user, expirationDate);
         ArgumentCaptor<AssumeRoleRequest> requestArgumentCaptor = ArgumentCaptor.forClass(AssumeRoleRequest.class);
         Mockito.verify(sts, Mockito.times(1)).assumeRole(requestArgumentCaptor.capture());
         AssumeRoleRequest assumeRoleRequest = requestArgumentCaptor.getValue();
@@ -105,13 +108,13 @@ public class STSHelperTest {
         Mockito.when(instantHelper.now()).thenReturn(now);
         AssumeRoleResult mockAssumeRoleResult = Mockito.mock(AssumeRoleResult.class);
         Credentials mockCredentials = new Credentials().withAccessKeyId("AccessKeyId")
-                .withSessionToken("SessionToken")
-                .withSecretAccessKey("SecretAccessKey")
-                .withExpiration(expirationDate);
+                                                       .withSessionToken("SessionToken")
+                                                       .withSecretAccessKey("SecretAccessKey")
+                                                       .withExpiration(expirationDate);
         Mockito.when(mockAssumeRoleResult.getCredentials()).thenReturn(mockCredentials);
         Mockito.when(sts.assumeRole(Mockito.any())).thenReturn(mockAssumeRoleResult);
 
-        TemporaryCredentials credentials =  CUT.getGetCredentials(srn, fileLocation, roleArn, user, expirationDate);
+        TemporaryCredentials credentials = CUT.getRetrievalCredentials(fileLocation, roleArn, user, expirationDate);
         ArgumentCaptor<AssumeRoleRequest> requestArgumentCaptor = ArgumentCaptor.forClass(AssumeRoleRequest.class);
         Mockito.verify(sts, Mockito.times(1)).assumeRole(requestArgumentCaptor.capture());
         AssumeRoleRequest assumeRoleRequest = requestArgumentCaptor.getValue();
@@ -129,9 +132,8 @@ public class STSHelperTest {
 
     private String getFirstResourceArn(String policyJson) throws JSONException {
         JSONObject policyObject = new JSONObject(policyJson);
-        String resource = policyObject.getJSONArray("Statement")
-                .getJSONObject(0).getJSONArray("Resource")
-                .getString(0);
-        return resource;
+        return policyObject.getJSONArray("Statement")
+                           .getJSONObject(0).getJSONArray("Resource")
+                           .getString(0);
     }
 }

@@ -14,13 +14,11 @@
 
 package org.opengroup.osdu.file.provider.aws.di;
 
-import org.opengroup.osdu.core.common.model.http.DpsException;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import org.opengroup.osdu.core.common.http.HttpResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.opengroup.osdu.core.common.http.HttpResponse;
+import org.opengroup.osdu.core.common.model.http.DpsException;
 
 @Data
 @EqualsAndHashCode(callSuper = false)

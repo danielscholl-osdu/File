@@ -25,7 +25,7 @@
 // import org.opengroup.osdu.file.model.delivery.SignedUrl;
 // import org.opengroup.osdu.file.provider.aws.config.AwsServiceConfig;
 // import org.opengroup.osdu.file.provider.aws.model.S3Location;
-// import org.opengroup.osdu.file.provider.aws.model.TemporaryCredentials;
+// import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 // import org.opengroup.osdu.file.provider.aws.service.DeliveryStorageServiceImpl;
 // import org.opengroup.osdu.file.provider.aws.util.ExpirationDateHelper;
 // import org.opengroup.osdu.file.provider.aws.util.InstantHelper;
@@ -143,7 +143,7 @@
 //             Date expirationDate = new Date();
 //             Mockito.when(expirationDateHelper.getExpiration(Mockito.any(Instant.class),
 //                     Mockito.any(Duration.class))).thenReturn(expirationDate);
-            
+
 //             awsServiceConfig.init();
 //             CUT.init();
 

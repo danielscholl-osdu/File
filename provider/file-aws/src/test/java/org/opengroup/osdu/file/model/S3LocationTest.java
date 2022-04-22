@@ -15,6 +15,8 @@
 package org.opengroup.osdu.file.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,33 +26,36 @@ import org.opengroup.osdu.file.provider.aws.model.S3Location;
 @ExtendWith(MockitoExtension.class)
 public class S3LocationTest {
 
-  @Test
-  public void should_create_with_validS3URI() {
-    String uri = "s3://bucket/key/file";
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(true, fileLocation.isValid);
-    assertEquals("bucket", fileLocation.bucket);
-    assertEquals( "key/file", fileLocation.key);
-  }
+    @Test
+    public void should_create_with_validS3URI() {
+        String uri = "s3://bucket/key/file";
+        S3Location fileLocation = new S3Location(uri);
 
-  @Test
-  public void should_beInValidState_with_validS3URIbutWithOutKeyPath() {
-    String uri = "s3://bucket";
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(false, fileLocation.isValid);
-  }
+        assertTrue(fileLocation.isValid);
+        assertEquals("bucket", fileLocation.bucket);
+        assertEquals("key/file", fileLocation.key);
+    }
 
-  @Test
-  public void should_beInValidState_with_emptyString() {
-    String uri = "";
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(false, fileLocation.isValid);
-  }
+    @Test
+    public void should_beInValidState_with_validS3URIbutWithOutKeyPath() {
+        String uri = "s3://bucket";
+        S3Location fileLocation = new S3Location(uri);
 
-  @Test
-  public void should_beInValidState_with_null() {
-    String uri = null;
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(false, fileLocation.isValid);
-  }
+        assertFalse(fileLocation.isValid);
+    }
+
+    @Test
+    public void should_beInValidState_with_emptyString() {
+        String uri = "";
+        S3Location fileLocation = new S3Location(uri);
+        assertFalse(fileLocation.isValid);
+    }
+
+    @Test
+    public void should_beInValidState_with_null() {
+        String uri = null;
+
+        S3Location fileLocation = new S3Location(uri);
+        assertFalse(fileLocation.isValid);
+    }
 }

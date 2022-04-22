@@ -17,12 +17,11 @@ package org.opengroup.osdu.file.provider.aws.di;
 import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
+@Builder
 public class DatasetAPIConfig {
 
     String rootUrl;
-
     String apiKey;
 
     public static DatasetAPIConfig Default() {

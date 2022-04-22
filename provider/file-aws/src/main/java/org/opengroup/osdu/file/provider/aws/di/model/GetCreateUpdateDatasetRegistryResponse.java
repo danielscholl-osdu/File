@@ -14,16 +14,14 @@
 
 package org.opengroup.osdu.file.provider.aws.di.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import org.opengroup.osdu.core.common.model.storage.Record;
 
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @AllArgsConstructor
@@ -32,6 +30,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GetCreateUpdateDatasetRegistryResponse {
 
-	private List<Record> datasetRegistries;
-
+    private List<Record> datasetRegistries;
 }
