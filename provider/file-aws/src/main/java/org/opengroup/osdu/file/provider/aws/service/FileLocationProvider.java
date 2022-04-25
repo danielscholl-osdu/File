@@ -12,10 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.model.constant;
+package org.opengroup.osdu.file.provider.aws.service;
 
-public final class StorageConstant {
+import org.opengroup.osdu.file.provider.aws.model.FileLocation;
+import org.opengroup.osdu.file.provider.aws.model.S3Location;
 
-    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
-    public static final int AWS_MAX_KEY_LENGTH = 1_024;
+import java.time.Duration;
+
+public interface FileLocationProvider {
+
+    FileLocation getFileLocation(String fileID, String partitionID);
+
+    FileLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration);
+
+    String getProviderKey();
 }

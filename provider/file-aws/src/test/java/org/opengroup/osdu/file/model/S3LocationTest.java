@@ -27,35 +27,42 @@ import org.opengroup.osdu.file.provider.aws.model.S3Location;
 public class S3LocationTest {
 
     @Test
-    public void should_create_with_validS3URI() {
+    public void should_create_with_valid_s_3_uri() {
         String uri = "s3://bucket/key/file";
-        S3Location fileLocation = new S3Location(uri);
+        S3Location fileLocation = S3Location.of(uri);
 
-        assertTrue(fileLocation.isValid);
-        assertEquals("bucket", fileLocation.bucket);
-        assertEquals("key/file", fileLocation.key);
+        assertTrue(fileLocation.isValid());
+        assertEquals("bucket", fileLocation.getBucket());
+        assertEquals("key/file", fileLocation.getKey());
     }
 
     @Test
-    public void should_beInValidState_with_validS3URIbutWithOutKeyPath() {
+    public void should_be_in_valid_state_with_valid_s_3_uri_but_with_out_key_path() {
         String uri = "s3://bucket";
-        S3Location fileLocation = new S3Location(uri);
+        S3Location fileLocation = S3Location.of(uri);
 
-        assertFalse(fileLocation.isValid);
+        assertFalse(fileLocation.isValid());
     }
 
     @Test
-    public void should_beInValidState_with_emptyString() {
+    public void should_be_in_valid_state_with_empty_string() {
         String uri = "";
-        S3Location fileLocation = new S3Location(uri);
-        assertFalse(fileLocation.isValid);
+        S3Location fileLocation = S3Location.of(uri);
+
+        assertFalse(fileLocation.isValid());
     }
 
     @Test
-    public void should_beInValidState_with_null() {
+    public void should_be_in_valid_state_with_null() {
         String uri = null;
 
-        S3Location fileLocation = new S3Location(uri);
-        assertFalse(fileLocation.isValid);
+        S3Location fileLocation = S3Location.of(uri);
+        assertFalse(fileLocation.isValid());
+    }
+
+    @Test
+    public void should_get_correct_string() {
+        assertEquals("s3://bucket/key/file", S3Location.of("s3://bucket/key/file").toString());
+        assertEquals("", S3Location.of(null).toString());
     }
 }

@@ -12,10 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.model.constant;
+package org.opengroup.osdu.file.provider.aws.datamodel.coverter;
 
-public final class StorageConstant {
+import java.util.Date;
 
-    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
-    public static final int AWS_MAX_KEY_LENGTH = 1_024;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
+
+public class DateToEpochTypeConverter implements DynamoDBTypeConverter<Long, Date> {
+
+    @Override
+    public Long convert(Date date) {
+        return date.getTime();
+    }
+
+    @Override
+    public Date unconvert(Long l) {
+        return new Date(l);
+    }
 }

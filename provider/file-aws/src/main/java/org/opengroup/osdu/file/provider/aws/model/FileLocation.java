@@ -12,10 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.model.constant;
+package org.opengroup.osdu.file.provider.aws.model;
 
-public final class StorageConstant {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 
-    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
-    public static final int AWS_MAX_KEY_LENGTH = 1_024;
+import java.net.URI;
+import java.time.Instant;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class FileLocation {
+
+    private String unsignedUrl;
+    private URI signedUrl;
+    private String signedUploadFileName;
+    private Instant createdAt;
+    private String connectionString;
+    private TemporaryCredentials credentials;
 }

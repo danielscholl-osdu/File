@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.file.provider.aws.model.constant;
+package org.opengroup.osdu.file.provider.aws;
 
-public final class StorageConstant {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-    // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
-    public static final int AWS_MAX_KEY_LENGTH = 1_024;
+@SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
+public class FileApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(FileApplication.class, args);
+    }
 }

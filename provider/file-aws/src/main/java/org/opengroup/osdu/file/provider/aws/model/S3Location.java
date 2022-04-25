@@ -14,27 +14,22 @@
 
 package org.opengroup.osdu.file.provider.aws.model;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 public class S3Location {
 
     private static final String UNSIGNED_URL_PREFIX = "s3://";
 
     @Getter
-    @Setter(AccessLevel.PRIVATE)
-    public String bucket;
+    private String bucket;
 
     @Getter
-    @Setter(AccessLevel.PRIVATE)
-    public String key;
+    private String key;
 
     @Getter
-    @Setter(AccessLevel.PRIVATE)
-    public boolean isValid = false;
+    private boolean isValid = false;
 
-    public S3Location(String uri) {
+    private S3Location(String uri) {
         if (uri != null && uri.startsWith(UNSIGNED_URL_PREFIX)) {
             String[] bucketAndKey = uri.substring(UNSIGNED_URL_PREFIX.length()).split("/", 2);
 
@@ -44,5 +39,14 @@ public class S3Location {
                 isValid = true;
             }
         }
+    }
+
+    public static S3Location of(String uri) {
+        return new S3Location(uri);
+    }
+
+    @Override
+    public String toString() {
+        return isValid ? String.format("%s%s/%s", UNSIGNED_URL_PREFIX, bucket, key) : "";
     }
 }
