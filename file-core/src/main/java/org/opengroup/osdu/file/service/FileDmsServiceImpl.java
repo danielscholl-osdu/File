@@ -21,15 +21,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.dms.model.*;
+import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.dms.IDmsService;
-import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
-import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
-import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
-import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
-import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
@@ -43,21 +40,21 @@ import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.inject.Inject;
+import java.util.*;
 
 @Service("FileDmsService")
 @Slf4j
 @RequiredArgsConstructor
 public class FileDmsServiceImpl implements IDmsService {
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   final IStorageService storageService;
   final DpsHeaders headers;
   final DataLakeStorageFactory storageFactory;
   final IStorageUtilService storageUtilService;
   final ICloudStorageOperation cloudStorageOperation;
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Override
   public StorageInstructionsResponse getStorageInstructions() {
@@ -65,7 +62,7 @@ public class FileDmsServiceImpl implements IDmsService {
 
     log.debug("Create the empty blob in bucket. FileID : {}", fileID);
     return storageService.createStorageInstructions(fileID,
-                                                    headers.getPartitionIdWithFallbackToAccountId());
+        headers.getPartitionIdWithFallbackToAccountId());
   }
 
   private String generateFileId() {
@@ -84,11 +81,11 @@ public class FileDmsServiceImpl implements IDmsService {
       return this.storageService.createRetrievalInstructions(fileRetrievalData);
 
     } catch (StorageException storageExc) {
-      final int statusCode = storageExc.getHttpResponse() != null
-          ? storageExc.getHttpResponse().getResponseCode()
-          : 500;
+      final int statusCode = storageExc.getHttpResponse() != null ?
+          storageExc.getHttpResponse().getResponseCode() : 500;
       log.error("Unable to fetch metadata for the datasets", storageExc);
       throw new AppException(statusCode, "Unable to fetch metadata for the datasets", storageExc.getMessage(), storageExc);
+
     }
   }
 
@@ -97,7 +94,7 @@ public class FileDmsServiceImpl implements IDmsService {
     List<FileCopyOperation> copyOperations = new ArrayList<>();
     List<CopyDmsResponse> copyDmsResponseList = new ArrayList<>();
 
-    for (Record datasetSource : datasetSources) {
+    for (Record datasetSource: datasetSources) {
       final String filePath = this.getStorageFilePath(datasetSource);
       String stagingLocation = storageUtilService.getStagingLocation(filePath, headers.getPartitionId());
       String persistentLocation = storageUtilService.getPersistentLocation(filePath, headers.getPartitionId());
@@ -106,45 +103,45 @@ public class FileDmsServiceImpl implements IDmsService {
 
     List<FileCopyOperationResponse> copyResponses = cloudStorageOperation.copyFiles(copyOperations);
 
-    for (int i = 0; i < datasetSources.size(); i++) {
+    for (int i = 0; i< datasetSources.size(); i++) {
       copyDmsResponseList.add(CopyDmsResponse.builder()
-                                             .success(copyResponses.get(i).isSuccess())
-                                             .datasetBlobStoragePath(copyResponses.get(i).getCopyOperation().getDestinationPath())
-                                             .build());
+          .success(copyResponses.get(i).isSuccess())
+          .datasetBlobStoragePath(copyResponses.get(i).getCopyOperation().getDestinationPath())
+          .build());
     }
 
     return copyDmsResponseList;
   }
 
-  private List<FileRetrievalData> buildUnsignedUrls(List<Record> datasetRegistryRecords) {
+  private List<FileRetrievalData> buildUnsignedUrls(List<Record> datasetRegistryRecords){
     List<FileRetrievalData> fileRetrievalDataList = new ArrayList<>();
-    for (Record datasetRegistryRecord : datasetRegistryRecords) {
+    for(Record datasetRegistryRecord : datasetRegistryRecords){
       String cloudStorageFilePath = getStorageFilePath(datasetRegistryRecord);
 
       //reject paths that are not files
       if (cloudStorageFilePath.trim().endsWith("/")) {
         throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Invalid File Path",
-                               "Invalid File Path - Filename cannot contain trailing '/'");
+            "Invalid File Path - Filename cannot contain trailing '/'");
       }
 
       String fileAbsolutePath = storageUtilService.getPersistentLocation(cloudStorageFilePath,
-                                                                         headers.getPartitionId());
+          headers.getPartitionId());
 
       FileRetrievalData fileRetrievalData = FileRetrievalData.builder()
-                                                             .recordId(datasetRegistryRecord.getId())
-                                                             .unsignedUrl(fileAbsolutePath).build();
+          .recordId(datasetRegistryRecord.getId())
+          .unsignedUrl(fileAbsolutePath).build();
 
       fileRetrievalDataList.add(fileRetrievalData);
     }
     return fileRetrievalDataList;
   }
 
-  private String getStorageFilePath(Record datasetRegistryRecord) {
+  private String getStorageFilePath(Record datasetRegistryRecord){
     String storageFilePath;
 
     if (!datasetRegistryRecord.getData().containsKey("DatasetProperties")) {
       throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad Request",
-                             "Dataset Metadata does not contain dataset properties");
+          "Dataset Metadata does not contain dataset properties");
     }
 
     DatasetProperties datasetProperties = OBJECT_MAPPER.convertValue(
@@ -153,17 +150,17 @@ public class FileDmsServiceImpl implements IDmsService {
     FileSourceInfo fileSourceInfo = datasetProperties.getFileSourceInfo();
     if (fileSourceInfo == null) {
       throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad Request",
-                             "File Source Info is missing in the record metadata");
+          "File Source Info is missing in the record metadata");
     }
 
     if (!StringUtils.isEmpty(fileSourceInfo.getFileSource())) {
       storageFilePath = fileSourceInfo.getFileSource();
     } else if (!StringUtils.isEmpty(fileSourceInfo.getPreLoadFilePath())) {
       storageFilePath = fileSourceInfo.getPreLoadFilePath();
-    } else {
+    } else  {
       throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                             "No valid File Path found for File dataset",
-                             "Error finding unsigned path on record for signing");
+          "No valid File Path found for File dataset",
+          "Error finding unsigned path on record for signing");
     }
 
     return storageFilePath;
