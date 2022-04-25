@@ -26,7 +26,7 @@ import org.opengroup.osdu.file.provider.aws.helper.S3ConnectionInfoHelper;
 import org.opengroup.osdu.file.provider.aws.helper.S3Helper;
 import org.opengroup.osdu.file.provider.aws.helper.StsCredentialsHelper;
 import org.opengroup.osdu.file.provider.aws.helper.StsRoleHelper;
-import org.opengroup.osdu.file.provider.aws.model.FileLocation;
+import org.opengroup.osdu.file.provider.aws.model.ProviderLocation;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
 import org.opengroup.osdu.file.provider.aws.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.aws.service.FileLocationProvider;
@@ -78,7 +78,31 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     }
 
     @Override
-    public FileLocation getFileLocation(String fileID, String partitionID) {
+    public ProviderLocation getFileLocation(String fileID, String partitionID) {
+        return getLocationInternal(false, fileID, partitionID);
+    }
+
+    @Override
+    public ProviderLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration) {
+        return getLocationInternal(false, unsignedLocation, fileID, expirationDuration);
+    }
+
+    @Override
+    public ProviderLocation getFileCollectionLocation(String datasetID, String partitionID) {
+        return getLocationInternal(true, datasetID, partitionID);
+    }
+
+    @Override
+    public ProviderLocation getFileCollectionLocation(S3Location unsignedLocation, String datasetID, Duration expirationDuration) {
+        return getLocationInternal(true, unsignedLocation, datasetID, expirationDuration);
+    }
+
+    @Override
+    public String getProviderKey() {
+        return serviceConfig.providerKey;
+    }
+
+    private ProviderLocation getLocationInternal(boolean isCollection, String resourceName, String partitionID) {
         final S3ClientConnectionInfo s3ConnectionInfo = s3ConnectionInfoHelper.getS3ConnectionInfoForPartition(headers,
                                                                                                                serviceConfig.bucketParameterRelativePath);
         if (s3ConnectionInfo == null) {
@@ -98,11 +122,12 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         final S3Location unsignedLocation = S3Location.of(bucketUnsignedUrl);
         final Duration expirationDuration = Duration.ofDays(serviceConfig.s3SignedUrlExpirationTimeInDays);
 
-        return getFileLocation(unsignedLocation, fileID, expirationDuration);
+        return getLocationInternal(isCollection, unsignedLocation, resourceName, expirationDuration);
     }
 
-    @Override
-    public FileLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration) {
+
+    private ProviderLocation getLocationInternal(boolean isCollection, S3Location unsignedLocation, String resourceName,
+                                                 Duration expirationDuration) {
         final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, serviceConfig.stsRoleIamParameterRelativePath);
         if (stsRoleArn == null) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -120,28 +145,28 @@ public class FileLocationProviderImpl implements FileLocationProvider {
             // file will just be called signedUpload and need to be renamed later if it should be meaningful.
             String unsignedUrl = unsignedLocation.toString();
             if (!unsignedUrl.endsWith("/")) {
-                unsignedUrl += "/";
+                unsignedUrl += "/"; // need to add '/' to the end of the URL for both: files and collections.
             }
-            final S3Location s3LocationForSignedUpload = S3Location.of(unsignedUrl + fileID);
+
+            String urlForSignedUpload = unsignedUrl + resourceName;
+            if (isCollection) {
+                urlForSignedUpload += "/"; // '/' needs to be added at the end of the URL for collection.
+            }
+
+            final S3Location s3LocationForSignedUpload = S3Location.of(urlForSignedUpload);
             final URL s3SignedUrl = S3Helper.generatePresignedUrl(s3LocationForSignedUpload, HttpMethod.PUT, expiration, credentials);
 
-            return FileLocation.builder()
-                               .unsignedUrl(unsignedLocation.toString())
-                               .signedUrl(new URI(s3SignedUrl.toString()))
-                               .signedUploadFileName(fileID)
-                               .credentials(credentials)
-                               .connectionString(credentials.toConnectionString())
-                               .createdAt(Instant.now())
-                               .build();
-
+            return ProviderLocation.builder()
+                                   .unsignedUrl(unsignedUrl)
+                                   .signedUrl(new URI(s3SignedUrl.toString()))
+                                   .locationSource(s3LocationForSignedUpload.toString())
+                                   .credentials(credentials)
+                                   .connectionString(credentials.toConnectionString())
+                                   .createdAt(Instant.now())
+                                   .build();
         } catch (URISyntaxException e) {
             log.error("There was an error generating the URI.", e);
             throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
         }
-    }
-
-    @Override
-    public String getProviderKey() {
-        return serviceConfig.providerKey;
     }
 }

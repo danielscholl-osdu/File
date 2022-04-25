@@ -27,11 +27,11 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileLocation {
+public class ProviderLocation {
 
     private String unsignedUrl;
     private URI signedUrl;
-    private String signedUploadFileName;
+    private String locationSource;
     private Instant createdAt;
     private String connectionString;
     private TemporaryCredentials credentials;

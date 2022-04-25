@@ -14,16 +14,20 @@
 
 package org.opengroup.osdu.file.provider.aws.service;
 
-import org.opengroup.osdu.file.provider.aws.model.FileLocation;
+import org.opengroup.osdu.file.provider.aws.model.ProviderLocation;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
 
 import java.time.Duration;
 
 public interface FileLocationProvider {
 
-    FileLocation getFileLocation(String fileID, String partitionID);
+    ProviderLocation getFileLocation(String fileID, String partitionID);
 
-    FileLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration);
+    ProviderLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration);
+
+    ProviderLocation getFileCollectionLocation(String datasetID, String partitionID);
+
+    ProviderLocation getFileCollectionLocation(S3Location unsignedLocation, String datasetID, Duration expirationDuration);
 
     String getProviderKey();
 }
