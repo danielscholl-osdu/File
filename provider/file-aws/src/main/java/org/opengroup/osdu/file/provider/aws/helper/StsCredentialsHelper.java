@@ -65,7 +65,9 @@ public class StsCredentialsHelper {
         String roleSessionName = String.format("%s_%s", user, now.toEpochMilli());
 
         long duration = ((expiration.getTime() - now.toEpochMilli()) / 1_000);
-        duration = duration > MAX_DURATION_IN_SECONDS ? MAX_DURATION_IN_SECONDS : duration;
+        if (duration > MAX_DURATION_IN_SECONDS) {
+            duration = MAX_DURATION_IN_SECONDS;
+        }
 
         AssumeRoleRequest roleRequest = new AssumeRoleRequest()
                                             .withRoleArn(roleArn)

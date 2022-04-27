@@ -18,7 +18,9 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import lombok.RequiredArgsConstructor;
+import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
+import org.opengroup.osdu.core.aws.ssm.SSMConfig;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.status.Message;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -40,10 +43,10 @@ public class StatusEventPublisherImpl implements IEventPublisher {
 
     @Autowired
     public StatusEventPublisherImpl(ProviderConfigurationBag providerConfigurationBag) {
-//        AmazonSNSConfig snsConfig = new AmazonSNSConfig(providerConfigurationBag.amazonSnsRegion);
-//        snsClient = snsConfig.AmazonSNS();
-//        SSMConfig ssmConfig = new SSMConfig();
-//        amazonSnsTopic = Objects.requireNonNull(ssmConfig.amazonSSM().getProperty(providerConfigurationBag.snsTopicArn)).toString();
+        AmazonSNSConfig snsConfig = new AmazonSNSConfig(providerConfigurationBag.amazonSnsRegion);
+        snsClient = snsConfig.AmazonSNS();
+        SSMConfig ssmConfig = new SSMConfig();
+        amazonSnsTopic = Objects.requireNonNull(ssmConfig.amazonSSM().getProperty(providerConfigurationBag.snsTopicArn)).toString();
     }
 
     @Override
