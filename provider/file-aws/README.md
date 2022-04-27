@@ -36,7 +36,6 @@ The environment variables need to be tied to the `FileApplicationAWS.java` file 
 | `CACHE_CLUSTER_KEY`           | `SecretClusterKeyValue`                                           | yes      |                                                                                        | yes        |
 | `AWS_ROLE_ARN`                | `IAM service role`                                                | yes      |                                                                                        | yes        |
 | `AWS_WEB_IDENTITY_TOKEN_FILE` | `/path/to/secret/token/file`                                      | yes      |                                                                                        | yes        |
-| `file-sns-topic-arn`          | `sns:topic:arn`                                                   | yes      | ARN of the SNS topic to publish messages to                                            | no         |
 
 ### Run Locally
 

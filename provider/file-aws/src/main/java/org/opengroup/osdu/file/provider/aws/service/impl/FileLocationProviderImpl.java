@@ -20,7 +20,7 @@ import org.opengroup.osdu.core.aws.s3.util.S3ClientConnectionInfo;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
-import org.opengroup.osdu.file.provider.aws.config.ServiceConfig;
+import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.helper.ExpirationDateHelper;
 import org.opengroup.osdu.file.provider.aws.helper.S3ConnectionInfoHelper;
 import org.opengroup.osdu.file.provider.aws.helper.S3Helper;
@@ -49,22 +49,24 @@ import java.util.Date;
 @RequestScope
 public class FileLocationProviderImpl implements FileLocationProvider {
 
+    private static final String PROVIDER_KEY = "AWS_S3";
+
     private static final SecureRandom random = new SecureRandom();
     private static final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
 
     private final DpsHeaders headers;
-    private final ServiceConfig serviceConfig;
+    private final ProviderConfigurationBag providerConfigurationBag;
     private final StsRoleHelper stsRoleHelper;
     private final StsCredentialsHelper stsCredentialsHelper;
     private final S3ConnectionInfoHelper s3ConnectionInfoHelper;
 
     @Autowired
-    public FileLocationProviderImpl(ServiceConfig serviceConfig,
+    public FileLocationProviderImpl(ProviderConfigurationBag providerConfigurationBag,
                                     StsCredentialsHelper stsCredentialsHelper,
                                     StsRoleHelper stsRoleHelper,
                                     S3ConnectionInfoHelper s3ConnectionInfoHelper,
                                     DpsHeaders headers) {
-        this.serviceConfig = serviceConfig;
+        this.providerConfigurationBag = providerConfigurationBag;
         this.stsCredentialsHelper = stsCredentialsHelper;
         this.stsRoleHelper = stsRoleHelper;
         this.s3ConnectionInfoHelper = s3ConnectionInfoHelper;
@@ -99,12 +101,12 @@ public class FileLocationProviderImpl implements FileLocationProvider {
 
     @Override
     public String getProviderKey() {
-        return serviceConfig.providerKey;
+        return PROVIDER_KEY;
     }
 
     private ProviderLocation getLocationInternal(boolean isCollection, String resourceName, String partitionID) {
         final S3ClientConnectionInfo s3ConnectionInfo = s3ConnectionInfoHelper.getS3ConnectionInfoForPartition(headers,
-                                                                                                               serviceConfig.bucketParameterRelativePath);
+                                                                                                               providerConfigurationBag.bucketParameterRelativePath);
         if (s3ConnectionInfo == null) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                                    HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
@@ -120,7 +122,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
 
         final String bucketUnsignedUrl = String.format("s3://%s/%s/", s3ConnectionInfo.getBucketName(), objectKey);
         final S3Location unsignedLocation = S3Location.of(bucketUnsignedUrl);
-        final Duration expirationDuration = Duration.ofDays(serviceConfig.s3SignedUrlExpirationTimeInDays);
+        final Duration expirationDuration = Duration.ofDays(providerConfigurationBag.s3SignedUrlExpirationTimeInDays);
 
         return getLocationInternal(isCollection, unsignedLocation, resourceName, expirationDuration);
     }
@@ -128,7 +130,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
 
     private ProviderLocation getLocationInternal(boolean isCollection, S3Location unsignedLocation, String resourceName,
                                                  Duration expirationDuration) {
-        final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, serviceConfig.stsRoleIamParameterRelativePath);
+        final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
         if (stsRoleArn == null) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                                    HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),

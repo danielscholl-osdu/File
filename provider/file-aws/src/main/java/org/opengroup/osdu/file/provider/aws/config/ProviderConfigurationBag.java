@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 @Component
-public class ServiceConfig {
+public class ProviderConfigurationBag {
 
     @Value("${aws.region}")
     public String amazonRegion;
@@ -60,9 +60,6 @@ public class ServiceConfig {
 
     @Value("${aws.dynamodb.fileLocationRepositoryTable.ssm.relativePath}")
     public String fileLocationTableParameterRelativePath;
-
-    @Value("${PROVIDER_KEY}")
-    public String providerKey;
 
     @PostConstruct
     public void init() {

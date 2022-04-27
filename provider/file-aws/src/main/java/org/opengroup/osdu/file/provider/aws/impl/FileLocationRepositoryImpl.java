@@ -16,7 +16,6 @@ package org.opengroup.osdu.file.provider.aws.impl;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperFactory;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
@@ -27,7 +26,7 @@ import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.exception.OsduException;
-import org.opengroup.osdu.file.provider.aws.config.ServiceConfig;
+import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.datamodel.entity.FileLocationDoc;
 import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,19 +48,20 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
     private static final String FIND_ALL_FILTER_EXPRESSION = "dataPartitionId = :partitionId AND createdAt BETWEEN :startDate and :endDate AND createdBy = :user";
     private final DpsHeaders headers;
     private final DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory;
-    private final ServiceConfig serviceConfig;
+    private final ProviderConfigurationBag providerConfigurationBag;
 
     @Autowired
     public FileLocationRepositoryImpl(DpsHeaders headers,
                                       DynamoDBQueryHelperFactory dynamoDBQueryHelperFactory,
-                                      ServiceConfig serviceConfig) {
+                                      ProviderConfigurationBag providerConfigurationBag) {
         this.headers = headers;
         this.dynamoDBQueryHelperFactory = dynamoDBQueryHelperFactory;
-        this.serviceConfig = serviceConfig;
+        this.providerConfigurationBag = providerConfigurationBag;
     }
 
     private DynamoDBQueryHelperV2 getFileLocationQueryHelper() {
-        return dynamoDBQueryHelperFactory.getQueryHelperForPartition(headers, serviceConfig.fileLocationTableParameterRelativePath);
+        return dynamoDBQueryHelperFactory.getQueryHelperForPartition(headers,
+                                                                     providerConfigurationBag.fileLocationTableParameterRelativePath);
     }
 
     @Override

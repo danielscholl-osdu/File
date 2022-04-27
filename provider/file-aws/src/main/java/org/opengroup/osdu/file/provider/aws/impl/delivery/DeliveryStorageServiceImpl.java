@@ -22,8 +22,8 @@ import org.opengroup.osdu.file.model.delivery.SignedUrl;
 import org.opengroup.osdu.file.provider.interfaces.delivery.IDeliveryStorageService;
 import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class DeliveryStorageServiceImpl implements IDeliveryStorageService {
 

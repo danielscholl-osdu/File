@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
-import org.opengroup.osdu.file.provider.aws.config.ServiceConfig;
+import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.helper.StsCredentialsHelper;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -50,14 +50,14 @@ public class StsHelperTest {
     private StsCredentialsHelper stsCredentialsHelper;
 
     @Mock
-    private ServiceConfig serviceConfig;
+    private ProviderConfigurationBag providerConfigurationBag;
     @Mock
     private AWSSecurityTokenService securityTokenService;
 
     @BeforeEach
     public void setUp() {
-        serviceConfig.amazonRegion = "us-east-1";
-        stsCredentialsHelper = new StsCredentialsHelper(serviceConfig);
+        providerConfigurationBag.amazonRegion = "us-east-1";
+        stsCredentialsHelper = new StsCredentialsHelper(providerConfigurationBag);
 
         ReflectionTestUtils.setField(stsCredentialsHelper, "securityTokenService", securityTokenService);
     }

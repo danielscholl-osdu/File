@@ -25,8 +25,7 @@
 
 # fi
 
-if [ -n $USE_SELF_SIGNED_SSL_CERT ];
-then
+if [ -n $USE_SELF_SIGNED_SSL_CERT ]; then
     mkdir -p $SSL_KEY_STORE_DIR
     pushd $SSL_KEY_STORE_DIR
     keytool -genkeypair -alias $SSL_KEY_ALIAS -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore $SSL_KEY_STORE_NAME -validity 3650 -keypass $SSL_KEY_PASSWORD -storepass $SSL_KEY_PASSWORD -dname "CN=localhost, OU=AWS, O=Energy, L=Houston, ST=TX, C=US"

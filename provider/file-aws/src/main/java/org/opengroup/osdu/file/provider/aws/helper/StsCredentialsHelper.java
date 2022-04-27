@@ -25,7 +25,7 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.Credentials;
 import org.opengroup.osdu.core.aws.sts.STSConfig;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
-import org.opengroup.osdu.file.provider.aws.config.ServiceConfig;
+import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,8 +43,8 @@ public class StsCredentialsHelper {
     private final AWSSecurityTokenService securityTokenService;
 
     @Autowired
-    public StsCredentialsHelper(ServiceConfig serviceConfig) {
-        final STSConfig config = new STSConfig(serviceConfig.amazonRegion);
+    public StsCredentialsHelper(ProviderConfigurationBag providerConfigurationBag) {
+        final STSConfig config = new STSConfig(providerConfigurationBag.amazonRegion);
         this.securityTokenService = config.amazonSTS();
     }
 
