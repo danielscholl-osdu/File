@@ -123,7 +123,7 @@ class StorageServiceImplTest {
     then(signedUrl).satisfies(url -> {
       then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
       then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
-      then(url.getCreatedAt()).isBefore(now());
+      then(url.getCreatedAt()).isBeforeOrEqualTo(now());
       then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
     });
 
