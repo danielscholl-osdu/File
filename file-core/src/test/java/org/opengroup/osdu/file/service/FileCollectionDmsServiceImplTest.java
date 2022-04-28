@@ -15,30 +15,31 @@
  */
 package org.opengroup.osdu.file.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
+import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
 import org.opengroup.osdu.file.model.filecollection.DatasetProperties;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageUtilService;
-import org.opengroup.osdu.file.provider.interfaces.IStorageService;
-import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageFactory;
 import org.opengroup.osdu.file.service.storage.DataLakeStorageService;
 import org.opengroup.osdu.file.service.storage.StorageException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -50,19 +51,25 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.opengroup.osdu.file.TestUtils.PARTITION;
 
 @ExtendWith(MockitoExtension.class)
 public class FileCollectionDmsServiceImplTest {
-
   private static final String SIGNED_URL = "signedUrl";
   private static final String TEST_SIGNED_URL= "testSignedUrl";
   private static final String FILE_COLLECTION_SOURCE = "fileCollectionSource";
   private static final String AZURE = "azure";
+  private static final String STAGING_LOCATION = "staging-location";
+  private static final String PERSISTENT_LOCATION = "persistent-location";
+  private static final String DATA_PARTITION_ID = "opendes";
   private static final String TEST_DATASET_ID = "opendes:dataset--File.Generic:foo-bar";
   private static final String TEST_FILE_COLLECTION_SOURCE = "osdu-user-1641762126717";
   private static final String TEST_UNSIGNED_URL = "https://datalakestore/fileSystemName/osdu-user-1641762126717";
@@ -83,7 +90,19 @@ public class FileCollectionDmsServiceImplTest {
   IFileCollectionStorageUtilService storageUtilService;
 
   @Mock
+  StorageException storageException;
+
+  @Mock
   DataLakeStorageService dataLakeStorageService;
+
+  @Mock
+  List<DatasetCopyOperation> datasetCopyOperations;
+
+  @Mock
+  DatasetCopyOperation datasetCopyOperation;
+
+  @Mock
+  HttpResponse httpResponse;
 
   @InjectMocks
   FileCollectionDmsServiceImpl fileCollectionDmsService;
@@ -149,6 +168,80 @@ public class FileCollectionDmsServiceImplTest {
     }
   }
 
+  @Test
+  void getRetrievalInstructionsStorageExceptionInDataLakeStorageGetRecords() throws Exception {
+    RetrievalInstructionsRequest testRequest = new RetrievalInstructionsRequest();
+    testRequest.getDatasetRegistryIds().add(TEST_DATASET_ID);
+
+    when(storageFactory.create(headers)).thenReturn(dataLakeStorageService);
+    when(dataLakeStorageService.getRecords(eq(testRequest.getDatasetRegistryIds()))).thenThrow(storageException);
+    when(storageException.getHttpResponse()).thenReturn(httpResponse);
+    when(httpResponse.getResponseCode()).thenReturn(500);
+    when(storageException.getMessage()).thenReturn("exception");
+
+    AppException exception = assertThrows(AppException.class, () -> {
+      fileCollectionDmsService.getRetrievalInstructions(testRequest);
+    });
+
+    Assertions.assertNotNull(exception);
+    Assertions.assertEquals(500, exception.getError().getCode());
+    Assertions.assertEquals("Unable to fetch metadata for the datasets", exception.getError().getReason());
+    Assertions.assertEquals("exception", exception.getError().getMessage());
+
+    verify(storageFactory, times(1)).create(headers);
+    verify(dataLakeStorageService, times(1)).getRecords(eq(testRequest.getDatasetRegistryIds()));
+    verify(storageException, times(2)).getHttpResponse();
+    verify(storageException, times(2)).getMessage();
+    verify(httpResponse, times(1)).getResponseCode();
+
+  }
+
+  @Test
+  public void copyDatasetsToPersistentLocationSuccess() {
+
+    List<Record> records = new ArrayList<>();
+    addTestRecord(records);
+
+    when(datasetCopyOperations.get(0)).thenReturn(datasetCopyOperation);
+    when(datasetCopyOperation.isSuccess()).thenReturn(true);
+    when(cloudStorageOperation.copyDirectories(any())).thenReturn(datasetCopyOperations);
+    when(headers.getPartitionId()).thenReturn(DATA_PARTITION_ID);
+    when(storageUtilService.getStagingLocation(TEST_FILE_COLLECTION_SOURCE, DATA_PARTITION_ID)).thenReturn(STAGING_LOCATION);
+    when(storageUtilService.getPersistentLocation(TEST_FILE_COLLECTION_SOURCE, DATA_PARTITION_ID)).thenReturn(PERSISTENT_LOCATION);
+
+    List<CopyDmsResponse> result = fileCollectionDmsService.copyDatasetsToPersistentLocation(records);
+
+    Assertions.assertNotNull(result);
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertTrue(result.get(0).isSuccess());
+    Assertions.assertEquals(TEST_FILE_COLLECTION_SOURCE, result.get(0).getDatasetBlobStoragePath());
+
+    verify(storageUtilService, times(1)).getPersistentLocation(TEST_FILE_COLLECTION_SOURCE, DATA_PARTITION_ID);
+    verify(storageUtilService, times(1)).getStagingLocation(TEST_FILE_COLLECTION_SOURCE, DATA_PARTITION_ID);
+    verify(headers, times(2)).getPartitionId();
+    verify(cloudStorageOperation, times(1)).copyDirectories(any());
+    verify(datasetCopyOperations, times(1)).get(0);
+    verify(datasetCopyOperation, times(1)).isSuccess();
+
+  }
+
+  @Test
+  public void copyDatasetsToPersistentLocationAppException() {
+
+    List<Record> records = new ArrayList<>();
+    addTestRecordNoDataSetProperty(records);
+
+    AppException exception = assertThrows(AppException.class, () -> {
+      fileCollectionDmsService.copyDatasetsToPersistentLocation(records);
+    });
+
+    Assertions.assertNotNull(exception);
+    Assertions.assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, exception.getError().getCode());
+    Assertions.assertEquals("Bad Request", exception.getError().getReason());
+    Assertions.assertEquals("Dataset Metadata does not contain dataset properties", exception.getError().getMessage());
+
+  }
+
   private RetrievalInstructionsRequest prepareRetrievalInstructionsRequest() throws StorageException {
     RetrievalInstructionsRequest  testRequest= new RetrievalInstructionsRequest();
     testRequest.getDatasetRegistryIds().add(TEST_DATASET_ID);
@@ -197,6 +290,16 @@ public class FileCollectionDmsServiceImplTest {
         .providerKey("AZURE").datasets(datasets).build();
 
     return actualResponse;
+  }
+
+  private void addTestRecordNoDataSetProperty(List<Record> records) {
+    Record record = new Record();
+    record.setId(TEST_DATASET_ID);
+
+    Map<String, Object> data = new HashMap<>();
+    record.setData(data);
+
+    records.add(record);
   }
 
   private void addTestRecord(List<Record> records) {

@@ -17,23 +17,29 @@
 
 package org.opengroup.osdu.file.logging;
 
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AuditLoggerTest {
 
   @Mock
@@ -47,51 +53,68 @@ public class AuditLoggerTest {
 
   private List<String> resources;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    when(this.headers.getUserEmail()).thenReturn("test_user@email.com");
+    when(headers.getUserEmail()).thenReturn("test_user@email.com");
     resources = Collections.singletonList("resources");
   }
 
   @Test
   public void should_writeReadFileLocationSuccessEvent() {
-    this.sut.readFileLocationSuccess(this.resources);
 
-    verify(this.log, times(1)).audit(any());
+    sut.readFileLocationSuccess(resources);
+    verify(log, times(1)).audit(any());
   }
 
   @Test
   public void should_writeReadFileLocationFailureEvent() {
-    this.sut.readFileLocationSuccess(this.resources);
+    sut.readFileLocationSuccess(resources);
 
-    verify(this.log, times(1)).audit(any());
+    verify(log, times(1)).audit(any());
   }
 
   @Test
   public void should_writeReadFileListSuccessEvent() {
-    this.sut.readFileListSuccess(this.resources);
+    sut.readFileListSuccess(resources);
 
-    verify(this.log, times(1)).audit(any());
+    verify(log, times(1)).audit(any());
   }
 
   @Test
   public void should_writeReadFileListFailureEvent() {
-    this.sut.readFileListFailure(this.resources);
+    sut.readFileListFailure(resources);
 
-    verify(this.log, times(1)).audit(any());
+    verify(log, times(1)).audit(any());
   }
 
   @Test
   public void should_writeCreateLocationSuccessEvent() {
-    this.sut.createLocationSuccess(this.resources);
+    sut.createLocationSuccess(resources);
 
-    verify(this.log, times(1)).audit(any());
+    verify(log, times(1)).audit(any());
   }
 
   @Test
   public void should_writeCreateLocationFailureEvent() {
-    this.sut.createLocationFailure(this.resources);
+    sut.createLocationFailure(resources);
 
-    verify(this.log, times(1)).audit(any());
+    verify(log, times(1)).audit(any());
+  }
+
+  @Test
+  public void should_writeCreateLocationFailureEventFailure() {
+    when(headers.getUserEmail()).thenReturn(null);
+
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+      sut.createLocationFailure(resources);
+    });
+    assertNotNull(exception);
+    assertEquals("User not provided for audit events.", exception.getMessage());
+  }
+
+  @Test
+  public void should_writeReadFileLocationFailure() {
+    sut.readFileLocationFailure(resources);
+    verify(log, times(1)).audit(any());
   }
 }
