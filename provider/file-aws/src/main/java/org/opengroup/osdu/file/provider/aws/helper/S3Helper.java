@@ -38,7 +38,7 @@ public class S3Helper {
                                            HttpMethod httpMethod,
                                            Date expiration,
                                            TemporaryCredentials credentials) throws SdkClientException {
-        final AmazonS3 s3 = generateS3ClientWithCredentials(location.getBucket(), credentials);
+        final AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
         final GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(location.getBucket(),
                                                                                                         location.getKey(),
                                                                                                         httpMethod)
@@ -48,7 +48,7 @@ public class S3Helper {
     }
 
     public static boolean doesObjectExist(S3Location location, TemporaryCredentials credentials) {
-        AmazonS3 s3 = generateS3ClientWithCredentials(location.getBucket(), credentials);
+        AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
         try {
             return s3.doesObjectExist(location.getBucket(), location.getKey());
         } catch (AmazonServiceException exception) {
@@ -56,7 +56,7 @@ public class S3Helper {
         }
     }
 
-    private static AmazonS3 generateS3ClientWithCredentials(String bucket, TemporaryCredentials credentials) {
+    private static AmazonS3 generateClientWithCredentials(String bucket, TemporaryCredentials credentials) {
         final String region = getBucketRegion(bucket, credentials);
 
         return AmazonS3ClientBuilder.standard()
