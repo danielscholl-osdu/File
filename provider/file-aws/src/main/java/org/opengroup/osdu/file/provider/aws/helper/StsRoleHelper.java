@@ -104,7 +104,7 @@ public class StsRoleHelper {
     }
 
     public StsIamInfo getStsIamInfoFromSSM(String tenantSSMPrefix, String ssmRelativePath) {
-        String ssmPath = URI.create(String.format("%s/%s", tenantSSMPrefix, ssmRelativePath) + '/')
+        String ssmPath = URI.create(String.format("%s/%s/", tenantSSMPrefix, ssmRelativePath))
                             .normalize()
                             .toString();
 

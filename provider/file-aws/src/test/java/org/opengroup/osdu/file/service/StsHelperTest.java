@@ -63,15 +63,11 @@ public class StsHelperTest {
     }
 
     @Test
-    public void should_get_folder_credentials_for_single_file_types() throws JSONException {
-        String srn = "opendes:doc:a6d1cc3605e649d1a01575be868412c7";
+    public void shouldGetFolderCredentialsForSingleFileTypes() throws JSONException {
         String expectedArn = "arn:aws:s3:::bucket";
         Instant now = Instant.now();
-        String expectedRoleSessionName = String.format("%s_%s", user, now.toEpochMilli());
         Date expirationDate = Date.from(now.plusSeconds(3600));
 
-        // TODO (dfisenko@amazon.com): deal with a wrapper
-        //Mockito.when(Instant.now()).thenReturn(now);
         AssumeRoleResult mockAssumeRoleResult = Mockito.mock(AssumeRoleResult.class);
         Credentials mockCredentials = new Credentials().withAccessKeyId("AccessKeyId")
                                                        .withSessionToken("SessionToken")
@@ -87,7 +83,6 @@ public class StsHelperTest {
         AssumeRoleRequest assumeRoleRequest = requestArgumentCaptor.getValue();
 
         assertEquals(roleArn, assumeRoleRequest.getRoleArn());
-//        assertEquals(expectedRoleSessionName, assumeRoleRequest.getRoleSessionName());
 
         String policyJson = assumeRoleRequest.getPolicy();
         log.info("Policy: {}", policyJson);
@@ -100,14 +95,11 @@ public class StsHelperTest {
     }
 
     @Test
-    public void should_get_folder_credentials_for_ovds_types() throws JSONException {
-        String srn = "opendes:ovds:a6d1cc3605e649d1a01575be868412c7";
+    public void shouldGetFolderCredentialsForOvdsTypes() throws JSONException {
         String expectedArn = "arn:aws:s3:::bucket";
         Instant now = Instant.now();
-        String expectedRoleSessionName = String.format("%s_%s", user, now.toEpochMilli());
         Date expirationDate = Date.from(now.plusSeconds(3600));
 
-//        Mockito.when(instantHelper.now()).thenReturn(now);
         AssumeRoleResult mockAssumeRoleResult = Mockito.mock(AssumeRoleResult.class);
         Credentials mockCredentials = new Credentials().withAccessKeyId("AccessKeyId")
                                                        .withSessionToken("SessionToken")
@@ -122,7 +114,6 @@ public class StsHelperTest {
         AssumeRoleRequest assumeRoleRequest = requestArgumentCaptor.getValue();
 
         assertEquals(roleArn, assumeRoleRequest.getRoleArn());
-        //assertEquals(expectedRoleSessionName, assumeRoleRequest.getRoleSessionName());
 
         String policyJson = assumeRoleRequest.getPolicy();
         log.info("Policy: {}", policyJson);
