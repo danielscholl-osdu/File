@@ -70,7 +70,7 @@ public class StorageServiceImpl implements IStorageService {
     public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
         log.debug("Creating the signed URL for file ID: {}, authorization: {}, partition ID: {}", fileID, authorizationToken, partitionID);
 
-        final ProviderLocation fileLocation = fileLocationProvider.getFileLocation(fileID, partitionID);
+        final ProviderLocation fileLocation = fileLocationProvider.getUploadFileLocation(fileID, partitionID);
 
         return mapTo(fileLocation);
     }
@@ -116,9 +116,7 @@ public class StorageServiceImpl implements IStorageService {
         final RelativeTimeValue relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
         final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
         final Duration expiration = Duration.ofMillis(expireInMillis);
-        final ProviderLocation fileLocation = fileLocationProvider.getFileLocation(unsignedLocation,
-                                                                                   signedUrlParameters.getFileName(),
-                                                                                   expiration);
+        final ProviderLocation fileLocation = fileLocationProvider.getRetrievalFileLocation(unsignedLocation, expiration);
 
         return mapTo(fileLocation);
     }

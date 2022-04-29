@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.file.provider.aws.helper;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
@@ -44,6 +45,15 @@ public class S3Helper {
                                                                             .withExpiration(expiration);
 
         return s3.generatePresignedUrl(generatePresignedUrlRequest);
+    }
+
+    public static boolean doesObjectExist(S3Location location, TemporaryCredentials credentials) {
+        AmazonS3 s3 = generateS3ClientWithCredentials(location.getBucket(), credentials);
+        try {
+            return s3.doesObjectExist(location.getBucket(), location.getKey());
+        } catch (AmazonServiceException exception) {
+            return false;
+        }
     }
 
     private static AmazonS3 generateS3ClientWithCredentials(String bucket, TemporaryCredentials credentials) {

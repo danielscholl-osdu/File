@@ -64,7 +64,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 
     @Override
     public StorageInstructionsResponse createStorageInstructions(String datasetID, String partitionID) {
-        final ProviderLocation fileLocation = fileLocationProvider.getFileCollectionLocation(datasetID, partitionID);
+        final ProviderLocation fileLocation = fileLocationProvider.getFileCollectionUploadLocation(datasetID, partitionID);
 
         FileCollectionDmsStorageLocation dmsLocation = FileCollectionDmsStorageLocation
                                                            .builder()
@@ -105,9 +105,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         final RelativeTimeValue relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
         final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
         final Duration expiration = Duration.ofMillis(expireInMillis);
-        final ProviderLocation fileLocation = fileLocationProvider.getFileCollectionLocation(unsignedLocation,
-                                                                                             signedUrlParameters.getFileName(),
-                                                                                             expiration);
+        final ProviderLocation fileLocation = fileLocationProvider.getFileCollectionRetrievalLocation(unsignedLocation, expiration);
 
         final FileCollectionDmsStorageLocation dmsLocation = FileCollectionDmsStorageLocation
                                                                  .builder()

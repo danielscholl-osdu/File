@@ -14,7 +14,11 @@
 
 package org.opengroup.osdu.file.provider.aws.model;
 
+import com.amazonaws.util.StringUtils;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class S3Location {
 
@@ -29,6 +33,16 @@ public class S3Location {
     @Getter
     private boolean isValid = false;
 
+    public S3Location(String bucket, String key) {
+        if (bucket.startsWith(UNSIGNED_URL_PREFIX)) {
+            throw new IllegalArgumentException("Bucket name should stats with 's3://'");
+        }
+
+        this.bucket = bucket;
+        this.key = key;
+        this.isValid = true;
+    }
+
     private S3Location(String uri) {
         if (uri != null && uri.startsWith(UNSIGNED_URL_PREFIX)) {
             String[] bucketAndKey = uri.substring(UNSIGNED_URL_PREFIX.length()).split("/", 2);
@@ -41,12 +55,77 @@ public class S3Location {
         }
     }
 
+    public static S3Location of(String bucket, String key) {
+        return new S3Location(bucket, key);
+    }
+
     public static S3Location of(String uri) {
         return new S3Location(uri);
+    }
+
+    public static S3LocationBuilder newBuilder() {
+        return new S3LocationBuilder();
+    }
+
+    public boolean isFolder() {
+        return key.endsWith("/");
+    }
+
+    public boolean isFile() {
+        return !isFolder();
     }
 
     @Override
     public String toString() {
         return isValid ? String.format("%s%s/%s", UNSIGNED_URL_PREFIX, bucket, key) : "";
+    }
+
+    public static class S3LocationBuilder {
+
+        private final List<String> path = new ArrayList<>();
+        private boolean isFile = false;
+
+        public S3LocationBuilder withBucket(String bucketName) {
+            final String prefixedName = bucketName.startsWith(UNSIGNED_URL_PREFIX)
+                                        ? bucketName
+                                        : UNSIGNED_URL_PREFIX + bucketName;
+            if (this.path.isEmpty()) {
+                this.path.add(prefixedName);
+            } else {
+                if (!this.path.get(0).startsWith(UNSIGNED_URL_PREFIX)) {
+                    this.path.add(0, prefixedName);
+                } else {
+                    this.path.set(0, prefixedName);
+                }
+            }
+
+            return this;
+        }
+
+        public S3LocationBuilder withFolder(String folderName) {
+            if (!StringUtils.isNullOrEmpty(folderName)) {
+                this.path.add(folderName);
+                this.isFile = false;
+            }
+
+            return this;
+        }
+
+        public S3LocationBuilder withFile(String fileName) {
+            if (!StringUtils.isNullOrEmpty(fileName)) {
+                this.path.add(fileName);
+                this.isFile = true;
+            }
+
+            return this;
+        }
+
+        public S3Location build() {
+            String path = String.join("/", this.path);
+            if (!this.isFile) {
+                path += "/";
+            }
+            return S3Location.of(path);
+        }
     }
 }

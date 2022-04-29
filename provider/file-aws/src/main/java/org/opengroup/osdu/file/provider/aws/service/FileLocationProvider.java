@@ -21,13 +21,13 @@ import java.time.Duration;
 
 public interface FileLocationProvider {
 
-    ProviderLocation getFileLocation(String fileID, String partitionID);
+    ProviderLocation getUploadFileLocation(String fileID, String partitionID);
 
-    ProviderLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration);
+    ProviderLocation getRetrievalFileLocation(S3Location unsignedLocation, Duration expirationDuration);
 
-    ProviderLocation getFileCollectionLocation(String datasetID, String partitionID);
+    ProviderLocation getFileCollectionUploadLocation(String datasetID, String partitionID);
 
-    ProviderLocation getFileCollectionLocation(S3Location unsignedLocation, String datasetID, Duration expirationDuration);
+    ProviderLocation getFileCollectionRetrievalLocation(S3Location unsignedLocation, Duration expirationDuration);
 
     String getProviderKey();
 }

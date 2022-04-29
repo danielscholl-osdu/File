@@ -16,6 +16,7 @@ package org.opengroup.osdu.file.provider.aws.service.impl;
 
 import com.amazonaws.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.opengroup.osdu.core.aws.s3.util.S3ClientConnectionInfo;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -28,6 +29,7 @@ import org.opengroup.osdu.file.provider.aws.helper.StsCredentialsHelper;
 import org.opengroup.osdu.file.provider.aws.helper.StsRoleHelper;
 import org.opengroup.osdu.file.provider.aws.model.ProviderLocation;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
+import org.opengroup.osdu.file.provider.aws.model.S3Location.S3LocationBuilder;
 import org.opengroup.osdu.file.provider.aws.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.aws.service.FileLocationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +40,8 @@ import org.springframework.web.context.annotation.RequestScope;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -49,10 +49,8 @@ import java.util.Date;
 @RequestScope
 public class FileLocationProviderImpl implements FileLocationProvider {
 
+    private static final int RANDOM_KEY_LENGTH = 32;
     private static final String PROVIDER_KEY = "AWS_S3";
-
-    private static final SecureRandom random = new SecureRandom();
-    private static final Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
 
     private final DpsHeaders headers;
     private final ProviderConfigurationBag providerConfigurationBag;
@@ -73,30 +71,24 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         this.headers = headers;
     }
 
-    private static String generateUniqueKey() {
-        byte[] buffer = new byte[20];
-        random.nextBytes(buffer);
-        return encoder.encodeToString(buffer);
+    @Override
+    public ProviderLocation getUploadFileLocation(String fileID, String partitionID) {
+        return getUploadLocationInternal(false, fileID, partitionID);
     }
 
     @Override
-    public ProviderLocation getFileLocation(String fileID, String partitionID) {
-        return getLocationInternal(false, fileID, partitionID);
+    public ProviderLocation getRetrievalFileLocation(S3Location unsignedLocation, Duration expirationDuration) {
+        return getRetrievalLocationInternal(false, unsignedLocation, expirationDuration);
     }
 
     @Override
-    public ProviderLocation getFileLocation(S3Location unsignedLocation, String fileID, Duration expirationDuration) {
-        return getLocationInternal(false, unsignedLocation, fileID, expirationDuration);
+    public ProviderLocation getFileCollectionUploadLocation(String datasetID, String partitionID) {
+        return getUploadLocationInternal(true, datasetID, partitionID);
     }
 
     @Override
-    public ProviderLocation getFileCollectionLocation(String datasetID, String partitionID) {
-        return getLocationInternal(true, datasetID, partitionID);
-    }
-
-    @Override
-    public ProviderLocation getFileCollectionLocation(S3Location unsignedLocation, String datasetID, Duration expirationDuration) {
-        return getLocationInternal(true, unsignedLocation, datasetID, expirationDuration);
+    public ProviderLocation getFileCollectionRetrievalLocation(S3Location unsignedLocation, Duration expirationDuration) {
+        return getRetrievalLocationInternal(true, unsignedLocation, expirationDuration);
     }
 
     @Override
@@ -104,7 +96,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         return PROVIDER_KEY;
     }
 
-    private ProviderLocation getLocationInternal(boolean isCollection, String resourceName, String partitionID) {
+    private ProviderLocation getUploadLocationInternal(boolean isCollection, String resourceName, String partitionID) {
         final S3ClientConnectionInfo s3ConnectionInfo = s3ConnectionInfoHelper.getS3ConnectionInfoForPartition(headers,
                                                                                                                providerConfigurationBag.bucketParameterRelativePath);
         if (s3ConnectionInfo == null) {
@@ -113,23 +105,71 @@ public class FileLocationProviderImpl implements FileLocationProvider {
                                    "Unable to get connection info for S3 bucket");
         }
 
-        final String objectKey = String.format("%s/%s", partitionID, generateUniqueKey());
+        final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
+        if (stsRoleArn == null) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                   HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                                   "Unable to get RoleArn to assume using STS for bucket access");
+        }
+
+        final S3LocationBuilder s3LocationBuilder = S3Location.newBuilder();
+        s3LocationBuilder.withBucket(s3ConnectionInfo.getBucketName())
+                         .withFolder(partitionID)
+                         .withFolder(RandomStringUtils.randomAlphanumeric(RANDOM_KEY_LENGTH));
+
+        final Duration expirationDuration = Duration.ofDays(providerConfigurationBag.s3SignedUrlExpirationTimeInDays);
+        final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
+        final S3Location unsignedLocation = s3LocationBuilder.build();
+
+        final String objectKey = unsignedLocation.getKey();
         if (objectKey.length() > StorageConstant.AWS_MAX_KEY_LENGTH) {
             String errorMessage = String.format("The maximum object key length is %s characters, but got %s",
                                                 StorageConstant.AWS_MAX_KEY_LENGTH, objectKey.length());
             throw new IllegalArgumentException(errorMessage);
         }
 
-        final String bucketUnsignedUrl = String.format("s3://%s/%s/", s3ConnectionInfo.getBucketName(), objectKey);
-        final S3Location unsignedLocation = S3Location.of(bucketUnsignedUrl);
-        final Duration expirationDuration = Duration.ofDays(providerConfigurationBag.s3SignedUrlExpirationTimeInDays);
+        final TemporaryCredentials credentials = stsCredentialsHelper.getUploadCredentials(unsignedLocation, stsRoleArn,
+                                                                                           headers.getUserEmail(),
+                                                                                           expiration);
 
-        return getLocationInternal(isCollection, unsignedLocation, resourceName, expirationDuration);
+        if (isCollection) {
+            s3LocationBuilder.withFolder(resourceName);
+        } else {
+            s3LocationBuilder.withFile(resourceName);
+        }
+
+        try {
+            final S3Location s3LocationForSignedUpload = s3LocationBuilder.build();
+            final URL s3SignedUrl = S3Helper.generatePresignedUrl(s3LocationForSignedUpload, HttpMethod.PUT, expiration, credentials);
+
+            return ProviderLocation.builder()
+                                   .unsignedUrl(unsignedLocation.toString())
+                                   .signedUrl(new URI(s3SignedUrl.toString()))
+                                   .locationSource(s3LocationForSignedUpload.toString())
+                                   .credentials(credentials)
+                                   .connectionString(credentials.toConnectionString())
+                                   .createdAt(Instant.now())
+                                   .build();
+        } catch (URISyntaxException e) {
+            log.error("There was an error generating the URI.", e);
+            throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
+        }
     }
 
+    private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration) {
+        if (!unsignedLocation.isValid()) {
+            throw new AppException(HttpStatus.BAD_REQUEST.value(),
+                                   "Malformed URL",
+                                   "Unsigned URL invalid, needs to be full S3 path");
+        }
 
-    private ProviderLocation getLocationInternal(boolean isCollection, S3Location unsignedLocation, String resourceName,
-                                                 Duration expirationDuration) {
+        if ((isCollection && unsignedLocation.isFile()) || (!isCollection && unsignedLocation.isFolder())) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                   "Invalid S3 Object Key",
+                                   String.format("Invalid S3 Object Key - %s", isCollection ? "Object Key should contain trailing '/'"
+                                                                                            : "Object Key cannot contain trailing '/'"));
+        }
+
         final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
         if (stsRoleArn == null) {
             throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -138,30 +178,23 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         }
 
         final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
-        final TemporaryCredentials credentials = stsCredentialsHelper.getUploadCredentials(unsignedLocation, stsRoleArn,
-                                                                                           headers.getUserEmail(),
-                                                                                           expiration);
+        final TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(unsignedLocation, stsRoleArn,
+                                                                                              headers.getUserEmail(),
+                                                                                              expiration);
+
+        if (!S3Helper.doesObjectExist(unsignedLocation, credentials)) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                   "Invalid File Path",
+                                   "Invalid File Path - File not found at specified S3 path");
+        }
 
         try {
-            // Signed urls only support a single file. If user chooses to use the signedURL approach,
-            // file will just be called signedUpload and need to be renamed later if it should be meaningful.
-            String unsignedUrl = unsignedLocation.toString();
-            if (!unsignedUrl.endsWith("/")) {
-                unsignedUrl += "/"; // need to add '/' to the end of the URL for both: files and collections.
-            }
-
-            String urlForSignedUpload = unsignedUrl + resourceName;
-            if (isCollection) {
-                urlForSignedUpload += "/"; // '/' needs to be added at the end of the URL for collection.
-            }
-
-            final S3Location s3LocationForSignedUpload = S3Location.of(urlForSignedUpload);
-            final URL s3SignedUrl = S3Helper.generatePresignedUrl(s3LocationForSignedUpload, HttpMethod.PUT, expiration, credentials);
+            final URL s3SignedUrl = S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials);
 
             return ProviderLocation.builder()
-                                   .unsignedUrl(unsignedUrl)
+                                   .unsignedUrl(unsignedLocation.toString())
                                    .signedUrl(new URI(s3SignedUrl.toString()))
-                                   .locationSource(s3LocationForSignedUpload.toString())
+                                   .locationSource(unsignedLocation.toString())
                                    .credentials(credentials)
                                    .connectionString(credentials.toConnectionString())
                                    .createdAt(Instant.now())

@@ -25,7 +25,7 @@ import java.util.Date;
 public class ExpirationDateHelper {
 
     /**
-     * Adds the timespan to the Local date and returns a Date object of that time
+     * Adds the timespan to the Local date and returns a Date object of that time.
      *
      * @param date     the start date
      * @param timeSpan a length of time to calculate the future date

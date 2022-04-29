@@ -33,7 +33,7 @@ import java.util.Date;
 public class ExpirationDateHelperTest {
 
     @Test
-    public void should_offset_time_by_duration() throws ParseException {
+    public void shouldOffsetTimeByDuration() throws ParseException {
         long offSetInDays = 1;
         DateFormat dt = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date start = dt.parse("01/01/2020 00:00:00");
