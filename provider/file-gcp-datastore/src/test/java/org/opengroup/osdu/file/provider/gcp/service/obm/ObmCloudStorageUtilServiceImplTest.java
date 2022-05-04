@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2021-2022 Google LLC
+ * Copyright 2021-2022 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
 import org.opengroup.osdu.file.provider.gcp.util.obm.ObmStorageUtil;
 
@@ -61,7 +61,7 @@ public class ObmCloudStorageUtilServiceImplTest {
   private TenantInfo tenantInfo;
 
   @Mock
-  private TenantFactory tenantFactory;
+  private ITenantFactory tenantFactory;
 
   @Mock
   EnvironmentResolver environmentResolver;
