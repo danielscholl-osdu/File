@@ -21,7 +21,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
@@ -79,7 +83,8 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
   public StorageInstructionsResponse createStorageInstructions(String datasetId,
       String partitionID) {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionID);
-    String stagingBucket = obmStorageUtil.getStagingBucket(tenantInfo.getProjectId());
+    String stagingBucket = obmStorageUtil.getStagingBucket(tenantInfo.getProjectId(),
+        tenantInfo.getName());
     SignedUrl signedUrl = this.createSignedUrl(datasetId, partitionID, stagingBucket);
 
     Map<String, Object> signingOptions = collectionStorageUtilRepository.createSigningOptions(
@@ -92,7 +97,8 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
         .fileCollectionSource(signedUrl.getFileSource()).build();
 
     Map<String, Object> uploadLocation = objectMapper.convertValue(dmsLocation,
-        new TypeReference<Map<String, Object>>() {});
+        new TypeReference<Map<String, Object>>() {
+        });
 
     return StorageInstructionsResponse.builder()
         .providerKey(environmentResolver.getProviderKey())
@@ -118,12 +124,12 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
             .createdBy(signedUrl.getCreatedBy()).build();
 
         Map<String, Object> downloadLocation = objectMapper.convertValue(dmsLocation,
-            new TypeReference<Map<String, Object>>() {});
+            new TypeReference<Map<String, Object>>() {
+            });
         retrievalPropertiesList.add(downloadLocation);
       }
 
-      Map<String, Object> retrievalProperties = new HashMap<String, Object>()
-      {{
+      Map<String, Object> retrievalProperties = new HashMap<String, Object>() {{
         put("retrievalPropertiesList", retrievalPropertiesList);
       }};
 
@@ -168,13 +174,15 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
         unsignedUrl.split(environmentResolver.getTransferProtocol(tenantInfo.getDataPartitionId()));
 
     if (gsPathParts.length < 2) {
-      throw new AppException(org.springframework.http.HttpStatus.BAD_REQUEST.value(), "Malformed URL",
+      throw new AppException(org.springframework.http.HttpStatus.BAD_REQUEST.value(),
+          "Malformed URL",
           INVALID_GS_PATH_REASON);
     }
 
     String[] gsObjectKeyParts = gsPathParts[1].split("/");
     if (gsObjectKeyParts.length < 1) {
-      throw new AppException(org.springframework.http.HttpStatus.BAD_REQUEST.value(), "Malformed URL",
+      throw new AppException(org.springframework.http.HttpStatus.BAD_REQUEST.value(),
+          "Malformed URL",
           INVALID_GS_PATH_REASON);
     }
 

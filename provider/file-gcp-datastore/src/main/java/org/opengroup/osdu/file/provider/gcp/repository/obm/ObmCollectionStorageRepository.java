@@ -22,7 +22,6 @@ import static org.opengroup.osdu.file.provider.gcp.util.url.UrlProvider.RESOURCE
 import com.google.cloud.storage.HttpMethod;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -105,7 +104,7 @@ public class ObmCollectionStorageRepository implements IStorageRepository {
   }
 
   private URI getObjectUri(String bucketName, String partitionId) {
-    return getObjectUri(bucketName,"", partitionId);
+    return getObjectUri(bucketName, "", partitionId);
   }
 
   private URI getObjectUri(String bucketName, String filepath, String partitionId) {
