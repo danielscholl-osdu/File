@@ -19,6 +19,7 @@ package org.opengroup.osdu.file.provider.azure.service;
 import com.azure.cosmos.implementation.InternalServerErrorException;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
@@ -29,12 +30,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.ReplaceCamelCase;
-import org.opengroup.osdu.file.exception.ApplicationException;
-import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
@@ -45,13 +48,15 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
-import javax.annotation.Signed;
 import java.net.URI;
 import java.net.URL;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -118,7 +123,7 @@ class StorageServiceImplTest {
     then(signedUrl).satisfies(url -> {
       then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
       then(url.getUri().toString()).matches(TestUtils.AZURE_OBJECT_URI);
-      then(url.getCreatedAt()).isBefore(now());
+      then(url.getCreatedAt()).isBeforeOrEqualTo(now());
       then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
     });
 
@@ -200,17 +205,7 @@ class StorageServiceImplTest {
 
   @Test
   void createSignedUrlFileLocation_ShouldCallGeneratePreSignedURL() {
-    Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
-    Mockito.when(serviceHelper
-        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
-    Mockito.when(serviceHelper
-        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-        .thenReturn(TestUtils.RELATIVE_FILE_PATH);
-    String signedUrlString = getSignedObject().getUrl().toString();
-    doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
-        anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
-
+    prepareMockForCreateSignedUrlFileLocation();
     storageService
         .createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH, TestUtils.AUTHORIZATION_TOKEN,
             new SignedUrlParameters());
@@ -234,6 +229,83 @@ class StorageServiceImplTest {
     storageService.createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH,TestUtils.AUTHORIZATION_TOKEN,new SignedUrlParameters(null, TestUtils.FILE_NAME, TestUtils.FILE_CONTENT_TYPE));
     verify(blobStore,times(1)).generatePreSignedURL(
         anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class), anyString(), anyString());
+  }
+
+  @Test
+  void shouldCreateStorageInstructions() {
+    Mockito.when(blobStoreConfig.getStagingContainer()).thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    when(dpsHeaders.getAuthorization()).thenReturn(TestUtils.AUTHORIZATION_TOKEN);
+    // given
+    SignedObject signedObject = getSignedObject();
+    given(storageRepository.createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), anyString())).willReturn(signedObject);
+
+    // when
+    StorageInstructionsResponse storageInstructions = storageService.createStorageInstructions(
+        TestUtils.FILE_ID, TestUtils.PARTITION);
+
+    // then
+    then(storageInstructions).satisfies(response -> {
+      then(response.getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
+      then(response.getStorageLocation()).isNotEmpty();
+    });
+
+    verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), filenameCaptor.capture());
+    verify(blobStoreConfig).getStagingContainer();
+    verify(dpsHeaders).getAuthorization();
+    then(filenameCaptor.getValue()).matches(".*?");
+  }
+
+  @Test
+  void shouldRetrievalStorageInstructions() {
+    List<FileRetrievalData> fileRetrievalDataList = getFileRetrievalDataList();
+    prepareMockForCreateSignedUrlFileLocation();
+    Mockito.when(dpsHeaders.getAuthorization()).thenReturn(TestUtils.AUTHORIZATION_TOKEN);
+
+    RetrievalInstructionsResponse response = storageService.createRetrievalInstructions(fileRetrievalDataList);
+
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = response.getDatasets();
+    Assertions.assertNotNull(datasetRetrievalProperties.get(0).getRetrievalProperties());
+    Assertions.assertEquals(datasetRetrievalProperties.get(0).getDatasetRegistryId(),
+        fileRetrievalDataList.get(0).getRecordId());
+
+    verify(blobStore,times(1)).generatePreSignedURL(
+        anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class));
+    verify(dpsHeaders).getAuthorization();
+    verifyMockForCreateSignedUrlFileLocation();
+  }
+
+  private void prepareMockForCreateSignedUrlFileLocation() {
+    Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    Mockito.when(serviceHelper
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    Mockito.when(serviceHelper
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+    String signedUrlString = getSignedObject().getUrl().toString();
+    doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
+        anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
+  }
+
+
+  private void verifyMockForCreateSignedUrlFileLocation() {
+    Mockito.verify(dpsHeaders).getPartitionId();
+    Mockito.verify(serviceHelper)
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH);
+    Mockito.verify(serviceHelper)
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH);
+    verify(blobStore).generatePreSignedURL(
+        anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
+  }
+
+  private List<FileRetrievalData> getFileRetrievalDataList() {
+    List<FileRetrievalData> fileRetrievalDataList = new ArrayList<>();
+    FileRetrievalData fileRetrievalData  = FileRetrievalData.builder()
+        .recordId(TestUtils.FILE_RECORD_ID)
+        .unsignedUrl(TestUtils.ABSOLUTE_FILE_PATH)
+        .build();
+    fileRetrievalDataList.add(fileRetrievalData);
+    return fileRetrievalDataList;
   }
 
 

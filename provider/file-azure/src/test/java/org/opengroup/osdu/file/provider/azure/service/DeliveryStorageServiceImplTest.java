@@ -17,8 +17,8 @@
 package org.opengroup.osdu.file.provider.azure.service;
 
 import org.apache.http.HttpStatus;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -69,13 +69,13 @@ public class DeliveryStorageServiceImplTest {
     public void createSignedUrl() throws IOException, URISyntaxException {
         // Arrange
         Date testDate = new Date();
-        when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
+        lenient().when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
         String srn = "srn:file:-965274437";
 
         URL url = new URL("http://testsignedurl.com");
 
         Instant instant = Instant.now();
-        when(instantHelper.getCurrentInstant()).thenReturn(instant);
+        lenient().when(instantHelper.getCurrentInstant()).thenReturn(instant);
 
         SignedUrl expected = new SignedUrl();
         expected.setUri(new URI(url.toString()));
@@ -83,26 +83,26 @@ public class DeliveryStorageServiceImplTest {
         expected.setCreatedAt(instant);
         expected.setConnectionString("");
 
-        when(tokenService.sign(any(String.class))).thenReturn(url.toString());
+        lenient().when(tokenService.sign(any(String.class))).thenReturn(url.toString());
 
         // Act
         SignedUrl actual = CUT.createSignedUrl(srn, unsignedUrl, authorizationToken);
 
         // Assert
-        Assert.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void createSignedUrlForBlob() throws IOException, URISyntaxException {
         // Arrange
         Date testDate = new Date();
-        when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
+        lenient().when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
         String srn = "srn:file:-965274437";
 
         URL url = new URL("http://testsignedurl.com");
 
         Instant instant = Instant.now();
-        when(instantHelper.getCurrentInstant()).thenReturn(instant);
+        lenient().when(instantHelper.getCurrentInstant()).thenReturn(instant);
 
 
         SignedUrl expected = new SignedUrl();
@@ -111,26 +111,26 @@ public class DeliveryStorageServiceImplTest {
         expected.setCreatedAt(instant);
         expected.setConnectionString("");
 
-        when(tokenService.sign(any(String.class))).thenReturn(url.toString());
+        lenient().when(tokenService.sign(any(String.class))).thenReturn(url.toString());
 
         // Act
         SignedUrl actual = CUT.createSignedUrl(srn, unsignedUrl, authorizationToken);
 
         // Assert
-        Assert.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void createSignedUrlForContainer() throws IOException, URISyntaxException {
         // Arrange
         Date testDate = new Date();
-        when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
+        lenient().when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
         String srn = "srn:file/ovds:-965274437";
 
         URL url = new URL("http://testsignedurl.com");
 
         Instant instant = Instant.now();
-        when(instantHelper.getCurrentInstant()).thenReturn(instant);
+        lenient().when(instantHelper.getCurrentInstant()).thenReturn(instant);
 
 
         SignedUrl expected = new SignedUrl();
@@ -139,13 +139,13 @@ public class DeliveryStorageServiceImplTest {
         expected.setCreatedAt(instant);
         expected.setConnectionString("");
 
-        when(tokenService.signContainer(any(String.class))).thenReturn(url.toString());
+        lenient().when(tokenService.signContainer(any(String.class))).thenReturn(url.toString());
 
         // Act
         SignedUrl actual = CUT.createSignedUrl(srn, unsignedUrl, authorizationToken);
 
         // Assert
-        Assert.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -156,7 +156,7 @@ public class DeliveryStorageServiceImplTest {
             String authorizationToken = "testAuthorizationToken";
             String srn = "srn:file/:-965274437";
 
-            when(tokenService.sign(any(String.class))).thenReturn(unsignedUrl);
+            lenient().when(tokenService.sign(any(String.class))).thenReturn(unsignedUrl);
 
             // Act
             CUT.createSignedUrl(srn, unsignedUrl, authorizationToken);
@@ -182,7 +182,7 @@ public class DeliveryStorageServiceImplTest {
             String authorizationToken = "testAuthorizationToken";
             String srn = "srn:file/:-965274437";
 
-            when(tokenService.sign(any(String.class))).thenReturn(unsignedUrl);
+            lenient().when(tokenService.sign(any(String.class))).thenReturn(unsignedUrl);
 
             // Act
             CUT.createSignedUrl(srn, unsignedUrl, authorizationToken);
@@ -204,11 +204,11 @@ public class DeliveryStorageServiceImplTest {
     public void createSignedUrl_unsupportedOperationServiceError_throwsUnsupportedOperationException() {
         try {
             Date testDate = new Date();
-            when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
+            lenient().when(expirationDateHelper.getExpirationDate(anyInt())).thenReturn(testDate);
 
 
             Instant instant = Instant.now();
-            when(instantHelper.getCurrentInstant()).thenReturn(instant);
+            lenient().when(instantHelper.getCurrentInstant()).thenReturn(instant);
 
             // Act
             CUT.createSignedUrl(unsignedUrl, authorizationToken);

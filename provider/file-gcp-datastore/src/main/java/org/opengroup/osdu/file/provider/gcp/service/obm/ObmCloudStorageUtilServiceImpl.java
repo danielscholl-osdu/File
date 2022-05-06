@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2021-2022 Google LLC
+ * Copyright 2021-2022 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ public class ObmCloudStorageUtilServiceImpl implements IStorageUtilService {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
     return environmentResolver.getTransferProtocol(partitionId)
         + obmStorageUtil.getPersistentBucket(
-        tenantInfo.getProjectId()) + relativePath;
+        tenantInfo.getProjectId(), tenantInfo.getName()) + relativePath;
   }
 
   @Override
   public String getStagingLocation(String relativePath, String partitionId) {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
     return environmentResolver.getTransferProtocol(partitionId) + obmStorageUtil.getStagingBucket(
-        tenantInfo.getProjectId()) + relativePath;
+        tenantInfo.getProjectId(), tenantInfo.getName()) + relativePath;
   }
 }

@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
@@ -98,6 +99,8 @@ public class FileCollectionStorageServiceImplTest {
 
     then(response.getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
     then(response.getStorageLocation().get("signedUrl")).isEqualTo(signedObject.getUrl().toString());
+
+    verifyMockForSignedUrl();
   }
 
   @Test
@@ -114,17 +117,53 @@ public class FileCollectionStorageServiceImplTest {
 
   @Test
   public void shouldCreateRetrievalInstructions() {
-    OffsetDateTime offsetDateTime = OffsetDateTime.now();
     URL mockSignedUrl = TestUtils.getAzureObjectUrl(TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.DIRECTORY_NAME);
-    prepareCreateSignedUrlFileLocationMocks(offsetDateTime, mockSignedUrl);
+    prepareCreateSignedUrlFileLocationMocks(mockSignedUrl);
 
     RetrievalInstructionsResponse response = fileCollectionStorageServiceImpl.
         createRetrievalInstructions(getFileRetrievalDataList());
 
     then(response.getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
     then(response.getDatasets().get(0).getDatasetRegistryId()).isEqualTo(TestUtils.FILE_COLLECTION_RECORD_ID);
-
+    verifyCreateSignedUrlFileLocationMocks();
   }
+
+  @Test
+  public void testCreateRetrievalInstructions_EmptyUnsignedUrl_ThrowsIllegalArgumentException() {
+
+    Throwable thrown = catchThrowable(() -> fileCollectionStorageServiceImpl.
+        createRetrievalInstructions(getFileRetrievalDataList_EmptyUnsignedUrl()));
+    then(thrown)
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("invalid received for unsignedURL");
+  }
+
+  @Test
+  public void testCreateRetrievalInstructions_EmptySignedUrl_ThrowsAppException() throws MalformedURLException {
+    OffsetDateTime offsetDateTime = OffsetDateTime.now();
+    when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(any())).thenReturn(offsetDateTime);
+    when(serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH))
+        .thenReturn(TestUtils.STAGING_FILE_SYSTEM_NAME);
+    when(serviceHelper.getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH))
+        .thenReturn(TestUtils.DIRECTORY_NAME);
+    when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    when(dataLakeStore.generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
+        eq(TestUtils.DIRECTORY_NAME), eq(offsetDateTime), any())).thenReturn(TestUtils.EMPTY_STRING);
+
+    Throwable thrown = catchThrowable(() -> fileCollectionStorageServiceImpl.
+        createRetrievalInstructions(getFileRetrievalDataList()));
+    then(thrown)
+        .isInstanceOf(AppException.class)
+        .hasMessageContaining("Could not generate signed URL for directory location");
+
+    verify(expiryTimeUtil).getExpiryTimeInOffsetDateTime(any());
+    verify(serviceHelper).getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    verify(serviceHelper).getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    verify(dpsHeaders).getPartitionId();
+    verify(dataLakeStore).generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
+        eq(TestUtils.DIRECTORY_NAME), eq(offsetDateTime), any());
+  }
+
   private void prepareMockForSignedUrl(SignedObject signedObject) {
     when(dataLakeConfig.getStagingFileSystem()).thenReturn(TestUtils.STAGING_FILE_SYSTEM_NAME);
     when(fileLocationProperties.getUserId()).thenReturn(OSDU_USER);
@@ -132,7 +171,14 @@ public class FileCollectionStorageServiceImplTest {
         .thenReturn(signedObject);
   }
 
-  private void prepareCreateSignedUrlFileLocationMocks(OffsetDateTime offsetDateTime, URL mockSignedUrl) {
+  private void verifyMockForSignedUrl() {
+    verify(dataLakeConfig).getStagingFileSystem();
+    verify(fileLocationProperties).getUserId();
+    verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_FILE_SYSTEM_NAME), anyString());
+  }
+
+  private void prepareCreateSignedUrlFileLocationMocks(URL mockSignedUrl) {
+    OffsetDateTime offsetDateTime = OffsetDateTime.now();
     when(fileLocationProperties.getUserId()).thenReturn(OSDU_USER);
     when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(any())).thenReturn(offsetDateTime);
     when(serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH))
@@ -143,6 +189,17 @@ public class FileCollectionStorageServiceImplTest {
     when(dataLakeStore.generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
         eq(TestUtils.DIRECTORY_NAME), eq(offsetDateTime), any())).thenReturn(mockSignedUrl.toString());
   }
+
+  private void verifyCreateSignedUrlFileLocationMocks() {
+    verify(fileLocationProperties).getUserId();
+    verify(expiryTimeUtil).getExpiryTimeInOffsetDateTime(any());
+    verify(serviceHelper).getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    verify(serviceHelper).getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    verify(dpsHeaders).getPartitionId();
+    verify(dataLakeStore).generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
+        eq(TestUtils.DIRECTORY_NAME), any(), any());
+  }
+
   private SignedObject getSignedObject() {
     String fileSystemName = RandomStringUtils.randomAlphanumeric(4);
     String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);
@@ -163,6 +220,15 @@ public class FileCollectionStorageServiceImplTest {
   private List<FileRetrievalData> getFileRetrievalDataList() {
     List<FileRetrievalData> fileRetrievalDataList = new ArrayList<>();
     fileRetrievalDataList.add(getFileRetrievalData());
+    return fileRetrievalDataList;
+  }
+
+  private List<FileRetrievalData> getFileRetrievalDataList_EmptyUnsignedUrl() {
+    List<FileRetrievalData> fileRetrievalDataList = new ArrayList<>();
+    FileRetrievalData fileRetrievalData = FileRetrievalData.builder()
+        .recordId(TestUtils.FILE_COLLECTION_RECORD_ID)
+        .build();
+    fileRetrievalDataList.add(fileRetrievalData);
     return fileRetrievalDataList;
   }
 

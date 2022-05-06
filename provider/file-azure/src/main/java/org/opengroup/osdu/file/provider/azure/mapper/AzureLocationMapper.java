@@ -27,8 +27,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AzureLocationMapper implements ILocationMapper {
 
-  private static final String SIGNED_URL_KEY = "SignedURL";
-  private static final String FILE_SOURCE = "FileSource";
+  static final String SIGNED_URL_KEY = "SignedURL";
+  static final String FILE_SOURCE = "FileSource";
 
   @Override
   public LocationResponse buildLocationResponse(SignedUrl signedUrl, FileLocation fileLocation) {

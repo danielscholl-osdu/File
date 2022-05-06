@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2021-2022 Google LLC
+ * Copyright 2021-2022 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
 import org.opengroup.osdu.file.provider.gcp.util.obm.ObmStorageUtil;
 
 @ExtendWith(MockitoExtension.class)
-public class ObmCloudStorageUtilServiceImplTest {
+class ObmCloudStorageUtilServiceImplTest {
 
   public static final String EXPECTED_GC_PERSISTENT_PATH =
       "gs://tenant-project-staging-area/some-area/some-folder/filename.txt";
@@ -44,6 +44,7 @@ public class ObmCloudStorageUtilServiceImplTest {
   public static final String EXPECTED_MINIO_STAGING_PATH =
       "https://minio.com/tenant-project-staging-area/some-area/some-folder/filename.txt";
   public static final String TENANT_PROJECT = "tenant-project";
+  public static final String TENANT_NAME = "tenant-name";
   public static final String PARTITION_ID = "partition1";
   public static final String MINIO_COM = "https://minio.com/";
   public static final String PERSISTENT_FILE_PATH = "/some-area/some-folder/filename.txt";
@@ -61,53 +62,59 @@ public class ObmCloudStorageUtilServiceImplTest {
   private TenantInfo tenantInfo;
 
   @Mock
-  private TenantFactory tenantFactory;
+  private ITenantFactory tenantFactory;
 
   @Mock
-  EnvironmentResolver environmentResolver;
+  private EnvironmentResolver environmentResolver;
 
   @Test
-  public void getGSPersistentLocation() {
+  void getGSPersistentLocation() {
     when(tenantFactory.getTenantInfo(anyString())).thenReturn(tenantInfo);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_PROJECT);
-    when(obmStorageUtil.getPersistentBucket(anyString())).thenReturn(
+    when(tenantInfo.getName()).thenReturn(TENANT_NAME);
+    when(obmStorageUtil.getPersistentBucket(anyString(), anyString())).thenReturn(
         TENANT_PROJECT_PERSISTENT_AREA);
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(GS_PROTOCOL);
-    String persistentFilePath = PERSISTENT_FILE_PATH;
+
     assertEquals(EXPECTED_GS_STAGING_PATH,
-        obmCloudStorageUtilService.getPersistentLocation(persistentFilePath, PARTITION_ID));
+        obmCloudStorageUtilService.getPersistentLocation(PERSISTENT_FILE_PATH, PARTITION_ID));
   }
 
   @Test
-  public void getGSStagingLocation() {
+  void getGSStagingLocation() {
     when(tenantFactory.getTenantInfo(anyString())).thenReturn(tenantInfo);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_PROJECT);
-    when(obmStorageUtil.getPersistentBucket(anyString())).thenReturn(
+    when(tenantInfo.getName()).thenReturn(TENANT_NAME);
+    when(obmStorageUtil.getPersistentBucket(anyString(), anyString())).thenReturn(
         TENANT_PROJECT_STAGING_AREA);
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(GS_PROTOCOL);
-    String persistentFilePath = PERSISTENT_FILE_PATH;
+
     assertEquals(EXPECTED_GC_PERSISTENT_PATH,
-        obmCloudStorageUtilService.getPersistentLocation(persistentFilePath, PARTITION_ID));
+        obmCloudStorageUtilService.getPersistentLocation(PERSISTENT_FILE_PATH, PARTITION_ID));
   }
 
   @Test
-  public void getMinioPersistentLocation() {
+  void getMinioPersistentLocation() {
     when(tenantFactory.getTenantInfo(anyString())).thenReturn(tenantInfo);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_PROJECT);
-    when(obmStorageUtil.getPersistentBucket(anyString())).thenReturn(
+    when(tenantInfo.getName()).thenReturn(TENANT_NAME);
+    when(obmStorageUtil.getPersistentBucket(anyString(), anyString())).thenReturn(
         TENANT_PROJECT_PERSISTENT_AREA);
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(MINIO_COM);
-    String persistentFilePath = PERSISTENT_FILE_PATH;
+
     assertEquals(EXPECTED_MINIO_PERSISTENT_PATH,
-        obmCloudStorageUtilService.getPersistentLocation(persistentFilePath, PARTITION_ID));
+        obmCloudStorageUtilService.getPersistentLocation(PERSISTENT_FILE_PATH, PARTITION_ID));
   }
 
   @Test
-  public void getMinioStagingLocation() {
+  void getMinioStagingLocation() {
     when(tenantFactory.getTenantInfo(anyString())).thenReturn(tenantInfo);
     when(tenantInfo.getProjectId()).thenReturn(TENANT_PROJECT);
-    when(obmStorageUtil.getPersistentBucket(anyString())).thenReturn(TENANT_PROJECT_STAGING_AREA);
+    when(tenantInfo.getName()).thenReturn(TENANT_NAME);
+    when(obmStorageUtil.getPersistentBucket(anyString(), anyString())).thenReturn(
+        TENANT_PROJECT_STAGING_AREA);
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(MINIO_COM);
+
     assertEquals(EXPECTED_MINIO_STAGING_PATH,
         obmCloudStorageUtilService.getPersistentLocation(PERSISTENT_FILE_PATH, PARTITION_ID));
   }

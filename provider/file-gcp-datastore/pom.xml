@@ -34,7 +34,7 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
-    <core.lib.gcp.version>0.15.0-rc1</core.lib.gcp.version>
+    <core.lib.gcp.version>0.15.0-rc3</core.lib.gcp.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -52,31 +52,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!--for MinIO-->
-      <dependency>
-        <groupId>org.jetbrains.kotlin</groupId>
-        <artifactId>kotlin-stdlib</artifactId>
-        <version>1.6.0</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.okio</groupId>
-        <artifactId>okio</artifactId>
-        <version>2.7.0</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.okhttp3</groupId>
-        <artifactId>okhttp</artifactId>
-        <version>4.9.2</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.minio</groupId>
-        <artifactId>minio</artifactId>
-        <version>8.3.4</version>
-        <scope>compile</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
@@ -90,22 +65,6 @@
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-gcp</artifactId>
       <version>${core.lib.gcp.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-gcp-starter-data-datastore</artifactId>
-      <version>1.2.2.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-storage</artifactId>
-      <version>1.108.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-nio</artifactId>
-      <version>0.120.0-alpha</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback.contrib</groupId>

@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2020-2022 Google LLC
+ * Copyright 2020-2022 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,8 @@ public class ObmStorageService implements IStorageService {
 
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionID);
 
-    String stagingBucket = obmStorageUtil.getStagingBucket(tenantInfo.getProjectId());
+    String stagingBucket = obmStorageUtil.getStagingBucket(tenantInfo.getProjectId(),
+        tenantInfo.getName());
     String userDesID = this.dpsHeaders.getUserEmail();
     log.debug("Create storage object for fileName {} in bucket {} with filepath {}",
         fileName, stagingBucket, filepath);
