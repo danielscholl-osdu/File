@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2020-2022 Google LLC
+ * Copyright 2020-2022 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,14 @@ public class ObmStorageUtil {
   private final EnvironmentResolver environmentResolver;
   private final PropertiesConfiguration propertiesConfiguration;
 
-  public String getStagingBucket(String tenantProject) {
-    return tenantProject + "-" + propertiesConfiguration.getStagingArea();
+  public String getStagingBucket(String tenantProject, String tenantName) {
+    return String.format("%s-%s-%s", tenantProject, tenantName,
+        propertiesConfiguration.getStagingArea());
   }
 
-  public String getPersistentBucket(String tenantProject) {
-    return tenantProject + "-" + propertiesConfiguration.getPersistentArea();
+  public String getPersistentBucket(String tenantProject, String tenantName) {
+    return String.format("%s-%s-%s", tenantProject, tenantName,
+        propertiesConfiguration.getPersistentArea());
   }
 
 

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Primary
 public class ObmCollectionStorageUtilService implements IFileCollectionStorageUtilService {
+
   private final ITenantFactory tenantFactory;
   private final ObmStorageUtil obmStorageUtil;
   private final EnvironmentResolver environmentResolver;
@@ -39,13 +40,13 @@ public class ObmCollectionStorageUtilService implements IFileCollectionStorageUt
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
     return environmentResolver.getTransferProtocol(partitionId)
         + obmStorageUtil.getPersistentBucket(
-        tenantInfo.getProjectId()) + relativePath;
+        tenantInfo.getProjectId(), tenantInfo.getName()) + relativePath;
   }
 
   @Override
   public String getStagingLocation(String relativePath, String partitionId) {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
     return environmentResolver.getTransferProtocol(partitionId) + obmStorageUtil.getStagingBucket(
-        tenantInfo.getProjectId()) + relativePath;
+        tenantInfo.getProjectId(), tenantInfo.getName()) + relativePath;
   }
 }

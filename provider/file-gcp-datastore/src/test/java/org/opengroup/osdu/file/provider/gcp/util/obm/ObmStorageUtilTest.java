@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2020-2021 Google LLC
+ * Copyright 2021-2021 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
 
 @ExtendWith(MockitoExtension.class)
-public class ObmStorageUtilTest {
+class ObmStorageUtilTest {
 
   private static final String BUCKET = "bucket";
   private static final String FULL_GS_PATH = "gs://bucket/directory/file.csv";
@@ -61,14 +61,14 @@ public class ObmStorageUtilTest {
   }
 
   @Test
-  public void testGetBucketNameFromFullGSPath() {
+  void testGetBucketNameFromFullGSPath() {
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(GS_PROTOCOL);
     String bucketName = obmStorageUtil.getBucketName(FULL_GS_PATH, tenantInfo);
     assertEquals(BUCKET, bucketName);
   }
 
   @Test
-  public void testGetBucketNameFromFullMinioPath() {
+  void testGetBucketNameFromFullMinioPath() {
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(MINIO_PROTOCOL);
     String bucketName =
         obmStorageUtil.getBucketName(FULL_MINIO_PATH, tenantInfo);
@@ -76,14 +76,14 @@ public class ObmStorageUtilTest {
   }
 
   @Test
-  public void testGetDirPathFromFullGSPath() {
+  void testGetDirPathFromFullGSPath() {
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(GS_PROTOCOL);
     String directoryPath = obmStorageUtil.getDirectoryPath(FULL_GS_PATH, tenantInfo);
     assertEquals(EXPECTED_DIR_PATH, directoryPath);
   }
 
   @Test
-  public void testGetDirPathFromFullMinioPath() {
+  void testGetDirPathFromFullMinioPath() {
     when(environmentResolver.getTransferProtocol(PARTITION_ID)).thenReturn(MINIO_PROTOCOL);
     String bucketName =
         obmStorageUtil.getDirectoryPath(FULL_MINIO_PATH, tenantInfo);

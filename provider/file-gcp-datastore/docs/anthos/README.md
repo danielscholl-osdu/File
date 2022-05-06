@@ -215,13 +215,13 @@ These buckets must be defined in tenants’ dedicated object store servers. OBM 
    </td>
   </tr>
   <tr>
-   <td>&lt;PartitionInfo.projectId>-$GCP_STORAGE_STAGING_AREA:<strong>staging-area</strong>
+   <td>&lt;PartitionInfo.projectId-PartitionInfo.name>-$GCP_STORAGE_STAGING_AREA:<strong>staging-area</strong>
    </td>
    <td>ListObjects, CRUDObject, SignedURLs
    </td>
   </tr>
   <tr>
-   <td>&lt;PartitionInfo.projectId>-$GCP_STORAGE_PERSISTENT_AREA:<strong>persistent-area</strong>
+   <td>&lt;PartitionInfo.projectId-PartitionInfo.name>-$GCP_STORAGE_PERSISTENT_AREA:<strong>persistent-area</strong>
    </td>
    <td>ListObjects, CRUDObject, SignedURLs
    </td>
