@@ -26,7 +26,7 @@
 
 	<properties>
 		<start-class>org.opengroup.osdu.file.provider.ibm.FileIBMApplication</start-class>
-		<os-core-lib-ibm.version>0.14.0</os-core-lib-ibm.version>
+		<os-core-lib-ibm.version>0.15.0-rc1</os-core-lib-ibm.version>
 		<aws.version>1.11.637</aws.version>
   </properties>
 
