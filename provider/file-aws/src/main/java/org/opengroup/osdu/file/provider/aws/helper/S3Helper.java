@@ -56,6 +56,16 @@ public class S3Helper {
         }
     }
 
+    public static String getBucketRegion(String bucket, TemporaryCredentials credentials) {
+        final AmazonS3 simpleS3Client = AmazonS3ClientBuilder.standard()
+            .withCredentials(new TemporaryCredentialsProvider(credentials))
+            .build();
+        final String bucketLocation = simpleS3Client.getBucketLocation(bucket);
+        final Region s3Region = Region.fromValue(bucketLocation);
+
+        return s3Region.toAWSRegion().getName();
+    }
+
     private static AmazonS3 generateClientWithCredentials(String bucket, TemporaryCredentials credentials) {
         final String region = getBucketRegion(bucket, credentials);
 
@@ -63,15 +73,5 @@ public class S3Helper {
                                     .withRegion(Regions.fromName(region))
                                     .withCredentials(new TemporaryCredentialsProvider(credentials))
                                     .build();
-    }
-
-    private static String getBucketRegion(String bucket, TemporaryCredentials credentials) {
-        final AmazonS3 simpleS3Client = AmazonS3ClientBuilder.standard()
-                                                             .withCredentials(new TemporaryCredentialsProvider(credentials))
-                                                             .build();
-        final String bucketLocation = simpleS3Client.getBucketLocation(bucket);
-        final Region s3Region = Region.fromValue(bucketLocation);
-
-        return s3Region.toAWSRegion().getName();
     }
 }

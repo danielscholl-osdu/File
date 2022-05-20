@@ -18,6 +18,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
+
+import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Builder
@@ -25,7 +29,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileDmsStorageLocation {
 
+    private String unsignedUrl;
     private String signedUrl;
     private String fileSource;
+    private Instant createdAt;
+    private String connectionString;
+    private TemporaryCredentials credentials;
     private String createdBy;
+    private String signedUploadFileName;
+    private String region;
+    private Date signedUrlExpiration;
+    private String fileName;
 }

@@ -25,6 +25,8 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.file.provider.aws.helper.ExpirationDateHelper;
+import org.opengroup.osdu.file.provider.aws.helper.S3Helper;
 import org.opengroup.osdu.file.provider.aws.model.FileDmsStorageLocation;
 import org.opengroup.osdu.file.provider.aws.model.ProviderLocation;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
@@ -40,6 +42,8 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import java.net.MalformedURLException;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,19 +81,30 @@ public class StorageServiceImpl implements IStorageService {
 
     @Override
     public StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionID) {
-        final SignedUrl signedUrl = createSignedUrl(datasetId, headers.getAuthorization(), partitionID);
+        log.debug("Creating the provider location for dataset ID: {}, partition ID: {}", datasetId, partitionID);
+        final ProviderLocation fileLocation = fileLocationProvider.getUploadFileLocation(datasetId, partitionID);
+        final S3Location unsignedLocation = S3Location.of(fileLocation.getUnsignedUrl());
 
-        final FileDmsStorageLocation dmsLocation = FileDmsStorageLocation.builder()
-                                                                         .signedUrl(signedUrl.getUrl().toString())
-                                                                         .createdBy(signedUrl.getCreatedBy())
-                                                                         .fileSource(signedUrl.getFileSource()).build();
+        final FileDmsStorageLocation dmsLocation =
+            FileDmsStorageLocation
+                .builder()
+                .unsignedUrl(fileLocation.getUnsignedUrl())
+                .signedUrl(fileLocation.getSignedUrl().toString())
+                .fileSource(fileLocation.getLocationSource())
+                .createdAt(fileLocation.getCreatedAt())
+                .connectionString(fileLocation.getConnectionString())
+                .credentials(fileLocation.getCredentials())
+                .createdBy(this.headers.getUserEmail())
+                .signedUploadFileName(datasetId)
+                .region(S3Helper.getBucketRegion(unsignedLocation.getBucket(), fileLocation.getCredentials()))
+                .build();
 
         final Map<String, Object> storageLocation = objectMapper.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
 
         return StorageInstructionsResponse.builder()
-                                          .storageLocation(storageLocation)
-                                          .providerKey(fileLocationProvider.getProviderKey())
-                                          .build();
+            .storageLocation(storageLocation)
+            .providerKey(fileLocationProvider.getProviderKey())
+            .build();
     }
 
     @Override
@@ -122,13 +137,30 @@ public class StorageServiceImpl implements IStorageService {
     }
 
     private DatasetRetrievalProperties buildDatasetRetrievalProperties(FileRetrievalData fileRetrievalData) {
-        final SignedUrl signedUrl = createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
-                                                                headers.getAuthorization(),
-                                                                new SignedUrlParameters());
-        final FileDmsStorageLocation dmsLocation = FileDmsStorageLocation.builder()
-                                                                         .signedUrl(signedUrl.getUrl().toString())
-                                                                         .fileSource(signedUrl.getFileSource())
-                                                                         .createdBy(signedUrl.getCreatedBy()).build();
+        final S3Location unsignedLocation = S3Location.of(fileRetrievalData.getUnsignedUrl());
+        if (!unsignedLocation.isValid()) {
+            throw new AppException(HttpStatus.BAD_REQUEST.value(),
+                "Malformed URL",
+                "Unsigned URL is invalid, needs to be full S3 storage path");
+        }
+        final RelativeTimeValue relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit((new SignedUrlParameters()).getExpiryTime());
+        final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
+        final Duration expiration = Duration.ofMillis(expireInMillis);
+        final Date expirationDate = ExpirationDateHelper.getExpiration(Instant.now(), expiration);
+        final ProviderLocation fileLocation = fileLocationProvider.getRetrievalFileLocation(unsignedLocation, expiration);
+        final String[] locationSourceSplit = fileLocation.getLocationSource().split("/");
+        final FileDmsStorageLocation dmsLocation =
+            FileDmsStorageLocation
+                .builder()
+                .unsignedUrl(fileLocation.getUnsignedUrl())
+                .signedUrl(fileLocation.getSignedUrl().toString())
+                .createdAt(fileLocation.getCreatedAt())
+                .connectionString(fileLocation.getConnectionString())
+                .credentials(fileLocation.getCredentials())
+                .fileName(locationSourceSplit[locationSourceSplit.length - 1])
+                .region(S3Helper.getBucketRegion(unsignedLocation.getBucket(), fileLocation.getCredentials()))
+                .signedUrlExpiration(expirationDate)
+                .build();
         final Map<String, Object> downloadLocation = objectMapper.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
 
         return DatasetRetrievalProperties.builder()
