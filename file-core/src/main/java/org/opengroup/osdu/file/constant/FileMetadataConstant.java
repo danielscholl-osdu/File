@@ -18,6 +18,6 @@ public class FileMetadataConstant {
 	public static final String FILE_NAME_PATH= "data.DatasetProperties.FileSourceInfo.Name";
 	public static final String METADATA_DELETE_STARTED = "Deleting metadata in store";
 	public static final String FILE_DEFAULT_EXTENSION= "application/octet-stream";
-
-
+	public static final String METADATA_EXCEPTION = "Failed to get the properties of ";
+	public static final String CHECKSUM_EXCEPTION = "Failed to calculate the checksum of ";
 }

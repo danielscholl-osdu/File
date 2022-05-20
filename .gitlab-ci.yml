@@ -13,9 +13,31 @@ variables:
   OSDU_GCP_HELM_NAMESPACE: default
   OSDU_GCP_HELM_CONFIG_SERVICE: file-config
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE: file-deploy
-  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.server_servlet_contextpath=/api/file --set data.log_level=INFO --set data.osdu_entitlements_url=$OSDU_GCP_AUTHORIZE_API --set data.file_location_bucket_name=$FILE_BUCKET --set data.partition_api=$OSDU_GCP_PARTITION_API --set data.audiences=$GOOGLE_AUDIENCE --set data.spring_cloud_gcp_datastore_namespace=$OSDU_GCP_DATASTORE_NAMESPACE --set data.file_location_user_id=$USER_ID --set data.storage_api=$OSDU_GCP_STORAGE_URL --set data.gcp_records_url=$OSDU_GCP_RECORDS_ROOT_URL"
-  OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: "--set data.server_servlet_contextpath=/api/file --set data.log_level=INFO --set data.osdu_entitlements_url=$OSDU_GCP_AUTHORIZE_API --set data.file_location_bucket_name=$FILE_BUCKET --set data.partition_api=$OSDU_GCP_PARTITION_API --set data.audiences=$GOOGLE_AUDIENCE --set data.spring_cloud_gcp_datastore_namespace=$OSDU_GCP_DATASTORE_NAMESPACE --set data.file_location_user_id=$USER_ID --set data.storage_api=$OSDU_GCP_STORAGE_URL --set data.gcp_records_url=$OSDU_GCP_RECORDS_ROOT_URL"
-  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s"
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: >
+    --set data.server_servlet_contextpath=/api/file 
+    --set data.log_level=INFO 
+    --set data.osdu_entitlements_url=$OSDU_GCP_AUTHORIZE_API 
+    --set data.file_location_bucket_name=$FILE_BUCKET 
+    --set data.partition_api=$OSDU_GCP_PARTITION_API 
+    --set data.audiences=$GOOGLE_AUDIENCE 
+    --set data.spring_cloud_gcp_datastore_namespace=$OSDU_GCP_DATASTORE_NAMESPACE 
+    --set data.file_location_user_id=$USER_ID 
+    --set data.storage_api=$OSDU_GCP_STORAGE_URL 
+    --set data.gcp_records_url=$OSDU_GCP_RECORDS_ROOT_URL
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: >
+    --set data.server_servlet_contextpath=/api/file 
+    --set data.log_level=INFO 
+    --set data.osdu_entitlements_url=$OSDU_GCP_AUTHORIZE_API 
+    --set data.file_location_bucket_name=$FILE_BUCKET 
+    --set data.partition_api=$OSDU_GCP_PARTITION_API 
+    --set data.audiences=$GOOGLE_AUDIENCE 
+    --set data.spring_cloud_gcp_datastore_namespace=$OSDU_GCP_DATASTORE_NAMESPACE 
+    --set data.file_location_user_id=$USER_ID 
+    --set data.storage_api=$OSDU_GCP_STORAGE_URL 
+    --set data.gcp_records_url=$OSDU_GCP_RECORDS_ROOT_URL
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: >
+    --set data.image=$CI_REGISTRY_IMAGE/osdu-gcp-$OSDU_GCP_SERVICE:$CI_COMMIT_SHORT_SHA 
+    --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s
 
   #Azure
   AZURE_SERVICE: file
@@ -23,7 +45,7 @@ variables:
   AZURE_TEST_SUBDIR: testing/file-test-azure
   STAGING_CONTAINER_NAME: file-staging-area
   PERSISTENCE_CONTAINER_NAME: file-persistent-area
-  AZURE_COVERAGE_THRESHOLD: 20
+  AZURE_COVERAGE_THRESHOLD: $AZURE_CODE_COVERAGE_THRESHOLD
 
   #AWS
   AWS_BUILD_SUBDIR: provider/file-aws/build-aws
@@ -35,43 +57,33 @@ variables:
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "standard-setup.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "build/maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "cloud-providers/ibm.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "scanners/gitlab-ultimate.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "scanners/fossa-maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "publishing/pages.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "cloud-providers/osdu-gcp-gke.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "cloud-providers/azure.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "cloud-providers/aws-global.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: "master"
     file: "cloud-providers/aws-maven.yml"
 
 osdu-gcp-test:

@@ -16,6 +16,9 @@
 
 package org.opengroup.osdu.file.provider.azure.service;
 
+import com.azure.storage.blob.models.BlobProperties;
+import com.azure.storage.blob.models.BlobStorageException;
+import com.azure.storage.blob.specialized.BlobInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,13 +26,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
 
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.BDDAssertions.then;
+import java.io.IOException;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,10 +57,22 @@ public class StorageUtilServiceImplTest {
   @Mock
   BlobServiceClientWrapper blobServiceClientWrapper;
 
+  @Mock
+  BlobStore blobStore;
+
+  @Mock
+  BlobProperties blobProperties;
+
+  @Mock
+  DpsHeaders dpsHeaders;
+
+  @Mock
+  ServiceHelper serviceHelper;
+
   @BeforeEach
   void init() {
     initMocks(this);
-    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, filePathUtil, blobServiceClientWrapper);
+    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, filePathUtil, blobServiceClientWrapper, blobStore, serviceHelper, dpsHeaders);
   }
 
   @Test
@@ -82,5 +105,79 @@ public class StorageUtilServiceImplTest {
 
     // verify
     Assertions.assertEquals(expectedLocation, location);
+  }
+
+  @Test
+  public void getChecksum_ShouldCall_BlobStoreGetBlobPropertiesMethod() {
+    // setup
+    when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
+    when(blobProperties.getContentMd5()).thenReturn(TestUtils.BLOB_NAME.getBytes());
+    when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    when(serviceHelper
+      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    when(serviceHelper
+      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+
+    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);
+    Assertions.assertNotNull(checksum);
+    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,TestUtils.STAGING_CONTAINER_NAME);
+  }
+
+  @Test
+  public void getChecksum_ShouldThrow_OsduBadRequestException_IfBlobStoreThrowsException() {
+    when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    when(serviceHelper
+      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    when(serviceHelper
+      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+    Mockito.doThrow(BlobStorageException.class).when(
+      blobStore).readBlobProperties(
+      TestUtils.PARTITION,
+      TestUtils.RELATIVE_FILE_PATH,
+      TestUtils.STAGING_CONTAINER_NAME);
+
+    Assertions.assertThrows(OsduBadRequestException.class,()->{storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);});
+  }
+
+  @Test
+  public void getChecksum_ShouldCall_CalculateChecksumMethod() throws IOException {
+    // setup
+    when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
+    BlobInputStream blobInputStream = mock(BlobInputStream.class);
+    when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
+    when(blobInputStream.read()).thenReturn(10).thenReturn(-1);
+    when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    when(serviceHelper
+      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    when(serviceHelper
+      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+
+    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);
+    Assertions.assertNotNull(checksum);
+    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,TestUtils.STAGING_CONTAINER_NAME);
+  }
+
+  @Test
+  public void getChecksum_ShouldThrow_IOException_IfReadThrowsException() throws IOException {
+    when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
+    BlobInputStream blobInputStream = mock(BlobInputStream.class);
+    when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
+    when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    when(serviceHelper
+      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    when(serviceHelper
+      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+    Mockito.doThrow(IOException.class).when(
+      blobInputStream).read();
+
+    Assertions.assertThrows(AppException.class,()->{storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);});
   }
 }

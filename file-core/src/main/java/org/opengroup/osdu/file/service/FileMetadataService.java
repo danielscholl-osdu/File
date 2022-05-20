@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.file.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -26,6 +27,7 @@ import org.opengroup.osdu.file.mapper.FileMetadataRecordMapper;
 import org.opengroup.osdu.file.model.filemetadata.FileMetadata;
 import org.opengroup.osdu.file.model.filemetadata.FileMetadataResponse;
 import org.opengroup.osdu.file.model.filemetadata.RecordVersion;
+import org.opengroup.osdu.file.model.filemetadata.filedetails.FileSourceInfo;
 import org.opengroup.osdu.file.model.storage.Record;
 import org.opengroup.osdu.file.model.storage.UpsertRecords;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
@@ -75,6 +77,12 @@ public class FileMetadataService {
             persistentLocation = storageUtilService.getPersistentLocation(filePath, dpsHeaders.getPartitionId());
 
             cloudStorageOperation.copyFile(stagingLocation, persistentLocation);
+            String checksum = storageUtilService.getChecksum(stagingLocation);
+            if (!StringUtils.isBlank(checksum)) {
+              FileSourceInfo fileSourceInfo = fileMetadata.getData().getDatasetProperties().getFileSourceInfo();
+              fileSourceInfo.setChecksum(checksum);
+              fileSourceInfo.setChecksumAlgorithm(storageUtilService.getChecksumAlgorithm().toString());
+            }
             Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
 
             log.info("Save Record Id " + record.getId());
