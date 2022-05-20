@@ -1,5 +1,7 @@
 package org.opengroup.osdu.file.provider.interfaces;
 
+import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
+
 public interface IStorageUtilService {
 
   /**
@@ -22,4 +24,16 @@ public interface IStorageUtilService {
     return null;
   }
 
+  /**
+   * Method is used to get the checksum of a file specified at file path.
+   * @param filePath Path of file to get the metadata
+   * @return File checksum.
+   */
+  default String getChecksum(final String filePath) { return null; }
+
+  /**
+   * Method is used to get the checksum algorithm.
+   * @return File checksum algorithm.
+   */
+  default ChecksumAlgorithm getChecksumAlgorithm() { return ChecksumAlgorithm.NONE; }
 }

@@ -33,7 +33,6 @@ import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.http.HttpResponse;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
@@ -45,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
