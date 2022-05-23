@@ -10,9 +10,9 @@ data:
 conf:
   configmap: "file-config"
   app_name: "file"
-  rabbitmq_secret_name: ""
-  file_minio_secret_name: ""
-  file_keycloak_secret_name: ""
-  file_postgres_secret_name: ""
+  rabbitmq_secret_name: "rabbitmq-secret"
+  file_minio_secret_name: "minio-file-secret"
+  file_keycloak_secret_name: "keycloak-file-secret"
+  file_postgres_secret_name: "postgres-file-secret"
   on_prem_enabled: false
   domain: ""
