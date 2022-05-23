@@ -1,14 +1,16 @@
 data:
-  log_level: ""
-  osdu_entitlements_url: ""
+  # common
+  log_level: "INFO"
+  osdu_entitlements_url: "http://entitlements/api/entitlements/v2/"
+  partition_api: "http://partition/api/partition/v1/"
+  storage_api: "http://storage/api/storage/v2/"
+  spring_profiles_active: "gcp"
+  # gcp
   file_location_bucket_name: ""
-  partition_api: ""
   audiences: ""
   spring_cloud_gcp_datastore_namespace: ""
   file_location_user_id: ""
-  storage_api: ""
   gcp_records_url: ""
-  spring_profile: "gcp"
 
 conf:
   configmap: "file-config"

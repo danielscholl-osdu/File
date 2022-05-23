@@ -10,7 +10,7 @@ data:
   OSDU_ENTITLEMENTS_URL: "{{ .Values.data.osdu_entitlements_url }}"
   PARTITION_API: "{{ .Values.data.partition_api }}"
   STORAGE_API: "{{ .Values.data.storage_api }}"
-  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profile }}"
+  SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profiles_active }}"
   {{- if not .Values.conf.on_prem_enabled }}
   FILE_LOCATION_BUCKET_NAME: "{{ .Values.data.file_location_bucket_name }}"
   GOOGLE_AUDIENCES: "{{ .Values.data.audiences }}"
