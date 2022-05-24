@@ -15,6 +15,8 @@
 package org.opengroup.osdu.file.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,33 +26,83 @@ import org.opengroup.osdu.file.provider.aws.model.S3Location;
 @ExtendWith(MockitoExtension.class)
 public class S3LocationTest {
 
-  @Test
-  public void should_create_with_validS3URI() {
-    String uri = "s3://bucket/key/file";
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(true, fileLocation.isValid);
-    assertEquals("bucket", fileLocation.bucket);
-    assertEquals( "key/file", fileLocation.key);
-  }
+    @Test
+    public void shouldCreateWithValidS3Uri() {
+        String uri = "s3://bucket/key/file";
+        S3Location fileLocation = S3Location.of(uri);
 
-  @Test
-  public void should_beInValidState_with_validS3URIbutWithOutKeyPath() {
-    String uri = "s3://bucket";
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(false, fileLocation.isValid);
-  }
+        assertTrue(fileLocation.isValid());
+        assertEquals("bucket", fileLocation.getBucket());
+        assertEquals("key/file", fileLocation.getKey());
+    }
 
-  @Test
-  public void should_beInValidState_with_emptyString() {
-    String uri = "";
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(false, fileLocation.isValid);
-  }
+    @Test
+    public void shouldBeInValidStateWithValidS3UriButWithOutKeyPath() {
+        String uri = "s3://bucket";
+        S3Location fileLocation = S3Location.of(uri);
 
-  @Test
-  public void should_beInValidState_with_null() {
-    String uri = null;
-    S3Location fileLocation = new S3Location(uri);
-    assertEquals(false, fileLocation.isValid);
-  }
+        assertFalse(fileLocation.isValid());
+    }
+
+    @Test
+    public void shouldBeInValidStateWithEmptyString() {
+        String uri = "";
+        S3Location fileLocation = S3Location.of(uri);
+
+        assertFalse(fileLocation.isValid());
+    }
+
+    @Test
+    public void shouldBeInValidStateWithNull() {
+        String uri = null;
+
+        S3Location fileLocation = S3Location.of(uri);
+        assertFalse(fileLocation.isValid());
+    }
+
+    @Test
+    public void shouldGetCorrectString() {
+        assertEquals("s3://bucket/key/file", S3Location.of("s3://bucket/key/file").toString());
+
+        assertEquals("", S3Location.of("").toString());
+    }
+
+    @Test
+    public void shouldHandleBucketWithPrefixAnWithoutPrefix() {
+        S3Location locationForBucketWithoutPrefix = S3Location.newBuilder().withBucket("abc")
+                                                              .withFolder("def")
+                                                              .build();
+
+        assertEquals("s3://abc/def/", locationForBucketWithoutPrefix.toString());
+
+        S3Location locationForBucketWithPrefix = S3Location.newBuilder().withBucket("s3://abc")
+                                                           .withFolder("def")
+                                                           .build();
+
+        assertEquals("s3://abc/def/", locationForBucketWithPrefix.toString());
+    }
+
+    @Test
+    public void shouldBuildFile() {
+        S3Location location = S3Location.newBuilder().withBucket("abc")
+                                        .withFolder("def")
+                                        .withFile("123.txt")
+                                        .withFolder("456")
+                                        .withFile("789.txt")
+                                        .build();
+
+        assertTrue(!location.isFolder());
+        assertEquals("s3://abc/def/123.txt/456/789.txt", location.toString());
+    }
+
+    @Test
+    public void shouldBuildFolder() {
+        S3Location location = S3Location.newBuilder().withBucket("abc")
+                                        .withFolder("def")
+                                        .withFolder("123")
+                                        .build();
+
+        assertTrue(location.isFolder());
+        assertEquals("s3://abc/def/123/", location.toString());
+    }
 }

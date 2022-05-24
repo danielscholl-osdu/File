@@ -143,7 +143,7 @@
 //             Date expirationDate = new Date();
 //             Mockito.when(expirationDateHelper.getExpiration(Mockito.any(Instant.class),
 //                     Mockito.any(Duration.class))).thenReturn(expirationDate);
-            
+
 //             awsServiceConfig.init();
 //             CUT.init();
 

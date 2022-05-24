@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Amazon Web Services
+ * Copyright Amazon.com, Inc.
  * Copyright 2020 Google LLC
  * Copyright 2020 EPAM Systems, Inc
  *

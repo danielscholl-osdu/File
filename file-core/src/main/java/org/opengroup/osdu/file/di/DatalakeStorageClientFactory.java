@@ -32,7 +32,7 @@ public class DatalakeStorageClientFactory extends AbstractFactoryBean<DataLakeSt
     @Value("${authorize.api.key}")
     private String apiKey;
 
-	  private final HttpResponseBodyMapper bodyMapper ;
+    private final HttpResponseBodyMapper bodyMapper;
 
     @Override
     protected DataLakeStorageFactory createInstance() throws Exception {
