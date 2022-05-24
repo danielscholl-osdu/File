@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface IFileCollectionStorageService {
 
-  // stub implementation
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.
    * @param datasetId Dataset ID

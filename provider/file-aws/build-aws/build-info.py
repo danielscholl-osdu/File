@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import argparse
 import boto3
 import json
 import os
-import argparse
 
 # Create the build-info.json
 parser = argparse.ArgumentParser(description="")
@@ -23,24 +23,22 @@ parser = argparse.ArgumentParser(description="")
 parser.add_argument("--branch", type=str, help="")
 
 # env - CODEBUILD_RESOLVED_SOURCE_VERSION
-parser.add_argument("--commit", type=str,  help="")
+parser.add_argument("--commit", type=str, help="")
 
 # env - CODEBUILD_BUILD_ID
-parser.add_argument("--buildid", type=str,  help="")
+parser.add_argument("--buildid", type=str, help="")
 
 # env - CODEBUILD_BUILD_NUMBER
-parser.add_argument("--buildnumber", type=str,  help="")
+parser.add_argument("--buildnumber", type=str, help="")
 
 # Get from directory name
-parser.add_argument("--reponame", type=str,  help="")
+parser.add_argument("--reponame", type=str, help="")
 
 # env OUTPUT_DIR
-parser.add_argument("--outdir", type=str,  help="")
+parser.add_argument("--outdir", type=str, help="")
 
 # full ecr image and tag, and any other artifacts
 parser.add_argument("--artifact", type=str, action="append", help="")
-
-
 
 args = parser.parse_args()
 
