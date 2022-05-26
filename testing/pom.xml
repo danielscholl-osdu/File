@@ -40,7 +40,8 @@
     <module>file-test-gcp</module>
     <module>file-test-azure</module>
     <module>file-test-aws</module>
-	<module>file-test-ibm</module>
+    <module>file-test-ibm</module>
+    <module>file-test-anthos</module>
   </modules>
 
   <repositories>

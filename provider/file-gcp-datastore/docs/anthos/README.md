@@ -47,6 +47,33 @@ Usage of spring profiles is preferred.
 | `PARTITION_AUTH_ENABLED` | ex `true` or `false` | Disable or enable auth token provisioning for requests to Partition service | no | - |
 | `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID` |Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no | - |
 
+## Testing
+
+### Running E2E Tests
+
+**Required to run integration tests**
+
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
+| `FILE_SERVICE_HOST` | ex `http://localhost:8080` | File service url | no | - |
+| `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
+| `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
+| `DOMAIN` | ex `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
+| `TENANT_NAME` | `opendes` | Tenant name | no | - |
+| `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
+| `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
+| `PRIVATE_TENANT2` | `opendes` | Private tenant id | no | - |
+| `LEGAL_TAG` | ex `opendes-storage-tag` | Valid legal tag name| - | - |
+| `TEST_OPENID_PROVIDER_CLIENT_ID` | `********` | Client Id for `$INTEGRATION_TESTER` | yes | -- |
+| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********` |  | Client secret for `$INTEGRATION_TESTER` | -- |
+| `TEST_OPENID_PROVIDER_URL` | ex `https://keycloak.com/auth/realms/osdu` | OpenID provider url | yes | -- |
+
+**Entitlements configuration for integration accounts**
+
+| INTEGRATION_TESTER |
+| ---  |
+| users<br/>service.file.editors<br/>service.file.viewers |
+
 ### Properties set in Partition service:
 
 Note that properties can be set in Partition as `sensitive` in that case in property `value` should be present **not value itself**, but **ENV variable name**.
