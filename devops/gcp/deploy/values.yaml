@@ -1,18 +1,18 @@
 data:
-  requests_cpu: "0.1"
-  requests_memory: "384M"
-  limits_cpu: "1"
-  limits_memory: "1G"
+  requestsCpu: "0.1"
+  requestsMemory: "384M"
+  limitsCpu: "1"
+  limitsMemory: "1G"
   serviceAccountName: ""
   imagePullPolicy: "IfNotPresent"
   image: ""
 
 conf:
   configmap: "file-config"
-  app_name: "file"
-  rabbitmq_secret_name: "rabbitmq-secret"
-  file_minio_secret_name: "minio-file-secret"
-  file_keycloak_secret_name: "keycloak-file-secret"
-  file_postgres_secret_name: "postgres-file-secret"
-  on_prem_enabled: false
+  appName: "file"
+  rabbitmqSecretName: "rabbitmq-secret"
+  fileMinioSecretName: "minio-file-secret"
+  fileKeycloakSecretName: "keycloak-file-secret"
+  filePostgresSecretName: "postgres-file-secret"
+  onPremEnabled: false
   domain: ""
