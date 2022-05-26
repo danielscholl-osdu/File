@@ -31,29 +31,11 @@ Pre-requisites
 
 ## Testing
 
-### Running E2E Tests
+#### Anthos:
+[Anthos Testing](docs/anthos/README.md)
+#### GCP:
+[Gcp Testing](docs/gcp/README.md)
 
-**Required to run integration tests**
-
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `FILE_SERVICE_HOST` | `http://localhost:8080` | File service url | no | - |
-| `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
-| `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
-| `DOMAIN` | `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
-| `TENANT_NAME` | `opendes` | Tenant name | no | - |
-| `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
-| `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
-| `PRIVATE_TENANT2` | `opendes` | Private tenant id | no | - |
-| `INTEGRATION_TEST_AUDIENCE` | `*.apps.googleusercontent.com` | Client Id for `$INTEGRATION_TESTER` | no | - |
-| `INTEGRATION_TESTER` | `ewogICJ***` | Service account for API calls as Base64 encoded string| yes | - |
-| `LEGAL_TAG` | `opendes-storage-tag` | Valid legal tag name| - | - |
-
-**Entitlements configuration for integration accounts**
-
-| INTEGRATION_TESTER |
-| ---  |
-| users<br/>service.file.editors<br/>service.file.viewers |
 
 ### Configure Maven
 
