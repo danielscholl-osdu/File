@@ -38,6 +38,32 @@ In order to run the service locally, you will need to have the following environ
 | `OBMDRIVER` | `gcs` | Obm driver mode that defines which object storage will be used | no | - |
 | `OSMDRIVER` | `datastore` | Osm driver mode that defines which KV storage will be used | no | - |
 
+## Testing
+
+### Running E2E Tests
+
+**Required to run integration tests**
+
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
+| `FILE_SERVICE_HOST` | ex `http://localhost:8080` | File service url | no | - |
+| `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
+| `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
+| `DOMAIN` | ex `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
+| `TENANT_NAME` | `opendes` | Tenant name | no | - |
+| `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
+| `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
+| `PRIVATE_TENANT2` | `opendes` | Private tenant id | no | - |
+| `INTEGRATION_TEST_AUDIENCE` | ex `*.apps.googleusercontent.com` | Client Id for `$INTEGRATION_TESTER` | no | - |
+| `INTEGRATION_TESTER` | ex `ewogICJ***` | Service account for API calls as Base64 encoded string| yes | - |
+| `LEGAL_TAG` | ex `opendes-storage-tag` | Valid legal tag name| - | - |
+
+**Entitlements configuration for integration accounts**
+
+| INTEGRATION_TESTER |
+| ---  |
+| users<br/>service.file.editors<br/>service.file.viewers |
+
 ## PubSub configuration
 
 At PubSub should be created topic with name:
