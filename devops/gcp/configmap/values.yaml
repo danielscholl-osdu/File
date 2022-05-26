@@ -1,18 +1,21 @@
 data:
   # common
-  log_level: "INFO"
-  osdu_entitlements_url: "http://entitlements/api/entitlements/v2/"
-  partition_api: "http://partition/api/partition/v1/"
-  storage_api: "http://storage/api/storage/v2/"
-  spring_profiles_active: "gcp"
+  logLevel: "INFO"
+  osduEntitlementsUrl: "http://entitlements/api/entitlements/v2/"
+  partitionApi: "http://partition/api/partition/v1/"
+  storageApi: "http://storage/api/storage/v2/"
+  springProfilesActive: "gcp"
+  # on-prem
+  gcpFileLocationKind: "file_locations_osm"
+  obmMinioPartitionPropertiesPrefix: "file.minio"
   # gcp
-  file_location_bucket_name: ""
+  fileLocationBucketName: ""
   audiences: ""
-  spring_cloud_gcp_datastore_namespace: ""
-  file_location_user_id: ""
-  gcp_records_url: ""
+  springCloudGcpDatastoreNamespace: ""
+  fileLocationUserId: ""
+  gcpRecordsUrl: ""
 
 conf:
   configmap: "file-config"
-  app_name: "file"
-  on_prem_enabled: false
+  appName: "file"
+  onPremEnabled: false
