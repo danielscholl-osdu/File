@@ -18,6 +18,7 @@
 package org.opengroup.osdu.file.provider.gcp.util.url;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConditionalOnProperty(name = "obmDriver", havingValue = "gcs")
 public class UrlGcsProvider implements UrlProvider {
+
   public static final String GCS_HOST = "https://storage.googleapis.com/";
 
   @Override
@@ -36,8 +38,15 @@ public class UrlGcsProvider implements UrlProvider {
   public URL getObjectUrl(String bucketName, String filepath, String partitionId)
       throws MalformedURLException {
 
-    return new URL(String.format(RESOURCE_ACCESS_STRING_FORMAT,
-        GCS_HOST, bucketName, filepath));
+    URI normalizedURI = URI.create(
+            String.format(
+                RESOURCE_ACCESS_STRING_FORMAT,
+                GCS_HOST,
+                bucketName,
+                filepath))
+        .normalize();
+
+    return normalizedURI.toURL();
 
   }
 }
