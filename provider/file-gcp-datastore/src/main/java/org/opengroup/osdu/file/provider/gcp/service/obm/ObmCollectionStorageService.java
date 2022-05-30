@@ -148,10 +148,10 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
   }
 
   private SignedUrl createSignedUrl(String directoryId, String partitionID, String bucket) {
-    log.debug("Creating the signed directory for directoryId : {}. partitionID : {}",
+    log.info("Creating the signed directory for directoryId : {}. partitionID : {}",
         directoryId, partitionID);
     String userDesID = this.dpsHeaders.getUserEmail();
-    log.debug("Create storage directory for directoryId {} in bucket {}",
+    log.info("Create storage directory for directoryId {} in bucket {}",
         directoryId, bucket);
 
     SignedObject signedObject = collectionStorageRepository.createSignedObject(bucket, directoryId);
