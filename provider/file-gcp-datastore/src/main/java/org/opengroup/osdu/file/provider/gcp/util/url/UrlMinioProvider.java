@@ -18,9 +18,8 @@
 package org.opengroup.osdu.file.provider.gcp.util.url;
 
 
-import static org.opengroup.osdu.file.provider.gcp.util.url.UrlProvider.RESOURCE_ACCESS_STRING_FORMAT;
-
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
@@ -43,8 +42,15 @@ public class UrlMinioProvider implements UrlProvider {
   public URL getObjectUrl(String bucketName, String filepath, String partitionId)
       throws MalformedURLException {
 
-    return new URL(String.format(RESOURCE_ACCESS_STRING_FORMAT,
-        environmentResolver.getTransferProtocol(partitionId), bucketName, filepath));
+    URI normalizedURI = URI.create(
+            String.format(
+                RESOURCE_ACCESS_STRING_FORMAT,
+                environmentResolver.getTransferProtocol(partitionId),
+                bucketName,
+                filepath))
+        .normalize();
+
+    return normalizedURI.toURL();
 
   }
 }

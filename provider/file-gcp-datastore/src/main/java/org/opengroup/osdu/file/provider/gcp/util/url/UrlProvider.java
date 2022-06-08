@@ -21,9 +21,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public interface UrlProvider {
-  String RESOURCE_ACCESS_STRING_FORMAT = "%s%s/%s";
+
+  String RESOURCE_ACCESS_STRING_FORMAT = "%s/%s/%s";
 
   URL getObjectUrl(String bucketName, String partitionId) throws MalformedURLException;
 
-  URL getObjectUrl(String bucketName, String filepath, String partitionId) throws MalformedURLException;
+  URL getObjectUrl(String bucketName, String filepath, String partitionId)
+      throws MalformedURLException;
 }
