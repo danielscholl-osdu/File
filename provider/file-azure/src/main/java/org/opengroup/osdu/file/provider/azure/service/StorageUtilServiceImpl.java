@@ -20,7 +20,6 @@ import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.specialized.BlobInputStream;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.util.Strings;
@@ -106,8 +105,7 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
         return new String(Hex.encodeHex(byteChecksum));
       } else {
         log.info("checksum is not available, calculating the checksum for fileId "+fileID);
-        String checksum = calculateChecksum(sourceFilePath, containerName);
-        return checksum;
+        return calculateChecksum(sourceFilePath, containerName);
       }
     } catch (BlobStorageException ex) {
       throw new OsduBadRequestException(FileMetadataConstant.METADATA_EXCEPTION + filePath, ex);
@@ -124,8 +122,7 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
         md.update(bytes, 0, numBytes);
       }
       byte[] digest = md.digest();
-      String checksum = new String(Hex.encodeHex(digest));
-      return checksum;
+      return new String(Hex.encodeHex(digest));
     } catch (NoSuchAlgorithmException ex) {
       String message = FileMetadataConstant.CHECKSUM_EXCEPTION + filePath;
       throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, message , ex.getMessage(), ex);
