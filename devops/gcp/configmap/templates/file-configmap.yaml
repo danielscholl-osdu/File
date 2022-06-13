@@ -15,9 +15,7 @@ data:
   GCP_FILE_LOCATION_KIND: "{{ .Values.data.gcpFileLocationKind }}"
   OBM_MINIO_PARTITION_PROPERTIES_PREFIX: "{{ .Values.data.obmMinioPartitionPropertiesPrefix }}"
   {{- else }}
-  FILE_LOCATION_BUCKET_NAME: "{{ .Values.data.fileLocationBucketName }}"
   GOOGLE_AUDIENCES: "{{ .Values.data.audiences }}"
   SPRING_CLOUD_GCP_DATASTORE_NAMESPACE: "{{ .Values.data.springCloudGcpDatastoreNamespace }}"
   FILE_LOCATION_USER_ID: "{{ .Values.data.fileLocationUserId }}"
-  GCP_RECORDS_URL: "{{ .Values.data.gcpRecordsUrl }}"
   {{- end }}

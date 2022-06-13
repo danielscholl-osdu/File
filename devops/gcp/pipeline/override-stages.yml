@@ -12,7 +12,6 @@ variables:
   OSDU_GCP_HELM_CONFIG_SERVICE_VARS: >
     --set data.logLevel=INFO 
     --set data.osduEntitlementsUrl=$OSDU_GCP_AUTHORIZE_API 
-    --set data.fileLocationBucketName=$FILE_BUCKET 
     --set data.partitionApi=$OSDU_GCP_PARTITION_API 
     --set data.audiences=$GOOGLE_AUDIENCE 
     --set data.springCloudGcpDatastoreNamespace=$OSDU_GCP_DATASTORE_NAMESPACE 
@@ -22,7 +21,6 @@ variables:
   OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: >
     --set data.logLevel=INFO 
     --set data.osduEntitlementsUrl=$OSDU_GCP_AUTHORIZE_API 
-    --set data.fileLocationBucketName=$FILE_BUCKET 
     --set data.partitionApi=$OSDU_GCP_PARTITION_API 
     --set data.audiences=$GOOGLE_AUDIENCE 
     --set data.springCloudGcpDatastoreNamespace=$OSDU_GCP_DATASTORE_NAMESPACE 
