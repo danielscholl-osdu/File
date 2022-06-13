@@ -9,11 +9,9 @@ data:
   gcpFileLocationKind: "file_locations_osm"
   obmMinioPartitionPropertiesPrefix: "file.minio"
   # gcp
-  fileLocationBucketName: ""
   audiences: ""
-  springCloudGcpDatastoreNamespace: ""
   fileLocationUserId: ""
-  gcpRecordsUrl: ""
+  springCloudGcpDatastoreNamespace: ""
 
 conf:
   configmap: "file-config"
