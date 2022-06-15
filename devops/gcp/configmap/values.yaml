@@ -6,14 +6,11 @@ data:
   storageApi: "http://storage/api/storage/v2/"
   springProfilesActive: "gcp"
   # on-prem
-  gcpFileLocationKind: "file_locations_osm"
   obmMinioPartitionPropertiesPrefix: "file.minio"
   # gcp
-  fileLocationBucketName: ""
-  audiences: ""
+  googleAudiences: ""
   springCloudGcpDatastoreNamespace: ""
   fileLocationUserId: ""
-  gcpRecordsUrl: ""
 
 conf:
   configmap: "file-config"

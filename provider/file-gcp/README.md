@@ -29,7 +29,8 @@ In order to run the service locally, you will need to have the following environ
 | ---  | ---   | ---         | ---        | ---    |
 | `LOG_PREFIX` | `ingest` | Logging prefix | no | - |
 | `OSDU_ENTITLEMENTS_URL` | `/https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `FILE_LOCATION_BUCKET-NAME` | ex `osdu-cicd-epam-file` | Bucket name for files | no | - |
+| `GCP_STORAGE_STAGING_AREA` | ex `ex staging-area` | staging area bucket(will be concatenated with project id ex osdu-cicd-epam-staging-area) | no | output of infrastructure deployment |
+| `GCP_STORAGE_PERSISTENT_AREA` | ex `ex persistent-area` | persistent area bucket(will be concatenated with project id ex osdu-cicd-epam-persistent-area | no | output of infrastructure deployment |
 | `FILE_LOCATION_USER-ID` | ex `common-user` |  User id which used to define files location in bucket | no | output of infrastructure deployment |
 | `GCLOUD_PROJECT` | ex `osdu-cicd-epam` | Google cloud project id | no | -- |
 | `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |

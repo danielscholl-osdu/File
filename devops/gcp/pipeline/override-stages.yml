@@ -1,34 +1,17 @@
 variables:
   OSDU_GCP_SERVICE: file
   OSDU_GCP_VENDOR: gcp-datastore
-  OSDU_GCP_APPLICATION_NAME: os-file
-  OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
-  OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
-  OSDU_GCP_HELM_DEPLOYMENT_DIR: "devops/gcp/deploy"
-  OSDU_GCP_HELM_CONFIG_DIR: "devops/gcp/configmap"
-  OSDU_GCP_HELM_NAMESPACE: default
-  OSDU_GCP_HELM_CONFIG_SERVICE: file-config
-  OSDU_GCP_HELM_DEPLOYMENT_SERVICE: file-deploy
-  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: >
-    --set data.logLevel=INFO 
-    --set data.osduEntitlementsUrl=$OSDU_GCP_AUTHORIZE_API 
-    --set data.fileLocationBucketName=$FILE_BUCKET 
-    --set data.partitionApi=$OSDU_GCP_PARTITION_API 
-    --set data.audiences=$GOOGLE_AUDIENCE 
-    --set data.springCloudGcpDatastoreNamespace=$OSDU_GCP_DATASTORE_NAMESPACE 
-    --set data.fileLocationUserId=$USER_ID 
-    --set data.storageApi=$OSDU_GCP_STORAGE_URL 
-    --set data.gcpRecordsUrl=$OSDU_GCP_RECORDS_ROOT_URL
   OSDU_GCP_HELM_CONFIG_SERVICE_VARS_DEV2: >
-    --set data.logLevel=INFO 
-    --set data.osduEntitlementsUrl=$OSDU_GCP_AUTHORIZE_API 
-    --set data.fileLocationBucketName=$FILE_BUCKET 
-    --set data.partitionApi=$OSDU_GCP_PARTITION_API 
-    --set data.audiences=$GOOGLE_AUDIENCE 
-    --set data.springCloudGcpDatastoreNamespace=$OSDU_GCP_DATASTORE_NAMESPACE 
-    --set data.fileLocationUserId=$USER_ID 
-    --set data.storageApi=$OSDU_GCP_STORAGE_URL 
+    --set data.logLevel=INFO
+    --set data.osduEntitlementsUrl=$OSDU_GCP_AUTHORIZE_API
+    --set data.fileLocationBucketName=$FILE_BUCKET
+    --set data.partitionApi=$OSDU_GCP_PARTITION_API
+    --set data.audiences=$GOOGLE_AUDIENCE
+    --set data.springCloudGcpDatastoreNamespace=$OSDU_GCP_DATASTORE_NAMESPACE
+    --set data.fileLocationUserId=$USER_ID
+    --set data.storageApi=$OSDU_GCP_STORAGE_URL
     --set data.gcpRecordsUrl=$OSDU_GCP_RECORDS_ROOT_URL
-  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: >
-    --set data.image=$CI_REGISTRY_IMAGE/osdu-gcp-$OSDU_GCP_SERVICE:$CI_COMMIT_SHORT_SHA 
-    --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s
+
+osdu-gcp-anthos-test:
+  variables:
+    OSDU_GCP_VENDOR: anthos
