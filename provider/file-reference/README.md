@@ -30,7 +30,8 @@ In order to run the service locally, you will need to have the following environ
 | `server.servlet.contextPath` | ex `/api/file/` | File service context path | no | - |
 | `LOG_PREFIX` | `ingest` | Logging prefix | no | - |
 | `OSDU_ENTITLEMENTS_URL` | `/https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `FILE_LOCATION_BUCKET-NAME` | ex `osdu-cicd-epam-file` | Bucket name for files | no | - |
+| `GCP_STORAGE_STAGING_AREA` | ex `ex staging-area` | staging area bucket(will be concatenated with project id ex osdu-cicd-epam-staging-area) | no | output of infrastructure deployment |
+| `GCP_STORAGE_PERSISTENT_AREA` | ex `ex persistent-area` | persistent area bucket(will be concatenated with project id ex osdu-cicd-epam-persistent-area | no | output of infrastructure deployment |
 | `FILE_LOCATION_USER-ID` | ex `common-user` |  User id which used to define files location in bucket | no | output of infrastructure deployment |
 | `RECORDS_ROOT_URL` | ex `https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2` / Storage API endpoint | no | output of infrastructure deployment |
 | `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
