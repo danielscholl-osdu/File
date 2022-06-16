@@ -34,6 +34,8 @@
 
   <properties>
     <io.rest-assured.version>4.0.0</io.rest-assured.version>
+    <jackson-databind.version>2.13.2.2</jackson-databind.version>
+    <jackson.version>2.13.2</jackson.version>
   </properties>
 
   <dependencies>
@@ -75,6 +77,21 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson-databind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
   </dependencies>
 
