@@ -224,8 +224,8 @@ public class StorageServiceImpl implements IStorageService {
       } else {
         signedUrlString = blobStore.generatePreSignedUrlWithUserDelegationSas(
             dpsHeaders.getPartitionId(),
-            filePath.toString(),
             containerName,
+            filePath,
             expiryTime,
             permission);
       }
@@ -234,7 +234,7 @@ public class StorageServiceImpl implements IStorageService {
       if(!msiConfiguration.getIsEnabled()) {
         signedUrlString = blobStore.generatePreSignedURL(
             dpsHeaders.getPartitionId(),
-            filePath.toString(),
+            filePath,
             containerName,
             expiryTime,
             permission,
