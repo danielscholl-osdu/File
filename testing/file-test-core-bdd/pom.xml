@@ -33,7 +33,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
     <google.oauth.version>0.21.1</google.oauth.version>
-    <os-core-lib-azure.version>0.14.0</os-core-lib-azure.version>
+    <os-core-lib-azure.version>0.15.2</os-core-lib-azure.version>
   </properties>
 
   <dependencies>
@@ -128,7 +128,7 @@
     <dependency>
 	    <groupId>org.opengroup.osdu</groupId>
 	    <artifactId>os-core-common</artifactId>
-	    <version>0.14.0</version>
+	    <version>0.15.0</version>
     </dependency>
   </dependencies>
 
