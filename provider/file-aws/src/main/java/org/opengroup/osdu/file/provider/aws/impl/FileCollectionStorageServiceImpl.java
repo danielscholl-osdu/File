@@ -24,6 +24,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.file.provider.aws.helper.S3Helper;
 import org.opengroup.osdu.file.provider.aws.model.FileCollectionDmsStorageLocation;
 import org.opengroup.osdu.file.provider.aws.model.ProviderLocation;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
@@ -65,20 +66,15 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
     @Override
     public StorageInstructionsResponse createStorageInstructions(String datasetID, String partitionID) {
         final ProviderLocation fileLocation = fileLocationProvider.getFileCollectionUploadLocation(datasetID, partitionID);
+        final S3Location unsignedLocation = S3Location.of(fileLocation.getUnsignedUrl());
 
-        FileCollectionDmsStorageLocation dmsLocation = FileCollectionDmsStorageLocation
-                                                           .builder()
-                                                           .signedUrl(fileLocation.getSignedUrl().toString())
-                                                           .createdBy(this.headers.getUserEmail())
-                                                           .fileCollectionSource(fileLocation.getLocationSource())
-                                                           .build();
-
-        Map<String, Object> uploadLocation = objectMapper.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+        final FileCollectionDmsStorageLocation dmsLocation = getFileCollectionDmsStorageLocation(fileLocation, unsignedLocation, this.headers);
+        final Map<String, Object> uploadLocation = objectMapper.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
 
         return StorageInstructionsResponse.builder()
-                                          .storageLocation(uploadLocation)
-                                          .providerKey(fileLocationProvider.getProviderKey())
-                                          .build();
+            .storageLocation(uploadLocation)
+            .providerKey(fileLocationProvider.getProviderKey())
+            .build();
     }
 
     @Override
@@ -91,6 +87,19 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
                                             .datasets(datasetRetrievalPropertiesList)
                                             .providerKey(fileLocationProvider.getProviderKey())
                                             .build();
+    }
+
+    private static FileCollectionDmsStorageLocation getFileCollectionDmsStorageLocation(ProviderLocation fileLocation, S3Location unsignedLocation, DpsHeaders headers) {
+        FileCollectionDmsStorageLocation dmsLocation = FileCollectionDmsStorageLocation
+            .builder()
+            .unsignedUrl(fileLocation.getUnsignedUrl())
+            .createdAt(fileLocation.getCreatedAt())
+            .connectionString(fileLocation.getConnectionString())
+            .credentials(fileLocation.getCredentials())
+            .createdBy(headers.getUserEmail())
+            .region(S3Helper.getBucketRegion(unsignedLocation.getBucket(), fileLocation.getCredentials()))
+            .build();
+        return dmsLocation;
     }
 
     private DatasetRetrievalProperties buildDatasetRetrievalProperties(FileRetrievalData fileRetrievalData) {
@@ -106,13 +115,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
         final Duration expiration = Duration.ofMillis(expireInMillis);
         final ProviderLocation fileLocation = fileLocationProvider.getFileCollectionRetrievalLocation(unsignedLocation, expiration);
-
-        final FileCollectionDmsStorageLocation dmsLocation = FileCollectionDmsStorageLocation
-                                                                 .builder()
-                                                                 .signedUrl(fileLocation.getSignedUrl().toString())
-                                                                 .createdBy(this.headers.getUserEmail())
-                                                                 .fileCollectionSource(fileLocation.getLocationSource())
-                                                                 .build();
+        final FileCollectionDmsStorageLocation dmsLocation = getFileCollectionDmsStorageLocation(fileLocation, unsignedLocation, this.headers);
         final Map<String, Object> downloadLocation = objectMapper.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
 
         return DatasetRetrievalProperties.builder()

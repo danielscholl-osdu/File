@@ -21,6 +21,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.Region;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentialsProvider;
@@ -51,6 +52,16 @@ public class S3Helper {
         AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
         try {
             return s3.doesObjectExist(location.getBucket(), location.getKey());
+        } catch (AmazonServiceException exception) {
+            return false;
+        }
+    }
+
+    public static boolean doesObjectCollectionExist(S3Location location, TemporaryCredentials credentials) {
+        AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
+        try {
+            final ObjectListing s3ObjectList = s3.listObjects(location.getBucket(), location.getKey());
+            return !s3ObjectList.getObjectSummaries().isEmpty();
         } catch (AmazonServiceException exception) {
             return false;
         }
