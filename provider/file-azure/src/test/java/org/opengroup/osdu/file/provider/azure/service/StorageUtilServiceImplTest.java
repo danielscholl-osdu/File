@@ -27,12 +27,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
+import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
 
 import java.io.IOException;
@@ -69,10 +71,13 @@ public class StorageUtilServiceImplTest {
   @Mock
   ServiceHelper serviceHelper;
 
+  @Mock
+  JaxRsDpsLog log;
+
   @BeforeEach
   void init() {
     initMocks(this);
-    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, filePathUtil, blobServiceClientWrapper, blobStore, serviceHelper, dpsHeaders);
+    storageUtilService = new StorageUtilServiceImpl(blobStoreConfig, filePathUtil, blobServiceClientWrapper, blobStore, serviceHelper, dpsHeaders, log);
   }
 
   @Test
@@ -114,33 +119,33 @@ public class StorageUtilServiceImplTest {
     when(blobProperties.getContentMd5()).thenReturn(TestUtils.BLOB_NAME.getBytes());
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
-      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+ StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     when(serviceHelper
-      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
 
-    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);
+    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
     Assertions.assertNotNull(checksum);
-    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,TestUtils.STAGING_CONTAINER_NAME);
+    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID,TestUtils.STAGING_CONTAINER_NAME);
   }
 
   @Test
   public void getChecksum_ShouldThrow_OsduBadRequestException_IfBlobStoreThrowsException() {
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
-      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     when(serviceHelper
-      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
     Mockito.doThrow(BlobStorageException.class).when(
-      blobStore).readBlobProperties(
-      TestUtils.PARTITION,
-      TestUtils.RELATIVE_FILE_PATH,
-      TestUtils.STAGING_CONTAINER_NAME);
+        blobStore).readBlobProperties(
+        TestUtils.PARTITION,
+        TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID,
+        TestUtils.STAGING_CONTAINER_NAME);
 
-    Assertions.assertThrows(OsduBadRequestException.class,()->{storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);});
+    Assertions.assertThrows(OsduBadRequestException.class,()->{storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);});
   }
 
   @Test
@@ -149,18 +154,19 @@ public class StorageUtilServiceImplTest {
     when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
     BlobInputStream blobInputStream = mock(BlobInputStream.class);
     when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
-    when(blobInputStream.read()).thenReturn(10).thenReturn(-1);
+    byte[] bytes = new byte[StorageConstant.AZURE_MAX_FILEPATH];
+    when(blobInputStream.read(bytes)).thenReturn(10).thenReturn(-1);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
-      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     when(serviceHelper
-      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
 
-    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);
+    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
     Assertions.assertNotNull(checksum);
-    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,TestUtils.STAGING_CONTAINER_NAME);
+    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID,TestUtils.STAGING_CONTAINER_NAME);
   }
 
   @Test
@@ -170,14 +176,15 @@ public class StorageUtilServiceImplTest {
     when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
-      .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     when(serviceHelper
-      .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
-      .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
+    byte[] bytes = new byte[StorageConstant.AZURE_MAX_FILEPATH];
     Mockito.doThrow(IOException.class).when(
-      blobInputStream).read();
+        blobInputStream).read(bytes);
 
-    Assertions.assertThrows(AppException.class,()->{storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH);});
+    Assertions.assertThrows(AppException.class,()->{storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);});
   }
 }

@@ -20,11 +20,11 @@ import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.specialized.BlobInputStream;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.util.Strings;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
@@ -44,7 +44,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 @Primary
 public class StorageUtilServiceImpl implements IStorageUtilService  {
@@ -67,6 +66,8 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
 
   @Autowired
   final DpsHeaders dpsHeaders;
+
+  final JaxRsDpsLog log;
 
   @Override
   public String getPersistentLocation(String relativePath, String partitionId) {
@@ -93,16 +94,17 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
     if (Strings.isBlank(filePath)) {
       throw new OsduBadRequestException(String.format("Illegal file path argument - { %s }", filePath));
     }
-
     String sourceFilePath = serviceHelper.getRelativeFilePathFromAbsoluteFilePath(filePath);
     String containerName = serviceHelper.getContainerNameFromAbsoluteFilePath(filePath);
     try {
       BlobProperties blobProperties = blobStore.readBlobProperties(dpsHeaders.getPartitionId(), sourceFilePath, containerName);
       byte[] byteChecksum = blobProperties.getContentMd5();
-
+      String fileID = sourceFilePath.split(StorageConstant.SLASH)[2];
       if (byteChecksum != null && byteChecksum.length > 0) {
+        log.info("checksum is available for fileId "+fileID);
         return new String(Hex.encodeHex(byteChecksum));
       } else {
+        log.info("checksum is not available, calculating the checksum for fileId "+fileID);
         return calculateChecksum(sourceFilePath, containerName);
       }
     } catch (BlobStorageException ex) {
@@ -116,12 +118,11 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
       BlobInputStream blobInputStream = blobStore.getBlobInputStream(dpsHeaders.getPartitionId(), filePath, containerName);
       byte[] bytes = new byte[StorageConstant.AZURE_MAX_FILEPATH];
       int numBytes;
-      while ((numBytes = blobInputStream.read()) != -1) {
+      while ((numBytes = blobInputStream.read(bytes)) != -1) {
         md.update(bytes, 0, numBytes);
       }
       byte[] digest = md.digest();
-      String checksum = new String(Hex.encodeHex(digest));
-      return checksum;
+      return new String(Hex.encodeHex(digest));
     } catch (NoSuchAlgorithmException ex) {
       String message = FileMetadataConstant.CHECKSUM_EXCEPTION + filePath;
       throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, message , ex.getMessage(), ex);

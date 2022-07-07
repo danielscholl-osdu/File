@@ -22,6 +22,7 @@ public final class StorageConstant {
   public static final int AZURE_MAX_FILEPATH = 1024;
   public static final String BLOB_STORAGE_ACCOUNT_BASE_URI_REGEX = "%s%s.blob.core.windows.net";
   public static final String BLOB_RESOURCE_BASE_URI_REGEX = "%s%s.blob.core.windows.net/%s/%s";
+  public static final String SLASH = "/";
   private StorageConstant() {
   }
 
