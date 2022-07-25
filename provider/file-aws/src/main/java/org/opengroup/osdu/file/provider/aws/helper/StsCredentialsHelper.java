@@ -84,101 +84,62 @@ public class StsCredentialsHelper {
     }
 
     private Policy createUploadPolicy(S3Location fileLocation) {
-        //Some string formats below assume no trailing slash.
-        String fileLocationKey = fileLocation.getKey();
         String fileLocationKeyWithoutTrailingSlash = fileLocation.getKey().replaceFirst("/$", "");
 
         Policy policy = new Policy();
 
-        //Statement 1: Allow Listing files at the file location
-        Statement listBucketStatement = new Statement(Statement.Effect.Allow);
-        String resource = String.format("arn:aws:s3:::%s", fileLocation.getBucket());
-        Condition condition = new Condition()
-                                  .withType("StringEquals")
-                                  .withConditionKey("s3:prefix")
-                                  .withValues(fileLocationKey);
+        // Policy Statement needed to create the S3 client.
+        Statement getBucketLocationStatement = (new Statement(Statement.Effect.Allow))
+            .withResources(new Resource(String.format("arn:aws:s3:::%s", fileLocation.getBucket())))
+            .withActions(S3Actions.GetBucketLocation);
 
-        listBucketStatement = listBucketStatement.withResources(new Resource(resource))
-                                                 .withConditions(condition)
-                                                 .withActions(S3Actions.ListObjects, S3Actions.ListObjectVersions);
+        // Policy Statement that lets the user put an object to S3.
+        Statement putObjectStatement = (new Statement(Statement.Effect.Allow))
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)))
+            .withActions(
+                S3Actions.PutObject,
+                S3Actions.ListObjects,
+                S3Actions.ListObjectVersions,
+                S3Actions.ListBucketMultipartUploads,
+                S3Actions.ListMultipartUploadParts,
+                S3Actions.AbortMultipartUpload);
 
-        //Statement 2: Allow Listing files under the file location
-        Statement listBucketSubPathStatement = new Statement(Statement.Effect.Allow);
-        String resource2 = String.format("arn:aws:s3:::%s", fileLocation.getBucket());
-        Condition condition2 = new Condition()
-                                   .withType("StringLike")
-                                   .withConditionKey("s3:prefix")
-                                   .withValues(String.format("%s/*", fileLocationKeyWithoutTrailingSlash));
-
-        listBucketSubPathStatement = listBucketSubPathStatement.withResources(new Resource(resource2))
-                                                               .withConditions(condition2)
-                                                               .withActions(S3Actions.AllS3Actions);
-
-        //Statement 3: Allow Uploading files at the file location
-        Statement allowUploadStatement = new Statement(Statement.Effect.Allow);
-        String resource3 = String.format("arn:aws:s3:::%s/%s", fileLocation.getBucket(), fileLocationKey);
-
-        allowUploadStatement = allowUploadStatement.withResources(new Resource(resource3))
-                                                   .withActions(S3Actions.PutObject, S3Actions.ListBucketMultipartUploads,
-                                                                S3Actions.ListMultipartUploadParts, S3Actions.AbortMultipartUpload);
-
-        //Statement 4: Allow Uploading files under the file location
-        Statement allowUploadSubPathStatement = new Statement(Statement.Effect.Allow);
-        String resource4 = String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash);
-
-        allowUploadSubPathStatement = allowUploadSubPathStatement.withResources(new Resource(resource4))
-                                                                 .withActions(S3Actions.PutObject, S3Actions.ListBucketMultipartUploads,
-                                                                              S3Actions.ListMultipartUploadParts,
-                                                                              S3Actions.AbortMultipartUpload);
-
-        return policy.withStatements(listBucketStatement, listBucketSubPathStatement, allowUploadStatement, allowUploadSubPathStatement);
+        return policy.withStatements(getBucketLocationStatement, putObjectStatement);
     }
 
     private Policy createRetrievalPolicy(S3Location fileLocation) {
-        String fileLocationKey = fileLocation.getKey();
         String fileLocationKeyWithoutTrailingSlash = fileLocation.getKey().replaceFirst("/$", "");
 
         Policy policy = new Policy();
 
-        //Statement 1: Allow Listing files at the file location
-        Statement listBucketStatement = new Statement(Statement.Effect.Allow);
-        String resource = String.format("arn:aws:s3:::%s", fileLocation.getBucket());
-        Condition condition = new Condition()
-                                  .withType("StringEquals")
-                                  .withConditionKey("s3:prefix")
-                                  .withValues(fileLocationKey);
+        // Policy Statement needed to perform validation against the s3 bucket.
+        Statement bucketValidationStatement = (new Statement(Statement.Effect.Allow))
+            .withResources(new Resource(String.format("arn:aws:s3:::%s", fileLocation.getBucket())))
+            .withActions(
+                S3Actions.GetBucketLocation,
+                S3Actions.ListObjects,
+                S3Actions.ListObjectVersions);
 
-        listBucketStatement = listBucketStatement.withResources(new Resource(resource))
-                                                 .withConditions(condition)
-                                                 .withActions(S3Actions.ListObjects, S3Actions.ListObjectVersions);
+        // Policy Statement that lets the user get objects from S3.
+        Statement getObjectStatement = (new Statement(Statement.Effect.Allow))
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)))
+            .withActions(
+                S3Actions.GetObject,
+                S3Actions.GetObjectVersion,
+                S3Actions.GetObjectAcl,
+                S3Actions.ListObjects,
+                S3Actions.ListObjectVersions);
 
-        //Statement 2: Allow Listing files under the file location
-        Statement listBucketSubPathStatement = new Statement(Statement.Effect.Allow);
-        String resource2 = String.format("arn:aws:s3:::%s", fileLocation.getBucket());
-        Condition condition2 = new Condition()
-                                   .withType("StringLike")
-                                   .withConditionKey("s3:prefix")
-                                   .withValues(String.format("%s/*", fileLocationKeyWithoutTrailingSlash));
+        // Policy Statement that lets the user get object collections from S3.
+        Statement getObjectCollectionStatement = (new Statement(Statement.Effect.Allow))
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)))
+            .withActions(
+                S3Actions.GetObject,
+                S3Actions.GetObjectVersion,
+                S3Actions.GetObjectAcl,
+                S3Actions.ListObjects,
+                S3Actions.ListObjectVersions);
 
-        listBucketSubPathStatement = listBucketSubPathStatement.withResources(new Resource(resource2))
-                                                               .withConditions(condition2)
-                                                               .withActions(S3Actions.AllS3Actions);
-
-        //Statement 3: Allow Downloading files at the file location
-        Statement allowDownloadStatement = new Statement(Statement.Effect.Allow);
-        String resource3 = String.format("arn:aws:s3:::%s/%s", fileLocation.getBucket(), fileLocationKey);
-
-        allowDownloadStatement = allowDownloadStatement.withResources(new Resource(resource3))
-                                                       .withActions(S3Actions.GetObject, S3Actions.GetObjectVersion);
-
-        //Statement 4: Allow Downloading files under the file location
-        Statement allowDownloadSubPathStatement = new Statement(Statement.Effect.Allow);
-        String resource4 = String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash);
-
-        allowDownloadSubPathStatement = allowDownloadSubPathStatement.withResources(new Resource(resource4))
-                                                                     .withActions(S3Actions.GetObject, S3Actions.GetObjectVersion);
-
-        return policy.withStatements(listBucketStatement, listBucketSubPathStatement, allowDownloadStatement,
-                                     allowDownloadSubPathStatement);
+        return policy.withStatements(bucketValidationStatement, getObjectStatement, getObjectCollectionStatement);
     }
 }
