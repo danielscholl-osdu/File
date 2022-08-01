@@ -1,0 +1,55 @@
+data:
+# common
+  javaAppJar: "/deployments/*-spring-boot.jar"
+  serverPort: 8080
+  contextPath: "/api/file/"
+  
+# log
+  logPrefix: file
+  loggingLevelOsdu: debug
+  loggingLevelSpring: debug
+
+# ibm 
+  beanDefOverriding: true
+  healthCheckUri: "/api/file/v2/info"
+ 
+#authorization
+  #check cm template
+  authorizeAPI: http://TBD:8080/api/entitlements/v2
+  deployEnv: CLOUD
+  
+#db 
+  #dbURL-refer-cm-template
+  dbURL: http://tbd:5984
+  #get-from-existing secret check cm template
+  dbUser: tbd
+  envPrefix: ibm-iks
+  #get-from-existing secret  
+  dbPassw: tbd
+
+#minio-values-injected-in-deployment-template
+  accessKey: tbd
+  secretKey: tbd
+
+#tenant-validation
+  pKCEndPointHost: referenv
+  keycloakRealm: OSDU
+  pKCClientId: partition-service
+  pKCClientSecret: referenv
+  grantType: password
+  pKCPassword: changeit
+  pKCUser: partition-service-admin
+  pKAcceptHttp: true
+  tenantCacheExpiryInSec: 10000
+  #refer-cm-template
+  #patitionAPI: refer-configmap-template
+
+  #AMQ
+  amqpPassword: TBD
+  amqpUserName: TBD
+  amqpURL: "amqp://ex-aao-amqp-0-svc:5672"
+
+
+
+conf:
+  configmap: "file-config"
