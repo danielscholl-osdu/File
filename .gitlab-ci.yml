@@ -1,6 +1,8 @@
 variables:
   IBM_BUILD_SUBDIR: provider/file-ibm
   IBM_INT_TEST_SUBDIR: testing/file-test-ibm
+  IBM_HELM_CONFIG_PATH: devops/ibm/ibm-file-config
+  IBM_HELM_DEPLOY_PATH: devops/ibm/ibm-file-deploy
 
   #Azure
   AZURE_SERVICE: file
@@ -27,6 +29,7 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/ibm.yml"
+    ref: "ibm-helm-charts"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
