@@ -381,8 +381,10 @@ The following software have components provided under the terms of this license:
 - Byte Buddy Java agent (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
 - Cloud Key Management Service (KMS) API v1-rev20220407-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
+- Cloud Key Management Service (KMS) API v1-rev20220701-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
 - Cloud Storage JSON API v1-rev20220509-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - Cloud Storage JSON API v1-rev20220608-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
+- Cloud Storage JSON API v1-rev20220705-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - CloudWatch Metrics for AWS Java SDK (from https://aws.amazon.com/sdkforjava)
 - Cobertura (from http://cobertura.sourceforge.net)
 - Collections (from https://repo1.maven.org/maven2/commons-collections/commons-collections)
@@ -435,6 +437,7 @@ The following software have components provided under the terms of this license:
 - IBM COS SDK For Java (from https://github.com/ibm/ibm-cos-sdk-java)
 - IBM COS SDK for Java - Core (from https://github.com/ibm/ibm-cos-sdk-java)
 - Identity and Access Management (IAM) API v2beta-rev20220421-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-iam)
+- Identity and Access Management (IAM) API v2beta-rev20220526-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-iam)
 - J2ObjC Annotations (from https://github.com/google/j2objc/)
 - JAXB OSGI (from http://jaxb.java.net/, https://eclipse-ee4j.github.io/jaxb-ri/, https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-osgi)
 - JBoss Logging 3 (from http://www.jboss.org)
@@ -733,6 +736,7 @@ The following software have components provided under the terms of this license:
 - springfox-swagger-ui (from https://github.com/springfox/springfox)
 - springfox-swagger2 (from https://github.com/springfox/springfox)
 - swagger-annotations (from https://repo1.maven.org/maven2/io/swagger/core/v3/swagger-annotations, https://repo1.maven.org/maven2/io/swagger/swagger-annotations)
+- swagger-core (from https://repo1.maven.org/maven2/io/swagger/swagger-core)
 - swagger-jaxrs (from https://repo1.maven.org/maven2/io/swagger/swagger-jaxrs)
 - swagger-models (from https://repo1.maven.org/maven2/io/swagger/core/v3/swagger-models)
 - t-digest (from https://github.com/tdunning/t-digest)
@@ -1053,7 +1057,7 @@ The following software have components provided under the terms of this license:
 - Jakarta RESTful WS API (from https://github.com/eclipse-ee4j/jaxrs-api)
 - Jakarta Servlet (from https://javaee.github.io/servlet-spec/, https://projects.eclipse.org/projects/ee4j.servlet)
 - Java Architecture for XML Binding (from http://jaxb.java.net/, https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api)
-- JavaBeans Activation Framework
+- JavaBeans Activation Framework (from https://repo1.maven.org/maven2/com/sun/activation/javax.activation)
 - Lang (from https://repo1.maven.org/maven2/commons-lang/commons-lang)
 - OSGi resource locator (from https://repo1.maven.org/maven2/org/glassfish/hk2/osgi-resource-locator)
 - RabbitMQ Java Client (from http://www.rabbitmq.com, https://www.rabbitmq.com)
@@ -1215,6 +1219,10 @@ The following software have components provided under the terms of this license:
 ========================================================================
 LGPL-3.0-only
 ========================================================================
+The following software have components provided under the terms of this license:
+
+- Logback Classic Module (from http://logback.qos.ch, https://repo1.maven.org/maven2/ch/qos/logback/logback-classic)
+- Logback Core Module (from http://logback.qos.ch, https://repo1.maven.org/maven2/ch/qos/logback/logback-core)
 - RabbitMQ Java Client (from http://www.rabbitmq.com, https://www.rabbitmq.com)
 
 ========================================================================
