@@ -34,7 +34,7 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
-    <core.lib.gcp.version>0.15.0</core.lib.gcp.version>
+    <core.lib.gcp.version>0.16.0</core.lib.gcp.version>
   </properties>
   <dependencyManagement>
     <dependencies>
