@@ -35,6 +35,7 @@
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
     <core.lib.gcp.version>0.15.0</core.lib.gcp.version>
+    <spring-webmvc.version>5.3.22</spring-webmvc.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -75,6 +76,11 @@
       <groupId>ch.qos.logback.contrib</groupId>
       <artifactId>logback-json-classic</artifactId>
       <version>0.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring-webmvc.version}</version>
     </dependency>
   </dependencies>
   <build>
