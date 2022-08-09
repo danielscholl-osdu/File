@@ -4,7 +4,6 @@ metadata:
   name: {{ include "ibm-file-deploy.fullname" . }}
   labels:
     {{- include "ibm-file-deploy.labels" . | nindent 4 }}
-    sidecar.istio.io/inject: "{{ .Values.sidecarIstioInjected }}"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -20,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "ibm-file-deploy.selectorLabels" . | nindent 8 }}
+        sidecar.istio.io/inject: "{{ .Values.sidecarIstioInjected }}"
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -31,8 +31,8 @@ spec:
       initContainers:
         - name: {{ .Values.initimage.name }}
           image: {{ .Values.initimage.initrepository }}:{{ .Values.initimage.tag }}
-          imagePullPolicy: {{ .Values.initimage.pullPolicy }} 
-          command: ['sh', '-c', './health_probe.sh $(HEALTH_URI)/info && sleep 5'] 
+          imagePullPolicy: {{ .Values.initimage.pullPolicy }}
+          command: ['sh', '-c', './health_probe.sh $(HEALTH_URI)/info && sleep 5']
           env:
             - name: HEALTH_URI
               valueFrom:
@@ -96,6 +96,11 @@ spec:
                 secretKeyRef:
                   key: ibm.cos.subpassword
                   name: minio-subuser
+            - name: ibm.cos.endpoint_url
+              valueFrom:
+                configMapKeyRef:
+                  key: ibm.cos.endpoint_url
+                  name: partition-config                
           envFrom:
           - configMapRef:
               name: "{{ .Values.conf.configmap }}"
