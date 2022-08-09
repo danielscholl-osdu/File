@@ -36,6 +36,7 @@
     <io.rest-assured.version>4.0.0</io.rest-assured.version>
     <jackson-databind.version>2.13.2.2</jackson-databind.version>
     <jackson.version>2.13.2</jackson.version>
+    <spring-webmvc.version>5.3.22</spring-webmvc.version>
   </properties>
 
   <dependencies>
@@ -55,6 +56,11 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring-webmvc.version}</version>
     </dependency>
 
 	<dependency>
