@@ -385,6 +385,7 @@ The following software have components provided under the terms of this license:
 - Cloud Storage JSON API v1-rev20220509-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - Cloud Storage JSON API v1-rev20220608-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - Cloud Storage JSON API v1-rev20220705-1.32.1 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
+- Cloud Storage JSON API v1-rev20220705-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - CloudWatch Metrics for AWS Java SDK (from https://aws.amazon.com/sdkforjava)
 - Cobertura (from http://cobertura.sourceforge.net)
 - Collections (from https://repo1.maven.org/maven2/commons-collections/commons-collections)
@@ -1181,8 +1182,6 @@ The following software have components provided under the terms of this license:
 ========================================================================
 LGPL-2.0-or-later
 ========================================================================
-The following software have components provided under the terms of this license:
-
 - SpotBugs Annotations (from https://spotbugs.github.io/)
 
 ========================================================================
@@ -1454,8 +1453,6 @@ The following software have components provided under the terms of this license:
 ========================================================================
 unknown
 ========================================================================
-The following software have components provided under the terms of this license:
-
 - Bouncy Castle PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs (from http://www.bouncycastle.org/java.html, https://maven.repository.redhat.com/ga/org/bouncycastle/bcpkix-jdk15on, https://www.bouncycastle.org/java.html)
 - Bouncy Castle Provider (from http://www.bouncycastle.org/java.html, https://www.bouncycastle.org/java.html)
 - Byte Buddy (without dependencies) (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy)
