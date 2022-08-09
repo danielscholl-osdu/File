@@ -34,6 +34,7 @@ data:
 
 #Authorization  
   AUTHORIZE_API: "http://{{ .Release.Name }}-ibm-entitlement-deploy:8080/api/entitlements/v2"
+  osdu.entitlements.url: "http://{{ .Release.Name }}-ibm-entitlement-deploy:8080/api/entitlements/v2"
   DEPLOYMENT_ENVIRONMENT: "{{ .Values.data.deployEnv }}"
 
 #AMQ

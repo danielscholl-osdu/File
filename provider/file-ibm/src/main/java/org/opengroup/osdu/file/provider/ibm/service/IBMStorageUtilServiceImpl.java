@@ -4,6 +4,9 @@
 package org.opengroup.osdu.file.provider.ibm.service;
 
 
+import java.util.Arrays;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -12,6 +15,8 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 import org.opengroup.osdu.core.ibm.objectstorage.CloudObjectStorageFactory;
+import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,4 +76,23 @@ public class IBMStorageUtilServiceImpl implements IStorageUtilService{
 			return cosFactory.getBucketName(partitionId, bucket);
 		}
 
+	  
+	  @Override
+	  public String getChecksum(final String filePath) {
+		  if (Strings.isNullOrEmpty(filePath)) {
+		      throw new AppException(HttpStatus.SC_BAD_REQUEST, String.format("Illegal file path argument - { %s }", filePath), "");
+		    }
+		  
+		  String[] filePath_split = Arrays.stream(filePath.split("/"))
+				  .map(String::trim)
+				  .toArray(String[]::new);
+		  		  
+		  Map<String, Object> rawMetadata = cosFactory.getClient().getObjectMetadata(filePath_split[2], filePath_split[3]).getRawMetadata();		 		  
+		  return rawMetadata.get("etag").toString();
+	  }
+	  
+	  @Override
+	  public ChecksumAlgorithm getChecksumAlgorithm() { 
+		  return ChecksumAlgorithm.MD5; 
+	  }
 }

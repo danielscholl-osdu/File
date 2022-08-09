@@ -21,6 +21,6 @@ spec:
         prefix: /api/file/
     route:
     - destination:
-        host: {{ .Release.Name }}-ibm-schema-deploy
+        host: {{ .Release.Name }}-ibm-file-deploy
         port:
           number: 8080
