@@ -20,10 +20,6 @@ analyze:
     type: mvn
     target: provider/file-aws/pom.xml
     path: .
-  - name: file-gcp
-    type: mvn
-    target: provider/file-gcp/pom.xml
-    path: .
   - name: file-ibm
     type: mvn
     target: provider/file-ibm/pom.xml
@@ -35,8 +31,4 @@ analyze:
   - name: file-azure
     type: mvn
     target: provider/file-azure/pom.xml
-    path: .
-  - name: file-reference
-    type: mvn
-    target: provider/file-reference/pom.xml
     path: .
