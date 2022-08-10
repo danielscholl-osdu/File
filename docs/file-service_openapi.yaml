@@ -788,7 +788,7 @@ components:
                   type: string
                   description: user-friendly file name.
 
-                PreLoadFilePath:
+                PreloadFilePath:
                   type: string
                   description: File system path to the data file as it existed before loading to the data platform
 
@@ -1205,7 +1205,7 @@ components:
           type: string
           description: user-friendly file name.
 
-        PreLoadFilePath:
+        PreloadFilePath:
           type: string
           description: File system path to the data file as it existed before loading to the data platform
         FileSource:

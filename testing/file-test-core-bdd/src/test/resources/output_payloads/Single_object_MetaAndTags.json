@@ -27,7 +27,7 @@
         "DatasetProperties": {
             "FileSourceInfo": {
                 "FileSource": "/osdu-user/1628661327615-2021-08-11-05-55-27-615/test.csv",
-                "PreLoadFilePath": "string",
+                "PreloadFilePath": "string",
                 "PreloadFileCreateUser": "string",
                 "PreloadFileCreateDate": "string",
                 "PreloadFileModifyUser": "string",

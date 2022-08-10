@@ -23,7 +23,7 @@
             }
         },
 		"SchemaFormatTypeID": "string",
-		"PreLoadFilePath": "string",
+		"PreloadFilePath": "string",
 		"FileSource": "string",
 		"FileSize": 0,
 		"Name": "File",

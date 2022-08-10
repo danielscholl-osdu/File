@@ -27,7 +27,7 @@
         "DatasetProperties": {
             "FileSourceInfo": {
                 "FileSource": "/osdu-user/1628662010285-2021-08-11-06-06-50-285/test.csv",
-                "PreLoadFilePath": "string",
+                "PreloadFilePath": "string",
                 "PreloadFileCreateUser": "string",
                 "PreloadFileCreateDate": "string",
                 "PreloadFileModifyUser": "string",
@@ -49,10 +49,10 @@
                 "string"
             ],
             "FileDateCreated": {
-                
+
             },
             "FileDateModified": {
-                
+
             },
             "FileContentsDetails": {
                 "TargetKind": "os:npd:wellbore:1:*.*",
@@ -74,13 +74,13 @@
                         ],
                         "uncertainty": 0,
                         "additionalProp1": {
-                            
+
                         },
                         "additionalProp2": {
-                            
+
                         },
                         "additionalProp3": {
-                            
+
                         }
                     }
                 ],
@@ -109,13 +109,13 @@
             ],
             "uncertainty": 0,
             "additionalProp1": {
-                
+
             },
             "additionalProp2": {
-                
+
             },
             "additionalProp3": {
-                
+
             }
         }
     ],

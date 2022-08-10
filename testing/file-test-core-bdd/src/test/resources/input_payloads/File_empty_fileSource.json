@@ -27,7 +27,7 @@
 		"DatasetProperties": {
 			"FileSourceInfo": {
 				"Name": "test.csv",
-				"PreLoadFilePath": "string",
+				"PreloadFilePath": "string",
 				"FileSource": "",
 				"PreloadFileCreateUser": "string",
 				"PreloadFileCreateDate": "string",

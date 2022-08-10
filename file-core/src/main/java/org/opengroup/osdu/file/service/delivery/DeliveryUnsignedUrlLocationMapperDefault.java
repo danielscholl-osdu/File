@@ -23,7 +23,7 @@ import java.util.Map;
 public class DeliveryUnsignedUrlLocationMapperDefault implements IDeliveryUnsignedUrlLocationMapper {
 
     //TODO Update to use a database and map by kind
-    private final String UNSIGNED_URL_PATH = "Data.GroupTypeProperties.PreLoadFilePath";
+    private final String UNSIGNED_URL_PATH = "Data.GroupTypeProperties.PreloadFilePath";
 
     @Override
     public String getUnsignedURLFromSearchResponse(Map<String, Object> searchResponse) {

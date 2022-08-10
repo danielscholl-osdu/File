@@ -17,7 +17,7 @@
             }
         },
 		"SchemaFormatTypeID": "string",
-		"PreLoadFilePath": "string",
+		"PreloadFilePath": "string",
 		"FileSource": "/0b37236c-a3ee-4ea8-8db8-82780362c849/d2ac6a46-3326-4075-b6d5-900f74b44f9e",
 		"FileSize": 0,
 		"Name": "File",

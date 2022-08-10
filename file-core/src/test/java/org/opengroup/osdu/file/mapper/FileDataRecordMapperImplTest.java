@@ -49,15 +49,15 @@ public class FileDataRecordMapperImplTest {
     private FileMetadataRecordMapper fileDataRecordMapper;
     public static final String RECORD_ID = "tenant1:file:1b9dd1a8-d317-11ea-87d0-0242ac130003";
     public static final String FILE_DATA = "{ \"ResourceHomeRegionID\": \"namespace:reference-data--OSDURegion:SomeUniqueOSDURegionID:\", \"ResourceHostRegionIDs\": [ \"namespace:reference-data--OSDURegion:SomeUniqueOSDURegionID:\" ], \"ResourceCurationStatus\": \"namespace:reference-data--ResourceCurationStatus:CREATED:\", \"ResourceLifecycleStatus\": \"namespace:reference-data--ResourceLifecycleStatus:LOADING:\", \"ResourceSecurityClassification\": \"namespace:reference-data--ResourceSecurityClassification:RESTRICTED:\", \"Source\": \"Example Data Source\", \"ExistenceKind\": \"namespace:reference-data--ExistenceKind:Prototype:\", \"Name\": \"Dataset X221/15\", \"Description\": \"As originally delivered by ACME.com.\", \"TotalSize\": \"13245217273\", \"EncodingFormatTypeID\": \"namespace:reference-data--EncodingFormatType:text%2Fcsv:\", \"SchemaFormatTypeID\": \"namespace:reference-data--SchemaFormatType:CWLS%20LAS3:\", \"Endian\": \"BIG\", \"DatasetProperties\": { \"FileSourceInfo\": { \"FileSource\": \"s3://default_bucket/r1/data/provided/documents/1000.witsml\", \"Name\": \"1000.witsml\" } }, \"Checksum\": \"d41d8cd98f00b204e9800998ecf8427e\", \"ExtensionProperties\": {} }";
-   
-    
+
+
     public static final String KIND = "wks:tenant1:file";
 
     @Test
     public void fileMetadataToRecord() throws ApplicationException, JsonProcessingException {
         fileDataRecordMapper = new FileMetadataRecordMapper(new ObjectMapper());
 
-        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();        
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
         DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
         FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
@@ -70,7 +70,7 @@ public class FileDataRecordMapperImplTest {
         assertEquals("tenant1:1234", record.getId());
 		assertEquals("stage/file.txt", extractFileSource(record));
 	}
-    
+
     @Test
     public void fileMetadataToRecordwithMetaBlock() throws ApplicationException {
         fileDataRecordMapper = new FileMetadataRecordMapper(new ObjectMapper());
@@ -121,7 +121,7 @@ public class FileDataRecordMapperImplTest {
     public void recordToRecordVersionParseError() throws ApplicationException, JsonMappingException, JsonProcessingException {
         fileDataRecordMapper = new FileMetadataRecordMapper(new ObjectMapper());
         Record record = getRecordObj();
-        String jsonString = "{ \"SchemaFormateID\": \"string\", \"PreLoadFilePath\": \"string\", \"Source\": \"/osdu-user/1609348736017-2020-12-30-17-18-56-017/943ee9537b8c4254a2fdc1f9c8684f79\", \"FileSize\": 0, \"Name\": \"File\", \"EncodingFormatTypeID\": \"string\", \"Endian\": \"BIG\", \"LossyCompressionIndicator\": true, \"CompressionMethodTypeID\": \"string\", \"CompressionLevel\": 0, \"Checksum\": \"string\", \"VectorHeaderMapping\": [ { \"KeyName\": \"string\", \"WordFormat\": \"string\", \"WordWidth\": 0, \"Position\": 0, \"UoM\": \"string\", \"ScalarIndicator\": \"STANDARD\", \"ScalarOverride\": 0 } ], \"relationships\": { \"parentEntity\": { \"confidence\": 1, \"id\": \"data_partition:namespace:entity_845934c40e8d922bc57b678990d55722\", \"name\": \"Survey ST2016\", \"version\": 0 }, \"relatedItems\": { \"confidences\": [ 0 ], \"ids\": [ \"string\" ], \"names\": [ \"string\" ], \"versions\": [ 0 ] } }, \"ExtensionProperties\": { \"Classification\": \"Raw File\", \"Description\": \"An text further describing this file example.\", \"ExternalIds\": [ \"string\" ], \"FileDateCreated\": {}, \"FileDateModified\": {}, \"FileContentsDetails\": { \"TargetKind\": \"os:npd:wellbore:1:*.*\", \"FileType\": \"csv\", \"FrameOfReference\": [ { \"kind\": \"CRS\", \"name\": \"[NAD27 * OGP-Usa Conus / North Dakota South [3202115851]ft]\", \"persistableReference\": \"scaleOffset:scale:0.3048006096012192offset:0.0symbol:ftUSbaseMeasurement:ancestry:Lengthtype:UMtype:USO}\", \"propertyNames\": [ \"elevationFromMsl\", \"totalDepthMdDriller\", \"wellHeadProjected\" ], \"propertyValues\": [ \"F\", \"ftUS\", \"deg\" ], \"uncertainty\": 0 } ], \"ExtensionProperties\": { \"kind\": \"os:npd:csvFileExtDetails:1.0.0\" }, \"ParentReference\": \"CSBE0417\" } } }";
+        String jsonString = "{ \"SchemaFormateID\": \"string\", \"PreloadFilePath\": \"string\", \"Source\": \"/osdu-user/1609348736017-2020-12-30-17-18-56-017/943ee9537b8c4254a2fdc1f9c8684f79\", \"FileSize\": 0, \"Name\": \"File\", \"EncodingFormatTypeID\": \"string\", \"Endian\": \"BIG\", \"LossyCompressionIndicator\": true, \"CompressionMethodTypeID\": \"string\", \"CompressionLevel\": 0, \"Checksum\": \"string\", \"VectorHeaderMapping\": [ { \"KeyName\": \"string\", \"WordFormat\": \"string\", \"WordWidth\": 0, \"Position\": 0, \"UoM\": \"string\", \"ScalarIndicator\": \"STANDARD\", \"ScalarOverride\": 0 } ], \"relationships\": { \"parentEntity\": { \"confidence\": 1, \"id\": \"data_partition:namespace:entity_845934c40e8d922bc57b678990d55722\", \"name\": \"Survey ST2016\", \"version\": 0 }, \"relatedItems\": { \"confidences\": [ 0 ], \"ids\": [ \"string\" ], \"names\": [ \"string\" ], \"versions\": [ 0 ] } }, \"ExtensionProperties\": { \"Classification\": \"Raw File\", \"Description\": \"An text further describing this file example.\", \"ExternalIds\": [ \"string\" ], \"FileDateCreated\": {}, \"FileDateModified\": {}, \"FileContentsDetails\": { \"TargetKind\": \"os:npd:wellbore:1:*.*\", \"FileType\": \"csv\", \"FrameOfReference\": [ { \"kind\": \"CRS\", \"name\": \"[NAD27 * OGP-Usa Conus / North Dakota South [3202115851]ft]\", \"persistableReference\": \"scaleOffset:scale:0.3048006096012192offset:0.0symbol:ftUSbaseMeasurement:ancestry:Lengthtype:UMtype:USO}\", \"propertyNames\": [ \"elevationFromMsl\", \"totalDepthMdDriller\", \"wellHeadProjected\" ], \"propertyValues\": [ \"F\", \"ftUS\", \"deg\" ], \"uncertainty\": 0 } ], \"ExtensionProperties\": { \"kind\": \"os:npd:csvFileExtDetails:1.0.0\" }, \"ParentReference\": \"CSBE0417\" } } }";
         Map<String, Object> jsonMap = strToJsonMap(jsonString);
         record.setData(jsonMap);
         List<Map<String, Object>> meta = new ArrayList<>();
@@ -134,19 +134,19 @@ public class FileDataRecordMapperImplTest {
     }
     @Test
     public void fileMetadataToRecordwithTagsBlock() throws ApplicationException {
-        
+
         fileDataRecordMapper = new FileMetadataRecordMapper(new ObjectMapper());
-       
+
         Map<String, String> tags = new HashMap<String, String>();
         tags.put("kye", "value");
-        
+
         FileMetadata fileMetadata = FileMetadata.builder().id(RECORD_ID).kind(KIND)
                 .data(FileData.builder().source("stage/file.txt").build()).build();
         fileMetadata.setTags(tags);
         Record record = fileDataRecordMapper.fileMetadataToRecord(fileMetadata);
         assertNotNull(record.getTags());
     }
-    
+
     @Test
     public void recordToRecordVersionWithTagsTest() throws ApplicationException, JsonMappingException, JsonProcessingException {
         fileDataRecordMapper = new FileMetadataRecordMapper(new ObjectMapper());
@@ -165,14 +165,14 @@ public class FileDataRecordMapperImplTest {
         record.setKind(KIND);
         return record;
     }
-    
+
     private Map<String, Object> strToJsonMap(String jsonStr) throws JsonProcessingException, JsonMappingException {
 		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
 		};
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(jsonStr, typeRef);
 	}
-    
+
     private String extractFileSource(Object obj) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 

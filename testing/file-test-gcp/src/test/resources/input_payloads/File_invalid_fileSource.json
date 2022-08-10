@@ -27,8 +27,8 @@
 		},
 		"Name": "File",
 		"SchemaFormatTypeID": "string",
-		"PreLoadFilePath": "string",		
-		"FileSize": 0,		
+		"PreloadFilePath": "string",
+		"FileSize": 0,
 		"EncodingFormatTypeID": "string",
 		"Endian": "BIG",
 		"LossyCompressionIndicator": true,
@@ -118,4 +118,3 @@
 		]
 	}
 }
-	

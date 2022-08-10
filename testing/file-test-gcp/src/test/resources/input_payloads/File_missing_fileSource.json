@@ -20,12 +20,12 @@
 	},
 "data": {
 		"DatasetProperties": {
-			"FileSourceInfo": {				
+			"FileSourceInfo": {
 				"Name": "File"
 			}
 		},
 		"SchemaFormatTypeID": "string",
-		"PreLoadFilePath": "string",
+		"PreloadFilePath": "string",
 		"FileSize": 0,
 		"Name": "File",
 		"EncodingFormatTypeID": "string",
