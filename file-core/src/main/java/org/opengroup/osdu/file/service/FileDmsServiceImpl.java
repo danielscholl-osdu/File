@@ -155,8 +155,8 @@ public class FileDmsServiceImpl implements IDmsService {
 
     if (!StringUtils.isEmpty(fileSourceInfo.getFileSource())) {
       storageFilePath = fileSourceInfo.getFileSource();
-    } else if (!StringUtils.isEmpty(fileSourceInfo.getPreLoadFilePath())) {
-      storageFilePath = fileSourceInfo.getPreLoadFilePath();
+    } else if (!StringUtils.isEmpty(fileSourceInfo.getPreloadFilePath())) {
+      storageFilePath = fileSourceInfo.getPreloadFilePath();
     } else  {
       throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
           "No valid File Path found for File dataset",

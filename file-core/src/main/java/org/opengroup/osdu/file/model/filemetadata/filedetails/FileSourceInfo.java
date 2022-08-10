@@ -35,8 +35,8 @@ public class FileSourceInfo {
     @NotEmpty(message = "FileSource can not be empty")
     private String fileSource;
 
-    @JsonProperty("PreLoadFilePath")
-    private String preLoadFilePath;
+    @JsonProperty("PreloadFilePath")
+    private String PreloadFilePath;
 
     @JsonProperty("PreloadFileCreateUser")
     private String preloadFileCreateUser;

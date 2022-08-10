@@ -29,7 +29,7 @@
     "DatasetProperties": {
       "FileSourceInfo": {
         "Name": "File",
-        "PreLoadFilePath": "string",
+        "PreloadFilePath": "string",
         "FileSource": "/b40197d1-a0e8-49e3-96dd-gvubkjnonl/5vyug87gibun9hn0non",
         "PreloadFileCreateUser": "string",
         "PreloadFileCreateDate": "string",

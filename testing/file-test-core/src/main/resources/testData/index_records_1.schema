@@ -2,7 +2,7 @@
   "kind": "KIND_VAL",
   "schema": [
     {
-       "path" : "Data.GroupTypeProperties.PreLoadFilePath",
+       "path" : "Data.GroupTypeProperties.PreloadFilePath",
        "kind": string
     },
     {

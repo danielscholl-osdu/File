@@ -73,14 +73,14 @@ public class DeliverySearchServiceImplTest {
             "queryAsOwner\":false}";
 
     private String responseBody = "{\"results\":[{\"data\":{\"ResourceID\":\"srn:file/csv:7344999246049527:\"," +
-            "\"Data.GroupTypeProperties.PreLoadFilePath\":\"s3://aws-osdu-demo-r2/data/provided/markers_csv/3676.csv\"," +
+            "\"Data.GroupTypeProperties.PreloadFilePath\":\"s3://aws-osdu-demo-r2/data/provided/markers_csv/3676.csv\"," +
             "\"Data.GroupTypeProperties.FileSource\":\"\",\"ResourceTypeID\":\"srn:type:file/csv:\"," +
             "\"ResourceSecurityClassification\":\"srn:reference-data/ResourceSecurityClassification:RESTRICTED:\"," +
             "\"AssociativeID\":\"f-1\"},\"kind\":\"opendes:osdu:file:0.0.4\",\"namespace\":\"opendes:osdu\",\"legal\":" +
             "{\"legaltags\":[\"opendes-public-usa-dataset-1\"],\"otherRelevantDataCountries\":[\"US\"],\"status\":\"compliant\"}," +
             "\"id\":\"opendes:doc:543b05af7d094739a7e6ad1496cbf5ec\",\"acl\":{\"viewers\":[\"data.default.viewers@opendes.testing.com\"]," +
             "\"owners\":[\"data.default.owners@opendes.testing.com\"]},\"type\":\"file\",\"version\":1585246320682077}," +
-            "{\"data\":{\"ResourceID\":\"srn:file/csv:69207556434748899880399:\",\"Data.GroupTypeProperties.PreLoadFilePath\":" +
+            "{\"data\":{\"ResourceID\":\"srn:file/csv:69207556434748899880399:\",\"Data.GroupTypeProperties.PreloadFilePath\":" +
             "\"s3://aws-osdu-demo-r2/data/provided/markers_csv/3675.csv\",\"Data.GroupTypeProperties.FileSource\":\"\"," +
             "\"ResourceTypeID\":\"srn:type:file/csv:\",\"ResourceSecurityClassification\":\"srn:reference-data/ResourceSecurityClassification:RESTRICTED:\"," +
             "\"AssociativeID\":\"f-1\"},\"kind\":\"opendes:osdu:file:0.0.4\",\"namespace\":\"opendes:osdu\",\"legal\"" +
@@ -88,7 +88,7 @@ public class DeliverySearchServiceImplTest {
             ":\"compliant\"},\"id\":\"opendes:doc:d66f60d44adc4cafa6ad82a35c0f038f\",\"acl\":{\"viewers\":" +
             "[\"data.default.viewers@opendes.testing.com\"],\"owners\":[\"data.default.owners@opendes.testing.com\"]}," +
             "\"type\":\"file\",\"version\":1585246320682077},{\"data\":{\"ResourceID\":\"srn:file/csv:59158134479121976019:\"," +
-            "\"Data.GroupTypeProperties.PreLoadFilePath\":\"s3://aws-osdu-demo-r2/data/provided/markers_csv/3713.csv\"," +
+            "\"Data.GroupTypeProperties.PreloadFilePath\":\"s3://aws-osdu-demo-r2/data/provided/markers_csv/3713.csv\"," +
             "\"Data.GroupTypeProperties.FileSource\":\"\",\"ResourceTypeID\":\"srn:type:file/csv:\"," +
             "\"ResourceSecurityClassification\":\"srn:reference-data/ResourceSecurityClassification:RESTRICTED:\"," +
             "\"AssociativeID\":\"f-1\"},\"kind\":\"opendes:osdu:file:0.0.4\",\"namespace\":\"opendes:osdu\",\"legal\"" +

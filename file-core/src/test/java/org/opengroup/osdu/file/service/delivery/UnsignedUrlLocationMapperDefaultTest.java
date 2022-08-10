@@ -50,7 +50,7 @@ public class UnsignedUrlLocationMapperDefaultTest {
         // Arrange
         String unsignedUrl = "s3://aws-osdu-demo-r2/data/provided/markers_csv/3676.csv";
         String responseBody = "{\"results\":[{\"data\":{\"ResourceID\":\"srn:file/csv:7344999246049527:\"," +
-                "\"Data.GroupTypeProperties.PreLoadFilePath\":\"" + unsignedUrl + "\"," +
+                "\"Data.GroupTypeProperties.PreloadFilePath\":\"" + unsignedUrl + "\"," +
                 "\"Data.GroupTypeProperties.FileSource\":\"\",\"ResourceTypeID\":\"srn:type:file/csv:\"," +
                 "\"ResourceSecurityClassification\":\"srn:reference-data/ResourceSecurityClassification:RESTRICTED:\"," +
                 "\"AssociativeID\":\"f-1\"},\"kind\":\"opendes:osdu:file:0.0.4\",\"namespace\":\"opendes:osdu\",\"legal\":" +

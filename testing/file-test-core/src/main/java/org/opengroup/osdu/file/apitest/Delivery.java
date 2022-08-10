@@ -116,7 +116,7 @@ public abstract class Delivery extends TestBase {
 
     generateTenantMapping();
 
-    createLegalTag();    
+    createLegalTag();
 
     List<DeliverySetup> inputList = DeliverySetupConf.getDeliverySetup();
     for (DeliverySetup input : inputList) {
@@ -154,7 +154,7 @@ public abstract class Delivery extends TestBase {
   private void ingest_records_with_the_for_a_given(String record, String dataGroup, String kind) {
     String actualKind = generateActualName(kind, timeStamp);
     try {
-          String fileContent = DeliveryFileHandler.readFile(String.format("%s.%s", record, "json"));          
+          String fileContent = DeliveryFileHandler.readFile(String.format("%s.%s", record, "json"));
           StringSubstitutor stringSubstitutor = new StringSubstitutor(
               ImmutableMap.of(
                   "tenant", Config.getTenant(),
@@ -168,7 +168,7 @@ public abstract class Delivery extends TestBase {
               String recordId = generateActualName(testRecord.get("id").toString(), timeStamp);
               String filePath = cloudStorageUtil.createCloudFile(recordId);
               Map<String,String> data = (Map<String, String>) testRecord.get("data");
-              data.put("Data.GroupTypeProperties.PreLoadFilePath", filePath);
+              data.put("Data.GroupTypeProperties.PreloadFilePath", filePath);
               data.put("ResourceID", recordId);
               testRecord.put("data", data);
               testRecord.put("id", recordId);
@@ -179,7 +179,7 @@ public abstract class Delivery extends TestBase {
               testRecord.put("acl", acl);
           }
           String payLoad = new Gson().toJson(records);
-          
+
           ClientResponse clientResponse = client.sendExt(Config.getStorageBaseURL() + "records", HttpMethod.PUT, getDeliveryHeaders(), payLoad);
         assertEquals(201, clientResponse.getStatus());
     } catch (Exception ex) {
@@ -187,15 +187,15 @@ public abstract class Delivery extends TestBase {
     }
   }
 
-  //Disabled as failing in Gitlab pipeline 
+  //Disabled as failing in Gitlab pipeline
   //@Test
   public void ingestRecordsForAGivenSchemaAndTestSearchAndDelivery() throws Exception {
 
       List<DeliveryRecordSetup> recordSetups = new ArrayList<>();
       recordSetups.add(new DeliveryRecordSetup("index_records_1", "data.default.viewers@${tenant}.${domain}", "tenant1:testindex<timestamp>:well:3.0.0", 5));
       recordSetups.add(new DeliveryRecordSetup("index_records_1", "data.default.viewers@${tenant}.${domain}", "tenant1:testindex<timestamp>:well:1.0.0", 5));
-      
-      
+
+
       for (DeliveryRecordSetup recordSetup: recordSetups) {
         //Given: ingest records
         ingest_records_with_the_for_a_given(recordSetup.getRecord(), recordSetup.getDataGroup(), recordSetup.getKind());
@@ -206,14 +206,14 @@ public abstract class Delivery extends TestBase {
 
         //Then: validate Delivery API returns correct number of delivery object based on nubmer of records ingested
         ClientResponse response = retrieveSignedResponse();
-        String responseBody = response.getEntity(String.class);        
+        String responseBody = response.getEntity(String.class);
         UrlSigningResponse signedResponse = mapper.readValue(responseBody, UrlSigningResponse.class);
         assertEquals(recordSetup.getExpectedCount(), signedResponse.getProcessed().size());
         assertEquals(0, signedResponse.getUnprocessed().size());
       }
   }
 
-  //Disabled as failing in Gitlab pipeline 
+  //Disabled as failing in Gitlab pipeline
   //@Test
   public void ingestInvalidRecordsForAGivenSchemaAndGetBadResponse() throws Exception {
 
@@ -229,11 +229,11 @@ public abstract class Delivery extends TestBase {
       assertEquals(recordSetup.getExpectedCount(), recordIds.size());
 
       //Then: validate Delivery API returns an error with no file path
-      ClientResponse response = retrieveSignedResponse();         
+      ClientResponse response = retrieveSignedResponse();
       assertEquals(500, response.getStatus());
     }
 
-    
+
   }
 
   // Method to be overridden by cloud providers to validate connectionString
