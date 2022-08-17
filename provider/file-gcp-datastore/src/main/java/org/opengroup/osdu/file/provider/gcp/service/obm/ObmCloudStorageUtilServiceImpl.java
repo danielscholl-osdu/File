@@ -18,8 +18,14 @@
 package org.opengroup.osdu.file.provider.gcp.service.obm;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
+import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.core.gcp.obm.model.Blob;
+import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
 import org.opengroup.osdu.file.provider.gcp.util.obm.ObmStorageUtil;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
@@ -32,6 +38,8 @@ public class ObmCloudStorageUtilServiceImpl implements IStorageUtilService {
   private final ITenantFactory tenantFactory;
   private final ObmStorageUtil obmStorageUtil;
   private final EnvironmentResolver environmentResolver;
+  private final Driver obmStorageDriver;
+  private final DpsHeaders dpsHeaders;
 
   @Override
   public String getPersistentLocation(String relativePath, String partitionId) {
@@ -46,5 +54,24 @@ public class ObmCloudStorageUtilServiceImpl implements IStorageUtilService {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
     return environmentResolver.getTransferProtocol(partitionId) + obmStorageUtil.getStagingBucket(
         tenantInfo.getProjectId(), tenantInfo.getName()) + relativePath;
+  }
+
+  @Override
+  public String getChecksum(String filePath) {
+    if (Strings.isBlank(filePath)) {
+      throw new OsduBadRequestException(String.format("Illegal file path argument - { %s }", filePath));
+    }
+
+    TenantInfo tenantInfo = tenantFactory.getTenantInfo(dpsHeaders.getPartitionId());
+    String fromBucket = obmStorageUtil.getBucketName(filePath, tenantInfo);
+    String fromPath = obmStorageUtil.getDirectoryPath(filePath, tenantInfo);
+    Blob sourceBlob = obmStorageDriver.getBlob(fromBucket, fromPath,
+        obmStorageUtil.getDestination(tenantInfo.getDataPartitionId()));
+    return sourceBlob.getChecksum();
+  }
+
+  @Override
+  public ChecksumAlgorithm getChecksumAlgorithm() {
+    return ChecksumAlgorithm.MD5;
   }
 }
