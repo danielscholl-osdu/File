@@ -12,6 +12,9 @@ import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.file.constants.TestConstants;
 import org.opengroup.osdu.file.model.DownloadUrlResponse;
 import org.opengroup.osdu.file.model.filemetadata.RecordVersion;
+import org.opengroup.osdu.file.model.filemetadata.filedetails.DatasetProperties;
+import org.opengroup.osdu.file.model.filemetadata.filedetails.FileData;
+import org.opengroup.osdu.file.model.filemetadata.filedetails.FileSourceInfo;
 import org.opengroup.osdu.file.stepdefs.model.FileScope;
 import org.opengroup.osdu.file.stepdefs.model.HttpRequest;
 import org.opengroup.osdu.file.stepdefs.model.HttpResponse;
@@ -118,6 +121,17 @@ public class FileStepDef_GET implements En {
 			String response = this.context.getHttpResponse().getBody();
 			RecordVersion metadataResp = JsonUtils.getPojoFromJSONString(RecordVersion.class, response);
 		});
+
+    Then("Service should respond metadata with not null checksum {string}", (String respCode) ->{
+      validateResponseCode(respCode);
+      String response = this.context.getHttpResponse().getBody();
+      RecordVersion metadataResp = JsonUtils.getPojoFromJSONString(RecordVersion.class, response);
+      FileData fileData = metadataResp.getData();
+      DatasetProperties datasetProperties = fileData.getDatasetProperties();
+      FileSourceInfo fileSourceInfo = datasetProperties.getFileSourceInfo();
+      String checksum = fileSourceInfo.getChecksum();
+      assertNotNull(checksum);
+    });
 
 		Then("service should respond back with error {string} and {string}", (String errorCode, String errorMsg) -> {
 			verifyFailedResponse(errorCode, errorMsg);
