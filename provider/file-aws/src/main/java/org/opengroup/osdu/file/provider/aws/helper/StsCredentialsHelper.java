@@ -116,9 +116,7 @@ public class StsCredentialsHelper {
         Statement bucketValidationStatement = (new Statement(Statement.Effect.Allow))
             .withResources(new Resource(String.format("arn:aws:s3:::%s", fileLocation.getBucket())))
             .withActions(
-                S3Actions.GetBucketLocation,
-                S3Actions.ListObjects,
-                S3Actions.ListObjectVersions);
+                S3Actions.GetBucketLocation);
 
         // Policy Statement that lets the user get objects from S3.
         Statement getObjectStatement = (new Statement(Statement.Effect.Allow))
