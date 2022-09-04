@@ -20,6 +20,7 @@ import com.azure.storage.file.datalake.sas.FileSystemSasPermission;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
@@ -38,6 +39,9 @@ public class DataLakeRepository implements IStorageRepository {
 
   @Autowired
   DpsHeaders dpsHeaders;
+
+  @Autowired
+  private MSIConfiguration msiConfiguration;
 
   /**
    * Creates the empty object blob in bucket by filepath.
@@ -61,8 +65,14 @@ public class DataLakeRepository implements IStorageRepository {
         .setCreatePermission(true)
         .setListPermission(true);
 
-    String signedUrlStr = dataLakeStore.generatePreSignedURL(dpsHeaders.getPartitionId(),
-        containerName, directoryName, expiryTime, permission);
+    String signedUrlStr;
+    if(!msiConfiguration.getIsEnabled()) {
+      signedUrlStr = dataLakeStore.generatePreSignedURL(dpsHeaders.getPartitionId(),
+          containerName, directoryName, expiryTime, permission);
+    } else {
+      signedUrlStr = dataLakeStore.generatePreSignedURLWithUserDelegationSas(dpsHeaders.getPartitionId(),
+          containerName, directoryName, expiryTime, permission);
+    }
 
     URL signedUrl = new URL(signedUrlStr);
     return SignedObject.builder()

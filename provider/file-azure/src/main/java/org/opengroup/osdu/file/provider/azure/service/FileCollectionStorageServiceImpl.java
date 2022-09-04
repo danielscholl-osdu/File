@@ -26,6 +26,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
@@ -94,6 +95,9 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 
   @Autowired
   DataLakeConfig dataLakeConfig;
+
+  @Autowired
+  private MSIConfiguration msiConfiguration;
 
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.
@@ -219,15 +223,21 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
     OffsetDateTime expiryTime = expiryTimeUtil
         .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
 
-    String signedUrlString = dataLakeStore
-        .generatePreSignedURL(dpsHeaders.getPartitionId(), fileSystemName, directoryPath,
-            expiryTime, permission);
+    String signedUrlString;
+    if(!msiConfiguration.getIsEnabled()) {
+      signedUrlString = dataLakeStore
+          .generatePreSignedURL(dpsHeaders.getPartitionId(), fileSystemName, directoryPath,
+              expiryTime, permission);
+    } else {
+      signedUrlString = dataLakeStore
+          .generatePreSignedURLWithUserDelegationSas(dpsHeaders.getPartitionId(), fileSystemName, directoryPath,
+              expiryTime, permission);
+    }
 
     if(StringUtils.isBlank(signedUrlString)) {
       throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error",
           String.format("Could not generate signed URL for directory location %s", unsignedUrl));
     }
-
     return SignedUrl.builder()
         .url(new URL(signedUrlString))
         .uri(URI.create(unsignedUrl))
