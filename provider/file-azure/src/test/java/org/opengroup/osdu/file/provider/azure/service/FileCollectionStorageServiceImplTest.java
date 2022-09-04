@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -86,6 +87,9 @@ public class FileCollectionStorageServiceImplTest {
   @Captor
   ArgumentCaptor<String> directoryNameCaptor;
 
+  @Mock
+  MSIConfiguration msiConfiguration;
+
   @InjectMocks
   FileCollectionStorageServiceImpl fileCollectionStorageServiceImpl;
 
@@ -119,6 +123,7 @@ public class FileCollectionStorageServiceImplTest {
   public void shouldCreateRetrievalInstructions() {
     URL mockSignedUrl = TestUtils.getAzureObjectUrl(TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.DIRECTORY_NAME);
     prepareCreateSignedUrlFileLocationMocks(mockSignedUrl);
+    when(msiConfiguration.getIsEnabled()).thenReturn(false);
 
     RetrievalInstructionsResponse response = fileCollectionStorageServiceImpl.
         createRetrievalInstructions(getFileRetrievalDataList());

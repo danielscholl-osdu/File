@@ -23,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
@@ -49,11 +50,15 @@ public class DataLakeRepositoryTest {
   @InjectMocks
   DataLakeRepository dataLakeRepository;
 
+  @Mock
+  MSIConfiguration msiConfiguration;
+
   @Test
   public void shouldCreateSignedObject() {
     doNothing().when(dataLakeStore).createDirectory(TestUtils.PARTITION, TestUtils.STAGING_FILE_SYSTEM_NAME,
         TestUtils.DIRECTORY_NAME);
 
+    when(msiConfiguration.getIsEnabled()).thenReturn(false);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(dataLakeStore.generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
         eq(TestUtils.DIRECTORY_NAME) , any(OffsetDateTime.class), any(FileSystemSasPermission.class)))
