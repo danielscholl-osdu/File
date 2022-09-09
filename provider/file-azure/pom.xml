@@ -40,7 +40,7 @@
     <jackson-databind.version>2.13.2.2</jackson-databind.version>
     <spring-webmvc.version>5.3.22</spring-webmvc.version>
 
-    <osdu.corelibazure.version>0.17.0-rc9</osdu.corelibazure.version>
+    <osdu.corelibazure.version>0.17.0-rc14</osdu.corelibazure.version>
     <osdu.oscorecommon.version>0.16.0</osdu.oscorecommon.version>
   </properties>
   <dependencyManagement>
