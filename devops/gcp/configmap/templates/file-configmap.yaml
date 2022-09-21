@@ -16,6 +16,5 @@ data:
   OBM_MINIO_PARTITION_PROPERTIES_PREFIX: "{{ .Values.data.obmMinioPartitionPropertiesPrefix }}"
   {{- else }}
   GOOGLE_AUDIENCES: "{{ .Values.data.googleAudiences }}"
-  SPRING_CLOUD_GCP_DATASTORE_NAMESPACE: "{{ .Values.data.springCloudGcpDatastoreNamespace }}"
   FILE_LOCATION_USER_ID: "{{ .Values.data.fileLocationUserId }}"
   {{- end }}
