@@ -9,7 +9,6 @@ data:
   obmMinioPartitionPropertiesPrefix: "file.minio"
   # gcp
   googleAudiences: ""
-  springCloudGcpDatastoreNamespace: ""
   fileLocationUserId: ""
 
 conf:
