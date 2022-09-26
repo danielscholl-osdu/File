@@ -85,10 +85,7 @@ public class ExpiryTimeUtil {
   }
 
   public boolean isInputPatternSupported(String input) {
-    if (null != input && !getTimeUnitForInput(input).isPresent()) {
-      return false;
-    }
-    return true;
+    return null == input || getTimeUnitForInput(input).isPresent();
   }
 
   private Optional<TimeUnitEnum> getTimeUnitForInput(String input) {
