@@ -1,6 +1,6 @@
 apiVersion: v2
 name: "os-file"
-version: 
+version: __CHART_VERSION__
 kubeVersion: "v1.21.x-x-x"
 description: File Helm Chart for Kubernetes
 type: application
