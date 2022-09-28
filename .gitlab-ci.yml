@@ -15,7 +15,9 @@ variables:
   #AWS
   AWS_BUILD_SUBDIR: provider/file-aws/build-aws
   AWS_TEST_SUBDIR: testing/file-test-aws
+  AWS_CHART_SUBDIR: devops/aws/chart
   AWS_SERVICE: file
+  AWS_SERVICE_GATEWAY: osdu-gateway
   AWS_ENVIRONMENT: dev
   AWS_DEPLOY_TARGET: EKS
   AWS_EKS_DEPLOYMENT_NAME: os-file
