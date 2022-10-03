@@ -37,7 +37,7 @@ public class STSHelper {
 	@Inject
 	private InstantHelper instantHelper;
 	
-	@Value("${ibm.cos.endpoint_url}")
+	@Value("${ibm.cos.s3endpoint}")
 	private String endpointurl;
 	
 	@Value("${ibm.cos.region:us-south}")
@@ -48,6 +48,16 @@ public class STSHelper {
 	
 	@Value("${ibm.cos.subpassword}")
 	private String subpassword;
+	
+	@Value("${ibm.cos.roleArn}")
+	private String rolearn;
+	
+	@Value("${ibm.cos.roleSessionName}")
+	private String roleSessionName;
+	
+	@Value("${ibm.cos.durationinms}")
+	private Integer durationinms;
+	
 	
 	public TemporaryCredentials getUploadCredentials(S3Location fileLocation,
 		    String roleArn, String user, Date expiration) {
@@ -68,15 +78,15 @@ public class STSHelper {
 	private TemporaryCredentials getCredentials(Policy policy,
 		    String roleArn, String user, Date expiration) {
 		    Instant now = instantHelper.getCurrentInstant();
-		    String roleSessionName = String.format("%s_%s", user, now.toEpochMilli());
+		   // String roleSessionName = String.format("%s_%s", user, now.toEpochMilli());
 
 		    Long duration = ((expiration.getTime() - now.toEpochMilli()) / 1000);
 		    duration = duration > MAX_DURATION_IN_SECONDS ? MAX_DURATION_IN_SECONDS : duration;
 
 		    AssumeRoleRequest roleRequest = new AssumeRoleRequest()
-		            .withRoleArn(roleArn)
+		            .withRoleArn("arn:aws:iam:::role/"+rolearn)
 		            .withRoleSessionName(roleSessionName)
-		            .withDurationSeconds(duration.intValue())
+		            .withDurationSeconds(durationinms)
 		            .withPolicy(policy.toJson());
 		    AWSCredentials credentials = new BasicAWSCredentials(subuser,
 	    			 subpassword); 
@@ -85,7 +95,7 @@ public class STSHelper {
 		    AWSSecurityTokenService stsClient =
 	                 AWSSecurityTokenServiceClientBuilder.standard()
 	                 .withEndpointConfiguration(new
-	                 AwsClientBuilder.EndpointConfiguration("https://"+endpointurl, region))
+	                 AwsClientBuilder.EndpointConfiguration(endpointurl, region))
 	                 .withClientConfiguration(clientConfiguration) .withCredentials(new
 	                 AWSStaticCredentialsProvider(credentials)) .build();
 
