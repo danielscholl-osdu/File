@@ -11,6 +11,7 @@ variables:
   STAGING_CONTAINER_NAME: file-staging-area
   PERSISTENCE_CONTAINER_NAME: file-persistent-area
   AZURE_COVERAGE_THRESHOLD: $AZURE_CODE_COVERAGE_THRESHOLD
+  AZURE_SWAGGER_PATH: api/file/swagger-ui/index.html/
 
   #AWS
   AWS_BUILD_SUBDIR: provider/file-aws/build-aws
