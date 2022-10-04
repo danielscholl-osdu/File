@@ -11,6 +11,7 @@ variables:
   STAGING_CONTAINER_NAME: file-staging-area
   PERSISTENCE_CONTAINER_NAME: file-persistent-area
   AZURE_COVERAGE_THRESHOLD: $AZURE_CODE_COVERAGE_THRESHOLD
+  AZURE_SWAGGER_PATH: api/file/swagger-ui/index.html/
 
   #AWS
   AWS_BUILD_SUBDIR: provider/file-aws/build-aws
@@ -19,7 +20,7 @@ variables:
   AWS_SERVICE: file
   AWS_SERVICE_GATEWAY: osdu-gateway
   AWS_ENVIRONMENT: dev
-  AWS_DEPLOY_TARGET: EKS
+  AWS_DEPLOY_TARGET: HELM
   AWS_EKS_DEPLOYMENT_NAME: os-file
 
 include:
