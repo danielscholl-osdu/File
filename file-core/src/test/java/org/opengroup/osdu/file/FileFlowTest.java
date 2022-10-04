@@ -70,6 +70,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayNameGeneration(ReplaceCamelCase.class)
+@SuppressWarnings("java:S2187") // there is no test cases in this class at present
 public class FileFlowTest {
 
   private static final String SIGNED_URL_KEY = "SignedURL";

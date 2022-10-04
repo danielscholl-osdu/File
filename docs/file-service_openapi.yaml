@@ -75,7 +75,7 @@ paths:
       security:
         - bearer: []
         - appkey: []
-  /v2/files/UploadURL:
+  /v2/files/uploadURL:
     get:
       tags:
         - File Service
@@ -338,7 +338,7 @@ paths:
         - bearer: []
         - appkey: []
 
-  /v2/files/{Id}/DownloadURL:
+  /v2/files/{Id}/downloadURL:
     get:
       tags:
         - File Service

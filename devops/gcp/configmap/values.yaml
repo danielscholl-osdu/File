@@ -1,6 +1,6 @@
 data:
   # common
-  logLevel: "INFO"
+  logLevel: "ERROR"
   osduEntitlementsUrl: "http://entitlements/api/entitlements/v2/"
   partitionApi: "http://partition/api/partition/v1/"
   storageApi: "http://storage/api/storage/v2/"
@@ -9,7 +9,6 @@ data:
   obmMinioPartitionPropertiesPrefix: "file.minio"
   # gcp
   googleAudiences: ""
-  springCloudGcpDatastoreNamespace: ""
   fileLocationUserId: ""
 
 conf:
