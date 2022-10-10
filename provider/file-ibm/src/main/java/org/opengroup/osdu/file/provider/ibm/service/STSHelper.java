@@ -49,13 +49,13 @@ public class STSHelper {
 	@Value("${ibm.cos.subpassword}")
 	private String subpassword;
 	
-	@Value("${ibm.cos.roleArn}")
+	@Value("${ibm.cos.roleArn:osdurolearn}")
 	private String rolearn;
 	
-	@Value("${ibm.cos.roleSessionName}")
+	@Value("${ibm.cos.roleSessionName:Bob}")
 	private String roleSessionName;
 	
-	@Value("${ibm.cos.durationinms}")
+	@Value("${ibm.cos.durationinms:3600}")
 	private Integer durationinms;
 	
 	
