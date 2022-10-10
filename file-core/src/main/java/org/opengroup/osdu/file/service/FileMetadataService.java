@@ -95,16 +95,16 @@ public class FileMetadataService {
             fileDatasetDetailsPublisher.publishDatasetDetails(upsertRecords.getRecordIds().get(0),
                     upsertRecords.getRecordIdVersions().get(0));
         } catch (StorageException e) {
-            log.error("Error occurred while creating file metadata storage record");
+            log.error("Error occurred while creating file metadata storage record " + e.getMessage(), e);
             cloudStorageOperation.deleteFile(persistentLocation);
             fileStatusPublisher.publishFailureStatus(e.getHttpResponse());
             throw e;
         } catch(OsduBadRequestException e) {
-            log.error("Error occurred while creating file metadata storage record");
+            log.error("Error occurred while creating file metadata storage record " + e.getMessage(), e);
             fileStatusPublisher.publishFailureStatus(e.getMessage(), HttpStatus.BAD_REQUEST.value());
             throw e;
         }catch (Exception e) {
-            log.error("Error occurred while creating file metadata", e);
+            log.error("Error occurred while creating file metadata " + e.getMessage(), e);
             cloudStorageOperation.deleteFile(persistentLocation);
             fileStatusPublisher.publishFailureStatus(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
             throw new ApplicationException("Error occurred while creating file metadata", e);
@@ -116,12 +116,12 @@ public class FileMetadataService {
             throws OsduBadRequestException, NotFoundException, ApplicationException, StorageException {
         DataLakeStorageService dataLakeStorage = this.dataLakeStorageFactory.create(dpsHeaders);
         Record rec = null;
-        log.info("Fetcing Record Id ");
+        log.info("Fetching Record Id");
         try {
             rec = dataLakeStorage.getRecord(id);
 
         } catch (StorageException storageExc) {
-            log.error("Error occurred while fetching metadata from storage ");
+            log.error("Error occurred while fetching metadata from storage");
 
             HttpResponse response = storageExc.getHttpResponse();
             if (FileMetadataConstant.HTTP_CODE_400 == response.getResponseCode()) {
