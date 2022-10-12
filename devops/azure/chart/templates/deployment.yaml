@@ -139,6 +139,8 @@ spec:
           value: "statuschangedtopic"
         - name: azure_pubsub_publish
           value: "true"
+        - name: FILE_CHECKSUM_CALCULATION_LIMIT
+          value: "5368709120"
         {{- if has .Values.env .Values.featureFlag.notificationv2.enabledEnvs }}
         - name: service_bus_enabled_status
           value: "true"

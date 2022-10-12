@@ -21,6 +21,7 @@ import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.specialized.BlobInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,6 +37,7 @@ import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 
@@ -131,6 +133,29 @@ public class StorageUtilServiceImplTest {
   }
 
   @Test
+  @DisplayName("getChecksum should skip checksum generation and return empty string")
+  public void getChecksumShouldSkipHashGenerationAndReturnEmptyString() {
+    //given
+    when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
+    when(blobProperties.getBlobSize()).thenReturn(TestUtils.SIX_GB_BYTES);
+    when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE, String.class);
+    when(serviceHelper
+        .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    when(serviceHelper
+        .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
+
+    //when
+    String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
+
+    //then
+    Assertions.assertTrue(checksum.isEmpty());
+    verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID,TestUtils.STAGING_CONTAINER_NAME);
+  }
+
+  @Test
   public void getChecksum_ShouldThrow_OsduBadRequestException_IfBlobStoreThrowsException() {
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
@@ -155,6 +180,7 @@ public class StorageUtilServiceImplTest {
     BlobInputStream blobInputStream = mock(BlobInputStream.class);
     when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
     byte[] bytes = new byte[StorageConstant.AZURE_MAX_FILEPATH];
+    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE, String.class);
     when(blobInputStream.read(bytes)).thenReturn(10).thenReturn(-1);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
@@ -175,6 +201,7 @@ public class StorageUtilServiceImplTest {
     BlobInputStream blobInputStream = mock(BlobInputStream.class);
     when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE, String.class);
     when(serviceHelper
         .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
         .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
