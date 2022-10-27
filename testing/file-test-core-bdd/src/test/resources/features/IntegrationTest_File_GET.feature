@@ -43,9 +43,9 @@ Feature: File service API integration test
   #Negative scenario for FILE service
   @File
   Scenario Outline: Verify error message for invalid id input
-    Given I hit File service GET metadata signed API with an <InvalidId>
+    Given I hit File service GET metadata signed API with an <InvalidId> and <tenant>
     Then service should respond back with error <ReponseStatusCode> and <ResponseMessage>
 
     Examples:
-      | InvalidId                                               | ReponseStatusCode | ResponseMessage                           |
-      | "opendes:file:21107053-17bf-405e-9dd3-bb0a1e9b8e0aTEST" | "404"             | "/output_payloads/FileGET_InvalidID.json" |
+      | InvalidId                                               | tenant            | ReponseStatusCode | ResponseMessage                           |
+      | ":file:21107053-17bf-405e-9dd3-bb0a1e9b8e0aTEST" | "PRIVATE_TENANT2" | "404"             | "/output_payloads/FileGET_InvalidID.json" |
