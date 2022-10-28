@@ -38,7 +38,6 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -48,7 +47,6 @@ import java.security.NoSuchAlgorithmException;
 @Service
 @RequiredArgsConstructor
 @Primary
-//@PropertySource(value="classpath:application.properties", ignoreResourceNotFound = true)
 public class StorageUtilServiceImpl implements IStorageUtilService  {
   private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
   @Value("#{new Long(${CHECKSUM_CALCULATION_LIMIT})}")
