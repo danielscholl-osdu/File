@@ -38,6 +38,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -47,10 +48,11 @@ import java.security.NoSuchAlgorithmException;
 @Service
 @RequiredArgsConstructor
 @Primary
+//@PropertySource(value="classpath:application.properties", ignoreResourceNotFound = true)
 public class StorageUtilServiceImpl implements IStorageUtilService  {
   private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
-  @Value("${FILE_CHECKSUM_CALCULATION_LIMIT}")
-  private String BLOB_SIZE_LIMIT;
+  @Value("#{new Long(${CHECKSUM_CALCULATION_LIMIT})}")
+  private long blobSizeLimit;
 
   @Autowired
   final BlobStoreConfig blobStoreConfig;
@@ -117,10 +119,9 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
 
   private String calculateChecksum(String filePath, String containerName, long blobSize) {
     try {
-      long blobSizeLimit = Long.parseLong(BLOB_SIZE_LIMIT);
       if (blobSize > blobSizeLimit) {
         log.info(String.format("Checksum is not calculated, blob size is '%d' exceeds defined limit '%d'.", blobSize, blobSizeLimit));
-        return "";
+        return null;
       }
       MessageDigest md = MessageDigest.getInstance(getChecksumAlgorithm().toString());
       BlobInputStream blobInputStream = blobStore.getBlobInputStream(dpsHeaders.getPartitionId(), filePath, containerName);

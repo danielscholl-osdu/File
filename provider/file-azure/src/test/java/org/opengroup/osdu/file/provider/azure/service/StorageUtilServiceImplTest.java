@@ -139,7 +139,7 @@ public class StorageUtilServiceImplTest {
     when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
     when(blobProperties.getBlobSize()).thenReturn(TestUtils.SIX_GB_BYTES);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
-    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE, String.class);
+    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE);
     when(serviceHelper
         .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
         .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
@@ -151,7 +151,7 @@ public class StorageUtilServiceImplTest {
     String checksum = storageUtilService.getChecksum(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID);
 
     //then
-    Assertions.assertTrue(checksum.isEmpty());
+    Assertions.assertNull(checksum);
     verify(blobStore, times(1)).readBlobProperties(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID,TestUtils.STAGING_CONTAINER_NAME);
   }
 
@@ -180,7 +180,7 @@ public class StorageUtilServiceImplTest {
     BlobInputStream blobInputStream = mock(BlobInputStream.class);
     when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
     byte[] bytes = new byte[StorageConstant.AZURE_MAX_FILEPATH];
-    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE, String.class);
+    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE);
     when(blobInputStream.read(bytes)).thenReturn(10).thenReturn(-1);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(serviceHelper
@@ -201,7 +201,7 @@ public class StorageUtilServiceImplTest {
     BlobInputStream blobInputStream = mock(BlobInputStream.class);
     when(blobStore.getBlobInputStream(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobInputStream);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
-    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE, String.class);
+    ReflectionTestUtils.setField(storageUtilService, TestUtils.BLOB_SIZE_LIMIT, TestUtils.BLOB_SIZE);
     when(serviceHelper
         .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH+StorageConstant.SLASH+TestUtils.FILE_ID))
         .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
