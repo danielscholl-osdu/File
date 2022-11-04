@@ -40,7 +40,9 @@ public class FileStepDef_GET implements En {
 	Gson gsn = null;
 	Gson gsnActual = null;
 	private static String fileName = null;
-	
+
+  private static String downloadedFileName = null;
+
 	public FileStepDef_GET() {
 
 		Given("I generate user token and set request headers with {string}", (String tenant) -> {
@@ -124,20 +126,20 @@ public class FileStepDef_GET implements En {
 			String response = this.context.getHttpResponse().getBody();
 			RecordVersion metadataResp = JsonUtils.getPojoFromJSONString(RecordVersion.class, response);
 		});
-		
+
 		Then("metadata service should respond back with a valid {string} and {string}", (String respCode, String metablock) -> {
 			validateResponseCode(respCode);
 			String response = this.context.getHttpResponse().getBody();
 			RecordVersion metadataResp = JsonUtils.getPojoFromJSONString(RecordVersion.class, response);
-			
+
 			JsonElement responseBody = new Gson().fromJson(response, JsonElement.class);
 			JsonArray metaResponseArray = responseBody.getAsJsonObject().getAsJsonArray("meta");
-			
+
 			String expectedMetaBody = this.context.getFileUtils().read(metablock);
 			JsonElement expectedJsonBody = new Gson().fromJson(expectedMetaBody, JsonElement.class);
 			JsonArray metaExpectedArray = expectedJsonBody.getAsJsonObject().getAsJsonArray("meta");
 			assertTrue(metaResponseArray.toString().contentEquals(metaExpectedArray.toString()));
-			
+
 		});
 
 		Then("service should respond back with error {string} and {string}", (String errorCode, String errorMsg) -> {
@@ -176,10 +178,11 @@ public class FileStepDef_GET implements En {
 			LOGGER.log(Level.INFO, "resp - " + response.toString());
 		});
 
-		Given("I hit File service GET metadata signed API with an {string}", (String invalidId) -> {
+		Given("I hit File service GET metadata signed API with an {string} and {string}", (String invalidId, String tenant) -> {
 			String id = this.context.getId();
-			HttpRequest httpRequest = HttpRequest.builder()
-					.url(TestConstants.HOST + TestConstants.GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 + invalidId
+      String idNotPresentInEnv = CommonUtil.selectTenant(tenant) + invalidId;
+      HttpRequest httpRequest = HttpRequest.builder()
+					.url(TestConstants.HOST + TestConstants.GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 + idNotPresentInEnv
 							+ TestConstants.GET_METADATA_ENDPOINT2)
 					.httpMethod(HttpRequest.GET).requestHeaders(this.context.getAuthHeaders()).build();
 			HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);
@@ -190,15 +193,12 @@ public class FileStepDef_GET implements En {
 		When("I hit signed url to download a file within expiration period at {string}", (String outputFilePath) -> {
 			String response = this.context.getHttpResponse().getBody();
 			String downLoadUrl = this.context.getSignedUrl();
-//			String[] filenameString = downLoadUrl.split("filename%3D%20");
-//			String[] exactFilename = filenameString[1].split("&");
-//			fileName = exactFilename[0];
-			readFile(downLoadUrl, outputFilePath, fileName);
-		});
+      downloadedFileName = readFile(downLoadUrl, outputFilePath, fileName);
+    });
 		When("name {string} and content of the file uploaded {string} and downloaded {string} files is same",
 				(String filename, String outputFilePath, String inputFilePath) -> {
-					assertTrue(filename.equals(fileName));
-					outputFilePath = outputFilePath + fileName;
+					assertTrue(filename.equals(downloadedFileName));
+					outputFilePath = outputFilePath + downloadedFileName;
 					compareFileContent(outputFilePath, inputFilePath);
 				});
 	}
@@ -209,14 +209,17 @@ public class FileStepDef_GET implements En {
 		assertTrue(outputContent.contentEquals(inputContent));
 	}
 
-	private void readFile(String fileURL, String outputFilePath, String filename) throws InterruptedException, AWTException {
+	private String readFile(String fileURL, String outputFilePath, String filename) throws InterruptedException, AWTException {
 		URL url;
 		try {
 			url = new URL(fileURL);
 			URLConnection conn = url.openConnection();
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+      String contentDispositionHeaderValue = conn.getHeaderField("Content-Disposition");
+      String fileNameFromHeader = contentDispositionHeaderValue.substring(
+          contentDispositionHeaderValue.indexOf("filename=") + 9);
+      BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String inputLine;
-			String fileName = System.getProperty("user.dir") + outputFilePath + filename;
+			String fileName = System.getProperty("user.dir") + outputFilePath + fileNameFromHeader;
 			File file = new File(fileName);
 			if (!file.exists()) {
 				file.createNewFile();
@@ -228,12 +231,13 @@ public class FileStepDef_GET implements En {
 			}
 			bw.close();
 			br.close();
+      return fileNameFromHeader;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+    return null;
 	}
 
 	private void verifySuccessfulGetSignedURLResponse(String responseCode, String inputFilePath)
@@ -285,7 +289,7 @@ public class FileStepDef_GET implements En {
 		JsonObject root = gsn.fromJson(response, JsonObject.class);
 		this.context.setSignedUrl(root.get("Location").getAsJsonObject().get("SignedURL").getAsString());
 	}
-	
+
 	private void setDownloadSignedUrl() throws IOException {
 		String response = this.context.getHttpResponse().getBody();
 		gsn = new Gson();
