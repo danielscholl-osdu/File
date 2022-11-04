@@ -67,77 +67,87 @@ public class StsCredentialsHelper {
         long duration = Math.min(((expiration.getTime() - now.toEpochMilli()) / 1_000), MAX_DURATION_IN_SECONDS);
 
         AssumeRoleRequest roleRequest = new AssumeRoleRequest()
-                                            .withRoleArn(roleArn)
-                                            .withRoleSessionName(roleSessionName)
-                                            .withDurationSeconds((int) duration)
-                                            .withPolicy(policy.toJson());
+            .withRoleArn(roleArn)
+            .withRoleSessionName(roleSessionName)
+            .withDurationSeconds((int) duration)
+            .withPolicy(policy.toJson());
 
         AssumeRoleResult response = securityTokenService.assumeRole(roleRequest);
         Credentials sessionCredentials = response.getCredentials();
 
         return TemporaryCredentials.builder()
-                                   .accessKeyId(sessionCredentials.getAccessKeyId())
-                                   .expiration(sessionCredentials.getExpiration())
-                                   .secretAccessKey(sessionCredentials.getSecretAccessKey())
-                                   .sessionToken(sessionCredentials.getSessionToken())
-                                   .build();
+            .accessKeyId(sessionCredentials.getAccessKeyId())
+            .expiration(sessionCredentials.getExpiration())
+            .secretAccessKey(sessionCredentials.getSecretAccessKey())
+            .sessionToken(sessionCredentials.getSessionToken())
+            .build();
     }
 
     private Policy createUploadPolicy(S3Location fileLocation) {
         String fileLocationKeyWithoutTrailingSlash = fileLocation.getKey().replaceFirst("/$", "");
-
-        Policy policy = new Policy();
-
-        // Policy Statement needed to create the S3 client.
-        Statement getBucketLocationStatement = (new Statement(Statement.Effect.Allow))
-            .withResources(new Resource(String.format("arn:aws:s3:::%s", fileLocation.getBucket())))
-            .withActions(S3Actions.GetBucketLocation);
-
-        // Policy Statement that lets the user put an object to S3.
-        Statement putObjectStatement = (new Statement(Statement.Effect.Allow))
-            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)))
-            .withActions(
-                S3Actions.PutObject,
-                S3Actions.ListObjects,
-                S3Actions.ListObjectVersions,
-                S3Actions.ListBucketMultipartUploads,
-                S3Actions.ListMultipartUploadParts,
-                S3Actions.AbortMultipartUpload);
-
-        return policy.withStatements(getBucketLocationStatement, putObjectStatement);
+        return (new Policy()).withStatements(
+            allowUserToSeeBucketList(),
+            allowRootAndLocationListing(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowSubLocationListing(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowSubLocationGet(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowLocationGet(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowLocationPut(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowSubLocationPut(fileLocation, fileLocationKeyWithoutTrailingSlash)
+        );
     }
 
     private Policy createRetrievalPolicy(S3Location fileLocation) {
         String fileLocationKeyWithoutTrailingSlash = fileLocation.getKey().replaceFirst("/$", "");
+        return new Policy().withStatements(
+            allowUserToSeeBucketList(),
+            allowRootAndLocationListing(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowSubLocationListing(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowSubLocationGet(fileLocation, fileLocationKeyWithoutTrailingSlash),
+            allowLocationGet(fileLocation, fileLocationKeyWithoutTrailingSlash)
+        );
+    }
 
-        Policy policy = new Policy();
+    private Statement allowUserToSeeBucketList() {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.ListBuckets, S3Actions.GetBucketLocation)
+            .withResources(new Resource(String.format("arn:aws:s3:::*")));
+    }
 
-        // Policy Statement needed to perform validation against the s3 bucket.
-        Statement bucketValidationStatement = (new Statement(Statement.Effect.Allow))
+    private Statement allowRootAndLocationListing(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.ListBuckets, S3Actions.ListObjects, S3Actions.ListObjectVersions)
             .withResources(new Resource(String.format("arn:aws:s3:::%s", fileLocation.getBucket())))
-            .withActions(
-                S3Actions.GetBucketLocation);
+            .withConditions(new Condition().withType("StringEquals").withConditionKey("s3:prefix").withValues("", fileLocationKeyWithoutTrailingSlash));
+    }
 
-        // Policy Statement that lets the user get objects from S3.
-        Statement getObjectStatement = (new Statement(Statement.Effect.Allow))
-            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)))
-            .withActions(
-                S3Actions.GetObject,
-                S3Actions.GetObjectVersion,
-                S3Actions.GetObjectAcl,
-                S3Actions.ListObjects,
-                S3Actions.ListObjectVersions);
+    private Statement allowSubLocationListing(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.ListBuckets, S3Actions.ListObjects, S3Actions.ListObjectVersions)
+            .withResources(new Resource(String.format("arn:aws:s3:::%s", fileLocation.getBucket())))
+            .withConditions(new Condition().withType("StringLike").withConditionKey("s3:prefix").withValues(String.format("%s/*", fileLocationKeyWithoutTrailingSlash)));
+    }
 
-        // Policy Statement that lets the user get object collections from S3.
-        Statement getObjectCollectionStatement = (new Statement(Statement.Effect.Allow))
-            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)))
-            .withActions(
-                S3Actions.GetObject,
-                S3Actions.GetObjectVersion,
-                S3Actions.GetObjectAcl,
-                S3Actions.ListObjects,
-                S3Actions.ListObjectVersions);
+    private Statement allowLocationGet(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.GetObject, S3Actions.GetObjectVersion, S3Actions.GetObjectAcl)
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)));
+    }
 
-        return policy.withStatements(bucketValidationStatement, getObjectStatement, getObjectCollectionStatement);
+    private Statement allowSubLocationGet(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.GetObject, S3Actions.GetObjectVersion, S3Actions.GetObjectAcl)
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)));
+    }
+
+    private Statement allowLocationPut(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.PutObject, S3Actions.ListBucketMultipartUploads, S3Actions.ListMultipartUploadParts, S3Actions.AbortMultipartUpload)
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)));
+    }
+
+    private Statement allowSubLocationPut(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {
+        return (new Statement(Statement.Effect.Allow))
+            .withActions(S3Actions.PutObject, S3Actions.ListBucketMultipartUploads, S3Actions.ListMultipartUploadParts, S3Actions.AbortMultipartUpload)
+            .withResources(new Resource(String.format("arn:aws:s3:::%s/%s/*", fileLocation.getBucket(), fileLocationKeyWithoutTrailingSlash)));
     }
 }
