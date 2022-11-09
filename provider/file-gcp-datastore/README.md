@@ -26,15 +26,15 @@ Pre-requisites
 ### Anthos Service Configuration:
 
 [Anthos service configuration ](docs/anthos/README.md)
-### GCP Service Configuration:
-[Gcp service configuration ](docs/gcp/README.md)
+##***REMOVED*** Service Configuration:
+[Google Cloud service configuration ](docs/gcp/README.md)
 
 ## Testing
 
 #### Anthos:
 [Anthos Testing](docs/anthos/README.md)
-#### GCP:
-[Gcp Testing](docs/gcp/README.md)
+###***REMOVED***:
+[Google Cloud Testing](docs/gcp/README.md)
 
 
 ### Configure Maven
@@ -134,7 +134,7 @@ request does not fail, you can then run the integration tests.
 # build + install integration test core
 $ (cd testing/file-test-core/ && mvn clean install)
 
-# build + run GCP integration tests.
+# build + run Google Cloud integration tests.
 #
 # Note: this assumes that the environment variables for integration tests as outlined
 #       above are already exported in your environment.

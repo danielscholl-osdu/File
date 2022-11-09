@@ -34,6 +34,7 @@
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
     <google.oauth.version>0.21.1</google.oauth.version>
     <os-core-lib-azure.version>0.16.0</os-core-lib-azure.version>
+    <groovy.version>3.0.2</groovy.version>
   </properties>
 
   <dependencies>
@@ -54,7 +55,31 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>4.3.1</version>
-      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>json-path</artifactId>
+      <version>4.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>xml-path</artifactId>
+      <version>4.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+      <version>${groovy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-xml</artifactId>
+      <version>${groovy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-json</artifactId>
+      <version>${groovy.version}</version>
     </dependency>
     <dependency>
 			<groupId>io.jsonwebtoken</groupId>

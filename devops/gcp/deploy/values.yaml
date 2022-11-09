@@ -11,8 +11,8 @@ conf:
   configmap: "file-config"
   appName: "file"
   rabbitmqSecretName: "rabbitmq-secret"
-  fileMinioSecretName: "minio-file-secret"
-  fileKeycloakSecretName: "keycloak-file-secret"
-  filePostgresSecretName: "postgres-file-secret"
+  fileMinioSecretName: "file-minio-secret"
+  fileKeycloakSecretName: "file-keycloak-secret"
+  filePostgresSecretName: "file-postgres-secret"
   onPremEnabled: false
   domain: ""

@@ -23,12 +23,17 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.HttpMethod;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.core.gcp.obm.model.ObmHttpMethod;
+import org.opengroup.osdu.core.gcp.obm.model.ObmSignedUrlParams;
+import org.opengroup.osdu.core.gcp.obm.model.ObmSignedUrlParams.ObmSignedUrlParamsBuilder;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.gcp.config.obm.EnvironmentResolver;
@@ -41,6 +46,10 @@ import org.springframework.stereotype.Component;
 @Component("ObmStorageRepository")
 @RequiredArgsConstructor
 public class ObmStorageRepository implements IStorageRepository {
+
+  private static final String CONTENT_DISPOSITION_QUERY_PARAM = "response-content-disposition";
+  private static final String CONTENT_TYPE_QUERY_PARAM = "response-content-type";
+  public static final String ATTACHMENT_FILENAME = "attachment; filename=";
 
   private final DpsHeaders dpsHeaders;
   private final ITenantFactory tenantFactory;
@@ -76,23 +85,32 @@ public class ObmStorageRepository implements IStorageRepository {
         .getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
 
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(dpsHeaders.getPartitionId());
-    URL signedUrl = null;
 
-    if (httpMethod.equals(HttpMethod.GET)) {
-      signedUrl = obmStorageDriver.getSignedUrlForDownload(
-          bucketName,
-          obmStorageUtil.getDestination(tenantInfo.getDataPartitionId()),
-          filepath,
-          expiryTimeInTimeUnit.getValue(),
-          expiryTimeInTimeUnit.getTimeUnit());
-    } else if (httpMethod.equals(HttpMethod.PUT)) {
-      signedUrl = obmStorageDriver.getSignedUrlForUpload(
-          bucketName,
-          obmStorageUtil.getDestination(tenantInfo.getDataPartitionId()),
-          filepath,
-          expiryTimeInTimeUnit.getValue(),
-          expiryTimeInTimeUnit.getTimeUnit());
+    ObmSignedUrlParamsBuilder obmSignedUrlParamsBuilder = ObmSignedUrlParams.builder()
+        .method(ObmHttpMethod.valueOf(httpMethod.name()))
+        .destination(obmStorageUtil.getDestination(tenantInfo.getDataPartitionId()))
+        .bucket(bucketName)
+        .fileName(filepath)
+        .expiryDuration(expiryTimeInTimeUnit.getValue())
+        .expiryTimeUnit(expiryTimeInTimeUnit.getTimeUnit());
+
+    String fileName = signedUrlParameters.getFileName();
+    String contentType = signedUrlParameters.getContentType();
+
+    if (Objects.nonNull(fileName) && !fileName.isEmpty()) {
+      obmSignedUrlParamsBuilder.queryParams(
+          Collections.singletonMap(CONTENT_DISPOSITION_QUERY_PARAM,
+              ATTACHMENT_FILENAME + fileName));
     }
+
+    if (Objects.nonNull(contentType) && !contentType.isEmpty()) {
+      obmSignedUrlParamsBuilder.queryParams(
+          Collections.singletonMap(CONTENT_TYPE_QUERY_PARAM, contentType));
+    }
+
+    ObmSignedUrlParams obmSignedUrlParams = obmSignedUrlParamsBuilder.build();
+
+    URL signedUrl = obmStorageDriver.getSignedUrlWithParams(obmSignedUrlParams);
 
     log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
         blobId,

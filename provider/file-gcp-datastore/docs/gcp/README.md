@@ -1,4 +1,4 @@
-# Service Configuration for GCP
+# Service Configuration for Google Cloud
 
 ## Environment variables
 
@@ -6,7 +6,7 @@
 
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
-| `SPRING_PROFILES_ACTIVE` | ex `gcp` | Spring profile that activate default configuration for GCP environment | false | - |
+| `SPRING_PROFILES_ACTIVE` | ex `gcp` | Spring profile that activate default configuration for Google Cloud environment | false | - |
 | `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, you only need this if running locally | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
 | `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
 
@@ -78,7 +78,7 @@ It can be overridden by:
 ## GCS configuration <a name="ObjectStoreConfig"></a>
 
 ### Per-tenant buckets configuration
-These buckets must be defined in tenants’ “data” GCP projects that names are pointed in tenants’ PartitionInfo registration objects’ “projectId” property at the Partition service.
+These buckets must be defined in tenants’ “data” Google Cloud projects that names are pointed in tenants’ PartitionInfo registration objects’ “projectId” property at the Partition service.
 
 <table>
   <tr>
@@ -102,7 +102,7 @@ These buckets must be defined in tenants’ “data” GCP projects that names a
 </table>
 
 ## Google cloud service account configuration
-The GCP Identity and Access Management service account for the File service must have the
+The Google Cloud Identity and Access Management service account for the File service must have the
 `iam.serviceAccounts.signBlob` permission.
 
 | Required roles |
