@@ -21,6 +21,7 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.Credentials;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +88,7 @@ public class StsHelperTest {
         String policyJson = assumeRoleRequest.getPolicy();
         log.info("Policy: {}", policyJson);
 
-        String resource = getFirstResourceArn(policyJson);
+        String resource = getBucketResourceArn(policyJson, expectedArn);
         assertEquals(expectedArn, resource);
         assertEquals(mockCredentials.getAccessKeyId(), credentials.getAccessKeyId());
         assertEquals(mockCredentials.getSecretAccessKey(), credentials.getSecretAccessKey());
@@ -118,17 +119,21 @@ public class StsHelperTest {
         String policyJson = assumeRoleRequest.getPolicy();
         log.info("Policy: {}", policyJson);
 
-        String resource = getFirstResourceArn(policyJson);
+        String resource = getBucketResourceArn(policyJson, expectedArn);
         assertEquals(expectedArn, resource);
         assertEquals(mockCredentials.getAccessKeyId(), credentials.getAccessKeyId());
         assertEquals(mockCredentials.getSecretAccessKey(), credentials.getSecretAccessKey());
         assertEquals(mockCredentials.getSessionToken(), mockCredentials.getSessionToken());
     }
 
-    private String getFirstResourceArn(String policyJson) throws JSONException {
+    private String getBucketResourceArn(String policyJson, String arnToLookFor) throws JSONException {
         JSONObject policyObject = new JSONObject(policyJson);
-        return policyObject.getJSONArray("Statement")
-                           .getJSONObject(0).getJSONArray("Resource")
-                           .getString(0);
+        JSONArray statements = policyObject.getJSONArray("Statement");
+        for (int i = 0; i < statements.length(); i++) {
+            if (statements.getJSONObject(i).getJSONArray("Resource").getString(0).equals(arnToLookFor)) {
+                return statements.getJSONObject(i).getJSONArray("Resource").getString(0);
+            }
+        }
+        return null;
     }
 }

@@ -298,6 +298,6 @@ The File service has several Service Provider Interfaces that the classes need t
 ## Running integration tests
 Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
-## GCP Implementation
+#***REMOVED*** Implementation
 * All documentation for The Cloud Datastore implementation of File service is located [here](./provider/file-gcp-datastore/README.md).
 * All documentation for The Cloud Firestore implementation of File service is located [here](./provider/file-gcp/README.md).
