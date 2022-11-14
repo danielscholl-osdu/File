@@ -18,4 +18,6 @@ public final class StorageConstant {
 
     // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
     public static final int AWS_MAX_KEY_LENGTH = 1_024;
+    
+    public static final int AWS_HASH_BYTE_ARRAY_LENGTH = 1024;
 }
