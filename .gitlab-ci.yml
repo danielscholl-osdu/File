@@ -23,6 +23,9 @@ variables:
   AWS_DEPLOY_TARGET: HELM
   AWS_EKS_DEPLOYMENT_NAME: os-file
 
+  # FIXME remove when all services are migrated to a single helm
+  OSDU_GCP_ENABLE_HELM_CONFIG: "false"
+
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"

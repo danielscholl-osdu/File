@@ -1,4 +1,5 @@
 data:
+  #Deployment
   requestsCpu: "0.1"
   requestsMemory: "384M"
   limitsCpu: "1"
@@ -6,6 +7,15 @@ data:
   serviceAccountName: ""
   imagePullPolicy: "IfNotPresent"
   image: ""
+  #Configmap
+  logLevel: "ERROR"
+  osduEntitlementsUrl: "http://entitlements/api/entitlements/v2/"
+  partitionApi: "http://partition/api/partition/v1/"
+  storageApi: "http://storage/api/storage/v2/"
+  springProfilesActive: "gcp"
+  obmMinioPartitionPropertiesPrefix: "file.minio"
+  googleAudiences: ""
+  fileLocationUserId: ""
 
 conf:
   configmap: "file-config"
