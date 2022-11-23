@@ -40,7 +40,7 @@ public class InfoStepDef_GET implements En {
 
     Given("I send get request to version info endpoint", () -> {
       HttpRequest httpRequest = HttpRequest.builder()
-          .url(TestConstants.HOST + "/v2/info")
+          .url(TestConstants.HOST + "/info")
           .httpMethod(HttpRequest.GET)
           .build();
       HttpResponse response = HttpClientFactory.getInstance().send(httpRequest);

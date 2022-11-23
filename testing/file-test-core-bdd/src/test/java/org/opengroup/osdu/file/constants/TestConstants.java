@@ -35,9 +35,9 @@ public class TestConstants {
 	public static final String ACL_OWNERS_GROUP = "<acl_owners>";
 	public static final String CLOUD_DOMAIN = "<cloud_domain>";
 	public static final String LEGAL_TAGS = "<legal_tags>";
-	public static final String TENANT_NAME_PLACEHOLDER_VALUE = System.getProperty("tenant_name", System.getenv("tenant_name"));
-	public static final String ACL_VIEWERS_GROUP_VALUE = System.getProperty("acl_viewers", System.getenv("acl_viewers"));
-	public static final String ACL_OWNERS_GROUP_VALUE = System.getProperty("acl_owners", System.getenv("acl_owners"));
-	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("cloud_domain", System.getenv("cloud_domain"));
-	public static final String LEGAL_TAGS_VALUE = System.getProperty("legal_tags", System.getenv("legal_tags"));
+	public static final String TENANT_NAME_PLACEHOLDER_VALUE = System.getProperty("TENANT_NAME", System.getenv("TENANT_NAME"));
+	public static final String ACL_VIEWERS_GROUP_VALUE = System.getProperty("ACL_VIEWERS", System.getenv("ACL_VIEWERS"));
+	public static final String ACL_OWNERS_GROUP_VALUE = System.getProperty("ACL_OWNERS", System.getenv("ACL_OWNERS"));
+	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("CLOUD_DOMAIN", System.getenv("CLOUD_DOMAIN"));
+	public static final String LEGAL_TAGS_VALUE = System.getProperty("LEGAL_TAGS", System.getenv("LEGAL_TAGS"));
 }

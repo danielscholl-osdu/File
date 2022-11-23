@@ -5,3 +5,45 @@ variables:
 osdu-gcp-anthos-test:
   variables:
     OSDU_GCP_VENDOR: anthos
+
+osdu-gcp-test:
+  variables:
+    VENDOR: gcp
+    HOST: https://community.gcp.gnrg-osdu.projects.epam.com/api/file/v2
+    CLOUD_DOMAIN: osdu-gcp.go3-nrg.projects.epam.com
+    INTEGRATION_TESTER: $OSDU_GCP_INTEGRATION_TESTER
+    NO_DATA_ACCESS_TESTER: $OSDU_GCP_NO_DATA_ACCESS_TESTER
+    SEARCH_INTEGRATION_TESTER: $OSDU_GCP_INTEGRATION_TESTER
+    DE_OPS_TESTER: $OSDU_GCP_R3_OPS_TESTER
+    DE_ADMIN_TESTER: $OSDU_GCP_R3_ADMIN_TESTER
+    DE_EDITOR_TESTER: $OSDU_GCP_R3_EDITOR_TESTER
+    DE_NO_ACCESS_TESTER: $OSDU_GCP_R3_NO_ACCESS_TESTER
+    LEGAL_TAGS: $LEGAL_TAG
+  script:
+    - echo "COMMON TESTS"
+    - >
+      $MAVEN_BUILD . test-results.log
+      verify -DdisableXmlReport=true
+      --quiet
+      --file $OSDU_GCP_TESTING_DIR/pom.xml
+      --projects $OSDU_GCP_TEST_PROJECT
+      --update-snapshots
+    - echo "ADDITIONAL TESTS"
+    - >
+      $MAVEN_BUILD . test-results.log
+      verify -DdisableXmlReport=true
+      --quiet
+      --file $OSDU_GCP_TESTING_DIR/file-test-core-bdd/pom.xml
+      --update-snapshots
+  artifacts:
+    when: always
+    paths:
+      - test-results.log
+    expire_in: 2 days
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$OSDU_GCP == "1" && $OSDU_GCP_INT_TEST_TYPE != "python"'
+      when: on_success
