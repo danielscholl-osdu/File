@@ -133,8 +133,8 @@ public class StorageUtilServiceImplTest {
   }
 
   @Test
-  @DisplayName("getChecksum should skip checksum generation and return empty string")
-  public void getChecksumShouldSkipHashGenerationAndReturnEmptyString() {
+  @DisplayName("getChecksum should skip checksum generation and return null")
+  public void getChecksumShouldSkipHashGenerationAndReturnEmptyNull() {
     //given
     when(blobStore.readBlobProperties(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(blobProperties);
     when(blobProperties.getBlobSize()).thenReturn(TestUtils.SIX_GB_BYTES);
