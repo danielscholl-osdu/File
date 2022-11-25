@@ -20,9 +20,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.Region;
+import com.amazonaws.services.s3.model.*;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentialsProvider;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
@@ -75,6 +73,13 @@ public class S3Helper {
         final Region s3Region = Region.fromValue(bucketLocation);
 
         return s3Region.toAWSRegion().getName();
+    }
+
+    public static S3Object getObject(S3Location location, TemporaryCredentials credentials) {
+        AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
+        GetObjectRequest getObjectRequest = new GetObjectRequest(location.getBucket(), location.getKey());
+        S3Object s3Obj = s3.getObject(getObjectRequest);
+        return s3Obj;
     }
 
     private static AmazonS3 generateClientWithCredentials(String bucket, TemporaryCredentials credentials) {
