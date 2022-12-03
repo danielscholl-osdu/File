@@ -71,6 +71,9 @@ public final class TestUtils {
   public static final String GENERATED_ID = "blobName";
   public static final String INVALID_URL = "invalidURL";
   public static final String EMPTY_STRING = "";
+  public static final long SIX_GB_BYTES = 6_442_450_944L;
+  public static final String BLOB_SIZE_LIMIT = "blobSizeLimit";
+  public static final long  BLOB_SIZE = 100L;
 
   private TestUtils() {
   }
