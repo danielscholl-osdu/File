@@ -19,6 +19,7 @@ data:
 
 #minio
   ibm.cos.endpoint_url: "http://{{ .Release.Name }}-minio:9000"
+  ibm.cos.s3endpoint: "http://{{ .Release.Name }}-minio:9000"
   #accesskey and secretkey of minio - refer deployment yaml
   ibm.cos.access_key: "{{ .Values.data.accessKey }}"
   ibm.cos.secret_key: "{{ .Values.data.secretKey }}"
