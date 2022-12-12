@@ -36,6 +36,7 @@ import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
 import org.opengroup.osdu.file.provider.azure.util.FilePathUtil;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,8 @@ import java.security.NoSuchAlgorithmException;
 @Primary
 public class StorageUtilServiceImpl implements IStorageUtilService  {
   private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
+  @Value("#{new Long(${CHECKSUM_CALCULATION_LIMIT})}")
+  private long blobSizeLimit;
 
   @Autowired
   final BlobStoreConfig blobStoreConfig;
@@ -105,15 +108,19 @@ public class StorageUtilServiceImpl implements IStorageUtilService  {
         return new String(Hex.encodeHex(byteChecksum));
       } else {
         log.info("checksum is not available, calculating the checksum for fileId "+fileID);
-        return calculateChecksum(sourceFilePath, containerName);
+        return calculateChecksum(sourceFilePath, containerName, blobProperties.getBlobSize());
       }
     } catch (BlobStorageException ex) {
       throw new OsduBadRequestException(FileMetadataConstant.METADATA_EXCEPTION + filePath, ex);
     }
   }
 
-  private String calculateChecksum(String filePath, String containerName) {
+  private String calculateChecksum(String filePath, String containerName, long blobSize) {
     try {
+      if (blobSize > blobSizeLimit) {
+        log.info(String.format("Checksum is not calculated, blob size is '%d' exceeds defined limit '%d'.", blobSize, blobSizeLimit));
+        return null;
+      }
       MessageDigest md = MessageDigest.getInstance(getChecksumAlgorithm().toString());
       BlobInputStream blobInputStream = blobStore.getBlobInputStream(dpsHeaders.getPartitionId(), filePath, containerName);
       byte[] bytes = new byte[StorageConstant.AZURE_MAX_FILEPATH];
