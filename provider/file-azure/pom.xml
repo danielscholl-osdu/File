@@ -118,7 +118,13 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>9.0.67</version>
+      <version>9.0.69</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>tomcat-annotations-api</artifactId>
+          <groupId>org.apache.tomcat</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.azure.spring</groupId>
@@ -218,7 +224,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <version>5.7.2</version>
+      <version>5.7.5</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
