@@ -29,7 +29,7 @@
 		<os-core-lib-ibm.version>0.17.0-rc4</os-core-lib-ibm.version>
 		<aws.version>1.11.637</aws.version>
 		<spring-webmvc.version>5.3.22</spring-webmvc.version>
-		<jackson-databind.version>2.13.2.2</jackson-databind.version>
+		<jackson-databind.version>2.13.4.2</jackson-databind.version>
 	</properties>
 
 	<dependencies>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-      <version>9.0.69</version>
+      		<version>9.0.68</version>
       <exclusions>
         <exclusion>
           <artifactId>tomcat-annotations-api</artifactId>
@@ -159,8 +159,26 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<version>5.7.3</version>
+			<version>5.7.5</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+		<dependency>
+		    <groupId>org.yaml</groupId>
+		    <artifactId>snakeyaml</artifactId>
+		    <version>1.33</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-beans -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-beans</artifactId>
+		    <version>5.3.20</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-core</artifactId>
+		    <version>5.3.20</version>
+		</dependency>
+
 	</dependencies>
   <repositories>
     <repository>
