@@ -14,7 +14,6 @@ data:
   storageApi: "http://storage/api/storage/v2/"
   springProfilesActive: "gcp"
   obmMinioPartitionPropertiesPrefix: "file.minio"
-  googleAudiences: ""
   fileLocationUserId: ""
 
 conf:
