@@ -8,7 +8,6 @@
 | ---  | ---   | ---         | ---        | ---    |
 | `SPRING_PROFILES_ACTIVE` | ex `gcp` | Spring profile that activate default configuration for Google Cloud environment | false | - |
 | `GOOGLE_APPLICATION_CREDENTIALS` | ex `/path/to/directory/service-key.json` | Service account credentials, you only need this if running locally | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
-| `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
 
 ### Common-properties-for-all-environments
 
@@ -54,7 +53,6 @@ In order to run the service locally, you will need to have the following environ
 | `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
 | `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
 | `PRIVATE_TENANT2` | `opendes` | Private tenant id | no | - |
-| `INTEGRATION_TEST_AUDIENCE` | ex `*.apps.googleusercontent.com` | Client Id for `$INTEGRATION_TESTER` | no | - |
 | `INTEGRATION_TESTER` | ex `ewogICJ***` | Service account for API calls as Base64 encoded string| yes | - |
 | `LEGAL_TAG` | ex `opendes-storage-tag` | Valid legal tag name| - | - |
 

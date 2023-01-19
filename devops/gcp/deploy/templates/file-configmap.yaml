@@ -15,6 +15,5 @@ data:
   {{- if .Values.conf.onPremEnabled }}
   OBM_MINIO_PARTITION_PROPERTIES_PREFIX: {{ .Values.data.obmMinioPartitionPropertiesPrefix | quote }}
   {{- else }}
-  GOOGLE_AUDIENCES: {{ .Values.data.googleAudiences | quote }}
   FILE_LOCATION_USER_ID: {{ .Values.data.fileLocationUserId  | quote }}
   {{- end }}
