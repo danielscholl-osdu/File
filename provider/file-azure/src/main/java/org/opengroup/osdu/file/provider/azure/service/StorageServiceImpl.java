@@ -160,6 +160,7 @@ public class StorageServiceImpl implements IStorageService {
       DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
           .retrievalProperties(downloadLocation)
           .datasetRegistryId(fileRetrievalData.getRecordId())
+          .providerKey(PROVIDER_KEY)
           .build();
 
       datasetRetrievalProperties.add(datasetRetrievalProperty);
@@ -167,7 +168,6 @@ public class StorageServiceImpl implements IStorageService {
 
     return RetrievalInstructionsResponse.builder()
         .datasets(datasetRetrievalProperties)
-        .providerKey(PROVIDER_KEY)
         .build();
   }
 

@@ -128,7 +128,7 @@ public class FileCollectionStorageServiceImplTest {
     RetrievalInstructionsResponse response = fileCollectionStorageServiceImpl.
         createRetrievalInstructions(getFileRetrievalDataList());
 
-    then(response.getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
+    then(response.getDatasets().get(0).getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
     then(response.getDatasets().get(0).getDatasetRegistryId()).isEqualTo(TestUtils.FILE_COLLECTION_RECORD_ID);
     verifyCreateSignedUrlFileLocationMocks();
   }

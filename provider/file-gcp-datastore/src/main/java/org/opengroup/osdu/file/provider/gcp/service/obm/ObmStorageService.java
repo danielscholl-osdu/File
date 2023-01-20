@@ -178,7 +178,6 @@ public class ObmStorageService implements IStorageService {
 
     return RetrievalInstructionsResponse.builder()
         .datasets(datasetRetrievalPropertiesList)
-        .providerKey(environmentResolver.getProviderKey())
         .build();
   }
 
@@ -199,6 +198,7 @@ public class ObmStorageService implements IStorageService {
     return DatasetRetrievalProperties.builder()
         .retrievalProperties(downloadLocation)
         .datasetRegistryId(fileRetrievalData.getRecordId())
+        .providerKey(environmentResolver.getProviderKey())
         .build();
   }
 
