@@ -44,29 +44,29 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 	private static final String s3UploadLocationUriFormat = "s3://%s/%s";
     private ExpirationDateHelper expirationDateHelper = new ExpirationDateHelper();
     private final static String INVALID_S3_PATH_REASON = "Unsigned url invalid, needs to be full S3 path";
-    
-    
+
+
     @Value("${ibm.cos.signed-url.expiration-days:7}")
 	private int s3SignedUrlExpirationTimeInDays;
-    
+
     @Value("${ibm.staging.bucket}")
 	public String DB_NAME;
-    
+
 	@Inject
     private DpsHeaders headers;
-	
+
 	@Value("${PROVIDER_KEY}")
     private String providerKey;
-	
+
 	@Inject
     private STSHelper stsHelper;
-	
+
 	private String roleArn = "arn:123:456:789:1234";
-	
+
 	@Inject
 	private CloudObjectStorageFactory cosFactory;
-	
-	
+
+
 	@Override
 	public StorageInstructionsResponse createStorageInstructions(String directoryID, String partitionID) {
 		// s3://{bucket-name}/{data-partition}/{key-path}/
@@ -85,7 +85,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 
 	@Override
 	public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
-		log.info("calling Retrieval Instructions to generate temporaryCredentials and signed url for file download");	
+		log.info("calling Retrieval Instructions to generate temporaryCredentials and signed url for file download");
 		RetrievalInstructionsResponse response = new RetrievalInstructionsResponse();
 		Map<String, Object> retrivalDataSet = new HashMap<String, Object>();
 		DatasetRetrievalProperties dataset = new DatasetRetrievalProperties();
@@ -111,17 +111,18 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 			retrivalDataSet.put("createdAt", Instant.now());
 			dataset.setRetrievalProperties(retrivalDataSet);
 			dataset.setDatasetRegistryId(retrivaldata.getRecordId());
+      dataset.setProviderKey(providerKey);
 			listOfdDataSet.add(dataset);
 			response.setDatasets(listOfdDataSet);
-			response.setProviderKey(providerKey);
+
 			}catch (Exception e) {
 				throw new NullPointerException("data cannot be null");
 			}
 		}
 		return response;
 	}
-	
-	
+
+
 	public String getBucketName() {
 		String partitionId = headers.getPartitionIdWithFallbackToAccountId();
 		if (Strings.isNullOrEmpty(partitionId)) {
@@ -130,7 +131,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 		return cosFactory.getBucketName(partitionId, DB_NAME);
 	}
 
-	
-	
+
+
 
 }
