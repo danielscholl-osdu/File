@@ -87,19 +87,19 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Value("${ibm.env.prefix:local-dev}")
 	private String bucketNamePrefix;
-	
+
 	@Value("${PROVIDER_KEY}")
 	private String providerKey;
-	
+
 	private String roleArn;
 
 	private ExpirationDateHelper expirationDateHelper;
-	
+
 	private SignedUrlParameters signedParam;
 
 	@Inject
 	private CloudObjectStorageFactory cosFactory;
-	
+
 	@Autowired
 	private FileDeliveryService deliveryService;
 
@@ -110,7 +110,7 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 	@Autowired
 	private TenantInfo tenant;
-	
+
 	@Inject
 	private STSHelper stsHelper;
 
@@ -253,10 +253,10 @@ public class IBMStorageServiceImpl implements IStorageService {
 
 
 	}
-   
+
    @Override
 	public StorageInstructionsResponse createStorageInstructions(String fileID, String partitionID) {
-		
+
 		log.info("calling StorageInstructions to create temporaryCredentials and signed url for file upload");
 		StorageInstructionsResponse storageInstructionsResponse = new StorageInstructionsResponse();
 		Map<String, Object> storageLocation = new HashMap<String, Object>();
@@ -279,11 +279,11 @@ public class IBMStorageServiceImpl implements IStorageService {
 		log.debug("signedUrl for file upload:",signedUrl);
 		return storageInstructionsResponse;
 	}
-	
+
 	@Override
 	public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
-	
-		log.info("calling Retrieval Instructions to generate temporaryCredentials and signed url for file download");	
+
+		log.info("calling Retrieval Instructions to generate temporaryCredentials and signed url for file download");
 		RetrievalInstructionsResponse response = new RetrievalInstructionsResponse();
 		Map<String, Object> retrivalDataSet = new HashMap<String, Object>();
 		DatasetRetrievalProperties dataset = new DatasetRetrievalProperties();
@@ -314,9 +314,9 @@ public class IBMStorageServiceImpl implements IStorageService {
 			retrivalDataSet.put("region", s3Region);
 			dataset.setRetrievalProperties(retrivalDataSet);
 			dataset.setDatasetRegistryId(retrivaldata.getRecordId());
+      dataset.setProviderKey(providerKey);
 			listOfdDataSet.add(dataset);
 			response.setDatasets(listOfdDataSet);
-			response.setProviderKey(providerKey);
 			}catch (Exception e) {
 				throw new NullPointerException("data cannot be null");
 			}

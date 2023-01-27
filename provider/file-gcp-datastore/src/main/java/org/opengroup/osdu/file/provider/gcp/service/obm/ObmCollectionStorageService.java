@@ -136,6 +136,7 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
       DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
           .retrievalProperties(retrievalProperties)
           .datasetRegistryId(fileRetrieval.getRecordId())
+          .providerKey(environmentResolver.getProviderKey())
           .build();
 
       datasetRetrievalProperties.add(datasetRetrievalProperty);
@@ -143,7 +144,6 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
 
     return RetrievalInstructionsResponse.builder()
         .datasets(datasetRetrievalProperties)
-        .providerKey(environmentResolver.getProviderKey())
         .build();
   }
 

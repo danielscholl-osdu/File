@@ -147,6 +147,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
       DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
           .retrievalProperties(downloadLocation)
           .datasetRegistryId(fileRetrievalData.getRecordId())
+          .providerKey(PROVIDER_KEY)
           .build();
 
       datasetRetrievalProperties.add(datasetRetrievalProperty);
@@ -154,7 +155,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 
     return RetrievalInstructionsResponse.builder()
         .datasets(datasetRetrievalProperties)
-        .providerKey(PROVIDER_KEY)
         .build();
   }
 

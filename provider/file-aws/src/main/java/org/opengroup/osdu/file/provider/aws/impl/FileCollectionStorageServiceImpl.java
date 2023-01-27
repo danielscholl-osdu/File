@@ -85,7 +85,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
 
         return RetrievalInstructionsResponse.builder()
                                             .datasets(datasetRetrievalPropertiesList)
-                                            .providerKey(fileLocationProvider.getProviderKey())
                                             .build();
     }
 
@@ -121,6 +120,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         return DatasetRetrievalProperties.builder()
                                          .retrievalProperties(downloadLocation)
                                          .datasetRegistryId(fileRetrievalData.getRecordId())
+                                         .providerKey(fileLocationProvider.getProviderKey())
                                          .build();
     }
 }

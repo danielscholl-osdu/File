@@ -283,11 +283,14 @@ public class FileCollectionDmsServiceImplTest {
 
     datasets.add(DatasetRetrievalProperties.builder()
         .retrievalProperties(retrievalProperties)
-        .datasetRegistryId(TEST_DATASET_ID).build());
+        .datasetRegistryId(TEST_DATASET_ID)
+            .providerKey("AZURE")
+            .build()
+        );
 
 
     RetrievalInstructionsResponse actualResponse = RetrievalInstructionsResponse.builder()
-        .providerKey("AZURE").datasets(datasets).build();
+        .datasets(datasets).build();
 
     return actualResponse;
   }

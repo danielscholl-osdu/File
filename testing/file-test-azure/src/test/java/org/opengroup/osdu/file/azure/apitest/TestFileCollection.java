@@ -116,7 +116,7 @@ public class TestFileCollection extends TestBase {
     RetrievalInstructionsResponse retrievalResponse = mapper.readValue(
         retrievalInstructionsResponse.getEntity(String.class), RetrievalInstructionsResponse.class);
 
-    assertEquals("AZURE", retrievalResponse.getProviderKey());
+    assertEquals("AZURE", retrievalResponse.getDatasets().get(0).getProviderKey());
     assertEquals(1, retrievalResponse.getDatasets().size());
 
     assertEquals(createdRecords.getRecordIds().get(0),

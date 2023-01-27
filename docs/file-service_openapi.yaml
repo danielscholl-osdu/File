@@ -1478,9 +1478,6 @@ components:
     RetrievalInstructionsResponse:
       type: object
       properties:
-        providerKey:
-          type: string
-          example: "AZURE"
         datasets:
           type: array
           items:
@@ -1498,6 +1495,9 @@ components:
                     type: string
                   CSP_SPECIFIC_PROPERTY_3:
                     type: string
+              providerKey:
+                type: string
+                example: "AZURE"
     CopyDmsResponse:
       type: array
       items:

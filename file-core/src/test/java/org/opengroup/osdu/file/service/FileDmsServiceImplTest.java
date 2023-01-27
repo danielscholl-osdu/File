@@ -146,10 +146,11 @@ public class FileDmsServiceImplTest {
 
     datasets.add(DatasetRetrievalProperties.builder()
         .retrievalProperties(retrievalProperties)
-        .datasetRegistryId(TEST_DATASET_ID).build());
+        .datasetRegistryId(TEST_DATASET_ID)
+        .providerKey("AZURE").build());
 
     RetrievalInstructionsResponse actualResponse = RetrievalInstructionsResponse.builder()
-        .providerKey("AZURE").datasets(datasets).build();
+        .datasets(datasets).build();
 
     // test request.
     RetrievalInstructionsRequest testRequest = new RetrievalInstructionsRequest();
@@ -195,10 +196,11 @@ public class FileDmsServiceImplTest {
 
     datasets.add(DatasetRetrievalProperties.builder()
         .retrievalProperties(retrievalProperties)
-        .datasetRegistryId(TEST_DATASET_ID).build());
+        .datasetRegistryId(TEST_DATASET_ID)
+        .providerKey("AZURE").build());
 
     RetrievalInstructionsResponse actualResponse = RetrievalInstructionsResponse.builder()
-        .providerKey("AZURE").datasets(datasets).build();
+        .datasets(datasets).build();
 
     // test request.
     RetrievalInstructionsRequest testRequest = new RetrievalInstructionsRequest();
