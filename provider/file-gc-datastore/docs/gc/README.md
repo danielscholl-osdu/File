@@ -48,7 +48,7 @@ In order to run the service locally, you will need to have the following environ
 | `FILE_SERVICE_HOST` | ex `http://localhost:8080` | File service url | no | - |
 | `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
 | `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
-| `DOMAIN` | ex `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
+| `DOMAIN` | ex `osdu-gc.go3-nrg.projects.epam.com` | - | no | - |
 | `TENANT_NAME` | `opendes` | Tenant name | no | - |
 | `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
 | `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
@@ -115,5 +115,3 @@ grant the **Service Account Token Creator** role to the development service acco
 Obtaining user credentials for Application Default Credentials isn't suitable in this case because
 signing a blob is only available with the service account credentials. Remember to set the
 `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
-
-

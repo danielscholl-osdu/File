@@ -23,9 +23,6 @@ variables:
   AWS_DEPLOY_TARGET: HELM
   AWS_EKS_DEPLOYMENT_NAME: os-file
 
-  # FIXME remove when all services are migrated to a single helm
-  OSDU_GCP_ENABLE_HELM_CONFIG: "false"
-
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
@@ -46,7 +43,7 @@ include:
     file: "publishing/pages.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/osdu-gcp-global.yml"
+    file: "cloud-providers/gc-global.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
@@ -57,12 +54,4 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-maven.yml"
 
-  - local: "devops/gcp/pipeline/override-stages.yml"
-
-osdu-gcp-test:
-  variables:
-    OSDU_GCP_VENDOR: gcp
-
-osdu-gcp-dev2-test:
-  variables:
-    OSDU_GCP_VENDOR: gcp
+  - local: "devops/gc/pipeline/override-stages.yml"
