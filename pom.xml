@@ -38,7 +38,7 @@
     <module>file-core</module>
     <module>provider/file-aws</module>
     <module>provider/file-ibm</module>
-    <module>provider/file-gcp-datastore</module>
+    <module>provider/file-gc-datastore</module>
     <module>provider/file-azure</module>
   </modules>
 

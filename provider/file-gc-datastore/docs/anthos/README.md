@@ -36,8 +36,7 @@ In order to run the service locally, you will need to have the following environ
 | `GCP_STATUS_CHANGED_TOPIC` | ex `status-changed` | PubSub topic for status publishing | no | output of infrastructure deployment |
 | `GCP_FILE_LOCATION_KIND` | by default `file-locations-osm` | Kind for Datastore or Table for postgres  | no | - |
 
-These variables define service behavior, and are used to switch between `anthos` or `gcp` environments, their overriding and usage in mixed mode was not tested.
-Usage of spring profiles is preferred.
+These variables define service behavior, and are used to switch between `reference` or `Google Cloud` environments, their overriding and usage in mixed mode was not tested. Usage of spring profiles is preferred.
 
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
@@ -58,7 +57,7 @@ Usage of spring profiles is preferred.
 | `FILE_SERVICE_HOST` | ex `http://localhost:8080` | File service url | no | - |
 | `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
 | `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
-| `DOMAIN` | ex `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
+| `DOMAIN` | ex `osdu-gc.go3-nrg.projects.epam.com` | - | no | - |
 | `TENANT_NAME` | `opendes` | Tenant name | no | - |
 | `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
 | `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
@@ -74,12 +73,13 @@ Usage of spring profiles is preferred.
 | ---  |
 | users<br/>service.file.editors<br/>service.file.viewers |
 
-### Properties set in Partition service:
+### Properties set in Partition service
 
 Note that properties can be set in Partition as `sensitive` in that case in property `value` should be present **not value itself**, but **ENV variable name**.
 This variable should be present in environment of service that need that variable.
 
 Example:
+
 ```
     "elasticsearch.port": {
       "sensitive": false, <- value not sensitive
@@ -133,7 +133,6 @@ curl -L -X PATCH 'http://partition.com/api/partition/v1/partitions/opendes' -H '
 
 </details>
 
-
 **database structure**
 OSM works with data logically organized as "partition"->"namespace"->"kind"->"record"->"columns".
 The above sequence describes how it is named in Google Datastore, where "partition" maps to "Google Cloud"
@@ -186,7 +185,6 @@ CREATE TABLE osdu."file_locations_osm"(
 CREATE INDEX file_locations_osm_datagin ON osdu."file_locations_osm" USING GIN (data);
 ```
 
-
 ### For OBM MinIO
 
 **prefix:** `obm.minio`
@@ -229,9 +227,11 @@ curl -L -X PATCH 'https:///api/partition/v1/partitions/opendes' -H 'data-partiti
 ### Object store configuration <a name="ObjectStoreConfig"></a>
 
 #### Used Technology
+
 MinIO (or any other supported by OBM)
 
 #### Per-tenant buckets configuration
+
 These buckets must be defined in tenants’ dedicated object store servers. OBM connection properties of these servers (url, etc.) are defined as specific properties in tenants’ PartitionInfo registration objects at the Partition service as described in accordant sections of this document.
 
 <table>
@@ -332,8 +332,8 @@ curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 
   }
 }'
 ```
-</details>
 
+</details>
 
 #### Exchanges and queues configuration
 

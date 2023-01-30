@@ -1,6 +1,7 @@
 # OSDU R2 Prototype File service
 
 ## Contents
+
 [[_TOC_]]
 
 ## Introduction
@@ -296,8 +297,9 @@ The File service has several Service Provider Interfaces that the classes need t
 | ValidationService      | Optional to implement   | `file-core/src/main/java/.../provider/interfaces/ValidationService`      |
 
 ## Running integration tests
+
 Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
 
 #***REMOVED*** Implementation
-* All documentation for The Cloud Datastore implementation of File service is located [here](./provider/file-gcp-datastore/README.md).
-* All documentation for The Cloud Firestore implementation of File service is located [here](./provider/file-gcp/README.md).
+
+* All documentation for The Cloud Datastore implementation of File service is located [here](./provider/file-gc-datastore/README.md).

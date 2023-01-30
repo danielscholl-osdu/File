@@ -23,19 +23,23 @@ Pre-requisites
 * Lombok 1.16 or later
 * Maven
 
-### Anthos Service Configuration:
+### Anthos Service Configuration
 
-[Anthos service configuration ](docs/anthos/README.md)
-##***REMOVED*** Service Configuration:
-[Google Cloud service configuration ](docs/gcp/README.md)
+[Anthos service configuration](docs/anthos/README.md)
+
+##***REMOVED*** Service Configuration
+
+[Google Cloud service configuration](docs/gc/README.md)
 
 ## Testing
 
-#### Anthos:
-[Anthos Testing](docs/anthos/README.md)
-###***REMOVED***:
-[Google Cloud Testing](docs/gcp/README.md)
+#### Anthos
 
+[Anthos Testing](docs/anthos/README.md)
+
+###***REMOVED***
+
+[Google Cloud Testing](docs/gc/README.md)
 
 ### Configure Maven
 
@@ -121,7 +125,7 @@ After configuring your environment as specified above, you can follow these step
 the application. These steps should be invoked from the *repository root.*
 
 ```bash
-cd provider/file-gcp-datastore/ && mvn spring-boot:run
+cd provider/file-gc-datastore/ && mvn spring-boot:run
 ```
 
 ### Test the application
@@ -138,7 +142,7 @@ $ (cd testing/file-test-core/ && mvn clean install)
 #
 # Note: this assumes that the environment variables for integration tests as outlined
 #       above are already exported in your environment.
-$ (cd testing/file-test-gcp/ && mvn clean test)
+$ (cd testing/file-test-gc/ && mvn clean test)
 ```
 
 ## Deployment
@@ -146,9 +150,9 @@ $ (cd testing/file-test-gcp/ && mvn clean test)
 Storage Service is compatible with Cloud Run.
 
 * To deploy into Cloud run, please, use this documentation:
-  https://cloud.google.com/run/docs/quickstarts/build-and-deploy
+  <https://cloud.google.com/run/docs/quickstarts/build-and-deploy>
 * To deploy into GKE, please, use this documentation:
-  https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-gke
+  <https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-gke>
 
 ## License
 

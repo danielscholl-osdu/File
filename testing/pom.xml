@@ -37,7 +37,7 @@
 
   <modules>
     <module>file-test-core</module>
-    <module>file-test-gcp</module>
+    <module>file-test-gc</module>
     <module>file-test-azure</module>
     <module>file-test-aws</module>
     <module>file-test-ibm</module>

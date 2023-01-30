@@ -8,27 +8,27 @@ cli:
   project: File
 analyze:
   modules:
-  - name: file
-    type: mvn
-    target: pom.xml
-    path: .
-  - name: file-core
-    type: mvn
-    target: file-core/pom.xml
-    path: .
-  - name: file-aws
-    type: mvn
-    target: provider/file-aws/pom.xml
-    path: .
-  - name: file-ibm
-    type: mvn
-    target: provider/file-ibm/pom.xml
-    path: .
-  - name: file-gcp-datastore
-    type: mvn
-    target: provider/file-gcp-datastore/pom.xml
-    path: .
-  - name: file-azure
-    type: mvn
-    target: provider/file-azure/pom.xml
-    path: .
+    - name: file
+      type: mvn
+      target: pom.xml
+      path: .
+    - name: file-core
+      type: mvn
+      target: file-core/pom.xml
+      path: .
+    - name: file-aws
+      type: mvn
+      target: provider/file-aws/pom.xml
+      path: .
+    - name: file-ibm
+      type: mvn
+      target: provider/file-ibm/pom.xml
+      path: .
+    - name: file-gcp-datastore
+      type: mvn
+      target: provider/file-gc-datastore/pom.xml
+      path: .
+    - name: file-azure
+      type: mvn
+      target: provider/file-azure/pom.xml
+      path: .
