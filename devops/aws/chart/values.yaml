@@ -41,8 +41,6 @@ environmentVariables:
     value: "http://os-search:8080"
   - name: DATASET_BASE_URL
     value: "http://os-dataset:8080"
-podAnnotations: 
-  seccomp.security.alpha.kubernetes.io/pod: "runtime/default"
 
 # Resource Config
 replicaCount: 1
@@ -61,7 +59,7 @@ autoscaling:
 
 # Security Config
 serviceAccountRole: arn:aws:iam::{{ .Values.global.accountID }}:role/osdu-{{ .Values.global.resourcePrefix }}-{{ .Values.global.region }}-{{ include "common.name" . }}
-securityContext: 
+securityContext:
   runAsUser: 10001
   runAsNonRoot: true
   readOnlyRootFilesystem: false
@@ -69,8 +67,12 @@ securityContext:
   capabilities:
     drop:
     - ALL
+podSecurityContext: 
+  fsGroup: 1337
+  seccompProfile:
+    type: RuntimeDefault
 allowedPrincipals:
-  - cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account
+  - cluster.local/ns/istio-system/sa/istio-ingressgateway
   - cluster.local/ns/{{ .Release.Namespace }}/sa/os-dataset
   - cluster.local/ns/aws-binary-dms/sa/binary-dms
   - cluster.local/ns/osdu-airflow/sa/airflow-dag-upload
