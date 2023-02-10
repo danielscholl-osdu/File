@@ -27,11 +27,11 @@ In order to run the service locally, you will need to have the following environ
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
 | `LOG_PREFIX` | `file` | Logging prefix | no | - |
-| `OSDU_ENTITLEMENTS_URL` | `https://entitlements.com/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `RECORDS_ROOT_URL` | ex `https://os-storage-dot-nice-etching-277309.uc.r.appspot.com/api/storage/v2` / Storage API endpoint | no | output of infrastructure deployment |
+| `ENTITLEMENTS_HOST` | `http://entitlements` | Entitlements service host address | no | output of infrastructure deployment |
+| `STORAGE_HOST` | ex `http://storage` / Storage service host address | no | output of infrastructure deployment |
 | `GCP_STORAGE_STAGING_AREA` | ex `staging-area` | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`) |no | output of infrastructure deployment |
 | `GCP_STORAGE_PERSISTENT_AREA` | ex `persistent-area` | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area` | no | output of infrastructure deployment |
-| `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
+| `PARTITION_HOST` | ex `http://partition` | Partition service host address | no | - |
 | `GCP_STATUS_CHANGED_MESSAGING_ENABLED` | `true` or `false` | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs| no | - |
 | `GCP_STATUS_CHANGED_TOPIC` | ex `status-changed` | PubSub topic for status publishing | no | output of infrastructure deployment |
 | `GCP_FILE_LOCATION_KIND` | by default `file-locations-osm` | Kind for Datastore or Table for postgres  | no | - |

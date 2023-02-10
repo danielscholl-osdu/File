@@ -9,9 +9,9 @@ data:
   image: ""
   #Configmap
   logLevel: "ERROR"
-  osduEntitlementsUrl: "http://entitlements/api/entitlements/v2/"
-  partitionApi: "http://partition/api/partition/v1/"
-  storageApi: "http://storage/api/storage/v2/"
+  entitlementsHost: "http://entitlements"
+  partitionHost: "http://partition"
+  storageHost: "http://storage"
   springProfilesActive: "gcp"
   obmMinioPartitionPropertiesPrefix: "file.minio"
   fileLocationUserId: ""
