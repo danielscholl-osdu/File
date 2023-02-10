@@ -31,9 +31,9 @@ First you need to set variables in **values.yaml** file using any code editor. S
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|---------|
 **data.logLevel** | logging level | string | "ERROR" | yes
-**data.osduEntitlementsUrl** | entitlements service endpoint | string | "http://entitlements/api/entitlements/v2" | yes
-**data.partitionApi** | partition service endpoint | string | "http://partition/api/partition/v1/" | yes
-**data.storageApi** | storage service endpoint | string | "http://storage/api/storage/v2/" | yes
+**data.entitlementsHost** | Entitlements service host address | string | "http://entitlements" | yes
+**data.partitionHost** | Partition service host address | string | "http://partition" | yes
+**data.storageHost** | Storage service host address | string | "http://storage" | yes
 **data.springProfilesActive** | Spring profile that activate default configuration for Google Cloud environment | string | "gcp" | yes
 **data.obmMinioPartitionPropertiesPrefix** | obm MinIO partition properties prefix | string | "file.minio" | yes
 **data.fileLocationUserId** | file service location user ID | string | - | yes

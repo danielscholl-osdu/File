@@ -7,10 +7,9 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   LOG_LEVEL: {{ .Values.data.logLevel | quote }}
-  OSDU_ENTITLEMENTS_URL: {{ .Values.data.osduEntitlementsUrl | quote }}
-  PARTITION_API: {{ .Values.data.partitionApi | quote }}
-  STORAGE_API: {{ .Values.data.storageApi | quote }}
-  GCP_RECORDS_URL: {{ .Values.data.storageApi | quote }}
+  ENTITLEMENTS_HOST: {{ .Values.data.entitlementsHost | quote }}
+  PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
+  STORAGE_HOST: {{ .Values.data.storageHost | quote }}
   SPRING_PROFILES_ACTIVE: {{ .Values.data.springProfilesActive | quote }}
   {{- if .Values.conf.onPremEnabled }}
   OBM_MINIO_PARTITION_PROPERTIES_PREFIX: {{ .Values.data.obmMinioPartitionPropertiesPrefix | quote }}
