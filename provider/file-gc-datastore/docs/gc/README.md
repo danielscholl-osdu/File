@@ -99,6 +99,18 @@ These buckets must be defined in tenants’ “data” Google Cloud projects tha
   </tr>
 </table>
 
+## Datastore configuration
+```yaml
+indexes:
+
+- kind: file-locations-osm
+  ancestor: no
+  properties:
+  - name: createdBy
+    direction: asc
+  - name: createdAt
+    direction: asc
+```
 ## Google cloud service account configuration
 The Google Cloud Identity and Access Management service account for the File service must have the
 `iam.serviceAccounts.signBlob` permission.
