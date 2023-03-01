@@ -122,8 +122,11 @@ public class ObmStorageRepository implements IStorageRepository {
   }
 
   private URI getObjectUri(String bucketName, String filePath, String partitionId) {
+    String transferProtocol = environmentResolver.getTransferProtocol(partitionId);
+    if (!transferProtocol.endsWith("/")) {
+      transferProtocol = transferProtocol + "/";
+    }
     return URI.create(
-        format("%s%s/%s", environmentResolver.getTransferProtocol(partitionId), bucketName,
-            filePath));
+        format("%s%s/%s",transferProtocol, bucketName, filePath));
   }
 }
