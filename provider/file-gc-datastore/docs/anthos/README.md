@@ -195,11 +195,12 @@ It can be overridden by:
 
 **PropertySet:**
 
-| Property            | Description            |
-|---------------------|------------------------|
-| obm.minio.endpoint  | server URL             |
-| obm.minio.accessKey | credentials access key |
-| obm.minio.secretKey | credentials secret key |
+| Property                  | Description                                                                                        |
+|---------------------------|----------------------------------------------------------------------------------------------------|
+| obm.minio.endpoint        | server URL                                                                                         |
+| obm.minio.accessKey       | credentials access key                                                                             |
+| obm.minio.secretKey       | credentials secret key                                                                             |
+| obm.minio.ignoreCertCheck | optional, default value is 'false'. When set to 'true' disables certificate check for MinIO client |
 
 <details><summary>Example of a definition for a single tenant</summary>
 
