@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class FileMetadataServiceTest {
@@ -60,7 +60,10 @@ public class FileMetadataServiceTest {
     public static final String RECORD_ID = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003";
     public static final String RECORD_ID_VERSION = "tenant1:dataset--File.Generic:1b9dd1a8-d317-11ea-87d0-0242ac130003:123456789";
     public static final String FILE_METADATA_KIND = "osdu:wks:dataset--File.Generic:1.0.0";
+    private static final String STAGING_FILE_PATH = "root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt";
 
+    private static final String PERSISTENT_FILE_PATH = "root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt";
+    private static final String FILE_SOURCE = "stage/file.txt";
     @InjectMocks
     FileMetadataService fileMetadataService;
 
@@ -87,10 +90,10 @@ public class FileMetadataServiceTest {
 
     @Mock
     IStorageUtilService storageUtilService;
-    
+
     @Mock
     FileStatusPublisher fileStatusPublisher;
-    
+
     @Mock
     FileDatasetDetailsPublisher fileDatasetDetailsPublisher;
 
@@ -99,7 +102,7 @@ public class FileMetadataServiceTest {
     @Test
     public void saveMetadata_Success() throws OsduBadRequestException, StorageException, ApplicationException {
 
-        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource(FILE_SOURCE).build();
         DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
         FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
@@ -119,9 +122,9 @@ public class FileMetadataServiceTest {
         when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
         when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
         when(storageUtilService.getStagingLocation(any(), any()))
-                .thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+                .thenReturn(STAGING_FILE_PATH);
         when(storageUtilService.getPersistentLocation(any(), any()))
-                .thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+                .thenReturn(PERSISTENT_FILE_PATH);
         when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
         when(dataLakeStorageService.upsertRecord(record)).thenReturn(upsertRecords);
         when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
@@ -131,11 +134,67 @@ public class FileMetadataServiceTest {
         assertEquals(RECORD_ID, fileMetadataResponse.getId());
 
     }
+  @Test
+  public void saveMetadata_StagingFileNotDeletedPrematurely() throws OsduBadRequestException, StorageException, ApplicationException {
 
+    FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource(FILE_SOURCE).build();
+    DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
+    FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
+
+    fileMetadata = FileMetadata.builder().data(fileData).kind(FILE_METADATA_KIND).build();
+
+    String dataPartitionId = "tenant";
+    Record record = new Record(dataPartitionId);
+    UpsertRecords upsertRecords = new UpsertRecords();
+    List<String> recordIds = new ArrayList<>();
+    recordIds.add(RECORD_ID);
+    List<String> recordIdVersions = new ArrayList<>();
+    recordIdVersions.add(RECORD_ID_VERSION);
+    upsertRecords.setRecordIds(recordIds);
+    upsertRecords.setRecordIdVersions(recordIdVersions);
+
+    when(headers.getPartitionId()).thenReturn(dataPartitionId);
+    when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
+    when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
+    when(storageUtilService.getStagingLocation(any(), any()))
+        .thenReturn(STAGING_FILE_PATH);
+    when(storageUtilService.getPersistentLocation(any(), any()))
+        .thenReturn(PERSISTENT_FILE_PATH);
+    when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
+    when(dataLakeStorageService.upsertRecord(record)).thenReturn(upsertRecords);
+    when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
+
+    doThrow(RuntimeException.class).when(fileStatusPublisher).publishSuccessStatus(anyString(),anyString());
+
+    /**Verify, if the  publisher threw runtime exception we get application exception as the resultant exception**/
+    assertThrows(ApplicationException.class, () -> {
+      FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
+      assertEquals(RECORD_ID, fileMetadataResponse.getId());
+    });
+
+    /**
+     * Verify staging file path is not deleted.
+     * */
+    verify(cloudStorageOperation, never()).deleteFile(STAGING_FILE_PATH);
+
+
+    /**Second attempt**/
+    /**Verify, if the  publisher didn't throw exception we are able to save the metadata successfully this time**/
+    doNothing().when(fileStatusPublisher).publishSuccessStatus(anyString(),anyString());
+    when(cloudStorageOperation.deleteFile(any())).thenReturn(Boolean.TRUE);
+
+    FileMetadataResponse fileMetadataResponse = fileMetadataService.saveMetadata(fileMetadata);
+    assertEquals(RECORD_ID, fileMetadataResponse.getId());
+    /**
+     * Verify staging file path is deleted this time.
+     * */
+    verify(cloudStorageOperation, atMostOnce()).deleteFile(STAGING_FILE_PATH);
+
+  }
     @Test
     public void saveMetadata_StorageException() throws OsduBadRequestException, StorageException, ApplicationException {
 
-        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource(FILE_SOURCE).build();
         DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
         FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
@@ -152,9 +211,9 @@ public class FileMetadataServiceTest {
         when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
         when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
         when(storageUtilService.getStagingLocation(any(), any()))
-                .thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+                .thenReturn(STAGING_FILE_PATH);
         when(storageUtilService.getPersistentLocation(any(), any()))
-                .thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+                .thenReturn(PERSISTENT_FILE_PATH);
         when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
         when(dataLakeStorageService.upsertRecord(record)).thenThrow(StorageException.class);
         when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
@@ -197,7 +256,7 @@ public class FileMetadataServiceTest {
     @Test
     public void saveMetadata_StorageFail() throws OsduBadRequestException, StorageException, ApplicationException {
 
-        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource("stage/file.txt").build();
+        FileSourceInfo fileSourceInfo = FileSourceInfo.builder().fileSource(FILE_SOURCE).build();
         DatasetProperties datasetProperties = DatasetProperties.builder().fileSourceInfo(fileSourceInfo).build();
         FileData fileData = FileData.builder().datasetProperties(datasetProperties).build();
 
@@ -214,9 +273,9 @@ public class FileMetadataServiceTest {
         when(dataLakeStorageFactory.create(headers)).thenReturn(dataLakeStorageService);
         when(fileMetadataUtil1.generateRecordId(anyString(), anyString())).thenReturn(RECORD_ID);
         when(storageUtilService.getStagingLocation(any(), any()))
-                .thenReturn("root://stage/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+                .thenReturn(STAGING_FILE_PATH);
         when(storageUtilService.getPersistentLocation(any(), any()))
-                .thenReturn("root://per/1b9dd1a8-d317-11ea-87d0-0242ac130003/fileName.txt");
+                .thenReturn(PERSISTENT_FILE_PATH);
         when(iFileMetadataRecordMapper.fileMetadataToRecord(any())).thenReturn(record);
         when(dataLakeStorageService.upsertRecord(record)).thenThrow(NullPointerException.class);
         when(cloudStorageOperation.copyFile(any(), any())).thenReturn("copy");
