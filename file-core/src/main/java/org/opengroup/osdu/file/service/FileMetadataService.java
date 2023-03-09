@@ -89,11 +89,27 @@ public class FileMetadataService {
             UpsertRecords upsertRecords = dataLakeStorage.upsertRecord(record);
             log.info(upsertRecords.toString());
             fileMetadataResponse.setId(upsertRecords.getRecordIds().get(0));
-            cloudStorageOperation.deleteFile(stagingLocation);
             fileStatusPublisher.publishSuccessStatus(upsertRecords.getRecordIds().get(0),
                     upsertRecords.getRecordIdVersions().get(0));
             fileDatasetDetailsPublisher.publishDatasetDetails(upsertRecords.getRecordIds().get(0),
                     upsertRecords.getRecordIdVersions().get(0));
+
+            /**
+             * Issue: https://community.opengroup.org/osdu/platform/system/file/-/issues/76
+             * Resolution:
+             * 1. Check the staging file exists
+             * 2. Catch deletion failures and ignore them as deletion failure should not
+             *    invalidate the call to save metadata
+             * 3. Delete should be the last step of metadata save process
+             * */
+            try{
+              if(dataLakeStorage.getRecord(record.getId()) != null) {
+                cloudStorageOperation.deleteFile(stagingLocation);
+              }
+            }
+            catch (Exception e){
+              log.warning("the file deletion failed for file id: " + record.getId());
+            }
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record " + e.getMessage(), e);
             cloudStorageOperation.deleteFile(persistentLocation);
