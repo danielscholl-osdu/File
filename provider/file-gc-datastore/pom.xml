@@ -34,7 +34,6 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
-    <core.lib.gcp.version>0.20.0-rc3</core.lib.gcp.version>
     <spring-webmvc.version>5.3.22</spring-webmvc.version>
     <jackson-databind.version>2.13.2.2</jackson-databind.version>
     <jackson.version>2.13.2</jackson.version>
@@ -72,7 +71,7 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-gcp</artifactId>
-      <version>${core.lib.gcp.version}</version>
+      <version>0.20.0-rc4</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback.contrib</groupId>
