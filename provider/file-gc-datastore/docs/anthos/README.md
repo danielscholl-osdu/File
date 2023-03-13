@@ -195,12 +195,13 @@ It can be overridden by:
 
 **PropertySet:**
 
-| Property                  | Description                                                                                        |
-|---------------------------|----------------------------------------------------------------------------------------------------|
-| obm.minio.endpoint        | server URL                                                                                         |
-| obm.minio.accessKey       | credentials access key                                                                             |
-| obm.minio.secretKey       | credentials secret key                                                                             |
-| obm.minio.ignoreCertCheck | optional, default value is 'false'. When set to 'true' disables certificate check for MinIO client |
+| Property                    | Description                                                                                                                           |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| obm.minio.endpoint          | server URL                                                                                                                            |
+| obm.minio.accessKey         | credentials access key                                                                                                                |
+| obm.minio.secretKey         | credentials secret key                                                                                                                |
+| obm.minio.ignoreCertCheck   | optional, default value is 'false'. When set to 'true' disables certificate check for MinIO client                                    |
+| obm.minio.external.endpoint | optional, used when service should use internal endpoint(in cluster) but must provide credentials for end users for external endpoint |
 
 <details><summary>Example of a definition for a single tenant</summary>
 

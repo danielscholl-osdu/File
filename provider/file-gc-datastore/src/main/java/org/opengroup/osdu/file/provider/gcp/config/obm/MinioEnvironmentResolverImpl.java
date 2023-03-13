@@ -17,6 +17,9 @@
 
 package org.opengroup.osdu.file.provider.gcp.config.obm;
 
+import static org.opengroup.osdu.core.destination.obm.MinioTenantObmDestinationResolver.ENDPOINT;
+import static org.opengroup.osdu.core.destination.obm.MinioTenantObmDestinationResolver.EXTERNAL_ENDPOINT;
+
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.partition.IPartitionProvider;
@@ -33,7 +36,6 @@ import org.springframework.stereotype.Service;
 @ConditionalOnProperty(name = "obmDriver", havingValue = "minio")
 public class MinioEnvironmentResolverImpl implements EnvironmentResolver {
 
-  private static final String ENDPOINT = ".endpoint";
   private final IPartitionProvider partitionProvider;
   private final MinioObmConfigurationProperties properties;
   private final HashMap<String, PartitionInfo> partitionInfoHashMap = new HashMap<>();
@@ -54,8 +56,11 @@ public class MinioEnvironmentResolverImpl implements EnvironmentResolver {
                 partitionId);
           }
         });
+    Property externalUrl = partitionInfo.getProperties()
+        .get(properties.getPartitionPropertiesPrefix() + EXTERNAL_ENDPOINT);
+
     Property minioUrl = partitionInfo.getProperties().get(
         properties.getPartitionPropertiesPrefix() + ENDPOINT);
-    return minioUrl.getValue().toString();
+    return externalUrl == null ? minioUrl.getValue().toString() : externalUrl.getValue().toString();
   }
 }
