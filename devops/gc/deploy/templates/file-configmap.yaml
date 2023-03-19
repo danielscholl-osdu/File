@@ -11,6 +11,6 @@ data:
   PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
   STORAGE_HOST: {{ .Values.data.storageHost | quote }}
   SPRING_PROFILES_ACTIVE: {{ .Values.data.springProfilesActive | quote }}
-  {{- if not .Values.conf.onPremEnabled }}
+  {{- if not .Values.global.onPremEnabled }}
   FILE_LOCATION_USER_ID: {{ .Values.data.fileLocationUserId  | quote }}
   {{- end }}

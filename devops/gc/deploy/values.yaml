@@ -1,3 +1,7 @@
+global:
+  domain: ""
+  onPremEnabled: false
+
 data:
   #Deployment
   requestsCpu: "10m"
@@ -23,8 +27,6 @@ conf:
   fileMinioSecretName: "file-minio-secret"
   fileKeycloakSecretName: "file-keycloak-secret"
   filePostgresSecretName: "file-postgres-secret"
-  onPremEnabled: false
-  domain: ""
 
 istio:
   proxyCPU: "10m"
