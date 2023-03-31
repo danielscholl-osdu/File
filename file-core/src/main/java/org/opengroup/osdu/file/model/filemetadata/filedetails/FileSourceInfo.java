@@ -15,13 +15,16 @@
 package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
 
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.validation.constraints.NotEmpty;
 
 @Builder
 @Getter
@@ -29,39 +32,51 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "File Source Info")
 public class FileSourceInfo {
 
+    @Schema(description = "Relative file path for the data in the file")
     @JsonProperty("FileSource")
     @NotEmpty(message = "FileSource can not be empty")
     private String fileSource;
 
+    @Schema(description = "File system path to the data file as it existed before loading to the data platform")
     @JsonProperty("PreloadFilePath")
     private String PreloadFilePath;
 
+    @Schema(description = "Optional user name or reference, who created the file prior to up-loading to the platform.")
     @JsonProperty("PreloadFileCreateUser")
     private String preloadFileCreateUser;
 
+    @Schema(description = "Optional create date and time of the file prior to uploading to the platform.")
     @JsonProperty("PreloadFileCreateDate")
     private String preloadFileCreateDate;
 
+    @Schema(description = "Optional user name or reference, who last modified the file prior to up-loading to the platform.")
     @JsonProperty("PreloadFileModifyUser")
     private String preloadFileModifyUser;
 
+    @Schema(description = "Optional last modified date and time of the file prior to up-loading to the platform.")
     @JsonProperty("PreloadFileModifyDate")
     private String preloadFileModifyDate;
 
+    @Schema(description = "user-friendly file name.")
     @JsonProperty("Name")
     private String name;
 
+    @Schema(description = "Length of file in bytes. Implemented as string. The value must be convertible to a long integer (sizes can become very large).")
     @JsonProperty("FileSize")
     private String fileSize;
 
+    @Schema(description = "Encoding Format Type ID", pattern = "^srn:<namespace>:reference-data\\\\/EncodingFormatType:[^:]+:[0-9]*$")
     @JsonProperty("EncodingFormatTypeID")
     private String encodingFormatTypeID;
 
+    @Schema(description = "MD5 checksum of file bytes - a 32 byte hexadecimal number", pattern = "^[0-9a-fA-F]32}$")
     @JsonProperty("Checksum")
     private String checksum;
 
+    @Schema(description = "The name of the checksum algorithm e.g. MD5, SHA-256.")
     @JsonProperty("ChecksumAlgorithm")
     private String checksumAlgorithm;
 }

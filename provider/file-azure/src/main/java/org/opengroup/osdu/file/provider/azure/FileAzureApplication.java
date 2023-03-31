@@ -18,8 +18,10 @@ package org.opengroup.osdu.file.provider.azure;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
+@PropertySource("classpath:swagger.properties")
 public class FileAzureApplication {
   public static void main(String[] args) {
     SpringApplication.run(FileAzureApplication.class, args);

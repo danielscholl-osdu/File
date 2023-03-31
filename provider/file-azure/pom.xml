@@ -35,7 +35,6 @@
     <azure.appservice.plan />
     <azure.appservice.appname />
     <azure.appservice.subscription />
-    <springfox-version>2.7.0</springfox-version>
     <jackson.version>2.13.2</jackson.version>
     <jackson-databind.version>2.13.2.2</jackson-databind.version>
     <spring-webmvc.version>5.3.22</spring-webmvc.version>
