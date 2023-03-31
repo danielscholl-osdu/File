@@ -19,9 +19,11 @@ package org.opengroup.osdu.file;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication(scanBasePackages = "org.opengroup")
 @EnableFeignClients
+@PropertySource("classpath:swagger.properties")
 public class FileApplication {
 
   public static void main(String[] args) {

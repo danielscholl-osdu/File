@@ -16,6 +16,15 @@
 
 package org.opengroup.osdu.file.api;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.IDmsService;
@@ -25,6 +34,7 @@ import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.model.http.AppError;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,13 +55,27 @@ import java.util.List;
 @RestController
 @RequestScope
 @Validated
+@Hidden
 @RequestMapping(value = "/v2/file-collections")
+@Tag(name = "file-collection-dms-api", description = "File Collection Dms API")
 public class FileCollectionDmsApi {
 
   @Autowired
   @Qualifier("FileCollectionDmsService")
   IDmsService fileCollectionDmsService;
 
+  @Operation(summary = "${fileCollectionDmsApi.getStorageInstructions.summary}", description = "${fileCollectionDmsApi.getStorageInstructions.description}",
+      security = {@SecurityRequirement(name = "Authorization")}, tags = { "file-collection-dms-api" })
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = StorageInstructionsResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad Request",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "403", description = "User not authorized to perform the action",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "404", description = "Not Found",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "502", description = "Bad Gateway",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
+  })
   @PostMapping("/storageInstructions")
   @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_EDITOR_ROLE + "')")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
@@ -59,6 +83,18 @@ public class FileCollectionDmsApi {
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
+  @Operation(summary = "${fileCollectionDmsApi.getRetrievalInstructions.summary}", description = "${fileCollectionDmsApi.getRetrievalInstructions.description}",
+      security = {@SecurityRequirement(name = "Authorization")}, tags = { "file-collection-dms-api" })
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = RetrievalInstructionsResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad Request",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "403", description = "User not authorized to perform the action",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "404", description = "Not Found",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "502", description = "Bad Gateway",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
+  })
   @PostMapping("/retrievalInstructions")
   @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
@@ -67,10 +103,21 @@ public class FileCollectionDmsApi {
     return new ResponseEntity<>(retrievalInstructionsResp, HttpStatus.OK);
   }
 
+  @Operation(summary = "${fileCollectionDmsApi.copyDms.summary}", description = "${fileCollectionDmsApi.copyDms.description}",
+      security = {@SecurityRequirement(name = "Authorization")}, tags = { "file-collection-dms-api" })
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK", content = { @Content(array = @ArraySchema(schema = @Schema(implementation = CopyDmsResponse.class)))}),
+      @ApiResponse(responseCode = "400", description = "Bad Request",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "403", description = "User not authorized to perform the action",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "404", description = "Not Found",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "502", description = "Bad Gateway",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
+  })
   @PostMapping("/copy")
   @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
-  public ResponseEntity<List<CopyDmsResponse>> copyDms(
-      @RequestBody CopyDmsRequest copyDmsRequest) {
+  public ResponseEntity<List<CopyDmsResponse>> copyDms(@RequestBody CopyDmsRequest copyDmsRequest) {
     List<CopyDmsResponse> copyOpResponse = fileCollectionDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
     return new ResponseEntity<>(copyOpResponse, HttpStatus.OK);
   }

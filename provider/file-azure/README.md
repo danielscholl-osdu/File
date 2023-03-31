@@ -124,6 +124,13 @@ $ (cd testing/file-test-core/ && mvn clean install)
 $ (cd testing/file-test-azure/ && mvn clean test)
 ```
 
+## Open API 3.0 - Swagger
+- Swagger UI:  http://localhost:8080/api/file/v2/swagger (will redirect to  http://localhost:8080/api/file/v2/swagger-ui/index.html)
+- api-docs (JSON) :  http://localhost:8080/api/file/v2/api-docs
+- api-docs (YAML) :  http://localhost:8080/api/file/v2/api-docs.yaml
+
+All the Swagger and OpenAPI related common properties are managed here [swagger.properties](../../file-core/src/main/resources/swagger.properties)
+
 ## Debugging
 
 Jet Brains - the authors of Intellij IDEA, have written an [excellent guide](https://www.jetbrains.com/help/idea/debugging-your-first-java-application.html) on how to debug java programs.

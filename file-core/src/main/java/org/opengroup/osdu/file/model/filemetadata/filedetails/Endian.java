@@ -2,10 +2,12 @@ package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
 import java.util.stream.Stream;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.opengroup.osdu.file.exception.EnumValidationException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Schema(description = "Endianness of binary value. Enumeration- \\BIG\\ \\LITTLE\\.  If absent applications will need to interpret from context indicators.")
 public enum Endian {
 
   BIG("BIG"), LITTLE("LITTLE");
