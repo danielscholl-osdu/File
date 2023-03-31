@@ -16,21 +16,35 @@
 
 package org.opengroup.osdu.file.api;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.IDmsService;
-import org.opengroup.osdu.core.common.dms.model.*;
+import org.opengroup.osdu.core.common.dms.model.CopyDmsRequest;
+import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
+import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.model.http.AppError;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -40,6 +54,8 @@ import java.util.List;
 @RequestScope
 @Validated
 @RequestMapping(value = "/v2/files")
+@Hidden
+@Tag(name = "file-dms-api", description = "File Dms API")
 public class FileDmsApi {
 
   final DpsHeaders headers;
@@ -48,12 +64,36 @@ public class FileDmsApi {
   @Qualifier("FileDmsService")
   private IDmsService fileDmsService;
 
+  @Operation(summary = "${fileDmsApi.getStorageInstructions.summary}", description = "${fileDmsApi.getStorageInstructions.description}",
+      security = {@SecurityRequirement(name = "Authorization")}, tags = { "file-dms-api" })
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = StorageInstructionsResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad Request",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "403", description = "User not authorized to perform the action",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "404", description = "Not Found",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "502", description = "Bad Gateway",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
+  })
   @PostMapping("/storageInstructions")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
     StorageInstructionsResponse storageInstructionsResp = fileDmsService.getStorageInstructions();
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
+  @Operation(summary = "${fileDmsApi.getRetrievalInstructions.summary}", description = "${fileDmsApi.getRetrievalInstructions.description}",
+      security = {@SecurityRequirement(name = "Authorization")}, tags = { "file-dms-api" })
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = RetrievalInstructionsResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Bad Request",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "403", description = "User not authorized to perform the action",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "404", description = "Not Found",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "502", description = "Bad Gateway",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
+  })
   @PostMapping("/retrievalInstructions")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
@@ -61,9 +101,20 @@ public class FileDmsApi {
     return new ResponseEntity<>(retrievalInstructionsResp, HttpStatus.OK);
   }
 
+  @Operation(summary = "${fileDmsApi.copyDms.summary}", description = "${fileDmsApi.copyDms.description}",
+      security = {@SecurityRequirement(name = "Authorization")}, tags = { "file-dms-api" })
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK", content = { @Content(array = @ArraySchema(schema = @Schema(implementation = CopyDmsResponse.class)))}),
+      @ApiResponse(responseCode = "400", description = "Bad Request",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "401", description = "Unauthorized",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "403", description = "User not authorized to perform the action",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "404", description = "Not Found",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "502", description = "Bad Gateway",  content = {@Content(schema = @Schema(implementation = AppError.class))}),
+      @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
+  })
   @PostMapping("/copy")
-  public ResponseEntity<List<CopyDmsResponse>> copyDms(
-      @RequestBody CopyDmsRequest copyDmsRequest) {
+  public ResponseEntity<List<CopyDmsResponse>> copyDms(@RequestBody CopyDmsRequest copyDmsRequest) {
     List<CopyDmsResponse> copyOpResponse = fileDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
     return new ResponseEntity<>(copyOpResponse, HttpStatus.OK);
   }

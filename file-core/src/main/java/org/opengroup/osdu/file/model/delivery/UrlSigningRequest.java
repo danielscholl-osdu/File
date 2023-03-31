@@ -14,11 +14,16 @@
 
 package org.opengroup.osdu.file.model.delivery;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Schema(description = "Represents a model for Url Signing Request", example = "{ \"srns\": [ \"srn:some-valid-srn\", \"srn:some-invalid-srn\" ] }")
 public class UrlSigningRequest {
+
+    @ArraySchema(arraySchema = @Schema(implementation = String.class, description = "A list of SRNs to fetch"))
     private List<String> srns;
 }
