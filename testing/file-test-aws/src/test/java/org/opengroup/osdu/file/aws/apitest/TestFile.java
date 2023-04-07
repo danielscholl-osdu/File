@@ -40,7 +40,7 @@ public class TestFile extends File {
 
     // protected static final DummyRecordsHelper RECORDS_HELPER = new DummyRecordsHelper();
     private static String containerName = System.getProperty("STAGING_CONTAINER_NAME", System.getenv("STAGING_CONTAINER_NAME"));
-    
+
     @BeforeAll
     public static void setUp() throws IOException {
         client = new HttpClientAws();
@@ -66,11 +66,11 @@ public class TestFile extends File {
 
                 FileLocationResponse fileLocationResponse = mapper
                     .readValue(getFileLocationResponse.getEntity(String.class), FileLocationResponse.class);
-                if(fileLocationResponse!=null && StringUtils.isNotBlank(fileLocationResponse.getLocation())) {                    
-                    
-                        IntTestS3Location s3Location = new IntTestS3Location(fileLocationResponse.getLocation(), AwsConfig.getCloudStorageRegion());                                                
+                if(fileLocationResponse!=null && StringUtils.isNotBlank(fileLocationResponse.getLocation())) {
+
+                        IntTestS3Location s3Location = new IntTestS3Location(fileLocationResponse.getLocation(), AwsConfig.getCloudStorageRegion());
                         cloudStorageUtil.deleteCloudFile(s3Location.bucket, s3Location.key);
-                    
+
                 }
             }
         }
@@ -84,8 +84,8 @@ public class TestFile extends File {
           "POST",
           getHeaders("invalid_partition", client.getAccessToken()),
           "{}");
-      assertEquals(HttpStatus.SC_FORBIDDEN, getLocationResponse.getStatus());
+      assertEquals(HttpStatus.SC_UNAUTHORIZED, getLocationResponse.getStatus());
     }
-  
-    
+
+
 }
