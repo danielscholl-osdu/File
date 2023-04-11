@@ -41,6 +41,8 @@ environmentVariables:
     value: "http://os-search:8080"
   - name: DATASET_BASE_URL
     value: "http://os-dataset:8080"
+  - name: TMP_VOLUME_PATH
+    value: "/tmp"
 
 # Resource Config
 replicaCount: 1
@@ -62,7 +64,7 @@ serviceAccountRole: arn:aws:iam::{{ .Values.global.accountID }}:role/osdu-{{ .Va
 securityContext:
   runAsUser: 10001
   runAsNonRoot: true
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
   capabilities:
     drop:
