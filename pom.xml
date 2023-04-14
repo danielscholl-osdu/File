@@ -28,7 +28,7 @@
 
   <groupId>org.opengroup.osdu</groupId>
   <artifactId>os-file</artifactId>
-  <version>0.20.0-SNAPSHOT</version>
+  <version>0.21.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>file</name>
@@ -54,6 +54,7 @@
     <lombok.version>1.18.0</lombok.version>
     <log4j2.version>2.17.1</log4j2.version>
     <springfox.version>3.0.0</springfox.version>
+    <openapi.version>1.6.14</openapi.version>
     <json-smart.version>2.4.7</json-smart.version>
   </properties>
 
@@ -124,10 +125,15 @@
     </dependency>
 
      <!--Swagger-->
+<!--    <dependency>-->
+<!--      <groupId>io.springfox</groupId>-->
+<!--      <artifactId>springfox-boot-starter</artifactId>-->
+<!--      <version>${springfox.version}</version>-->
+<!--    </dependency>-->
     <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-boot-starter</artifactId>
-      <version>${springfox.version}</version>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
+      <version>${openapi.version}</version>
     </dependency>
 
 

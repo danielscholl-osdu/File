@@ -15,6 +15,7 @@
 package org.opengroup.osdu.file.model.delivery;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Represents a model for SrnFileData")
 public class SrnFileData {
 
     @JsonProperty("signedUrl")
@@ -32,7 +34,7 @@ public class SrnFileData {
 
     @JsonProperty("kind")
     String kind;
-    
+
     @JsonProperty("connectionString")
     String connectionString;
 }

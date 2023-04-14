@@ -21,12 +21,12 @@
     <parent>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>os-file</artifactId>
-        <version>0.20.0-SNAPSHOT</version>
+        <version>0.21.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>file-aws</artifactId>
-    <version>0.20.0-SNAPSHOT</version>
+    <version>0.21.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>File service on AWS</description>
     <groupId>org.opengroup.osdu</groupId>
@@ -34,13 +34,13 @@
 
     <properties>
         <aws.version>1.11.1018</aws.version>
-        <os-core-lib-aws.version>0.21.0-SNAPSHOT</os-core-lib-aws.version>
+        <os-core-lib-aws.version>0.21.0-rc1</os-core-lib-aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
         <log4j2.version>2.17.1</log4j2.version>
         <jackson.version>2.13.4</jackson.version>
         <jackson-databind.version>2.13.4.2</jackson-databind.version>
-        <spring-webmvc.version>5.3.26</spring-webmvc.version>
+        <spring-webmvc.version>5.3.22</spring-webmvc.version>
     </properties>
 
     <dependencyManagement>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>file-core</artifactId>
-            <version>0.20.0-SNAPSHOT</version>
+            <version>0.21.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

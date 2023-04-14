@@ -15,6 +15,8 @@
 package org.opengroup.osdu.file.model.delivery;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,11 +29,15 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(description = "Represents a model for Url Signing Response",
+    example = "{ \"unprocessed\": [ \"srn:some-invalid-srn\" ], \"processed\": { \"srn:some-valid-srn\":  { \"signedUrl\": \"https://...\" }}}")
 public class UrlSigningResponse {
 
+    @ArraySchema(arraySchema = @Schema(implementation = String.class, description = "A list of SRNs which could not be processed"))
     @JsonProperty("unprocessed")
     List<String> unprocessed;
 
+    @Schema(implementation = Map.class, description = "A list of SRNs which are processed")
     @JsonProperty("processed")
     Map<String, SrnFileData> processed;
 

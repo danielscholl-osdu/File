@@ -21,6 +21,8 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,38 +36,51 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "The file data container containing all necessary details of the file record")
 public class FileData {
 
+    @Schema(description = "An optional name of the dataset, e.g. a user friendly file or file collection name.")
     @JsonProperty("Name")
     private String name;
 
+    @Schema(description = "An optional, textual description of the dataset.")
     @JsonProperty("Description")
     private String description;
 
+    @Schema(description = "Total size of the dataset in bytes; for files it is the same as declared in FileSourceInfo.FileSize or the sum of all individual files. Implemented as string. The value must be convertible to a long integer (sizes can become very large).",
+      pattern = "^[0-9]+$")
     @JsonProperty("TotalSize")
     private String totalSize;
 
+    @Schema(description = "Encoding Format Type ID", pattern = "^srn:<namespace>:reference-data\\\\/EncodingFormatType:[^:]+:[0-9]*$")
     @JsonProperty("EncodingFormatTypeID")
     private String encodingFormatTypeID;
 
+    @Schema(description = "Schema Format Type ID", pattern = "^srn:<namespace>:reference-data\\\\/SchemaFormatType:[^:]+:[0-9]*$")
     @JsonProperty("SchemaFormatTypeID")
     private String schemaFormatTypeID;
 
+    @Schema(description = "Resource Home Region ID")
     @JsonProperty("ResourceHomeRegionID")
     private String resourceHomeRegionID;
 
+    @ArraySchema(arraySchema = @Schema(implementation = String.class, description = "Resource Host Region IDs"))
     @JsonProperty("ResourceHostRegionIDs")
     private String[] resourceHostRegionIDs;
 
+    @Schema(description = "Resource Curation Status")
     @JsonProperty("ResourceCurationStatus")
     private String resourceCurationStatus;
 
+    @Schema(description = "Resource Lifecycle Status")
     @JsonProperty("ResourceLifecycleStatus")
     private String resourceLifecycleStatus;
 
+    @Schema(description = "Resource Security Classification")
     @JsonProperty("ResourceSecurityClassification")
     private String resourceSecurityClassification;
 
+    @Schema(description = "Source")
     @JsonProperty("Source")
     private String source;
 
@@ -74,16 +89,19 @@ public class FileData {
     @Valid
     private DatasetProperties datasetProperties;
 
+    @Schema(description = "Existence Kind")
     @JsonProperty("ExistenceKind")
     private String existenceKind;
 
     @JsonProperty("Endian")
     private Endian endian;
 
+    @Schema(description = "MD5 checksum of file bytes - a 32 byte hexadecimal number", pattern = "^[0-9a-fA-F]32}$")
     @JsonProperty("Checksum")
-    private String checksum; 
-	
+    private String checksum;
+
+    @Schema(description = "File DMS Extension Properties")
     @JsonProperty("ExtensionProperties")
     private Map<String,Object> extensionProperties;
-	
+
 }

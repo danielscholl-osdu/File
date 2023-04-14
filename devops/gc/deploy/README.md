@@ -26,6 +26,13 @@ Packages are only needed for installation from a local computer.
 
 First you need to set variables in **values.yaml** file using any code editor. Some of the values are prefilled, but you need to specify some values as well. You can find more information about them below.
 
+### Global variables
+
+| Name | Description | Type | Default |Required |
+|------|-------------|------|---------|---------|
+**global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
+**global.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
+
 ### Configmap variables
 
 | Name | Description | Type | Default | Required |
@@ -35,7 +42,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **data.partitionHost** | Partition service host address | string | "http://partition" | yes
 **data.storageHost** | Storage service host address | string | "http://storage" | yes
 **data.springProfilesActive** | Spring profile that activate default configuration for Google Cloud environment | string | "gcp" | yes
-**data.obmMinioPartitionPropertiesPrefix** | obm MinIO partition properties prefix | string | "file.minio" | yes
 **data.fileLocationUserId** | file service location user ID | string | - | yes
 
 ### Deployment variables
@@ -60,8 +66,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **conf.fileMinioSecretName** | secret for MinIO | string | "file-minio-secret" | yes
 **conf.fileKeycloakSecretName** | secret for Keykloak | string | "file-keycloak-secret" | yes
 **conf.filePostgresSecretName** | secret for Postgres | string | "file-postgres-secret" | yes
-**conf.onPremEnabled** | whether on-prem is enabled | boolean | false | yes
-**conf.domain** | your domain | string | - | yes
 
 ### ISTIO variables
 

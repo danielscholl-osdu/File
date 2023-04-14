@@ -14,12 +14,12 @@
   <parent>
     <groupId>org.opengroup.osdu</groupId>
     <artifactId>os-file</artifactId>
-    <version>0.20.0-SNAPSHOT</version>
+    <version>0.21.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>file-azure</artifactId>
-  <version>0.20.0-SNAPSHOT</version>
+  <version>0.21.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>file-azure</name>
@@ -35,7 +35,6 @@
     <azure.appservice.plan />
     <azure.appservice.appname />
     <azure.appservice.subscription />
-    <springfox-version>2.7.0</springfox-version>
     <jackson.version>2.13.2</jackson.version>
     <jackson-databind.version>2.13.2.2</jackson-databind.version>
     <spring-webmvc.version>5.3.22</spring-webmvc.version>
@@ -108,7 +107,7 @@
           <artifactId>tomcat-embed-core</artifactId>
         </exclusion>
       </exclusions>
-      <version>0.20.0-SNAPSHOT</version>
+      <version>0.21.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
