@@ -1,0 +1,4 @@
+{{- template "common.serviceparameters" (list . "os-file.serviceparameters") -}}
+{{- define "os-file.serviceparameters" -}}
+## Define overrides for the service parameters here
+{{- end -}}

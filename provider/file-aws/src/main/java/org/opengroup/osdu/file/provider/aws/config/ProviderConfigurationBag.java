@@ -25,9 +25,6 @@ public class ProviderConfigurationBag {
     @Value("${aws.region}")
     public String amazonRegion;
 
-    @Value("${aws.resource.prefix}")
-    public String environment;
-
     @Value("${aws.s3.signed-url.expiration-days}")
     public int s3SignedUrlExpirationTimeInDays;
 
@@ -54,9 +51,6 @@ public class ProviderConfigurationBag {
 
     @Value("${aws.sns.region}")
     public String amazonSnsRegion;
-
-    @Value("${aws.sns.topic.arn}")
-    public String snsTopicArn;
 
     @Value("${aws.dynamodb.fileLocationRepositoryTable.ssm.relativePath}")
     public String fileLocationTableParameterRelativePath;
