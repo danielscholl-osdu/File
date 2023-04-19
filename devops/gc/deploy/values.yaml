@@ -17,7 +17,6 @@ data:
   partitionHost: "http://partition"
   storageHost: "http://storage"
   springProfilesActive: "gcp"
-  obmMinioPartitionPropertiesPrefix: "file.minio"
   fileLocationUserId: ""
 
 conf:
