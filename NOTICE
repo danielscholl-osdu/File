@@ -390,9 +390,9 @@ The following software have components provided under the terms of this license:
 - GSON extensions to the Google HTTP Client Library for Java. (from https://repo1.maven.org/maven2/com/google/http-client/google-http-client-gson)
 - Google APIs Client Library for Java (from https://repo1.maven.org/maven2/com/google/api-client/google-api-client)
 - Google App Engine extensions to the Google HTTP Client Library for Java. (from https://repo1.maven.org/maven2/com/google/http-client/google-http-client-appengine)
-- Google Cloud Core (from https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core, https://github.com/googleapis/java-core)
-- Google Cloud Core HTTP (from https://github.com/GoogleCloudPlatform/google-cloud-java/tree/master/google-cloud-core-http, https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core-http, https://github.com/googleapis/java-core)
-- Google Cloud Core gRPC (from https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core-grpc, https://github.com/googleapis/java-core)
+- Google Cloud Core (from https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core, https://github.com/googleapis/java-core, https://repo1.maven.org/maven2/com/google/cloud/google-cloud-core)
+- Google Cloud Core HTTP (from https://github.com/GoogleCloudPlatform/google-cloud-java/tree/master/google-cloud-core-http, https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core-http, https://github.com/googleapis/java-core, https://repo1.maven.org/maven2/com/google/cloud/google-cloud-core-http)
+- Google Cloud Core gRPC (from https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-core-grpc, https://github.com/googleapis/java-core, https://repo1.maven.org/maven2/com/google/cloud/google-cloud-core-grpc)
 - Google Cloud Datastore (from https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-datastore, https://github.com/googleapis/java-datastore)
 - Google Cloud IAM Service Account Credentials (from https://github.com/googleapis/google-cloud-java, https://github.com/googleapis/java-iamcredentials)
 - Google Cloud Logging (from https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-logging, https://github.com/googleapis/java-logging)
@@ -430,7 +430,6 @@ The following software have components provided under the terms of this license:
 - Jackson datatype: Joda (from http://wiki.fasterxml.com/JacksonModuleJoda, https://github.com/FasterXML/jackson-datatype-joda)
 - Jackson datatype: jdk8 (from https://repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8)
 - Jackson module: Afterburner (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-modules-base)
-- Jackson module: JAXB Annotations (from http://github.com/FasterXML/jackson-module-jaxb-annotations, http://wiki.fasterxml.com/JacksonJAXBAnnotations, https://github.com/FasterXML/jackson-modules-base)
 - Jackson-annotations (from http://github.com/FasterXML/jackson, http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson)
 - Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
 - Jackson-dataformat-XML (from http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding, https://github.com/FasterXML/jackson-dataformat-xml)
@@ -695,6 +694,7 @@ BouncyCastle
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Bouncy Castle ASN.1 Extension and Utility APIs (from https://www.bouncycastle.org/java.html)
 - Bouncy Castle PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs (from http://www.bouncycastle.org/java.html, https://www.bouncycastle.org/java.html)
 - Bouncy Castle Provider (from http://www.bouncycastle.org/java.html, https://www.bouncycastle.org/java.html)
 
@@ -848,7 +848,6 @@ IPA
 The following software have components provided under the terms of this license:
 
 - AWS Java SDK for Amazon Connect (from https://aws.amazon.com/sdkforjava)
-- AWS Java SDK for Amazon EC2 (from https://aws.amazon.com/sdkforjava)
 
 ========================================================================
 ISC
@@ -920,6 +919,7 @@ The following software have components provided under the terms of this license:
 - ClassGraph (from https://github.com/classgraph/classgraph)
 - JAXB OSGI (from http://jaxb.java.net/, https://eclipse-ee4j.github.io/jaxb-ri/, https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-osgi)
 - JUL to SLF4J bridge (from http://www.slf4j.org)
+- Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
 - Jakarta XML Binding API (from https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api, https://repo1.maven.org/maven2/org/jboss/spec/javax/xml/bind/jboss-jaxb-api_2.3_spec)
 - Java Client Runtime for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Java JWT (from http://www.jwt.io, https://github.com/auth0/java-jwt)
