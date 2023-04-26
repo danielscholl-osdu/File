@@ -4,8 +4,8 @@ global:
 
 data:
   #Deployment
-  requestsCpu: "10m"
-  requestsMemory: "450Mi"
+  requestsCpu: "5m"
+  requestsMemory: "350Mi"
   limitsCpu: "1"
   limitsMemory: "1G"
   serviceAccountName: ""
@@ -28,7 +28,7 @@ conf:
   filePostgresSecretName: "file-postgres-secret"
 
 istio:
-  proxyCPU: "10m"
+  proxyCPU: "5m"
   proxyCPULimit: "500m"
-  proxyMemory: "100Mi"
+  proxyMemory: "50Mi"
   proxyMemoryLimit: "512Mi"
