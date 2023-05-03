@@ -40,7 +40,7 @@
         <log4j2.version>2.17.1</log4j2.version>
         <jackson.version>2.13.4</jackson.version>
         <jackson-databind.version>2.13.4.2</jackson-databind.version>
-        <spring-webmvc.version>5.3.22</spring-webmvc.version>
+        <spring-webmvc.version>5.3.26</spring-webmvc.version>
     </properties>
 
     <dependencyManagement>
