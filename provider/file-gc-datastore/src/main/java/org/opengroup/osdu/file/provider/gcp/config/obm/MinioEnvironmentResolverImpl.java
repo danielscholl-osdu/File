@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2020-2023 Google LLC
+ * Copyright 2020-2023 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 
 package org.opengroup.osdu.file.provider.gcp.config.obm;
 
-import static org.opengroup.osdu.core.destination.obm.MinioTenantObmDestinationResolver.ENDPOINT;
-import static org.opengroup.osdu.core.destination.obm.MinioTenantObmDestinationResolver.EXTERNAL_ENDPOINT;
+import static org.opengroup.osdu.core.gcp.obm.driver.minio.MinioTenantObmDestinationResolver.ENDPOINT;
+import static org.opengroup.osdu.core.gcp.obm.driver.minio.MinioTenantObmDestinationResolver.EXTERNAL_ENDPOINT;
 
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,12 @@ import org.opengroup.osdu.core.common.partition.IPartitionProvider;
 import org.opengroup.osdu.core.common.partition.PartitionException;
 import org.opengroup.osdu.core.common.partition.PartitionInfo;
 import org.opengroup.osdu.core.common.partition.Property;
-import org.opengroup.osdu.core.destination.obm.MinioObmConfigurationProperties;
+import org.opengroup.osdu.core.gcp.obm.driver.minio.MinioObmConfigurationProperties;
 import org.opengroup.osdu.core.gcp.osm.translate.TranslatorRuntimeException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
+//TODO Move to OBM
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "obmDriver", havingValue = "minio")

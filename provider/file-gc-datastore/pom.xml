@@ -38,6 +38,7 @@
     <jackson-databind.version>2.13.2.2</jackson-databind.version>
     <jackson.version>2.13.2</jackson.version>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -50,7 +51,7 @@
       <dependency>
         <groupId>com.google.cloud</groupId>
         <artifactId>libraries-bom</artifactId>
-        <version>24.0.0</version>
+        <version>26.13.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -61,6 +62,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -74,14 +76,39 @@
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-gcp</artifactId>
-      <version>0.20.0-rc4</version>
+      <artifactId>core-lib-gc</artifactId>
+      <version>0.21.0-rc5</version>
     </dependency>
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>os-core-common</artifactId>
+      <version>0.21.0-rc5</version>
+    </dependency>
+
+    <!-- Mappers -->
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>oqm</artifactId>
+      <version>0.21.0-rc4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>osm</artifactId>
+      <version>0.21.0-rc3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>obm</artifactId>
+      <version>0.21.0-rc2</version>
+    </dependency>
+
     <dependency>
       <groupId>ch.qos.logback.contrib</groupId>
       <artifactId>logback-json-classic</artifactId>
       <version>0.1.5</version>
     </dependency>
+
+    <!-- Vulnerabilities patches -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
