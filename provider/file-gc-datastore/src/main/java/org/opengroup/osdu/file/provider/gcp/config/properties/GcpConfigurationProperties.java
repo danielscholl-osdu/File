@@ -30,7 +30,9 @@ public class GcpConfigurationProperties {
 
   private String fileLocationKind;
 
-  private String statusChangedTopic;
+  private int partitionInfoVmCacheExpTime = 60;
+
+  private int partitionInfoVmCacheSize = 100;
 
   private SignedUrl signedUrl = new SignedUrl();
 

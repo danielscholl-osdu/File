@@ -1,6 +1,6 @@
 /*
- * Copyright 2021 Google LLC
- * Copyright 2021 EPAM Systems, Inc
+ * Copyright 2020-2023 Google LLC
+ * Copyright 2020-2023 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 package org.opengroup.osdu.file.provider.gcp.config.obm;
 
+//TODO Move to OBM
 public interface EnvironmentResolver {
 
   String getProviderKey();
