@@ -14,12 +14,16 @@
 
 package org.opengroup.osdu.file.provider.aws.impl.status;
 
+import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement;
+import com.amazonaws.services.simplesystemsmanagement.model.GetParameterRequest;
+import com.amazonaws.services.simplesystemsmanagement.model.ParameterNotFoundException;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
+import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
 import org.opengroup.osdu.core.aws.ssm.SSMConfig;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -46,7 +50,8 @@ public class StatusEventPublisherImpl implements IEventPublisher {
         AmazonSNSConfig snsConfig = new AmazonSNSConfig(providerConfigurationBag.amazonSnsRegion);
         snsClient = snsConfig.AmazonSNS();
         SSMConfig ssmConfig = new SSMConfig();
-        amazonSnsTopic = Objects.requireNonNull(ssmConfig.amazonSSM().getProperty(providerConfigurationBag.snsTopicArn)).toString();
+        K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
+        amazonSnsTopic = Objects.requireNonNull(provider.getParameterAsStringOrDefault("FILE_SNS_ARN", null)).toString();
     }
 
     @Override

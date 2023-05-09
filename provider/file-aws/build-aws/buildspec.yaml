@@ -83,7 +83,6 @@ phases:
             - ./testing/file-test-aws/build-aws/prepare-dist.sh
 
             - echo "--Copying Helm Charts to ${OUTPUT_DIR:-dist}--"
-            - sed -i "s|__CHART_VERSION__|$VERSION|"  devops/aws/chart/Chart.yaml
             - sed -i "s|__CONTAINER__|$ECR_IMAGE|"  devops/aws/chart/values.yaml
             - rsync -r devops/aws/* "${OUTPUT_DIR:-dist}"
 
