@@ -15,12 +15,14 @@
 package org.opengroup.osdu.file.provider.aws.helper;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import org.opengroup.osdu.core.aws.configurationsetup.ConfigSetup;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentialsProvider;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
@@ -68,6 +70,7 @@ public class S3Helper {
     public static String getBucketRegion(String bucket, TemporaryCredentials credentials) {
         final AmazonS3 simpleS3Client = AmazonS3ClientBuilder.standard()
             .withCredentials(new TemporaryCredentialsProvider(credentials))
+            .withClientConfiguration(ConfigSetup.setUpConfig())
             .build();
         final String bucketLocation = simpleS3Client.getBucketLocation(bucket);
         final Region s3Region = Region.fromValue(bucketLocation);
@@ -88,6 +91,7 @@ public class S3Helper {
         return AmazonS3ClientBuilder.standard()
                                     .withRegion(Regions.fromName(region))
                                     .withCredentials(new TemporaryCredentialsProvider(credentials))
+                                    .withClientConfiguration(ConfigSetup.setUpConfig())
                                     .build();
     }
 }
