@@ -23,9 +23,9 @@ Pre-requisites
 * Lombok 1.16 or later
 * Maven
 
-### Anthos Service Configuration
+### Baremetal Service Configuration
 
-[Anthos service configuration](docs/anthos/README.md)
+[Baremetal service configuration](docs/baremetal/README.md)
 
 ##***REMOVED*** Service Configuration
 
@@ -33,9 +33,9 @@ Pre-requisites
 
 ## Testing
 
-#### Anthos
+#### Baremetal
 
-[Anthos Testing](docs/anthos/README.md)
+[Baremetal Testing](docs/baremetal/README.md)
 
 ###***REMOVED***
 
