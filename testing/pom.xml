@@ -41,7 +41,7 @@
     <module>file-test-azure</module>
     <module>file-test-aws</module>
     <module>file-test-ibm</module>
-    <module>file-test-anthos</module>
+    <module>file-test-baremetal</module>
   </modules>
 
   <repositories>
