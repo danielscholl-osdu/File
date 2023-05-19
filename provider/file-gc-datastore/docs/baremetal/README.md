@@ -1,4 +1,4 @@
-# Service Configuration for Anthos
+# Service Configuration for Baremetal
 
 ## Environment variables
 

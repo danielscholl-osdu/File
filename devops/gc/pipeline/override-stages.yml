@@ -2,9 +2,9 @@ variables:
   GC_SERVICE: file
   GC_VENDOR: gc-datastore
 
-gc-anthos-test:
+gc-baremetal-test:
   variables:
-    GC_VENDOR: anthos
+    GC_VENDOR: baremetal
 
 gc-dev2-test:
   variables:
