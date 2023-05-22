@@ -32,6 +32,7 @@ import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.azure.model.blob.Blob;
@@ -39,6 +40,7 @@ import org.opengroup.osdu.file.provider.azure.model.blob.BlobId;
 import org.opengroup.osdu.file.provider.azure.model.blob.BlobInfo;
 import org.opengroup.osdu.file.provider.azure.storage.Storage;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
@@ -71,9 +73,18 @@ public class StorageRepository implements IStorageRepository {
   @Autowired
   DpsHeaders dpsHeaders;
 
+  @Autowired
+  private ExpiryTimeUtil expiryTimeUtil;
+
   @Override
   @SneakyThrows
   public SignedObject createSignedObject(String containerName, String filepath) {
+    return getSignedObjectBasedOnParams(containerName, filepath, new SignedUrlParameters());
+  }
+  @Override
+  @SneakyThrows
+  public SignedObject getSignedObjectBasedOnParams(String containerName, String filepath,
+                                         SignedUrlParameters signedUrlParameters) {
     log.debug("Creating the signed blob in container {} for path {}", containerName, filepath);
     BlobId blobId = BlobId.of(containerName, filepath);
     BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
@@ -82,8 +93,7 @@ public class StorageRepository implements IStorageRepository {
     Blob blob = storage.create(dpsHeaders.getPartitionId(), blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
     log.debug("Created the blob in container {} for path {}", containerName, filepath);
 
-    int expiryDays = 7;
-    OffsetDateTime expiryTime = OffsetDateTime.now().plusDays(expiryDays);
+    OffsetDateTime expiryTime = expiryTimeUtil.getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
     BlobSasPermission permissions = (new BlobSasPermission())
         .setWritePermission(true)
         .setCreatePermission(true);

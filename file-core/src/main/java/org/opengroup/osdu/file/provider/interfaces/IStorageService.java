@@ -38,6 +38,22 @@ public interface IStorageService {
    */
   SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID);
 
+  /**
+   * Creates the empty object blob in storage.
+   * Bucket name is determined by tenant using {@code partitionID}.
+   * Object name is concat of a filepath and a fileID. Filepath is determined by user.
+   *
+   * @param fileID file ID
+   * @param authorizationToken authorization token
+   * @param partitionID partition ID
+   * @param signedUrlParameters Signed Url Parameters
+   * @return info about object URI, signed URL and when and who created blob.
+   */
+  default SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID,
+                                    SignedUrlParameters signedUrlParameters) {
+    return createSignedUrl(fileID, authorizationToken, partitionID);
+  }
+
   // stub implementation
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.

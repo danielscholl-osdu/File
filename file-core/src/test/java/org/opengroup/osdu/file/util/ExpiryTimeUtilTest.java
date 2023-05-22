@@ -46,12 +46,30 @@ public class ExpiryTimeUtilTest {
   }
 
   @Test
+  public void testExpiryTimeEqualToCappedDefaultValue(){
+    relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit("7D");
+    verifyCappedDefaultExpiryTime(relativeTimeValue);
+  }
+
+  @Test
+  public void testExpiryTimeLessThanCappedDefaultValue(){
+    relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit("6D");
+    assertEquals(6L,relativeTimeValue.getValue());
+    assertEquals(TimeUnit.DAYS,relativeTimeValue.getTimeUnit());
+
+    relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit("120H");
+    assertEquals(120L,relativeTimeValue.getValue());
+    assertEquals(TimeUnit.HOURS,relativeTimeValue.getTimeUnit());
+
+  }
+
+  @Test
   public void testExpiryTimeGreaterThanCappedDefaultValue(){
     relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit("9D");
-    verifyDefaultExpirtyTime(relativeTimeValue);
+    verifyCappedDefaultExpiryTime(relativeTimeValue);
 
     relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit("200H");
-    verifyDefaultExpirtyTime(relativeTimeValue);
+    verifyCappedDefaultExpiryTime(relativeTimeValue);
 
   }
 
@@ -70,11 +88,15 @@ public class ExpiryTimeUtilTest {
   @Test
   public void testExpiryTimeNullInput(){
     relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit(null);
-    verifyDefaultExpirtyTime(relativeTimeValue);
+    verifyDefaultExpiryTime(relativeTimeValue);
   }
 
+  private void verifyDefaultExpiryTime(ExpiryTimeUtil.RelativeTimeValue relativeTimeValue) {
+    assertEquals(1L, relativeTimeValue.getValue());
+    assertEquals(TimeUnit.HOURS, relativeTimeValue.getTimeUnit());
+  }
 
-  private void verifyDefaultExpirtyTime(ExpiryTimeUtil.RelativeTimeValue relativeTimeValue) {
+  private void verifyCappedDefaultExpiryTime(ExpiryTimeUtil.RelativeTimeValue relativeTimeValue) {
     assertEquals(7L, relativeTimeValue.getValue());
     assertEquals(TimeUnit.DAYS, relativeTimeValue.getTimeUnit());
   }

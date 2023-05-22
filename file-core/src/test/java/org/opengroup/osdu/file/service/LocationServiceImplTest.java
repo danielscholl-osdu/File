@@ -16,29 +16,6 @@
 
 package org.opengroup.osdu.file.service;
 
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
-import static org.opengroup.osdu.file.TestUtils.AUTHORIZATION_TOKEN;
-import static org.opengroup.osdu.file.TestUtils.FILE_ID;
-import static org.opengroup.osdu.file.TestUtils.PARTITION;
-import static org.opengroup.osdu.file.TestUtils.SIGNED_URL_CONDITION;
-import static org.opengroup.osdu.file.TestUtils.SRG_OBJECT_URI;
-import static org.opengroup.osdu.file.TestUtils.SRG_PROTOCOL;
-import static org.opengroup.osdu.file.TestUtils.USER_DES_ID;
-import static org.opengroup.osdu.file.TestUtils.UUID_CONDITION;
-
-import java.net.URI;
-import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.validation.ConstraintViolationException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -64,12 +41,37 @@ import org.opengroup.osdu.file.TestUtils;
 import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.LocationAlreadyExistsException;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
 import org.opengroup.osdu.file.provider.interfaces.ILocationMapper;
 import org.opengroup.osdu.file.provider.interfaces.ILocationService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IValidationService;
 import org.opengroup.osdu.file.util.JsonUtils;
+
+import javax.validation.ConstraintViolationException;
+import java.net.URI;
+import java.net.URL;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.opengroup.osdu.file.TestUtils.AUTHORIZATION_TOKEN;
+import static org.opengroup.osdu.file.TestUtils.FILE_ID;
+import static org.opengroup.osdu.file.TestUtils.PARTITION;
+import static org.opengroup.osdu.file.TestUtils.SIGNED_URL_CONDITION;
+import static org.opengroup.osdu.file.TestUtils.SRG_OBJECT_URI;
+import static org.opengroup.osdu.file.TestUtils.SRG_PROTOCOL;
+import static org.opengroup.osdu.file.TestUtils.USER_DES_ID;
+import static org.opengroup.osdu.file.TestUtils.UUID_CONDITION;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceCamelCase.class)
@@ -93,6 +95,9 @@ class LocationServiceImplTest {
 
   private ILocationService locationService;
 
+  private SignedUrlParameters signedUrlParameters = new SignedUrlParameters();
+
+
   @BeforeEach
   void setUp() {
     locationService = new LocationServiceImpl(locationMapper, validationService,
@@ -109,7 +114,7 @@ class LocationServiceImplTest {
           .build();
       DpsHeaders headers = getHeaders();
 
-      given(storageService.createSignedUrl(anyString(), eq(AUTHORIZATION_TOKEN), eq(PARTITION)))
+      given(storageService.createSignedUrl(anyString(), eq(AUTHORIZATION_TOKEN), eq(PARTITION), eq(signedUrlParameters)))
           .willReturn(getSignedUrl());
       given(fileLocationRepository.save(any())).willAnswer(this::getFileLocationAnswer);
       given(locationMapper.buildLocationResponse(any(SignedUrl.class), any(FileLocation.class)))
@@ -129,7 +134,7 @@ class LocationServiceImplTest {
       inOrder.verify(fileLocationRepository).findByFileID(isNull());
       inOrder.verify(storageService)
           .createSignedUrl(fileIdCaptor.capture(), eq(AUTHORIZATION_TOKEN), eq(
-              PARTITION));
+              PARTITION), eq(signedUrlParameters));
       inOrder.verify(fileLocationRepository).save(fileLocationCaptor.capture());
       inOrder.verifyNoMoreInteractions();
 
@@ -151,7 +156,7 @@ class LocationServiceImplTest {
           .build();
       DpsHeaders headers = getHeaders();
 
-      given(storageService.createSignedUrl(FILE_ID, AUTHORIZATION_TOKEN, PARTITION))
+      given(storageService.createSignedUrl(FILE_ID, AUTHORIZATION_TOKEN, PARTITION, signedUrlParameters))
           .willReturn(getSignedUrl());
       given(fileLocationRepository.save(any())).willAnswer(this::getFileLocationAnswer);
       given(locationMapper.buildLocationResponse(any(SignedUrl.class), any(FileLocation.class)))
@@ -169,7 +174,7 @@ class LocationServiceImplTest {
       InOrder inOrder = Mockito.inOrder(validationService, fileLocationRepository, storageService);
       inOrder.verify(validationService).validateLocationRequest(request);
       inOrder.verify(fileLocationRepository).findByFileID(FILE_ID);
-      inOrder.verify(storageService).createSignedUrl(FILE_ID, AUTHORIZATION_TOKEN, PARTITION);
+      inOrder.verify(storageService).createSignedUrl(FILE_ID, AUTHORIZATION_TOKEN, PARTITION, signedUrlParameters);
       inOrder.verify(fileLocationRepository).save(fileLocationCaptor.capture());
       inOrder.verifyNoMoreInteractions();
 

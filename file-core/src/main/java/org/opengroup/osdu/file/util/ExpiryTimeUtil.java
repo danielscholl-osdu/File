@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.opengroup.osdu.file.constant.ErrorMessages;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -15,6 +16,9 @@ import java.util.regex.Pattern;
 
 @Component
 public class ExpiryTimeUtil {
+
+  private static final long DEFAULT_TTL = 1L;
+  private static final long CAPPED_DEFAULT_TTL = 7L;
 
   private enum TimeUnitEnum {
     MINUTES(Pattern.compile("^[0-9]+M$"), TimeUnit.MINUTES),
@@ -40,17 +44,19 @@ public class ExpiryTimeUtil {
 
   public RelativeTimeValue getExpiryTimeValueInTimeUnit(String input) {
 
-    RelativeTimeValue defaultExpiryTime = new RelativeTimeValue(7L, TimeUnit.DAYS);
-    Optional<TimeUnitEnum> OptionalForSupportedTimeUnit = getTimeUnitForInput(input);
-    if (OptionalForSupportedTimeUnit.isPresent()) {
+    RelativeTimeValue defaultExpiryTime = new RelativeTimeValue(DEFAULT_TTL, TimeUnit.HOURS);
+    RelativeTimeValue cappedDefaultExpiryTime = new RelativeTimeValue(CAPPED_DEFAULT_TTL, TimeUnit.DAYS);
+    Optional<TimeUnitEnum> optionalForSupportedTimeUnit = getTimeUnitForInput(input);
+    if (optionalForSupportedTimeUnit.isPresent()) {
       long value = extractValueFromRegexMatchedString(input);
       RelativeTimeValue expiryTimeInTimeUnit = new RelativeTimeValue(value,
-          OptionalForSupportedTimeUnit.get().timeUnit);
+          optionalForSupportedTimeUnit.get().timeUnit);
 
       if (getOffsetDateTimeFromNow(expiryTimeInTimeUnit)
-          .compareTo(getOffsetDateTimeFromNow(defaultExpiryTime)) <= 0)
+          .isAfter(getOffsetDateTimeFromNow(cappedDefaultExpiryTime)))
+        return cappedDefaultExpiryTime;
+      else
         return expiryTimeInTimeUnit;
-
     }
 
     return defaultExpiryTime;

@@ -52,7 +52,7 @@ public class FileDeliveryApi {
   @GetMapping("/v2/files/{id}/downloadURL")
   public ResponseEntity<DownloadUrlResponse> downloadURL(
       @Parameter(description = "File Metadata record Id.") @PathVariable("id") String id,
-      @Parameter(description = "The Time for which Signed URL to be valid. Accepted Regex patterns are \"^[0-9]+M$\", \"^[0-9]+H$\", \"^[0-9]+D$\" denoting Integer values in Minutes, Hours, Days respectively. In absence of this parameter the URL would be valid for 7 Days.",
+      @Parameter(description = "The Time for which Signed URL to be valid. Accepted Regex patterns are \"^[0-9]+M$\", \"^[0-9]+H$\", \"^[0-9]+D$\" denoting Integer values in Minutes, Hours, Days respectively. In absence of this parameter the URL would be valid for 1 Hour.",
         example = "5M")  @RequestParam(required = false, name = "expiryTime") String expiryTime)
       throws StorageException {
 

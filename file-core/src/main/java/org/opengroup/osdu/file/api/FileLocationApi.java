@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,12 +37,14 @@ import org.opengroup.osdu.core.common.model.http.AppError;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.FileServiceRole;
 import org.opengroup.osdu.file.logging.AuditLogger;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.interfaces.ILocationService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -121,9 +124,11 @@ public class FileLocationApi {
   })
   @GetMapping("/v2/files/uploadURL")
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.EDITORS+ "')")
-  public LocationResponse getLocationFile() throws JsonProcessingException {
+  public LocationResponse getLocationFile(@Parameter(description = "The Time for which Signed URL to be valid. Accepted Regex patterns are \"^[0-9]+M$\", \"^[0-9]+H$\", \"^[0-9]+D$\" denoting Integer values in Minutes, Hours, Days respectively. In absence of this parameter the URL would be valid for 1 Hour.",
+      example = "5M")  @RequestParam(required = false, name = "expiryTime") String expiryTime) throws JsonProcessingException {
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters(expiryTime);
     LocationRequest req = (new ObjectMapper()).readValue("{}", LocationRequest.class);
-    LocationResponse locationResponse = locationService.getLocation(req, headers);
+    LocationResponse locationResponse = locationService.getLocation(req, headers, signedUrlParameters);
     log.debug("Location result ready : {}", locationResponse);
     return locationResponse;
   }

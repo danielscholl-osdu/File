@@ -16,12 +16,14 @@
 
 package org.opengroup.osdu.file.provider.interfaces;
 
-import javax.validation.ConstraintViolationException;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
 import org.opengroup.osdu.core.common.model.file.FileLocationResponse;
 import org.opengroup.osdu.core.common.model.file.LocationRequest;
 import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
+
+import javax.validation.ConstraintViolationException;
 
 public interface ILocationService {
 
@@ -35,6 +37,21 @@ public interface ILocationService {
    * @throws ConstraintViolationException if request is invalid
    */
   LocationResponse getLocation(LocationRequest request, DpsHeaders headers);
+
+  /**
+   * GetLocation creates a new location (e.g. bucket) in a landing zone for a new file
+   * which will be uploaded by calling party.
+   *
+   * @param request location request
+   * @param headers request headers
+   * @param signedUrlParameters SignedUrlParameters
+   * @return location response that contains fileID and location
+   * @throws ConstraintViolationException if request is invalid
+   */
+  default LocationResponse getLocation(LocationRequest request, DpsHeaders headers, SignedUrlParameters signedUrlParameters){
+   return  getLocation(request, headers);
+  }
+
 
   /**
    * GetFileLocation returns internal information about particular file, including Driver.
