@@ -18,12 +18,22 @@ package org.opengroup.osdu.file.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.opengroup.osdu.core.common.model.file.*;
+import org.opengroup.osdu.core.common.model.file.DriverType;
+import org.opengroup.osdu.core.common.model.file.FileLocation;
+import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
+import org.opengroup.osdu.core.common.model.file.FileLocationResponse;
+import org.opengroup.osdu.core.common.model.file.LocationRequest;
+import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.LocationAlreadyExistsException;
 import org.opengroup.osdu.file.model.SignedUrl;
-import org.opengroup.osdu.file.provider.interfaces.*;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
+import org.opengroup.osdu.file.provider.interfaces.ILocationMapper;
+import org.opengroup.osdu.file.provider.interfaces.ILocationService;
+import org.opengroup.osdu.file.provider.interfaces.IStorageService;
+import org.opengroup.osdu.file.provider.interfaces.IValidationService;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -43,6 +53,12 @@ public class LocationServiceImpl implements ILocationService {
 
   @Override
   public LocationResponse getLocation(LocationRequest request, DpsHeaders headers) {
+    return getLocation(request, headers, new SignedUrlParameters());
+  }
+
+  @Override
+  public LocationResponse getLocation(LocationRequest request, DpsHeaders headers,
+                                      SignedUrlParameters signedUrlParameters) {
     log.debug("Request to create location for file upload with parameters : {}", request);
     validationService.validateLocationRequest(request);
     checkExisting(request);
@@ -51,7 +67,7 @@ public class LocationServiceImpl implements ILocationService {
 
     log.debug("Create the empty blob in bucket. FileID : {}", fileID);
     SignedUrl signedUrl = storageService.createSignedUrl(fileID, headers.getAuthorization(),
-        headers.getPartitionIdWithFallbackToAccountId());
+        headers.getPartitionIdWithFallbackToAccountId(), signedUrlParameters);
     log.debug("Signed URL for fileID = {} : {}", fileID, signedUrl);
 
     FileLocation fileLocation = FileLocation.builder()

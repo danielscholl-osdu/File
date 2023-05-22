@@ -11,12 +11,14 @@ import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.model.blob.Blob;
 import org.opengroup.osdu.file.provider.azure.model.blob.BlobInfo;
 import org.opengroup.osdu.file.provider.azure.storage.Storage;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
 import java.time.OffsetDateTime;
 
@@ -49,6 +51,9 @@ public class StorageRepositoryTest {
   @Mock
   DpsHeaders dpsHeaders;
 
+  @Mock
+  private ExpiryTimeUtil expiryTimeUtil;
+
   @InjectMocks
   StorageRepository storageRepository;
 
@@ -56,6 +61,11 @@ public class StorageRepositoryTest {
   public void shouldCreateSignedObject_MsiEnabled() {
     prepareMock(true);
     String signedUrl = TestUtils.getSignedURL(TestUtils.CONTAINER_NAME, TestUtils.FILE_PATH);
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters();
+    OffsetDateTime expiryTimeInOffsetDateTime = mock(OffsetDateTime.class);
+
+    when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime()))
+        .thenReturn(expiryTimeInOffsetDateTime);
     when(blobStore.generatePreSignedUrlWithUserDelegationSas(eq(TestUtils.PARTITION), eq(TestUtils.CONTAINER_NAME),
         eq(TestUtils.FILE_PATH), any(OffsetDateTime.class), any(BlobSasPermission.class))).thenReturn(signedUrl);
 
@@ -77,6 +87,11 @@ public class StorageRepositoryTest {
   public void shouldCreateSignedObject_MsiNotEnabled() {
     prepareMock(false);
     String signedUrl = TestUtils.getSignedURL(TestUtils.CONTAINER_NAME, TestUtils.FILE_PATH);
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters();
+    OffsetDateTime expiryTimeInOffsetDateTime = mock(OffsetDateTime.class);
+
+    when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime()))
+        .thenReturn(expiryTimeInOffsetDateTime);
     when(blobStore.generatePreSignedURL(eq(TestUtils.PARTITION),
         eq(TestUtils.FILE_PATH), eq(TestUtils.CONTAINER_NAME), any(OffsetDateTime.class), any(BlobSasPermission.class))).thenReturn(signedUrl);
 
@@ -92,6 +107,61 @@ public class StorageRepositoryTest {
     verify(dpsHeaders, times(2)).getPartitionId();
     verify(blobStore).generatePreSignedURL(eq(TestUtils.PARTITION),
         eq(TestUtils.FILE_PATH), eq(TestUtils.CONTAINER_NAME), any(OffsetDateTime.class), any(BlobSasPermission.class));
+  }
+
+  @Test
+  public void shouldCreateSignedObjectWithSignedUrlParametersAndMsiEnabled() {
+    prepareMock(true);
+    String signedUrl = TestUtils.getSignedURL(TestUtils.CONTAINER_NAME, TestUtils.FILE_PATH);
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters("2D");
+    OffsetDateTime expiryTimeInOffsetDateTime = OffsetDateTime.now().plusDays(2);
+
+    when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime()))
+        .thenReturn(expiryTimeInOffsetDateTime);
+    when(blobStore.generatePreSignedUrlWithUserDelegationSas(eq(TestUtils.PARTITION), eq(TestUtils.CONTAINER_NAME),
+        eq(TestUtils.FILE_PATH), any(OffsetDateTime.class), any(BlobSasPermission.class))).thenReturn(signedUrl);
+
+    SignedObject signedObject = storageRepository.getSignedObjectBasedOnParams(TestUtils.CONTAINER_NAME,
+        TestUtils.FILE_PATH, signedUrlParameters);
+
+    then(signedObject).satisfies(url -> {
+      then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
+      then(url.getUrl().toString()).isEqualTo(signedUrl);
+    });
+
+    verify(msiConfiguration).getIsEnabled();
+    verify(blobServiceClientWrapper).getStorageAccount();
+    verify(dpsHeaders, times(2)).getPartitionId();
+    verify(expiryTimeUtil, times(1)).getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
+    verify(blobStore).generatePreSignedUrlWithUserDelegationSas(eq(TestUtils.PARTITION), eq(TestUtils.CONTAINER_NAME),
+        eq(TestUtils.FILE_PATH), eq(expiryTimeInOffsetDateTime), any(BlobSasPermission.class));
+  }
+  @Test
+  public void shouldCreateSignedObjectWithSignedUrlParametersAndMsiDisabled() {
+    prepareMock(false);
+    String signedUrl = TestUtils.getSignedURL(TestUtils.CONTAINER_NAME, TestUtils.FILE_PATH);
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters("2D");
+    OffsetDateTime expiryTimeInOffsetDateTime = OffsetDateTime.now().plusDays(2);
+
+    when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime()))
+        .thenReturn(expiryTimeInOffsetDateTime);
+    when(blobStore.generatePreSignedURL(eq(TestUtils.PARTITION),
+        eq(TestUtils.FILE_PATH), eq(TestUtils.CONTAINER_NAME), any(OffsetDateTime.class), any(BlobSasPermission.class))).thenReturn(signedUrl);
+
+    SignedObject signedObject = storageRepository.getSignedObjectBasedOnParams(TestUtils.CONTAINER_NAME,
+        TestUtils.FILE_PATH, signedUrlParameters);
+
+    then(signedObject).satisfies(url -> {
+      then(url.getUrl().toString()).is(TestUtils.AZURE_URL_CONDITION);
+      then(url.getUrl().toString()).isEqualTo(signedUrl);
+    });
+
+    verify(msiConfiguration).getIsEnabled();
+    verify(blobServiceClientWrapper).getStorageAccount();
+    verify(dpsHeaders, times(2)).getPartitionId();
+    verify(expiryTimeUtil, times(1)).getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
+    verify(blobStore).generatePreSignedURL(eq(TestUtils.PARTITION),
+        eq(TestUtils.FILE_PATH), eq(TestUtils.CONTAINER_NAME), eq(expiryTimeInOffsetDateTime), any(BlobSasPermission.class));
   }
 
   private void prepareMock(boolean isMsiEnabled) {

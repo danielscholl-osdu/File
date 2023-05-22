@@ -21,7 +21,9 @@ public class ExpirationDateHelperTest {
     long expTimeMillis = expectedDate.getTime();
     expTimeMillis += 1000 * 60 * 60 * 24 * numberOfDays;
     expectedDate.setTime(expTimeMillis);
-    assertEquals(expectedDate,actualDate);
+
+    // To ignore the few ms difference - test case runs
+    assertEquals(expectedDate.getTime()/10,actualDate.getTime()/10);
   }
 
 }

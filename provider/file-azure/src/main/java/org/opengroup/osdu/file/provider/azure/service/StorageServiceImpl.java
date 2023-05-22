@@ -96,6 +96,12 @@ public class StorageServiceImpl implements IStorageService {
 
   @Override
   public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID) {
+    return createSignedUrl(fileID, authorizationToken, partitionID, new SignedUrlParameters());
+  }
+
+  @Override
+  public SignedUrl createSignedUrl(String fileID, String authorizationToken, String partitionID,
+                                   SignedUrlParameters signedUrlParameters) {
     log.debug("Creating the signed blob for fileID : {} : {}, partitionID : {}",
         fileID, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
@@ -113,7 +119,7 @@ public class StorageServiceImpl implements IStorageService {
           StorageConstant.AZURE_MAX_FILEPATH, filepath.length()));
     }
 
-    SignedObject signedObject = storageRepository.createSignedObject(containerName, filepath);
+    SignedObject signedObject = storageRepository.getSignedObjectBasedOnParams(containerName, filepath, signedUrlParameters);
 
     return SignedUrl.builder()
         .url(signedObject.getUrl())

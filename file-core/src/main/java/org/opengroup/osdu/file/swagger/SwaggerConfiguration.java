@@ -49,15 +49,7 @@ public class SwaggerConfiguration {
               .in("header")
               .required(true)
               .schema(new StringSchema());
-      Parameter frameOfReference = new Parameter()
-              .name(DpsHeaders.FRAME_OF_REFERENCE)
-              .description("This value indicates whether normalization applies, should be either " +
-                      "`none` or `units=SI;crs=wgs84;elevation=msl;azimuth=true north;dates=utc;`")
-              .in("header")
-              .required(true)
-              .example("units=SI;crs=wgs84;elevation=msl;azimuth=true north;dates=utc;")
-              .schema(new StringSchema());
-      return operation.addParametersItem(dataPartitionId).addParametersItem(frameOfReference);
+      return operation.addParametersItem(dataPartitionId);
     };
   }
 

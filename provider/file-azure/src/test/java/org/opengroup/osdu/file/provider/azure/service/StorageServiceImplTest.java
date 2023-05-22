@@ -30,11 +30,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
+import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
-import org.opengroup.osdu.azure.di.MSIConfiguration;
-import org.opengroup.osdu.core.common.exception.BadRequestException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.ReplaceCamelCase;
 import org.opengroup.osdu.file.model.FileRetrievalData;
@@ -56,13 +55,18 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,10 +114,12 @@ class StorageServiceImplTest {
 
   @Test
   void shouldCreateObjectSignedUrl() {
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters();
     Mockito.when(blobStoreConfig.getStagingContainer()).thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+
     // given
     SignedObject signedObject = getSignedObject();
-    given(storageRepository.createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), anyString())).willReturn(signedObject);
+    given(storageRepository.getSignedObjectBasedOnParams(eq(TestUtils.STAGING_CONTAINER_NAME), anyString(), eq(signedUrlParameters))).willReturn(signedObject);
 
     // when
     SignedUrl signedUrl = storageService.createSignedUrl(
@@ -127,7 +133,7 @@ class StorageServiceImplTest {
       then(url.getCreatedBy()).isEqualTo(TestUtils.USER_DES_ID);
     });
 
-    verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), filenameCaptor.capture());
+    verify(storageRepository).getSignedObjectBasedOnParams(eq(TestUtils.STAGING_CONTAINER_NAME), filenameCaptor.capture(), eq(signedUrlParameters));
     then(filenameCaptor.getValue()).matches(".*?");
   }
 
@@ -233,11 +239,13 @@ class StorageServiceImplTest {
 
   @Test
   void shouldCreateStorageInstructions() {
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters();
     Mockito.when(blobStoreConfig.getStagingContainer()).thenReturn(TestUtils.STAGING_CONTAINER_NAME);
     when(dpsHeaders.getAuthorization()).thenReturn(TestUtils.AUTHORIZATION_TOKEN);
     // given
     SignedObject signedObject = getSignedObject();
-    given(storageRepository.createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), anyString())).willReturn(signedObject);
+    given(storageRepository.getSignedObjectBasedOnParams(eq(TestUtils.STAGING_CONTAINER_NAME), anyString(),
+        eq(signedUrlParameters))).willReturn(signedObject);
 
     // when
     StorageInstructionsResponse storageInstructions = storageService.createStorageInstructions(
@@ -249,7 +257,8 @@ class StorageServiceImplTest {
       then(response.getStorageLocation()).isNotEmpty();
     });
 
-    verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_CONTAINER_NAME), filenameCaptor.capture());
+    verify(storageRepository).getSignedObjectBasedOnParams(eq(TestUtils.STAGING_CONTAINER_NAME), filenameCaptor.capture(),
+        eq(signedUrlParameters));
     verify(blobStoreConfig).getStagingContainer();
     verify(dpsHeaders).getAuthorization();
     then(filenameCaptor.getValue()).matches(".*?");

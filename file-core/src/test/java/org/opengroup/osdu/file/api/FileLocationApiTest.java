@@ -12,6 +12,7 @@ import org.opengroup.osdu.core.common.model.file.LocationRequest;
 import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.logging.AuditLogger;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.interfaces.ILocationService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -85,12 +86,13 @@ public class FileLocationApiTest {
 
   @Test
   public void test_getLocationFile() throws JsonProcessingException {
+    SignedUrlParameters signedUrlParameters = new SignedUrlParameters("7D");
+    when(locationService.getLocation(any(LocationRequest.class), eq(headers), eq(signedUrlParameters))).thenReturn(locationResponse);
 
-    when(locationService.getLocation(any(LocationRequest.class), eq(headers))).thenReturn(locationResponse);
-    LocationResponse result = fileLocationApi.getLocationFile();
+    LocationResponse result = fileLocationApi.getLocationFile("7D");
 
     assertNotNull(result);
-    verify(locationService, times(1)).getLocation(any(LocationRequest.class), eq(headers));
+    verify(locationService, times(1)).getLocation(any(LocationRequest.class), eq(headers), eq(signedUrlParameters));
   }
 
 
