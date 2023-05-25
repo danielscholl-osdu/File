@@ -24,12 +24,14 @@ import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.S
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
@@ -268,6 +270,22 @@ public class StorageServiceImpl implements IStorageService {
           .createdBy(getUserDesID(authorizationToken))
           .createdAt(Instant.now(Clock.systemUTC()))
           .build();
+  }
+
+  @Override
+  public Boolean revokeUrl(Map<String, String> revokeURLRequest) {
+    validateInputFor(revokeURLRequest);
+    return storageRepository.revokeUserDelegationKeys(revokeURLRequest);
+  }
+
+  private static void validateInputFor(Map<String, String> revokeURLRequest) {
+    String resourceGroupName = revokeURLRequest.get("resourceGroup");
+    String storageAccountName = revokeURLRequest.get("storageAccount");
+    if (Strings.isBlank(resourceGroupName) || Strings.isBlank(storageAccountName)) {
+      throw new OsduBadRequestException(
+          String.format("Illegal argument for resourceGroup { %s } or storageAccount { %s }",
+              resourceGroupName, storageAccountName));
+    }
   }
 
 }
