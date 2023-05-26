@@ -142,7 +142,6 @@ public class StorageRepository implements IStorageRepository {
   }
 
   @Override
-  @SneakyThrows
   public Boolean revokeUserDelegationKeys(Map<String, String> revokeURLRequest) {
     AzureResourceManager azureResourceManager = azureResourceManager();
     String resourceGroupName = revokeURLRequest.get("resourceGroup");
@@ -166,10 +165,9 @@ public class StorageRepository implements IStorageRepository {
 
   private static AzureResourceManager azureResourceManager() {
     AzureProfile azureProfile = new AzureProfile(AzureEnvironment.AZURE);
-    AzureResourceManager azureResourceManager = AzureResourceManager
+    return AzureResourceManager
         .authenticate(tokenCredential(), azureProfile)
         .withSubscription(azureProfile.getSubscriptionId());
-    return azureResourceManager;
   }
 
   private static ClientSecretCredential tokenCredential() {
