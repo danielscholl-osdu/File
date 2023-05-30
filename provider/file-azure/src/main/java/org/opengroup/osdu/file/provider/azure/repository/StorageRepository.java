@@ -16,38 +16,23 @@
 
 package org.opengroup.osdu.file.provider.azure.repository;
 
-import static java.lang.String.format;
-import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.AZURE_PROTOCOL;
-import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.BLOB_RESOURCE_BASE_URI_REGEX;
-
-import java.net.URI;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import com.azure.core.credential.TokenCredential;
-import com.azure.core.management.AzureEnvironment;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.core.util.Configuration;
+import com.azure.core.http.rest.Response;
 import com.azure.core.util.Context;
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.storage.fluent.StorageAccountsClient;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.file.constant.FileMetadataConstant;
-import org.opengroup.osdu.file.exception.ApplicationException;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
-import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.config.BlobServiceClientWrapper;
+import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.model.blob.Blob;
 import org.opengroup.osdu.file.provider.azure.model.blob.BlobId;
 import org.opengroup.osdu.file.provider.azure.model.blob.BlobInfo;
@@ -59,10 +44,16 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.util.UriUtils;
 
-import com.azure.storage.blob.sas.BlobSasPermission;
+import javax.inject.Inject;
+import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.util.Map;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import static java.lang.String.format;
+import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.AZURE_PROTOCOL;
+import static org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant.BLOB_RESOURCE_BASE_URI_REGEX;
 
 @Repository
 @Slf4j
@@ -88,6 +79,9 @@ public class StorageRepository implements IStorageRepository {
 
   @Autowired
   private ExpiryTimeUtil expiryTimeUtil;
+
+  @Inject
+  StorageAccountsClient storageAccountsClient;
 
   @Override
   @SneakyThrows
@@ -143,39 +137,19 @@ public class StorageRepository implements IStorageRepository {
 
   @Override
   public Boolean revokeUserDelegationKeys(Map<String, String> revokeURLRequest) {
-    AzureResourceManager azureResourceManager = azureResourceManager();
     String resourceGroupName = revokeURLRequest.get("resourceGroup");
     String storageAccountName = revokeURLRequest.get("storageAccount");
     log.debug("Revoke the signed urls for the storage account {} in Resource group {}", storageAccountName, resourceGroupName);
+    Response<Void> response;
     try {
-      azureResourceManager
-          .storageAccounts()
-          .manager()
-          .serviceClient()
-          .getStorageAccounts()
-          .revokeUserDelegationKeysWithResponse(resourceGroupName, storageAccountName, Context.NONE);
+      response = storageAccountsClient.revokeUserDelegationKeysWithResponse(resourceGroupName, storageAccountName, Context.NONE);
       log.debug("Revoked the signed urls for the storage account {} in Resource group {}", storageAccountName, resourceGroupName);
     } catch (Exception ex) {
       String message = "Error occurred while revoking signed urls";
       log.error(message + ex.getMessage(), ex);
-      throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, message , ex.getMessage(), ex);
+      throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, ex.getMessage(), ex);
     }
-    return true;
+    return response.getStatusCode() == HttpStatus.SC_OK;
   }
 
-  private static AzureResourceManager azureResourceManager() {
-    AzureProfile azureProfile = new AzureProfile(AzureEnvironment.AZURE);
-    return AzureResourceManager
-        .authenticate(tokenCredential(), azureProfile)
-        .withSubscription(azureProfile.getSubscriptionId());
-  }
-
-  private static ClientSecretCredential tokenCredential() {
-    Configuration configuration = Configuration.getGlobalConfiguration();
-    return new ClientSecretCredentialBuilder()
-        .clientId(configuration.get("AZURE_CLIENT_ID"))
-        .clientSecret(configuration.get("AZURE_CLIENT_SECRET"))
-        .tenantId(configuration.get("AZURE_TENANT_ID"))
-        .build();
-  }
 }
