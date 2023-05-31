@@ -21,7 +21,6 @@ import java.util.Map;
 @Validated
 @RequiredArgsConstructor
 @Hidden
-@Tag(name = "file-admin-api", description = "File Admin API")
 public class FileAdminApi {
 
   final IFileAdminService fileAdminService;
