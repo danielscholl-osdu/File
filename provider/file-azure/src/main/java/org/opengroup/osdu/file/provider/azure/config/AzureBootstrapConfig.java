@@ -16,8 +16,8 @@ package org.opengroup.osdu.file.provider.azure.config;
 
 import com.azure.core.management.AzureEnvironment;
 import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.identity.DefaultAzureCredential;
+import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.AzureResourceManager;
 import com.azure.resourcemanager.storage.fluent.StorageAccountsClient;
 import lombok.Getter;
@@ -67,14 +67,14 @@ public class AzureBootstrapConfig {
     return keyVaultURL;
   }
 
+  private static final DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
+
   @Bean
   @Inject
-  public StorageAccountsClient storageAccountsClient(@Named("appDevSpUsername") String clientId,
-                                                   @Named("appDevSpPassword") String clientSecret,
-                                                   @Named("appDevSpTenantId") String tenantId) {
+  public StorageAccountsClient storageAccountsClient() {
     AzureProfile azureProfile = new AzureProfile(AzureEnvironment.AZURE);
     AzureResourceManager azureResourceManager = AzureResourceManager
-        .authenticate(tokenCredential(clientId, clientSecret, tenantId), azureProfile)
+        .authenticate(defaultCredential, azureProfile)
         .withSubscription(azureProfile.getSubscriptionId());
 
     return azureResourceManager
@@ -84,11 +84,4 @@ public class AzureBootstrapConfig {
         .getStorageAccounts();
   }
 
-  private ClientSecretCredential tokenCredential(String clientId, String clientSecret, String tenantId) {
-    return new ClientSecretCredentialBuilder()
-        .clientId(clientId)
-        .clientSecret(clientSecret)
-        .tenantId(tenantId)
-        .build();
-  }
 }
