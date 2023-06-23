@@ -42,7 +42,10 @@ public class TestFile extends File {
   private static final String storageInstructionsApi = "/files/storageInstructions";
   private static final String retrievalInstructionsApi = "/files/retrievalInstructions";
   private static final String copyDmsApi = "/files/copy";
+  private static final String revokeURLApi = "/files/revokeURL";
 
+  private static String storageAccountName = System.getProperty("AZURE_STORAGE_ACCOUNT", System.getenv("AZURE_STORAGE_ACCOUNT"));
+  private static String resourceGroupName = System.getProperty("RESOURCE_GROUP_NAME", System.getenv("RESOURCE_GROUP_NAME"));
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -313,6 +316,26 @@ public class TestFile extends File {
         retrievalResponse.getDatasets().get(0).getDatasetRegistryId());
 
     assertTrue(retrievalResponse.getDatasets().get(0).getRetrievalProperties().containsKey("signedUrl"));
+
+
+    //Revoke the Signed URL
+    Map<String, String> revokeURLRequest = new HashMap<>();
+    revokeURLRequest.put("resourceGroup", resourceGroupName);
+    revokeURLRequest.put("storageAccount", storageAccountName);
+    ClientResponse revokeURLResponse = client.send(
+        retrievalInstructionsApi,
+        "POST",
+        getCommonHeader(),
+        mapper.writeValueAsString(revokeURLRequest));
+
+    assertNotNull(revokeURLResponse);
+    assertEquals(HttpStatus.SC_NO_CONTENT, revokeURLResponse.getStatus());
+
+    //Check SignedURL is accessible after revoking it
+    ClientResponse fileUploadResponse1 = client.sendExt(
+        storageInstructions.getStorageLocation().get("signedUrl").toString(),
+        "GET", null, null);
+    assertEquals(HttpStatus.SC_FORBIDDEN, fileUploadResponse1.getStatus());
   }
 
   @AfterAll
