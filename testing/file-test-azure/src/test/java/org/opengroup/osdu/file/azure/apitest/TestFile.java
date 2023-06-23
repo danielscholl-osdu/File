@@ -317,7 +317,6 @@ public class TestFile extends File {
 
     assertTrue(retrievalResponse.getDatasets().get(0).getRetrievalProperties().containsKey("signedUrl"));
 
-
     //Revoke the Signed URL
     Map<String, String> revokeURLRequest = new HashMap<>();
     revokeURLRequest.put("resourceGroup", resourceGroupName);
@@ -334,7 +333,7 @@ public class TestFile extends File {
     //Check SignedURL is accessible after revoking it
     ClientResponse fileUploadResponse1 = client.sendExt(
         storageInstructions.getStorageLocation().get("signedUrl").toString(),
-        "GET", null, null);
+        "GET", new HashMap<>(), null);
     assertEquals(HttpStatus.SC_FORBIDDEN, fileUploadResponse1.getStatus());
   }
 
