@@ -323,8 +323,8 @@ public class TestFile extends File {
     revokeURLRequest.put("resourceGroup", resourceGroupName);
     revokeURLRequest.put("storageAccount", storageAccountName);
     ClientResponse revokeURLResponse = client.send(
-        retrievalInstructionsApi,
-        "POST",
+        revokeURLApi,
+        "DELETE",
         getCommonHeader(),
         mapper.writeValueAsString(revokeURLRequest));
 
