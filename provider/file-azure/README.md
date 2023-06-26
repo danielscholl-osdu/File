@@ -40,7 +40,6 @@ Request example:
 ```sh
 curl --location --request DELETE 'https://{path}/v2/files/revokeURL' \
      --header 'Authorization: Bearer {token}' \
-     --header 'data-partition-id: {Data-Partition ID}' \
      --header 'Content-Type: application/json' \
      --data-raw '{
         "resourceGroup": "test-resource-group-name",
