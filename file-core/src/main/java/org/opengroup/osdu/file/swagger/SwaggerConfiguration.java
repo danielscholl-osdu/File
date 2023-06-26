@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Profile;
                 @Tag(name = "file-delivery-api", description = "File Delivery API"),
                 @Tag(name = "file-location-api", description = "File Location API"),
                 @Tag(name = "file-metadata-api", description = "File Metadata API"),
+                @Tag(name = "file-admin-api", description = "File Admin API"),
                 @Tag(name = "health-check-api", description = "Health Check API"),
                 @Tag(name = "info", description = "Version info endpoint")
         }
@@ -49,7 +51,10 @@ public class SwaggerConfiguration {
               .in("header")
               .required(true)
               .schema(new StringSchema());
-      return operation.addParametersItem(dataPartitionId);
+
+      if(!operation.getOperationId().equals("revokeURL"))
+        operation = operation.addParametersItem(dataPartitionId);
+      return operation;
     };
   }
 
