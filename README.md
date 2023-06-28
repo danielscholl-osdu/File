@@ -280,7 +280,7 @@ Response example:
 }
 ```
 
-### DELETE /v2/files/revokeURL
+### POST /v2/files/revokeURL
 
 The `/v2/files/revokeURL` API endpoint revokes the Signed URLs based on the request parameters.<br/>
 For example:  for the given `storage account`.
@@ -302,7 +302,7 @@ For example:  for the given `storage account`.
 Request example:
 
 ```sh
-curl --location --request DELETE 'https://{path}/v2/files/revokeURL' \
+curl --location --request POST 'https://{path}/v2/files/revokeURL' \
      --header 'Authorization: Bearer {token}' \
      --header 'Content-Type: application/json' \
      --data-raw '{

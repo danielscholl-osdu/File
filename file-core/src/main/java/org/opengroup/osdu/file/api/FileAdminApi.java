@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
@@ -44,7 +45,7 @@ public class FileAdminApi {
       @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
   })
   @PreAuthorize("@authorizationFilter.hasPermission('" + FileServiceRole.ADMIN + "')")
-  @DeleteMapping("/v2/files/revokeURL")
+  @PostMapping("/v2/files/revokeURL")
   public ResponseEntity<Void> revokeURL(@RequestBody Map<String, String> revokeURLRequest) {
       fileAdminService.revokeUrl(revokeURLRequest);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);

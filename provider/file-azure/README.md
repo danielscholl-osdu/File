@@ -5,7 +5,7 @@
 file-azure is a [Spring Boot](https://spring.io/projects/spring-boot) service that  provides internal and external API endpoints to let the application or user fetch any records from the system or request file location data.
 For example, users can request generation of an individual signed URL per file. Using a signed URL, OSDU R2 users will be able to upload their files to the system.
 
-### DELETE /v2/files/revokeURL
+### POST /v2/files/revokeURL
 
 The `/v2/files/revokeURL` API endpoint revokes the Signed URLs based on the request parameters.<br/>
 For example:  for the given `storage account`.
@@ -38,7 +38,7 @@ For example:  for the given `storage account`.
 Request example:
 
 ```sh
-curl --location --request DELETE 'https://{path}/v2/files/revokeURL' \
+curl --location --request POST 'https://{path}/v2/files/revokeURL' \
      --header 'Authorization: Bearer {token}' \
      --header 'Content-Type: application/json' \
      --data-raw '{
