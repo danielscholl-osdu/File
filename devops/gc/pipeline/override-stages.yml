@@ -5,6 +5,7 @@ variables:
 gc-baremetal-test:
   variables:
     GC_VENDOR: baremetal
+    DOMAIN: $GROUP_ID
 
 gc-dev2-test:
   variables:
@@ -15,7 +16,7 @@ gc-test:
     VENDOR: gcp
     GC_VENDOR: gc
     HOST: https://community.gcp.gnrg-osdu.projects.epam.com/api/file/v2
-    CLOUD_DOMAIN: osdu-gcp.go3-nrg.projects.epam.com
+    CLOUD_DOMAIN: $GROUP_ID
     INTEGRATION_TESTER: $GC_INTEGRATION_TESTER
     NO_DATA_ACCESS_TESTER: $GC_NO_DATA_ACCESS_TESTER
     SEARCH_INTEGRATION_TESTER: $GC_INTEGRATION_TESTER
@@ -24,6 +25,7 @@ gc-test:
     DE_EDITOR_TESTER: $GC_R3_EDITOR_TESTER
     DE_NO_ACCESS_TESTER: $GC_R3_NO_ACCESS_TESTER
     LEGAL_TAGS: $LEGAL_TAG
+    DOMAIN: $GROUP_ID
   script:
     - echo "COMMON TESTS"
     - >
