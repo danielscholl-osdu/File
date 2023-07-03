@@ -5,6 +5,51 @@
 file-azure is a [Spring Boot](https://spring.io/projects/spring-boot) service that  provides internal and external API endpoints to let the application or user fetch any records from the system or request file location data.
 For example, users can request generation of an individual signed URL per file. Using a signed URL, OSDU R2 users will be able to upload their files to the system.
 
+### POST /v2/files/revokeURL
+
+The `/v2/files/revokeURL` API endpoint revokes the Signed URLs based on the request parameters.<br/>
+For example:  for the given `storage account`.
+
+- Required permissions: `service.file.admin` role required to perform revoke operation
+- Required environment property: `AZURE_SUBSCRIPTION_ID` Azure Subscription ID of the given environment
+
+
+> **Note**:
+>- For the given storage account, all the existing Signed URLs generated via 'UserDelegationKey' method will be revoked.
+>- It will not have any impact on the Signed URLs generated using 'Account Key' method. <br/>
+>- 'msi_enabled' feature should be enabled and Pod Identity environment variables [AZURE_CLIENT_ID, AZURE_CLIENT_SECRET] should be removed.
+>- `Managed Identity` will be used for Authentication. All the required access for resources [CosmosDB Storage account , Event Grid] should be granted to the `Managed Identity`
+
+#### Request body
+
+| Property | Type     | Description                        |
+| ------- | -------- |------------------------------------|
+| resourceGroup        | `String` | Resource Group name of the Storage account |
+| storageAccount        | `String` | Storage acount name |
+
+> **Note**:
+>- The Request is a Map of Properties to manage the input parameters required to revoke Signed URLs.
+>- Each CSP will have its own implementation and request properties based on the revoke Logic supported by the provider.
+>- Example: For `Azure` [ Resource Group and Storage Account Name] is required to revoke URLs
+
+**References**:
+- https://learn.microsoft.com/en-us/rest/api/storagerp/storage-accounts/revoke-user-delegation-keys?tabs=HTTP
+
+Request example:
+
+```sh
+curl --location --request POST 'https://{path}/v2/files/revokeURL' \
+     --header 'Authorization: Bearer {token}' \
+     --header 'Content-Type: application/json' \
+     --data-raw '{
+        "resourceGroup": "test-resource-group-name",
+        "storageAccount" : "test-storage-account-name"
+     }'
+```
+
+#### Response
+The File service returns the following `HTTP 204 No Content` for successful response.
+
 ## Running Locally
 
 ### Requirements

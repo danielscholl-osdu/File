@@ -23,6 +23,7 @@ import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedUrl;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IStorageService {
 
@@ -87,5 +88,14 @@ public interface IStorageService {
    */
   default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData) {
     return null;
+  }
+
+  /**
+   * Revokes the Signed URLs based on the request
+   * @param revokeURLRequest Map of properties required to revoke urls eg: storage account name.
+   * @return true if urls are revoked successfully, otherwise false
+   */
+  default Boolean revokeUrl(Map<String, String> revokeURLRequest) {
+    return false;
   }
 }

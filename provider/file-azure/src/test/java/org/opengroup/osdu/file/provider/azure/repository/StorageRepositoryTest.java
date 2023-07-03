@@ -1,5 +1,9 @@
 package org.opengroup.osdu.file.provider.azure.repository;
 
+import com.azure.core.http.rest.SimpleResponse;
+import com.azure.core.management.exception.ManagementException;
+import com.azure.core.util.Context;
+import com.azure.resourcemanager.storage.fluent.StorageAccountsClient;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
@@ -9,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.azure.blobstorage.BlobStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
@@ -21,8 +26,12 @@ import org.opengroup.osdu.file.provider.azure.storage.Storage;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -53,6 +62,9 @@ public class StorageRepositoryTest {
 
   @Mock
   private ExpiryTimeUtil expiryTimeUtil;
+
+  @Mock
+  private StorageAccountsClient storageAccountsClient;
 
   @InjectMocks
   StorageRepository storageRepository;
@@ -162,6 +174,37 @@ public class StorageRepositoryTest {
     verify(expiryTimeUtil, times(1)).getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
     verify(blobStore).generatePreSignedURL(eq(TestUtils.PARTITION),
         eq(TestUtils.FILE_PATH), eq(TestUtils.CONTAINER_NAME), eq(expiryTimeInOffsetDateTime), any(BlobSasPermission.class));
+  }
+
+  @Test
+  public void shouldRevokeUserDelegationKeysSuccessfully() {
+    Map<String, String> revokeURLRequest = new HashMap<>();
+    revokeURLRequest.put("resourceGroup", "testresourcegroup");
+    revokeURLRequest.put("storageAccount", "teststorageaccount");
+    SimpleResponse<Void> simpleResponse = new SimpleResponse<>(null, 200, null, null);
+    when(storageAccountsClient
+        .revokeUserDelegationKeysWithResponse("testresourcegroup", "teststorageaccount", Context.NONE))
+        .thenReturn(simpleResponse);
+
+    assertTrue(storageRepository.revokeUserDelegationKeys(revokeURLRequest));
+
+    verify(storageAccountsClient,times(1))
+        .revokeUserDelegationKeysWithResponse("testresourcegroup", "teststorageaccount", Context.NONE);
+  }
+
+  @Test
+  public void revokeUserDelegationKeys_shouldThrowAppException() {
+    Map<String, String> revokeURLRequest = new HashMap<>();
+    revokeURLRequest.put("resourceGroup", "testresourcegroup");
+    revokeURLRequest.put("storageAccount", "teststorageaccount");
+    when(storageAccountsClient
+        .revokeUserDelegationKeysWithResponse("testresourcegroup", "teststorageaccount", Context.NONE))
+        .thenThrow(ManagementException.class);
+
+    assertThrows(AppException.class, ()-> storageRepository.revokeUserDelegationKeys(revokeURLRequest));
+
+    verify(storageAccountsClient,times(1))
+        .revokeUserDelegationKeysWithResponse("testresourcegroup", "teststorageaccount", Context.NONE);
   }
 
   private void prepareMock(boolean isMsiEnabled) {

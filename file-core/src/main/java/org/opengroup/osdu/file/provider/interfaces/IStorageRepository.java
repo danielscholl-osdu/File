@@ -19,6 +19,8 @@ package org.opengroup.osdu.file.provider.interfaces;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.SignedObject;
 
+import java.util.Map;
+
 public interface IStorageRepository {
 
   /**
@@ -52,6 +54,16 @@ public interface IStorageRepository {
   default SignedObject getSignedObjectBasedOnParams(String bucketName, String filepath,
       SignedUrlParameters signedUrlParameters) {
     return getSignedObject(bucketName,filepath);
+  }
+
+  /**
+   * Revokes the Signed URLs based on the request.
+   *
+   * @param revokeURLRequest Map of properties required to revoke urls eg: storage account name
+   * @return true if urls are revoked successfully, otherwise false
+   */
+  default Boolean revokeUserDelegationKeys(Map<String, String> revokeURLRequest){
+    return false;
   }
 
 }
