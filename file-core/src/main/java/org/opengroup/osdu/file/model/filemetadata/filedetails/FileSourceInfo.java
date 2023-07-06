@@ -42,7 +42,7 @@ public class FileSourceInfo {
 
     @Schema(description = "File system path to the data file as it existed before loading to the data platform")
     @JsonProperty("PreloadFilePath")
-    private String PreloadFilePath;
+    private String preloadFilePath;
 
     @Schema(description = "Optional user name or reference, who created the file prior to up-loading to the platform.")
     @JsonProperty("PreloadFileCreateUser")
