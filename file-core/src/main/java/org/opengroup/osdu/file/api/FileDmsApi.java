@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.dms.IDmsService;
+import org.opengroup.osdu.core.common.dms.constants.DatasetConstants;
 import org.opengroup.osdu.core.common.dms.model.CopyDmsRequest;
 import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
@@ -35,10 +36,12 @@ import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.AppError;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,6 +80,7 @@ public class FileDmsApi {
       @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
   })
   @PostMapping("/storageInstructions")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_EDITOR_ROLE + "')")
   public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
     StorageInstructionsResponse storageInstructionsResp = fileDmsService.getStorageInstructions();
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
@@ -95,6 +99,7 @@ public class FileDmsApi {
       @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
   })
   @PostMapping("/retrievalInstructions")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
       @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
     RetrievalInstructionsResponse retrievalInstructionsResp = fileDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
@@ -114,6 +119,7 @@ public class FileDmsApi {
       @ApiResponse(responseCode = "503", description = "Service Unavailable",  content = {@Content(schema = @Schema(implementation = AppError.class))})
   })
   @PostMapping("/copy")
+  @PreAuthorize("@authorizationFilter.hasPermission('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
   public ResponseEntity<List<CopyDmsResponse>> copyDms(@RequestBody CopyDmsRequest copyDmsRequest) {
     List<CopyDmsResponse> copyOpResponse = fileDmsService.copyDatasetsToPersistentLocation(copyDmsRequest.getDatasetSources());
     return new ResponseEntity<>(copyOpResponse, HttpStatus.OK);
