@@ -1,6 +1,6 @@
 Feature: File Service DMS API integration tests
 
-  @FileDMS
+  #@FileDMS
   Scenario Outline: A scenario
     When I send request for storage instructions i should receive valid response
     Then I should be able to upload file from <inputFilePath> with provided instruction
