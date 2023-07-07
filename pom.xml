@@ -129,12 +129,6 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-ui</artifactId>
       <version>${openapi.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-autoconfigure</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
 
