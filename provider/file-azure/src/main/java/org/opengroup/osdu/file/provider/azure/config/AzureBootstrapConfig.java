@@ -14,10 +14,18 @@
 
 package org.opengroup.osdu.file.provider.azure.config;
 
+import com.azure.core.management.AzureEnvironment;
+import com.azure.core.management.profile.AzureProfile;
+import com.azure.identity.DefaultAzureCredential;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.resourcemanager.AzureResourceManager;
+import com.azure.resourcemanager.storage.fluent.StorageAccountsClient;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Configuration
@@ -58,4 +66,22 @@ public class AzureBootstrapConfig {
   public String keyVaultURL() {
     return keyVaultURL;
   }
+
+  private static final DefaultAzureCredential defaultCredential = new DefaultAzureCredentialBuilder().build();
+
+  @Bean
+  @Inject
+  public StorageAccountsClient storageAccountsClient() {
+    AzureProfile azureProfile = new AzureProfile(AzureEnvironment.AZURE);
+    AzureResourceManager azureResourceManager = AzureResourceManager
+        .authenticate(defaultCredential, azureProfile)
+        .withSubscription(azureProfile.getSubscriptionId());
+
+    return azureResourceManager
+        .storageAccounts()
+        .manager()
+        .serviceClient()
+        .getStorageAccounts();
+  }
+
 }

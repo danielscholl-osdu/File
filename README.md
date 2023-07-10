@@ -280,6 +280,40 @@ Response example:
 }
 ```
 
+### POST /v2/files/revokeURL
+
+The `/v2/files/revokeURL` API endpoint revokes the Signed URLs based on the request parameters.<br/>
+For example:  for the given `storage account`.
+
+- Required permissions: `service.file.admin` role required to perform revoke operation
+
+#### Request body
+
+| Property  | Type                 | Description                     |
+|-----------|----------------------|---------------------------------|
+| property1 | `Type of Property-1` | Required Property to Revoke URL |
+| propertyN | `Type of Property-N` | Required Property to Revoke URL |
+
+> **Note**:
+>- The Request is a Map of Properties to manage the input parameters required to revoke Signed URLs.
+>- Each CSP will have its own implementation and request properties based on the revoke Logic supported by the provider.
+>- Example: For `Azure` [ Resource Group and Storage Account Name] is required to revoke URLs. Refer [Azure README](./provider/file-azure/README.md)
+
+Request example:
+
+```sh
+curl --location --request POST 'https://{path}/v2/files/revokeURL' \
+     --header 'Authorization: Bearer {token}' \
+     --header 'Content-Type: application/json' \
+     --data-raw '{
+        "property1": "property-1 sample value",
+        "propertyN" : "property-N sample value"
+     }'
+```
+
+#### Response
+The File service returns the following `HTTP 204 No Content` for successful response.
+
 ## Service Provider Interfaces
 
 The File service has several Service Provider Interfaces that the classes need to implement.

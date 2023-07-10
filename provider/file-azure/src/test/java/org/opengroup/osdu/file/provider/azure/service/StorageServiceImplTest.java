@@ -19,6 +19,7 @@ package org.opengroup.osdu.file.provider.azure.service;
 import com.azure.cosmos.implementation.InternalServerErrorException;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -36,6 +37,7 @@ import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.ReplaceCamelCase;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
@@ -53,10 +55,13 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -283,6 +288,70 @@ class StorageServiceImplTest {
     verifyMockForCreateSignedUrlFileLocation();
   }
 
+  @Test
+  public void shouldRevokeURL() {
+    Map<String, String> revokeURLRequest = createRevokeURLRequest("test-resource-group-name", "test-storage-account-name");
+    when(storageRepository.revokeUserDelegationKeys(revokeURLRequest)).thenReturn(true);
+
+    assertTrue(storageService.revokeUrl(revokeURLRequest));
+    verify(storageRepository, times(1)).revokeUserDelegationKeys(revokeURLRequest);
+  }
+
+  @Test
+  public void revokeURLShouldThrowBadRequestExceptionWhenResourceGroupIsEmpty() {
+    Map<String, String> revokeURLRequest = createRevokeURLRequest("", "test-storage-account-name");
+    String expectedMessage = "Illegal argument for resourceGroup {  } or storageAccount { test-storage-account-name }";
+    // when
+    Throwable thrown = catchThrowable(() -> storageService.revokeUrl(revokeURLRequest));
+
+    // then
+    then(thrown)
+        .isInstanceOf(OsduBadRequestException.class)
+        .hasMessageContaining(expectedMessage);
+    verify(storageRepository, never()).revokeUserDelegationKeys(revokeURLRequest);
+  }
+
+  @Test
+  public void revokeURLShouldThrowBadRequestExceptionWhenResourceGroupIsNull() {
+    Map<String, String> revokeURLRequest = createRevokeURLRequest(null, "test-storage-account-name");
+    String expectedMessage = "Illegal argument for resourceGroup { null } or storageAccount { test-storage-account-name }";
+    // when
+    Throwable thrown = catchThrowable(() -> storageService.revokeUrl(revokeURLRequest));
+
+    // then
+    then(thrown)
+        .isInstanceOf(OsduBadRequestException.class)
+        .hasMessageContaining(expectedMessage);
+    verify(storageRepository, never()).revokeUserDelegationKeys(revokeURLRequest);
+  }
+  @Test
+  public void revokeURLShouldThrowBadRequestExceptionWhenStorageAccountIsEmpty() {
+    Map<String, String> revokeURLRequest = createRevokeURLRequest("test-resource-group-name", "");
+    String expectedMessage = "Illegal argument for resourceGroup { test-resource-group-name } or storageAccount {  }";
+    // when
+    Throwable thrown = catchThrowable(() -> storageService.revokeUrl(revokeURLRequest));
+
+    // then
+    then(thrown)
+        .isInstanceOf(OsduBadRequestException.class)
+        .hasMessageContaining(expectedMessage);
+    verify(storageRepository, never()).revokeUserDelegationKeys(revokeURLRequest);
+  }
+
+  @Test
+  public void revokeURLShouldThrowBadRequestExceptionWhenStorageAccountIsNull() {
+    Map<String, String> revokeURLRequest = createRevokeURLRequest("test-resource-group-name", null);
+    String expectedMessage = "Illegal argument for resourceGroup { test-resource-group-name } or storageAccount { null }";
+    // when
+    Throwable thrown = catchThrowable(() -> storageService.revokeUrl(revokeURLRequest));
+
+    // then
+    then(thrown)
+        .isInstanceOf(OsduBadRequestException.class)
+        .hasMessageContaining(expectedMessage);
+    verify(storageRepository, never()).revokeUserDelegationKeys(revokeURLRequest);
+  }
+
   private void prepareMockForCreateSignedUrlFileLocation() {
     Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     Mockito.when(serviceHelper
@@ -295,7 +364,6 @@ class StorageServiceImplTest {
     doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
         anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class));
   }
-
 
   private void verifyMockForCreateSignedUrlFileLocation() {
     Mockito.verify(dpsHeaders).getPartitionId();
@@ -317,7 +385,6 @@ class StorageServiceImplTest {
     return fileRetrievalDataList;
   }
 
-
   private SignedObject getSignedObject() {
     String containerName = RandomStringUtils.randomAlphanumeric(4);
     String folderName = TestUtils.USER_DES_ID + "/" + RandomStringUtils.randomAlphanumeric(9);
@@ -330,6 +397,14 @@ class StorageServiceImplTest {
         .uri(uri)
         .url(url)
         .build();
+  }
+
+  @NotNull
+  private Map<String, String> createRevokeURLRequest(String resourceGroup, String storageAccount) {
+    Map<String, String> revokeURLRequest = new HashMap<>();
+    revokeURLRequest.put("resourceGroup", resourceGroup);
+    revokeURLRequest.put("storageAccount", storageAccount);
+    return revokeURLRequest;
   }
 
   private Instant now() {
