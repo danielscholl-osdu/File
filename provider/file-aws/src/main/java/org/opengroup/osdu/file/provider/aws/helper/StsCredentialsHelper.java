@@ -13,7 +13,7 @@
 // limitations under the License.
 
 package org.opengroup.osdu.file.provider.aws.helper;
-
+import java.util.UUID;
 import com.amazonaws.auth.policy.Condition;
 import com.amazonaws.auth.policy.Policy;
 import com.amazonaws.auth.policy.Resource;
@@ -62,8 +62,8 @@ public class StsCredentialsHelper {
 
     public TemporaryCredentials getCredentials(Policy policy, String roleArn, String user, Date expiration) {
         Instant now = Instant.now();
-        String roleSessionName = String.format("%s_%s", user, now.toEpochMilli());
-
+        UUID uuid = UUID.randomUUID();
+        String roleSessionName = uuid.toString();
         long duration = Math.min(((expiration.getTime() - now.toEpochMilli()) / 1_000), MAX_DURATION_IN_SECONDS);
 
         AssumeRoleRequest roleRequest = new AssumeRoleRequest()
