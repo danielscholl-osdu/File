@@ -65,7 +65,7 @@ public class FileCollectionDmsApiTest {
     ResponseEntity<StorageInstructionsResponse> storageInstructionsResponse
         = fileCollectionDmsApi.getStorageInstructions();
 
-    assertEquals(storageInstructionsResponse.getStatusCode(), HttpStatus.OK);
+    assertEquals(HttpStatus.OK, storageInstructionsResponse.getStatusCode());
   }
 
   @Test
@@ -76,7 +76,7 @@ public class FileCollectionDmsApiTest {
     ResponseEntity<RetrievalInstructionsResponse> retrievalInstructionsResponse
         = fileCollectionDmsApi.getRetrievalInstructions(mockRetrievalInstructionsRequest);
 
-    assertEquals(retrievalInstructionsResponse.getStatusCode(), HttpStatus.OK);
+    assertEquals(HttpStatus.OK, retrievalInstructionsResponse.getStatusCode());
   }
 
   @Test
@@ -90,7 +90,7 @@ public class FileCollectionDmsApiTest {
     when(fileCollectionDmsService.copyDatasetsToPersistentLocation(any())).thenReturn(copyDmsResponses);
     ResponseEntity<List<CopyDmsResponse>>responses = fileCollectionDmsApi.copyDms(mockCopyDmsRequest);
 
-    assertEquals(responses.getStatusCode(), HttpStatus.OK);
+    assertEquals(HttpStatus.OK, responses.getStatusCode());
 
   }
 

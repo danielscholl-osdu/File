@@ -1,16 +1,18 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.opengroup.osdu.file.service.delivery;
 
@@ -85,45 +87,52 @@ public class DeliverySearchServiceImpl implements IDeliverySearchService {
 
         int processedCount = 0;
         for(Map<String, Object> searchResult : searchResponse.getResults()){
-            String kind = null;
-            String srn = null;
-            Map<String, Object> data = null;
-
-            Object currentNode = searchResult.get("data");
-            if(currentNode != null) {
-                try {
-                    data = (Map<String, Object>) currentNode;
-                } catch (ClassCastException ignored) {} // Unable to parse the current node; add this to the unprocessed list.
-
-                if(data != null)
-                    srn = data.get("ResourceID").toString();
-            }
-
-            if (srn == null) {
-                srn = "UnknownSRN:" + processedCount;
-            }
-
-            if (searchResult.get("kind") != null) {
-                kind = searchResult.get("kind").toString();
-            }
-
-            String unsignedURL = unsignedUrlLocationMapper.getUnsignedURLFromSearchResponse(searchResult);
-
-            SrnFileData srnData = new SrnFileData(null, unsignedURL, kind, null);
-            if(unsignedURL != null) {
-                parsed.put(srn, srnData);
-            } else {
-                notFound.add(srn);
-            }
-            processedCount++;
-            unprocessedSrns.remove(srn);
+          processedCount = getProcessedCount(unprocessedSrns, notFound, parsed, processedCount, searchResult);
         }
 
         if (unprocessedSrns != null && unprocessedSrns.size() > 0) {
-            notFound.addAll(unprocessedSrns);
+          notFound.addAll(unprocessedSrns);
         }
 
         return UrlSigningResponse.builder().processed(parsed).unprocessed(notFound).build();
+      }
+
+    private int getProcessedCount(List<String> unprocessedSrns, List<String> notFound, Map<String, SrnFileData> parsed, int processedCount, Map<String, Object> searchResult) {
+        String kind = null;
+        String srn = null;
+        Map<String, Object> data = null;
+
+        Object currentNode = searchResult.get("data");
+        if(currentNode != null) {
+            try {
+                data = (Map<String, Object>) currentNode;
+            } catch (ClassCastException ignored) {
+              jaxRsDpsLog.error(ignored.getMessage());
+            } // Unable to parse the current node; add this to the unprocessed list.
+
+            if(data != null)
+                srn = data.get("ResourceID").toString();
+        }
+
+        if (srn == null) {
+            srn = "UnknownSRN:" + processedCount;
+        }
+
+        if (searchResult.get("kind") != null) {
+            kind = searchResult.get("kind").toString();
+        }
+
+        String unsignedURL = unsignedUrlLocationMapper.getUnsignedURLFromSearchResponse(searchResult);
+
+        SrnFileData srnData = new SrnFileData(null, unsignedURL, kind, null);
+        if(unsignedURL != null) {
+            parsed.put(srn, srnData);
+        } else {
+            notFound.add(srn);
+        }
+        processedCount++;
+        unprocessedSrns.remove(srn);
+        return processedCount;
     }
 
     @Override

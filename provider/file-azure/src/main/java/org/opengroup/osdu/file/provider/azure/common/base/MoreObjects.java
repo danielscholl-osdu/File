@@ -16,8 +16,10 @@
 
 package org.opengroup.osdu.file.provider.azure.common.base;
 
+import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
+@UtilityClass
 public final class MoreObjects {
   public static <T> T firstNonNull(@NullableDecl T first, @NullableDecl T second) {
     if (first != null) {

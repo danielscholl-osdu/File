@@ -1,5 +1,8 @@
 package org.opengroup.osdu.file.constant;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class FileMetadataConstant {
 
 	public static final String FORWARD_SLASH = "/";
