@@ -65,11 +65,16 @@ public class FileDeliveryService {
 
     String fileName = extractFileName(rec);
     if (StringUtils.isNoneEmpty(fileName)) {
+      try{
         contentType = getContentTypeFromFileName(fileName);
+      } catch (NullPointerException ne){
+        log.error("Error getting content type from file name");
+        throw ne;
+      }
     }
     signedUrlParameters.setFileName(fileName);
     signedUrlParameters.setContentType(contentType);
-    
+
     String absolutePath = storageUtilService.getPersistentLocation(fileSource,
                                                                    headers.getPartitionId());
     SignedUrl signedUrl = storageService
@@ -97,14 +102,14 @@ public class FileDeliveryService {
 		return jsonPath.get(FileMetadataConstant.FILE_SOURCE_PATH);
 	}
 
-	
-	
-    private String extractFileName(Record record) {
+
+
+    private String extractFileName(Record recordToHandle) {
         ObjectMapper mapper = new ObjectMapper();
         String fileName = null;
         String jsonStr;
         try {
-            jsonStr = mapper.writeValueAsString(record);
+            jsonStr = mapper.writeValueAsString(recordToHandle);
             JsonPath jsonPath = JsonPath.with(jsonStr);
             fileName = jsonPath.get(FileMetadataConstant.FILE_NAME_PATH);
         } catch (JsonProcessingException e) {
@@ -112,7 +117,7 @@ public class FileDeliveryService {
         }
         return fileName;
     }
-	
+
     private String getContentTypeFromFileName(String fileName) {
         FileExtension fileExtension = null;
         String contentType = null;

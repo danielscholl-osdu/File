@@ -108,9 +108,9 @@ public class StorageServiceImpl implements IStorageService {
         fileID, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
 
-    String containerName = getContainerName(partitionID);
+    String containerName = getContainerName();
 
-    String userDesID = getUserDesID(authorizationToken);
+    String userDesID = getUserDesID();
     String filepath = getFileLocationPrefix(now, fileID, userDesID);
     log.debug("Create storage object for fileID {} in container {} with filepath {}",
         fileID, containerName, filepath);
@@ -183,11 +183,11 @@ public class StorageServiceImpl implements IStorageService {
     return "/" + filePath;
   }
 
-  private String getContainerName(String partitionID) {
+  private String getContainerName() {
     return blobStoreConfig.getStagingContainer();
   }
 
-  private String getUserDesID(String authorizationToken) {
+  private String getUserDesID() {
     return fileLocationProperties.getUserId();
   }
 
@@ -267,7 +267,7 @@ public class StorageServiceImpl implements IStorageService {
     return SignedUrl.builder()
           .url(new URL(signedUrlString))
           .uri(URI.create(UriUtils.encodePath(unsignedUrl, StandardCharsets.UTF_8)))
-          .createdBy(getUserDesID(authorizationToken))
+          .createdBy(getUserDesID())
           .createdAt(Instant.now(Clock.systemUTC()))
           .build();
   }

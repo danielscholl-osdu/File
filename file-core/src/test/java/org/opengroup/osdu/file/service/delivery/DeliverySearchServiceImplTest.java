@@ -220,6 +220,6 @@ public class DeliverySearchServiceImplTest {
 
         // Assert
         assertTrue(actual.getResults().isEmpty());
-        assertEquals(actual.getTotalCount(), 0);
+        assertEquals(0, actual.getTotalCount());
     }
 }
