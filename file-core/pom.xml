@@ -37,6 +37,7 @@
     <jackson-databind.version>2.15.0-rc1</jackson-databind.version>
     <jackson.version>2.15.0-rc1</jackson.version>
     <spring-webmvc.version>5.3.26</spring-webmvc.version>
+    <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/config/**/*,**/*org/opengroup/osdu/file/constant/**/*,**/*org/opengroup/osdu/file/di/**/*,**/*org/opengroup/osdu/file/model/**/*,**/*org/opengroup/osdu/file/exception/**/*,**/*org/opengroup/osdu/file/swagger/**/*,**/*org/opengroup/osdu/file/errors/**/*</sonar.coverage.exclusions>
   </properties>
 
   <dependencies>
@@ -190,19 +191,16 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.3</version>
+        <version>0.8.8</version>
         <configuration>
           <excludes>
-            <exclude>org/opengroup/osdu/file/config/**</exclude>
-            <exclude>org/opengroup/osdu/file/constant/**</exclude>
-            <exclude>org/opengroup/osdu/file/di/**</exclude>
-            <exclude>org/opengroup/osdu/file/model/**</exclude>
-            <exclude>org/opengroup/osdu/file/exception/**</exclude>
-            <exclude>org/opengroup/osdu/file/swagger/**</exclude>
-            <exclude>org/opengroup/osdu/file/errors/**</exclude>
-            <exclude>org/opengroup/osdu/file/service/storage/**Exception.class</exclude>
-            <exclude>org/opengroup/osdu/file/service/storage/**Config.class</exclude>
-            <exclude>org/opengroup/osdu/file/provider/interfaces/**</exclude>
+            <exclude>**/*org/opengroup/osdu/file/config/**/*</exclude>
+            <exclude>**/*org/opengroup/osdu/file/constant/**/*</exclude>
+            <exclude>**/*org/opengroup/osdu/file/di/**/*</exclude>
+            <exclude>**/*org/opengroup/osdu/file/model/**/*</exclude>
+            <exclude>**/*org/opengroup/osdu/file/exception/**/*</exclude>
+            <exclude>**/*org/opengroup/osdu/file/swagger/**/*</exclude>
+            <exclude>**/*org/opengroup/osdu/file/errors/**/*</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -214,6 +212,12 @@
           <execution>
             <id>report</id>
             <phase>prepare-package</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jacoco-report</id>
             <goals>
               <goal>report</goal>
             </goals>

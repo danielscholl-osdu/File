@@ -36,10 +36,6 @@ public class Blob extends BlobInfo {
     return this.storage;
   }
 
-  public URL signUrl(long duration, TimeUnit unit) {
-    return this.storage.signUrl(this, duration, unit);
-  }
-
   public Blob.Builder toBuilder() {
     return new Blob.Builder(this);
   }

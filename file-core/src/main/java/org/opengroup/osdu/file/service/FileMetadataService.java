@@ -1,16 +1,18 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.opengroup.osdu.file.service;
 
@@ -83,10 +85,10 @@ public class FileMetadataService {
               fileSourceInfo.setChecksum(checksum);
               fileSourceInfo.setChecksumAlgorithm(storageUtilService.getChecksumAlgorithm().toString());
             }
-            Record record = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
+            Record fileMetadataRecord = fileMetadataRecordMapper.fileMetadataToRecord(fileMetadata);
 
-            log.info("Save Record Id " + record.getId());
-            UpsertRecords upsertRecords = dataLakeStorage.upsertRecord(record);
+            log.info("Save Record Id " + fileMetadataRecord.getId());
+            UpsertRecords upsertRecords = dataLakeStorage.upsertRecord(fileMetadataRecord);
             log.info(upsertRecords.toString());
             fileMetadataResponse.setId(upsertRecords.getRecordIds().get(0));
             fileStatusPublisher.publishSuccessStatus(upsertRecords.getRecordIds().get(0),
@@ -102,14 +104,7 @@ public class FileMetadataService {
              *    invalidate the call to save metadata
              * 3. Delete should be the last step of metadata save process
              * */
-            try{
-              if(dataLakeStorage.getRecord(record.getId()) != null) {
-                cloudStorageOperation.deleteFile(stagingLocation);
-              }
-            }
-            catch (Exception e){
-              log.warning("the file deletion failed for file id: " + record.getId());
-            }
+            cleanupStagingLocation(stagingLocation, dataLakeStorage, fileMetadataRecord);
         } catch (StorageException e) {
             log.error("Error occurred while creating file metadata storage record " + e.getMessage(), e);
             cloudStorageOperation.deleteFile(persistentLocation);
@@ -126,6 +121,17 @@ public class FileMetadataService {
             throw new ApplicationException("Error occurred while creating file metadata", e);
         }
         return fileMetadataResponse;
+    }
+
+    private void cleanupStagingLocation(String stagingLocation, DataLakeStorageService dataLakeStorage, Record fileMetadataRecord) {
+      try{
+        if(dataLakeStorage.getRecord(fileMetadataRecord.getId()) != null) {
+          cloudStorageOperation.deleteFile(stagingLocation);
+        }
+      }
+      catch (Exception e){
+        log.warning("the file deletion failed for file id: " + fileMetadataRecord.getId());
+      }
     }
 
     public RecordVersion getMetadataById(String id)

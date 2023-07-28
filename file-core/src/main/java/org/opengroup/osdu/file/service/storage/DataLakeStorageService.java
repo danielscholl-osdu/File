@@ -32,9 +32,9 @@ public class DataLakeStorageService {
         }
     }
 
-    public UpsertRecords upsertRecord(Record record) throws StorageException {
+    public UpsertRecords upsertRecord(Record recordToUpdate) throws StorageException {
         Record[] records = new Record[1];
-        records[0] = record;
+        records[0] = recordToUpdate;
         return this.upsertRecord(records);
     }
 
@@ -61,7 +61,7 @@ public class DataLakeStorageService {
 
     public MultiRecordInfo getRecords(Collection<String> ids) throws StorageException {
         MultiRecordIds input = new MultiRecordIds();
-        input.setRecords(new ArrayList());
+        input.setRecords(new ArrayList<>());
         input.getRecords().addAll(ids);
         String url = this.createUrl("/query/records");
         HttpResponse result = this.httpClient.send(HttpRequest.post(input).url(url).headers(this.headers.getHeaders()).build());
