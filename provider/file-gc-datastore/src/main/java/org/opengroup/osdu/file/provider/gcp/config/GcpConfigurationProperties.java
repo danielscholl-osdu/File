@@ -19,16 +19,24 @@ package org.opengroup.osdu.file.provider.gcp.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.opengroup.osdu.file.config.SharedAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
 
-@Setter
+@Configuration
+@ConfigurationProperties(prefix = "gcp")
 @Getter
-@ConfigurationProperties(prefix = "gcp.storage")
-@Import(SharedAutoConfiguration.class)
-public class PropertiesConfiguration {
+@Setter
+public class GcpConfigurationProperties {
 
-  private String stagingArea;
-  private String persistentArea;
+  private String fileLocationKind;
+  private int partitionInfoVmCacheExpTime = 60;
+  private int partitionInfoVmCacheSize = 100;
+  private SignedUrl signedUrl = new SignedUrl();
+
+  @Getter
+  @Setter
+  public static class SignedUrl {
+
+    private int expirationDays = 1;
+  }
 }
