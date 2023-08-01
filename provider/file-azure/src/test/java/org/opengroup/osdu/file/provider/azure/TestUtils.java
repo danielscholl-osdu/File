@@ -58,6 +58,7 @@ public final class TestUtils {
       = new Condition<>(TestUtils::isValidSignedUrl, "Signed URL for AZURE object");
   public static final String FILE_ID = "test-file-id.tmp";
   public static final String FILE_NAME = "test-file-name.pdf";
+  public static final String FILE_NAME_WITH_COMMA = "test,file-name.pdf";
   public static final String FILE_CONTENT_TYPE = "application/pdf";
   public static final String CONTAINER_NAME = "containerName";
   public static final String FILE_SYSTEM_NAME = "fileSystemName";

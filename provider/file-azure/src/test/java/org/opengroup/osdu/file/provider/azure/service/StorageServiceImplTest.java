@@ -243,6 +243,24 @@ class StorageServiceImplTest {
   }
 
   @Test
+  void createSignedUrlFileLocation_fileName_contains_comma_ShouldCallGeneratePreSignedURL() {
+    Mockito.when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
+    Mockito.when(serviceHelper
+            .getContainerNameFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+        .thenReturn(TestUtils.STAGING_CONTAINER_NAME);
+    Mockito.when(serviceHelper
+            .getRelativeFilePathFromAbsoluteFilePath(TestUtils.ABSOLUTE_FILE_PATH))
+        .thenReturn(TestUtils.RELATIVE_FILE_PATH);
+    String signedUrlString = getSignedObject().getUrl().toString();
+    doReturn(signedUrlString).when(blobStore).generatePreSignedURL(
+        anyString(), anyString(), anyString(), any(OffsetDateTime.class), any(BlobSasPermission.class), anyString(), anyString());
+
+    storageService.createSignedUrlFileLocation(TestUtils.ABSOLUTE_FILE_PATH,TestUtils.AUTHORIZATION_TOKEN,new SignedUrlParameters(null, TestUtils.FILE_NAME_WITH_COMMA, TestUtils.FILE_CONTENT_TYPE));
+    verify(blobStore,times(1)).generatePreSignedURL(
+        anyString(),anyString(),anyString(),any(OffsetDateTime.class), any(BlobSasPermission.class), anyString(), anyString());
+  }
+
+  @Test
   void shouldCreateStorageInstructions() {
     SignedUrlParameters signedUrlParameters = new SignedUrlParameters();
     Mockito.when(blobStoreConfig.getStagingContainer()).thenReturn(TestUtils.STAGING_CONTAINER_NAME);
