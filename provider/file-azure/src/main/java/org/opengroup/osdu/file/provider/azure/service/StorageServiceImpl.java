@@ -289,7 +289,7 @@ public class StorageServiceImpl implements IStorageService {
   }
 
   private String encompassFilename(String filepath) {
-    return '"' + filepath + "'";
+    return '"' + filepath + '"';
   }
 
 }
