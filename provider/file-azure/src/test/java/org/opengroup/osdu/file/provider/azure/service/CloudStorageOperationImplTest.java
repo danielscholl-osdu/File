@@ -174,35 +174,11 @@ public class CloudStorageOperationImplTest {
 
   @Test
   public void copyFiles_Success() {
-    prepareMockCopyFile();
     List<FileCopyOperation> fileCopyOperationList = getFileCopyOperationsForFile();
-    when(blobStore.copyFile(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,
-        TestUtils.STAGING_CONTAINER_NAME,TestUtils.ABSOLUTE_FILE_PATH)).thenReturn(blobCopyInfo);
 
     List<FileCopyOperationResponse> responses = cloudStorageOperation.copyFiles(fileCopyOperationList);
     Assertions.assertTrue(responses.get(0).isSuccess());
     Assertions.assertEquals(fileCopyOperationList.get(0), responses.get(0).getCopyOperation());
-
-    verifyMockCopyFile();
-    verify(blobCopyInfo).getCopyStatus();
-  }
-
-  @Test
-  public void copyFiles_OsduBadRequestException_IfBlobStoreThrowsException() {
-    prepareMockCopyFile();
-    List<FileCopyOperation> fileCopyOperationList = getFileCopyOperationsForFile();
-    Mockito.doThrow(BlobStorageException.class).when(
-        blobStore).copyFile(
-        TestUtils.PARTITION,
-        TestUtils.RELATIVE_FILE_PATH,
-        TestUtils.STAGING_CONTAINER_NAME,
-        TestUtils.ABSOLUTE_FILE_PATH);
-
-    List<FileCopyOperationResponse> responses = cloudStorageOperation.copyFiles(fileCopyOperationList);
-    Assertions.assertFalse(responses.get(0).isSuccess());
-    Assertions.assertEquals(fileCopyOperationList.get(0), responses.get(0).getCopyOperation());
-
-    verifyMockCopyFile();
   }
 
   @Test

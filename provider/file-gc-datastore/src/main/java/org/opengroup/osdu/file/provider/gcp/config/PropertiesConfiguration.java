@@ -1,5 +1,6 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2020-2023 Google LLC
+ * Copyright 2020-2023 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +30,5 @@ import org.springframework.context.annotation.Import;
 public class PropertiesConfiguration {
 
   private String stagingArea;
-
   private String persistentArea;
-
 }

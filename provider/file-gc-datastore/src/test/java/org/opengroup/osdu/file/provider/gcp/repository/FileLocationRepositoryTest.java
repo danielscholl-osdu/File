@@ -29,8 +29,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.gcp.osm.service.Context;
-import org.opengroup.osdu.file.provider.gcp.config.properties.GcpConfigurationProperties;
-import org.opengroup.osdu.file.provider.gcp.repository.osm.OsmFileLocationRepository;
+import org.opengroup.osdu.file.provider.gcp.config.GcpConfigurationProperties;
+import org.opengroup.osdu.file.provider.gcp.provider.repository.OsmFileLocationRepository;
 import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
 
 @ExtendWith(MockitoExtension.class)

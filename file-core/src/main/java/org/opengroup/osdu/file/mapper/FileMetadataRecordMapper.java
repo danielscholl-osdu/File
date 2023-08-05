@@ -28,21 +28,21 @@ public class FileMetadataRecordMapper {
 	}
 
 	public Record fileMetadataToRecord(FileMetadata fileMetadata) throws ApplicationException {
-		Record record = new Record();
-		record.setId(fileMetadata.getId());
-		record.setAcl(fileMetadata.getAcl());
-		record.setLegal(fileMetadata.getLegal());
-		record.setKind(fileMetadata.getKind());
-		record.setAncestry(fileMetadata.getAncestry());
-		record.setData(asJsonMap(fileMetadata.getData()));
+		Record fileMetadataRecord = new Record();
+		fileMetadataRecord.setId(fileMetadata.getId());
+		fileMetadataRecord.setAcl(fileMetadata.getAcl());
+		fileMetadataRecord.setLegal(fileMetadata.getLegal());
+		fileMetadataRecord.setKind(fileMetadata.getKind());
+		fileMetadataRecord.setAncestry(fileMetadata.getAncestry());
+		fileMetadataRecord.setData(asJsonMap(fileMetadata.getData()));
 		if (fileMetadata.getMeta() != null) {
-			record.setMeta(fileMetadata.getMeta());
+			fileMetadataRecord.setMeta(fileMetadata.getMeta());
 		}
 		if (fileMetadata.getTags() != null) {
-			record.setTags(fileMetadata.getTags());
+			fileMetadataRecord.setTags(fileMetadata.getTags());
 		}
 
-		return record;
+		return fileMetadataRecord;
 
 	}
 
@@ -57,16 +57,16 @@ public class FileMetadataRecordMapper {
 
 	}
 
-	public RecordVersion recordToRecordVersion(Record record) throws ApplicationException {
-		RecordVersion recordVersion = RecordVersion.builder().id(record.getId()).acl(record.getAcl())
-				.legal(record.getLegal()).ancestry(record.getAncestry()).kind(record.getKind())
-				.data(fileDataFromJsonMap(record.getData())).version(record.getVersion()).build();
-		if (record.getMeta() != null) {
-			recordVersion.setMeta(record.getMeta());
+	public RecordVersion recordToRecordVersion(Record recordToHandle) throws ApplicationException {
+		RecordVersion recordVersion = RecordVersion.builder().id(recordToHandle.getId()).acl(recordToHandle.getAcl())
+				.legal(recordToHandle.getLegal()).ancestry(recordToHandle.getAncestry()).kind(recordToHandle.getKind())
+				.data(fileDataFromJsonMap(recordToHandle.getData())).version(recordToHandle.getVersion()).build();
+		if (recordToHandle.getMeta() != null) {
+			recordVersion.setMeta(recordToHandle.getMeta());
 		}
 
-		if (record.getTags() != null) {
-			recordVersion.setTags(record.getTags());
+		if (recordToHandle.getTags() != null) {
+			recordVersion.setTags(recordToHandle.getTags());
 		}
 		return recordVersion;
 	}

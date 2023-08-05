@@ -18,13 +18,10 @@ package org.opengroup.osdu.file.provider.azure.model.entity;
 
 import java.util.Date;
 
-//import com.microsoft.azure.spring.data.cosmosdb.core.mapping.Document;
-//import com.microsoft.azure.spring.data.cosmosdb.core.mapping.PartitionKey;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-//import org.springframework.data.annotation.Id;
 
 //@Document(collection = "file-locations")
 @Data

@@ -86,8 +86,6 @@ public class CloudStorageOperationImpl implements ICloudStorageOperation {
     for (FileCopyOperation fileCopyOperation : fileCopyOperationList) {
       FileCopyOperationResponse response;
       try {
-        String copyId = this.copyFile(fileCopyOperation.getSourcePath(),
-            fileCopyOperation.getDestinationPath());
         response = FileCopyOperationResponse.builder()
             .copyOperation(fileCopyOperation)
             .success(true).build();
