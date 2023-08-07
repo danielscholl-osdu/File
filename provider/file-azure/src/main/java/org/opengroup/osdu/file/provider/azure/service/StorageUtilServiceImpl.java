@@ -49,7 +49,7 @@ import java.security.NoSuchAlgorithmException;
 @Primary
 public class StorageUtilServiceImpl implements IStorageUtilService  {
   private final String absolutePathFormat = "https://%s.blob.core.windows.net/%s/%s";
-  @Value("#{new Long('${CHECKSUM_CALCULATION_LIMIT}')}")
+  @Value("#{new Long(${CHECKSUM_CALCULATION_LIMIT})}")
   private long blobSizeLimit;
 
   @Autowired
