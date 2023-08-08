@@ -10,6 +10,7 @@ gc-baremetal-test:
 gc-dev2-test:
   variables:
     GC_VENDOR: gc
+    DOMAIN: $GROUP_ID
 
 gc-test:
   variables:
