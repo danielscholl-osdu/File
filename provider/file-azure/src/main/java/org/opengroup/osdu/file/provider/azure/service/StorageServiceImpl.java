@@ -246,7 +246,7 @@ public class StorageServiceImpl implements IStorageService {
             containerName,
             expiryTime,
             permission,
-            UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
+            encompassFilename(UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8)),
             signedUrlParameters.getContentType());
       } else {
         signedUrlString = blobStore.generatePreSignedUrlWithUserDelegationSas(
@@ -255,7 +255,7 @@ public class StorageServiceImpl implements IStorageService {
             containerName,
             expiryTime,
             permission,
-            UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8),
+            encompassFilename(UriUtils.encodePath(signedUrlParameters.getFileName(), StandardCharsets.UTF_8)),
             signedUrlParameters.getContentType());
       }
     }
@@ -286,6 +286,10 @@ public class StorageServiceImpl implements IStorageService {
           String.format("Illegal argument for resourceGroup { %s } or storageAccount { %s }",
               resourceGroupName, storageAccountName));
     }
+  }
+
+  private String encompassFilename(String filepath) {
+    return '"' + filepath + '"';
   }
 
 }
