@@ -45,6 +45,24 @@ public class S3Helper {
 
         return s3.generatePresignedUrl(generatePresignedUrlRequest);
     }
+    
+    /**
+     * Generates a presigned URL for the S3 location with ResponseHeaders
+     */
+    public static URL generatePresignedUrl(S3Location location,
+                                           HttpMethod httpMethod,
+                                           Date expiration,
+                                           TemporaryCredentials credentials,
+                                           ResponseHeaderOverrides responseHeaderOverrides) throws SdkClientException {
+        final AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
+        final GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(location.getBucket(),
+                                                                                                        location.getKey(),
+                                                                                                        httpMethod)
+                                                                            .withExpiration(expiration)
+                                                                            .withResponseHeaders(responseHeaderOverrides);
+
+        return s3.generatePresignedUrl(generatePresignedUrlRequest);
+    }
 
     public static boolean doesObjectExist(S3Location location, TemporaryCredentials credentials) {
         AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);

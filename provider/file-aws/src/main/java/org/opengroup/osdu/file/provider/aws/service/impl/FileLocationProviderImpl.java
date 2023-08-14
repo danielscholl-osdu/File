@@ -15,6 +15,8 @@
 package org.opengroup.osdu.file.provider.aws.service.impl;
 
 import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.opengroup.osdu.core.aws.s3.util.S3ClientConnectionInfo;
@@ -78,6 +80,11 @@ public class FileLocationProviderImpl implements FileLocationProvider {
 
     @Override
     public ProviderLocation getRetrievalFileLocation(S3Location unsignedLocation, Duration expirationDuration) {
+        return getRetrievalLocationInternal(false, unsignedLocation, expirationDuration);
+    }
+    
+    @Override
+    public ProviderLocation getRetrievalFileLocation(S3Location unsignedLocation, Duration expirationDuration, ResponseHeaderOverrides responseHeaderOverrides) {
         return getRetrievalLocationInternal(false, unsignedLocation, expirationDuration);
     }
 
@@ -156,6 +163,65 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         }
     }
 
+    
+    private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration, ResponseHeaderOverrides responseHeaderOverrides) {
+        if (!unsignedLocation.isValid()) {
+            throw new AppException(HttpStatus.BAD_REQUEST.value(),
+                "Malformed URL",
+                "Unsigned URL invalid, needs to be full S3 path");
+        }
+
+        if ((isCollection && unsignedLocation.isFile()) || (!isCollection && unsignedLocation.isFolder())) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Invalid S3 Object Key",
+                String.format("Invalid S3 Object Key - %s", isCollection ? "Object Key should contain trailing '/'"
+                                                                : "Object Key cannot contain trailing '/'"));
+        }
+
+        final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
+        if (stsRoleArn == null) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "Unable to get RoleArn to assume using STS for bucket access");
+        }
+
+        final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
+        final TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(unsignedLocation, stsRoleArn,
+            headers.getUserEmail(),
+            expiration);
+
+        if (isCollection) {
+            if (!S3Helper.doesObjectCollectionExist(unsignedLocation, credentials)) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Invalid/Empty File Collection Path",
+                    "Invalid/Empty File Collection Path - File collection not found at specified S3 path or is empty");
+            }
+        } else if (!S3Helper.doesObjectExist(unsignedLocation, credentials)) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Invalid File Path",
+                "Invalid File Path - File not found at specified S3 path");
+        }
+
+
+
+        try {
+            // Signed URLs only support single files.
+            final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials, responseHeaderOverrides);
+
+            return ProviderLocation.builder()
+                .unsignedUrl(unsignedLocation.toString())
+                .signedUrl(isCollection ? null : new URI(s3SignedUrl.toString()))
+                .locationSource(unsignedLocation.toString())
+                .credentials(credentials)
+                .connectionString(credentials.toConnectionString())
+                .createdAt(Instant.now())
+                .build();
+        } catch (URISyntaxException e) {
+            log.error("There was an error generating the URI.", e);
+            throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
+        }
+    }
+    
     private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration) {
         if (!unsignedLocation.isValid()) {
             throw new AppException(HttpStatus.BAD_REQUEST.value(),
