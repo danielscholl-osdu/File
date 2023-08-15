@@ -205,14 +205,19 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     }
     
     private ProviderLocation getProviderLocation(boolean isCollection, S3Location unsignedLocation, TemporaryCredentials credentials, URL s3SignedUrl) {
-    	return ProviderLocation.builder()
-                .unsignedUrl(unsignedLocation.toString())
-                .signedUrl(isCollection ? null : new URI(s3SignedUrl.toString()))
-                .locationSource(unsignedLocation.toString())
-                .credentials(credentials)
-                .connectionString(credentials.toConnectionString())
-                .createdAt(Instant.now())
-                .build();
+    	try {
+	    	return ProviderLocation.builder()
+	                .unsignedUrl(unsignedLocation.toString())
+	                .signedUrl(isCollection ? null : new URI(s3SignedUrl.toString()))
+	                .locationSource(unsignedLocation.toString())
+	                .credentials(credentials)
+	                .connectionString(credentials.toConnectionString())
+	                .createdAt(Instant.now())
+	                .build();
+        } catch (URISyntaxException e) {
+            log.error("There was an error generating the URI.", e);
+            throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
+        }
     }
     
     private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration, ResponseHeaderOverrides responseHeaderOverrides) {	
@@ -220,15 +225,9 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     	final TemporaryCredentials credentials = getTemporaryCredentials(unsignedLocation, expiration);
     	validateInput(isCollection, unsignedLocation, expirationDuration, credentials);
 
-        try {
-            // Signed URLs only support single files.
-            final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials, responseHeaderOverrides);	
-            
-            return getProviderLocation(isCollection, unsignedLocation, credentials, s3SignedUrl);
-        } catch (URISyntaxException e) {
-            log.error("There was an error generating the URI.", e);
-            throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
-        }
+        // Signed URLs only support single files.
+        final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials, responseHeaderOverrides);	
+        return getProviderLocation(isCollection, unsignedLocation, credentials, s3SignedUrl);
     }
     
     private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration) {
@@ -236,15 +235,8 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         final TemporaryCredentials credentials = getTemporaryCredentials(unsignedLocation, expiration);
     	validateInput(isCollection, unsignedLocation, expirationDuration, credentials);
 
-
-        try {
-            // Signed URLs only support single files.
-            final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials);
-
-            return getProviderLocation(isCollection, unsignedLocation, credentials, s3SignedUrl);
-        } catch (URISyntaxException e) {
-            log.error("There was an error generating the URI.", e);
-            throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
-        }
+        // Signed URLs only support single files.
+        final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials);
+        return getProviderLocation(isCollection, unsignedLocation, credentials, s3SignedUrl);
     }
 }
