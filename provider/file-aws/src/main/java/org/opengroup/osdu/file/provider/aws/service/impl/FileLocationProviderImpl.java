@@ -85,7 +85,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     
     @Override
     public ProviderLocation getRetrievalFileLocation(S3Location unsignedLocation, Duration expirationDuration, ResponseHeaderOverrides responseHeaderOverrides) {
-        return getRetrievalLocationInternal(false, unsignedLocation, expirationDuration);
+        return getRetrievalLocationInternal(false, unsignedLocation, expirationDuration, responseHeaderOverrides);
     }
 
     @Override
