@@ -89,8 +89,9 @@ public class ObmStorageRepository implements IStorageRepository {
     String contentType = signedUrlParameters.getContentType();
 
     if (Objects.nonNull(fileName) && !fileName.isEmpty()) {
+      String encompassFilename = encompassFilename(fileName);
       obmSignedUrlParamsBuilder.queryParams(
-          Collections.singletonMap(CONTENT_DISPOSITION_QUERY_PARAM, ATTACHMENT_FILENAME + fileName));
+          Collections.singletonMap(CONTENT_DISPOSITION_QUERY_PARAM, ATTACHMENT_FILENAME + encompassFilename));
     }
 
     if (Objects.nonNull(contentType) && !contentType.isEmpty()) {
@@ -117,5 +118,9 @@ public class ObmStorageRepository implements IStorageRepository {
       transferProtocol = transferProtocol + "/";
     }
     return URI.create(format("%s%s/%s", transferProtocol, bucketName, filePath));
+  }
+
+  private String encompassFilename(String filepath) {
+    return '"' + filepath + '"';
   }
 }
