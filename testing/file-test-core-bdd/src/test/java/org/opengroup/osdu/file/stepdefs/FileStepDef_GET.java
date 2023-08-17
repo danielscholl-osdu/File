@@ -216,11 +216,14 @@ public class FileStepDef_GET implements En {
 			URLConnection conn = url.openConnection();
       String contentDispositionHeaderValue = conn.getHeaderField("Content-Disposition");
       String fileNameFromHeader = contentDispositionHeaderValue.substring(
-          contentDispositionHeaderValue.indexOf("filename=") + 9);
+          contentDispositionHeaderValue.indexOf("\"") + 1,
+          contentDispositionHeaderValue.lastIndexOf("\"")
+      );
       BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String inputLine;
 			String fileName = System.getProperty("user.dir") + outputFilePath + fileNameFromHeader;
-			File file = new File(fileName);
+      File file = new File(fileName);
+
 			if (!file.exists()) {
 				file.createNewFile();
 			}
