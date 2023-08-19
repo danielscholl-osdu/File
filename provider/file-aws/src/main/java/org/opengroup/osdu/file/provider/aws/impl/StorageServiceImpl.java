@@ -14,9 +14,15 @@
 
 package org.opengroup.osdu.file.provider.aws.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import java.net.MalformedURLException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
@@ -40,13 +46,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
-import java.net.MalformedURLException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -58,6 +62,7 @@ public class StorageServiceImpl implements IStorageService {
     private final DpsHeaders headers;
     private final ObjectMapper objectMapper;
     private final ExpiryTimeUtil expiryTimeUtil;
+    
 
     @Autowired
     public StorageServiceImpl(FileLocationProvider fileLocationProvider,
@@ -127,10 +132,24 @@ public class StorageServiceImpl implements IStorageService {
                                    "Unsigned URL is invalid, needs to be full S3 storage path");
         }
 
+        String fileName = signedUrlParameters.getFileName();
+        String contentType = signedUrlParameters.getContentType();
+        ResponseHeaderOverrides responseHeaderOverrides = new ResponseHeaderOverrides();
+        
+        if (Objects.nonNull(fileName) && !fileName.isEmpty()) {
+        	responseHeaderOverrides.setContentDisposition("attachment; filename =\"" + fileName + "\"");
+        	
+        }
+        
+        if (Objects.nonNull(contentType) && !contentType.isEmpty()) {
+        	responseHeaderOverrides.setContentType(contentType);
+        }
+        
+        
         final RelativeTimeValue relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
         final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
         final Duration expiration = Duration.ofMillis(expireInMillis);
-        final ProviderLocation fileLocation = fileLocationProvider.getRetrievalFileLocation(unsignedLocation, expiration);
+        final ProviderLocation fileLocation = fileLocationProvider.getRetrievalFileLocation(unsignedLocation, expiration, responseHeaderOverrides);
 
         return mapTo(fileLocation);
     }
