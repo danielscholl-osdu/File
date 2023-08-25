@@ -29,6 +29,7 @@ import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
 import org.opengroup.osdu.core.gcp.obm.driver.EnvironmentResolver;
@@ -38,6 +39,7 @@ import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.file.provider.gcp.config.PartitionPropertyNames;
 import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.opengroup.osdu.file.provider.interfaces.IFileCollectionStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
@@ -59,6 +61,8 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
   private final Driver obmDriver;
   private final ExpiryTimeUtil expiryTimeUtil;
   private final SignedDirectoryPropertiesResolver signedDirectoryPropertiesResolver;
+  private final PartitionPropertyNames partitionPropertyNames;
+  private final PartitionPropertyResolver partitionPropertyResolver;
 
   public ObmCollectionStorageService(
       ITenantFactory tenantFactory,
@@ -68,7 +72,9 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
       PropertiesConfiguration properties,
       Driver obmDriver,
       ExpiryTimeUtil expiryTimeUtil,
-      SignedDirectoryPropertiesResolver signedDirectoryPropertiesResolver) {
+      SignedDirectoryPropertiesResolver signedDirectoryPropertiesResolver,
+      PartitionPropertyNames partitionPropertyNames,
+      PartitionPropertyResolver partitionPropertyResolver) {
     this.tenantFactory = tenantFactory;
     this.dpsHeaders = dpsHeaders;
     this.environmentResolver = environmentResolver;
@@ -77,21 +83,25 @@ public class ObmCollectionStorageService implements IFileCollectionStorageServic
     this.obmDriver = obmDriver;
     this.expiryTimeUtil = expiryTimeUtil;
     this.signedDirectoryPropertiesResolver = signedDirectoryPropertiesResolver;
+    this.partitionPropertyNames = partitionPropertyNames;
+    this.partitionPropertyResolver = partitionPropertyResolver;
   }
 
   /**
    * Create storage instructions for File collection Upload Operations in DMS API Context
    *
    * @param datasetId directory ID, a randomly generated UUID
-   * @param partitionID partition ID
+   * @param partitionId partition ID
    * @return storage instructions: provider key and signed url for uploading file collection
    */
   @Override
-  public StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionID) {
-    TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionID);
-    String stagingBucket = String.format("%s-%s-%s", tenantInfo.getProjectId(), tenantInfo.getName(), properties.getStagingArea());
+  public StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionId) {
+    String stagingBucket = partitionPropertyResolver.getOptionalPropertyValue(partitionPropertyNames.getStagingLocationName(), partitionId).orElseGet(() -> {
+      TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
+      return String.format("%s-%s-%s", tenantInfo.getProjectId(), tenantInfo.getName(), properties.getStagingArea());
+    });
 
-    log.info("Creating signed url for partition: {}, directoryId: {}. bucket: {}", partitionID, datasetId, stagingBucket);
+    log.info("Creating signed url for partition: {}, directoryId: {}. bucket: {}", partitionId, datasetId, stagingBucket);
     SignedUrl signedUrl = createSignedUrl(datasetId, stagingBucket);
     Map<String, String> signingOptions = createSigningOptions(datasetId, stagingBucket);
 

@@ -19,17 +19,15 @@ package org.opengroup.osdu.file.provider.gcp.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.opengroup.osdu.file.config.SharedAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "gcp.storage")
-@Import(SharedAutoConfiguration.class)
-@Deprecated
-public class PropertiesConfiguration {
+@Configuration
+@ConfigurationProperties(prefix = "partition.properties")
+public class PartitionPropertyNames {
 
-  private String stagingArea;
-  private String persistentArea;
+  private String stagingLocationName;
+  private String persistentLocationName;
 }
