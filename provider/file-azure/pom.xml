@@ -36,7 +36,7 @@
     <azure.appservice.appname />
     <azure.appservice.subscription />
     <jackson.version>2.13.2</jackson.version>
-    <jackson-databind.version>2.13.2.2</jackson-databind.version>
+    <jackson-databind.version>2.14.2</jackson-databind.version>
     <spring-webmvc.version>5.3.26</spring-webmvc.version>
     <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
     <osdu.corelibazure.version>0.17.0-rc14</osdu.corelibazure.version>
