@@ -31,6 +31,7 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.filecollection.DatasetProperties;
 import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
@@ -53,6 +54,35 @@ public class FileCollectionDmsServiceImpl implements IDmsService {
 
   final IFileCollectionStorageService storageService;
   final DpsHeaders headers;
+
+  @Override
+  public StorageInstructionsResponse getStorageInstructions(String expiryTime) {
+    String directoryID = generateDirectoryId();
+
+    log.debug("Create the empty directory with DirectoryId : {}", directoryID);
+    return storageService.createStorageInstructions(directoryID,
+        headers.getPartitionIdWithFallbackToAccountId(), new SignedUrlParameters(expiryTime));
+  }
+
+  @Override
+  public RetrievalInstructionsResponse getRetrievalInstructions(RetrievalInstructionsRequest retrievalInstructionsRequest, String expiryTime) {
+    DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
+
+    try {
+      MultiRecordInfo batchRecordsResponse = dataLakeStorage.getRecords(retrievalInstructionsRequest.getDatasetRegistryIds());
+      List<Record> datasetMetadataRecords = batchRecordsResponse.getRecords();
+      List<FileRetrievalData> fileRetrievalData = buildUnsignedUrls(datasetMetadataRecords);
+
+      return this.storageService.createRetrievalInstructions(fileRetrievalData,
+          new SignedUrlParameters(expiryTime));
+    } catch (StorageException storageExc) {
+      final int statusCode = storageExc.getHttpResponse() != null ?
+          storageExc.getHttpResponse().getResponseCode() : 500;
+      log.error("Unable to fetch metadata for the datasets", storageExc);
+      throw new AppException(statusCode, "Unable to fetch metadata for the datasets", storageExc.getMessage(), storageExc);
+    }
+  }
+
   final DataLakeStorageFactory storageFactory;
   final ICloudStorageOperation cloudStorageOperation;
   final IFileCollectionStorageUtilService storageUtilService;
@@ -70,21 +100,7 @@ public class FileCollectionDmsServiceImpl implements IDmsService {
 
   @Override
   public RetrievalInstructionsResponse getRetrievalInstructions(RetrievalInstructionsRequest retrievalInstructionsRequest) {
-    DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
-
-    try {
-      MultiRecordInfo batchRecordsResponse = dataLakeStorage.getRecords(retrievalInstructionsRequest.getDatasetRegistryIds());
-      List<Record> datasetMetadataRecords = batchRecordsResponse.getRecords();
-      List<FileRetrievalData> fileRetrievalData = buildUnsignedUrls(datasetMetadataRecords);
-
-      return this.storageService.createRetrievalInstructions(fileRetrievalData);
-    } catch (StorageException storageExc) {
-      final int statusCode = storageExc.getHttpResponse() != null ?
-          storageExc.getHttpResponse().getResponseCode() : 500;
-      log.error("Unable to fetch metadata for the datasets", storageExc);
-      throw new AppException(statusCode, "Unable to fetch metadata for the datasets", storageExc.getMessage(), storageExc);
-
-    }
+    return getRetrievalInstructions(retrievalInstructionsRequest, null);
   }
 
   private List<FileRetrievalData> buildUnsignedUrls(List<Record> datasetRegistryRecords) {

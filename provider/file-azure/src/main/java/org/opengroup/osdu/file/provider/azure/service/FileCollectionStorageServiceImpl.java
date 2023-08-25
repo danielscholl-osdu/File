@@ -99,6 +99,25 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
   @Autowired
   private MSIConfiguration msiConfiguration;
 
+  @Override
+  public StorageInstructionsResponse createStorageInstructions(String directoryID, String partitionID, SignedUrlParameters signedUrlParameters) {
+    SignedUrl signedUrl = this.createSignedUrl(directoryID, partitionID, signedUrlParameters);
+
+    AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
+        .signedUrl(signedUrl.getUrl().toString())
+        .createdBy(signedUrl.getCreatedBy())
+        .fileCollectionSource(signedUrl.getFileSource())
+        .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
+        .build();
+
+    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+    StorageInstructionsResponse response = StorageInstructionsResponse.builder()
+        .providerKey(PROVIDER_KEY)
+        .storageLocation(uploadLocation).build();
+
+    return response;
+  }
+
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.
    *
@@ -108,12 +127,14 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    */
   @Override
   public StorageInstructionsResponse createStorageInstructions(String directoryID, String partitionID) {
-    SignedUrl signedUrl = this.createSignedUrl(directoryID, partitionID);
+    SignedUrl signedUrl = this.createSignedUrl(directoryID, partitionID, new SignedUrlParameters());
 
     AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
         .signedUrl(signedUrl.getUrl().toString())
         .createdBy(signedUrl.getCreatedBy())
-        .fileCollectionSource(signedUrl.getFileSource()).build();
+        .fileCollectionSource(signedUrl.getFileSource())
+        .expiryTime(expiryTimeUtil.getExpiryTimeInString(new SignedUrlParameters()))
+        .build();
 
     Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
     StorageInstructionsResponse response = StorageInstructionsResponse.builder()
@@ -131,17 +152,24 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    */
   @Override
   public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList) {
+    return createRetrievalInstructions(fileRetrievalDataList, new SignedUrlParameters());
+  }
+
+  @Override
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList, SignedUrlParameters signedUrlParameters) {
 
     List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
 
     for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
       SignedUrl signedUrl = this.createSignedUrlDirectoryLocation(fileRetrievalData.getUnsignedUrl(),
-           new SignedUrlParameters());
+          signedUrlParameters);
 
       AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
           .signedUrl(signedUrl.getUrl().toString())
           .fileCollectionSource(signedUrl.getFileSource())
-          .createdBy(signedUrl.getCreatedBy()).build();
+          .createdBy(signedUrl.getCreatedBy())
+          .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
+          .build();
 
       Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
       DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
@@ -157,7 +185,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         .datasets(datasetRetrievalProperties)
         .build();
   }
-
   /**
    * Creates the empty object blob in storage.
    * Bucket name is determined by tenant using {@code partitionID}.
@@ -167,7 +194,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
    * @param partitionID        partition ID
    * @return info about object URI, signed URL and when and who created blob.
    */
-  private SignedUrl createSignedUrl(String directoryId, String partitionID) {
+  private SignedUrl createSignedUrl(String directoryId, String partitionID, SignedUrlParameters signedUrlParameters) {
     log.debug("Creating the signed url for directoryId : {}, partitionID : {}",
         directoryId, partitionID);
     Instant now = Instant.now(Clock.systemUTC());
@@ -183,7 +210,8 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
           StorageConstant.AZURE_MAX_FILEPATH, directoryName.length()));
     }
 
-    SignedObject signedObject = storageRepository.createSignedObject(containerName, directoryName);
+    SignedObject signedObject = storageRepository.createSignedObjectBasedOnParams(containerName,
+        directoryName, signedUrlParameters);
 
     return SignedUrl.builder()
         .url(signedObject.getUrl())

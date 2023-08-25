@@ -26,7 +26,9 @@ import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 
 import java.net.URL;
 import java.time.OffsetDateTime;
@@ -34,8 +36,7 @@ import java.time.OffsetDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -53,17 +54,19 @@ public class DataLakeRepositoryTest {
   @Mock
   MSIConfiguration msiConfiguration;
 
+  @Mock
+  ExpiryTimeUtil expiryTimeUtil;
   @Test
   public void shouldCreateSignedObject() {
     doNothing().when(dataLakeStore).createDirectory(TestUtils.PARTITION, TestUtils.STAGING_FILE_SYSTEM_NAME,
         TestUtils.DIRECTORY_NAME);
-
+    OffsetDateTime offsetDateTime = OffsetDateTime.now();
     when(msiConfiguration.getIsEnabled()).thenReturn(false);
     when(dpsHeaders.getPartitionId()).thenReturn(TestUtils.PARTITION);
     when(dataLakeStore.generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
         eq(TestUtils.DIRECTORY_NAME) , any(OffsetDateTime.class), any(FileSystemSasPermission.class)))
         .thenReturn(getSignedUrl().toString());
-
+    when(expiryTimeUtil.getExpiryTimeInOffsetDateTime(any())).thenReturn(offsetDateTime);
     SignedObject signedObject = dataLakeRepository.createSignedObject
         (TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.DIRECTORY_NAME);
 

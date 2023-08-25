@@ -18,6 +18,7 @@ package org.opengroup.osdu.file.api;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,10 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.List;
@@ -78,8 +76,9 @@ public class FileCollectionDmsApi {
   })
   @PostMapping("/storageInstructions")
   @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_EDITOR_ROLE + "')")
-  public ResponseEntity<StorageInstructionsResponse> getStorageInstructions() {
-    StorageInstructionsResponse storageInstructionsResp = fileCollectionDmsService.getStorageInstructions();
+  public ResponseEntity<StorageInstructionsResponse> getStorageInstructions(@Parameter(description = "The Time for which Signed URL to be valid. Accepted Regex patterns are \"^[0-9]+M$\", \"^[0-9]+H$\", \"^[0-9]+D$\" denoting Integer values in Minutes, Hours, Days respectively. In absence of this parameter the URL would be valid for 1 Hour.",
+      example = "5M")  @RequestParam(required = false, name = "expiryTime") String expiryTime) {
+    StorageInstructionsResponse storageInstructionsResp = fileCollectionDmsService.getStorageInstructions(expiryTime);
     return new ResponseEntity<>(storageInstructionsResp, HttpStatus.OK);
   }
 
@@ -98,8 +97,9 @@ public class FileCollectionDmsApi {
   @PostMapping("/retrievalInstructions")
   @PreAuthorize("@authorizationFilter.hasPermission('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
   public ResponseEntity<RetrievalInstructionsResponse> getRetrievalInstructions(
-      @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest) {
-    RetrievalInstructionsResponse retrievalInstructionsResp = fileCollectionDmsService.getRetrievalInstructions(retrievalInstructionsRequest);
+      @RequestBody RetrievalInstructionsRequest retrievalInstructionsRequest, @Parameter(description = "The Time for which Signed URL to be valid. Accepted Regex patterns are \"^[0-9]+M$\", \"^[0-9]+H$\", \"^[0-9]+D$\" denoting Integer values in Minutes, Hours, Days respectively. In absence of this parameter the URL would be valid for 1 Hour.",
+      example = "5M")  @RequestParam(required = false, name = "expiryTime") String expiryTime) {
+    RetrievalInstructionsResponse retrievalInstructionsResp = fileCollectionDmsService.getRetrievalInstructions(retrievalInstructionsRequest, expiryTime);
     return new ResponseEntity<>(retrievalInstructionsResp, HttpStatus.OK);
   }
 

@@ -32,6 +32,10 @@ public interface IStorageRepository {
    */
   SignedObject createSignedObject(String bucketName, String filepath);
 
+  default SignedObject createSignedObjectBasedOnParams(String bucketName, String filepath, SignedUrlParameters signedUrlParameters){
+    return createSignedObject(bucketName, filepath);
+  }
+
   /**
    * Get signed object for blob in bucket by filepath.
    *

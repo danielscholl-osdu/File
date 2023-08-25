@@ -29,4 +29,5 @@ public class AzureFileDmsUploadLocation {
   private String signedUrl;
   private String fileSource;
   private String createdBy;
+  private String expiryTime;
 }

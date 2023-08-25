@@ -34,6 +34,7 @@ import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
 import org.opengroup.osdu.file.model.filemetadata.filedetails.DatasetProperties;
@@ -155,7 +156,6 @@ public class FileDmsServiceImplTest {
     // test request.
     RetrievalInstructionsRequest testRequest = new RetrievalInstructionsRequest();
     testRequest.getDatasetRegistryIds().add(TEST_DATASET_ID);
-
     given(storageFactory.create(headers)).willReturn(dataLakeStorageService);
 
     // Multi record info
@@ -176,7 +176,8 @@ public class FileDmsServiceImplTest {
         .unsignedUrl(TEST_UNSIGNED_URL)
         .build());
 
-    given(storageService.createRetrievalInstructions(testRetrieveData)).willReturn(actualResponse);
+    given(storageService.createRetrievalInstructions(testRetrieveData,
+        new SignedUrlParameters())).willReturn(actualResponse);
 
     // when
     RetrievalInstructionsResponse expectedResponse = dmsService.getRetrievalInstructions(testRequest);
@@ -305,6 +306,28 @@ public class FileDmsServiceImplTest {
 
   }
 
+  @Test
+  void shouldReturnStorageInstructionsWithExpiryTime() {
+    // given
+    Map<String, Object> storageLocation = new HashMap<>();
+    storageLocation.put("signedUrl", "testSignedUrl");
+    storageLocation.put("fileSource", "fileSource");
+
+    StorageInstructionsResponse actualResponse = StorageInstructionsResponse.builder()
+        .providerKey("AZURE").storageLocation(storageLocation).build();
+
+    given(headers.getPartitionIdWithFallbackToAccountId()).willReturn(PARTITION);
+
+    given(storageService.createStorageInstructions(anyString(), eq(PARTITION), eq(new SignedUrlParameters("5D")))).willReturn(actualResponse);
+
+
+    // when
+    StorageInstructionsResponse expectedResponse = dmsService.getStorageInstructions("5D");
+
+    // then
+    then(expectedResponse).isEqualTo(actualResponse);
+    verify(storageService, times(1)).createStorageInstructions(anyString(), eq(PARTITION), eq(new SignedUrlParameters("5D")));
+  }
   private void addTestRecordNoDataSetProperty(List<Record> records) {
     Record record = new Record();
     record.setId(TEST_DATASET_ID);
