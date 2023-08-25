@@ -33,6 +33,7 @@ import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.obm.driver.EnvironmentResolver;
 import org.opengroup.osdu.core.gcp.obm.driver.ObmPathProvider;
@@ -41,6 +42,7 @@ import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
+import org.opengroup.osdu.file.provider.gcp.config.PartitionPropertyNames;
 import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.provider.interfaces.IStorageService;
@@ -59,27 +61,35 @@ public class ObmStorageService implements IStorageService {
   private final DpsHeaders dpsHeaders;
   private final EnvironmentResolver environmentResolver;
   private final PropertiesConfiguration properties;
+  private final PartitionPropertyNames partitionPropertyNames;
+  private final PartitionPropertyResolver partitionPropertyResolver;
 
   @Autowired
   public ObmStorageService(@Qualifier("ObmStorageRepository") IStorageRepository storageRepository,
       ObmPathProvider pathProvider, ITenantFactory tenantFactory,
-      DpsHeaders dpsHeaders, EnvironmentResolver environmentResolver, PropertiesConfiguration properties) {
+      DpsHeaders dpsHeaders, EnvironmentResolver environmentResolver, PropertiesConfiguration properties,
+      PartitionPropertyNames partitionPropertyNames, PartitionPropertyResolver partitionPropertyResolver) {
     this.storageRepository = storageRepository;
     this.pathProvider = pathProvider;
     this.tenantFactory = tenantFactory;
     this.dpsHeaders = dpsHeaders;
     this.environmentResolver = environmentResolver;
     this.properties = properties;
+    this.partitionPropertyNames = partitionPropertyNames;
+    this.partitionPropertyResolver = partitionPropertyResolver;
   }
 
   @Override
-  public SignedUrl createSignedUrl(String fileName, String authorizationToken, String partitionID) {
-    log.debug("Creating the signed blob for fileName : {}. Authorization : {}, partitionID : {}",
-        fileName, authorizationToken, partitionID);
+  public SignedUrl createSignedUrl(String fileName, String authorizationToken, String partitionId) {
+    log.debug("Creating the signed blob for fileName : {}. Authorization : {}, partitionId : {}",
+        fileName, authorizationToken, partitionId);
 
     String filepath = generateRelativePath(fileName);
-    TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionID);
-    String stagingBucket = String.format("%s-%s-%s", tenantInfo.getProjectId(), tenantInfo.getName(), properties.getStagingArea());
+
+    String stagingBucket = partitionPropertyResolver.getOptionalPropertyValue(partitionPropertyNames.getStagingLocationName(), partitionId).orElseGet(() -> {
+      TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
+      return String.format("%s-%s-%s", tenantInfo.getProjectId(), tenantInfo.getName(), properties.getStagingArea());
+    });
     log.debug("Create storage object for fileName {} in bucket {} with filepath {}",
         fileName, stagingBucket, filepath);
 
