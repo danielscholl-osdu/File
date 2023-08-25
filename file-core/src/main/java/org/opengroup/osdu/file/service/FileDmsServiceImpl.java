@@ -28,6 +28,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.file.model.FileRetrievalData;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.file.FileCopyOperation;
 import org.opengroup.osdu.file.model.file.FileCopyOperationResponse;
 import org.opengroup.osdu.file.model.filemetadata.filedetails.DatasetProperties;
@@ -70,7 +71,7 @@ public class FileDmsServiceImpl implements IDmsService {
   }
 
   @Override
-  public RetrievalInstructionsResponse getRetrievalInstructions(RetrievalInstructionsRequest retrievalInstructionsRequest) {
+  public RetrievalInstructionsResponse getRetrievalInstructions(RetrievalInstructionsRequest retrievalInstructionsRequest, String expiryTime) {
     DataLakeStorageService dataLakeStorage = this.storageFactory.create(headers);
 
     try {
@@ -78,7 +79,7 @@ public class FileDmsServiceImpl implements IDmsService {
       List<Record> datasetMetadataRecords = batchRecordsResponse.getRecords();
       List<FileRetrievalData> fileRetrievalData = buildUnsignedUrls(datasetMetadataRecords);
 
-      return this.storageService.createRetrievalInstructions(fileRetrievalData);
+      return this.storageService.createRetrievalInstructions(fileRetrievalData, new SignedUrlParameters(expiryTime));
 
     } catch (StorageException storageExc) {
       final int statusCode = storageExc.getHttpResponse() != null ?
@@ -87,6 +88,11 @@ public class FileDmsServiceImpl implements IDmsService {
       throw new AppException(statusCode, "Unable to fetch metadata for the datasets", storageExc.getMessage(), storageExc);
 
     }
+  }
+
+  @Override
+  public RetrievalInstructionsResponse getRetrievalInstructions(RetrievalInstructionsRequest retrievalInstructionsRequest) {
+      return getRetrievalInstructions(retrievalInstructionsRequest, null);
   }
 
   @Override
@@ -165,4 +171,14 @@ public class FileDmsServiceImpl implements IDmsService {
 
     return storageFilePath;
   }
+
+  @Override
+  public StorageInstructionsResponse getStorageInstructions(String expiryTime) {
+    String fileID = generateFileId();
+
+    log.debug("Create the empty blob in bucket. FileID : {}", fileID);
+    return storageService.createStorageInstructions(fileID,
+        headers.getPartitionIdWithFallbackToAccountId(), new SignedUrlParameters(expiryTime));
+  }
+
 }

@@ -23,7 +23,9 @@ import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedObject;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
+import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,21 +45,16 @@ public class DataLakeRepository implements IStorageRepository {
   @Autowired
   private MSIConfiguration msiConfiguration;
 
-  /**
-   * Creates the empty object blob in bucket by filepath.
-   *
-   * @param directoryName file path
-   * @return info created blob and signed URL
-   */
+  @Autowired
+  private ExpiryTimeUtil expiryTimeUtil;
   @Override
   @SneakyThrows
-  public SignedObject createSignedObject(String containerName, String directoryName) {
+  public SignedObject createSignedObjectBasedOnParams(String containerName, String directoryName, SignedUrlParameters signedUrlParameters) {
     log.debug("Creating the directory in FileSystem {} for path {}", containerName, directoryName);
     dataLakeStore.createDirectory(dpsHeaders.getPartitionId(), containerName, directoryName);
     log.debug("Created the directory in FileSystem {}", containerName);
 
-    int expiryDays = 7;
-    OffsetDateTime expiryTime = OffsetDateTime.now().plusDays(expiryDays);
+    OffsetDateTime expiryTime = expiryTimeUtil.getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
 
     FileSystemSasPermission permission = new FileSystemSasPermission().setReadPermission(true)
         .setAddPermission(true)
@@ -66,7 +63,7 @@ public class DataLakeRepository implements IStorageRepository {
         .setListPermission(true);
 
     String signedUrlStr;
-    if(!msiConfiguration.getIsEnabled()) {
+    if (!msiConfiguration.getIsEnabled()) {
       signedUrlStr = dataLakeStore.generatePreSignedURL(dpsHeaders.getPartitionId(),
           containerName, directoryName, expiryTime, permission);
     } else {
@@ -78,5 +75,17 @@ public class DataLakeRepository implements IStorageRepository {
     return SignedObject.builder()
         .url(signedUrl)
         .build();
+  }
+
+  /**
+   * Creates the empty object blob in bucket by filepath.
+   *
+   * @param directoryName file path
+   * @return info created blob and signed URL
+   */
+  @Override
+  @SneakyThrows
+  public SignedObject createSignedObject(String containerName, String directoryName) {
+    return createSignedObjectBasedOnParams(containerName, directoryName, new SignedUrlParameters());
   }
 }

@@ -134,49 +134,12 @@ public class StorageServiceImpl implements IStorageService {
 
   @Override
   public StorageInstructionsResponse createStorageInstructions(String blobId, String partitionID) {
-    SignedUrl signedUrl = this.createSignedUrl(blobId, dpsHeaders.getAuthorization(), partitionID);
-
-    AzureFileDmsUploadLocation dmsLocation = AzureFileDmsUploadLocation.builder()
-        .signedUrl(signedUrl.getUrl().toString())
-        .createdBy(signedUrl.getCreatedBy())
-        .fileSource(signedUrl.getFileSource()).build();
-
-    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
-    StorageInstructionsResponse response = StorageInstructionsResponse.builder()
-        .providerKey(PROVIDER_KEY)
-        .storageLocation(uploadLocation).build();
-
-    return response;
+    return createStorageInstructions(blobId, partitionID, new SignedUrlParameters());
   }
 
   @Override
   public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList) {
-
-    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
-
-    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-
-      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
-          dpsHeaders.getAuthorization(), new SignedUrlParameters());
-
-      AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
-          .signedUrl(signedUrl.getUrl().toString())
-          .fileSource(signedUrl.getFileSource())
-          .createdBy(signedUrl.getCreatedBy()).build();
-
-      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
-      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
-          .retrievalProperties(downloadLocation)
-          .datasetRegistryId(fileRetrievalData.getRecordId())
-          .providerKey(PROVIDER_KEY)
-          .build();
-
-      datasetRetrievalProperties.add(datasetRetrievalProperty);
-    }
-
-    return RetrievalInstructionsResponse.builder()
-        .datasets(datasetRetrievalProperties)
-        .build();
+    return createRetrievalInstructions(fileRetrievalDataList, new SignedUrlParameters());
   }
 
   private String getRelativeFileSource(String filePath) {
@@ -292,4 +255,54 @@ public class StorageServiceImpl implements IStorageService {
     return '"' + filepath + '"';
   }
 
+  @Override
+  public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList, SignedUrlParameters signedUrlParameters) {
+
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
+
+    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
+
+      SignedUrl signedUrl = this.createSignedUrlFileLocation(fileRetrievalData.getUnsignedUrl(),
+          dpsHeaders.getAuthorization(), signedUrlParameters);
+
+      AzureFileDmsDownloadLocation dmsLocation = AzureFileDmsDownloadLocation.builder()
+          .signedUrl(signedUrl.getUrl().toString())
+          .fileSource(signedUrl.getFileSource())
+          .createdBy(signedUrl.getCreatedBy())
+          .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
+          .build();
+
+      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
+          .retrievalProperties(downloadLocation)
+          .datasetRegistryId(fileRetrievalData.getRecordId())
+          .providerKey(PROVIDER_KEY)
+          .build();
+
+      datasetRetrievalProperties.add(datasetRetrievalProperty);
+    }
+
+    return RetrievalInstructionsResponse.builder()
+        .datasets(datasetRetrievalProperties)
+        .build();
+  }
+
+  @Override
+  public StorageInstructionsResponse createStorageInstructions(String blobId, String partitionID, SignedUrlParameters signedUrlParameters) {
+    SignedUrl signedUrl = this.createSignedUrl(blobId, dpsHeaders.getAuthorization(), partitionID, signedUrlParameters);
+
+    AzureFileDmsUploadLocation dmsLocation = AzureFileDmsUploadLocation.builder()
+        .signedUrl(signedUrl.getUrl().toString())
+        .createdBy(signedUrl.getCreatedBy())
+        .fileSource(signedUrl.getFileSource())
+        .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
+        .build();
+
+    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+    StorageInstructionsResponse response = StorageInstructionsResponse.builder()
+        .providerKey(PROVIDER_KEY)
+        .storageLocation(uploadLocation).build();
+
+    return response;
+  }
 }

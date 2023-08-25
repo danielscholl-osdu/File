@@ -690,6 +690,13 @@ The following software have components provided under the terms of this license:
 - ThreeTen backport (from https://github.com/ThreeTen/threetenbp, https://www.threeten.org/threetenbp)
 
 ========================================================================
+BSL-1.0
+========================================================================
+The following software have components provided under the terms of this license:
+
+- Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
+
+========================================================================
 Beerware
 ========================================================================
 The following software have components provided under the terms of this license:
@@ -890,8 +897,6 @@ LGPL-2.1-only
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Java Native Access (from https://github.com/java-native-access/jna, https://github.com/twall/jna)
-- Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Logback Classic Module (from http://logback.qos.ch, https://repo1.maven.org/maven2/ch/qos/logback/logback-classic)
 - Logback Contrib :: JSON :: Classic (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-classic)
 - Logback Contrib :: JSON :: Core (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-core)
@@ -907,6 +912,7 @@ LGPL-2.1-or-later
 The following software have components provided under the terms of this license:
 
 - Java Native Access (from https://github.com/java-native-access/jna, https://github.com/twall/jna)
+- Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Javassist (from http://www.javassist.org/)
 
 ========================================================================
@@ -1071,6 +1077,7 @@ public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Apache Groovy (from http://groovy-lang.org, http://groovy.codehaus.org/, https://groovy-lang.org)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
 - Microsoft Azure client library for Blob Storage (from https://github.com/Azure/azure-sdk-for-java)
