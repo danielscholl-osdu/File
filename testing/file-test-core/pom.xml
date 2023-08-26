@@ -20,7 +20,7 @@
 
   <groupId>org.opengroup.osdu</groupId>
   <artifactId>file-test-core</artifactId>
-  <version>0.23.0-SNAPSHOT</version>
+  <version>0.24.0-SNAPSHOT</version>
 
   <name>file-test-core</name>
   <description>Core test project for the file service</description>
@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.opengroup.osdu</groupId>
     <artifactId>os-file-test</artifactId>
-    <version>0.23.0-SNAPSHOT</version>
+    <version>0.24.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
