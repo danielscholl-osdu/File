@@ -35,7 +35,7 @@
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
     <spring-webmvc.version>5.3.22</spring-webmvc.version>
-    <jackson-databind.version>2.13.2.2</jackson-databind.version>
+    <jackson-databind.version>2.14.2</jackson-databind.version>
     <jackson.version>2.13.2</jackson.version>
   </properties>
 
