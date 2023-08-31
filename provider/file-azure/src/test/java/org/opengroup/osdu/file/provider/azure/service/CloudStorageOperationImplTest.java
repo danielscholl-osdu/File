@@ -174,11 +174,22 @@ public class CloudStorageOperationImplTest {
 
   @Test
   public void copyFiles_Success() {
+    prepareMockCopyFile();
     List<FileCopyOperation> fileCopyOperationList = getFileCopyOperationsForFile();
+
+    when(blobStore.copyFile(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,
+        TestUtils.STAGING_CONTAINER_NAME,TestUtils.ABSOLUTE_FILE_PATH)).thenReturn(blobCopyInfo);
 
     List<FileCopyOperationResponse> responses = cloudStorageOperation.copyFiles(fileCopyOperationList);
     Assertions.assertTrue(responses.get(0).isSuccess());
     Assertions.assertEquals(fileCopyOperationList.get(0), responses.get(0).getCopyOperation());
+
+    // verify
+    verify(blobStore, times(1)).copyFile(TestUtils.PARTITION, TestUtils.RELATIVE_FILE_PATH,
+        TestUtils.STAGING_CONTAINER_NAME,TestUtils.ABSOLUTE_FILE_PATH);
+
+    verifyMockCopyFile();
+    verify(blobCopyInfo).getCopyStatus();
   }
 
   @Test
