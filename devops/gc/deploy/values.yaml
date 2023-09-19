@@ -18,7 +18,6 @@ data:
   partitionHost: "http://partition"
   storageHost: "http://storage"
   springProfilesActive: "gcp"
-  fileLocationUserId: ""
 
 conf:
   configmap: "file-config"
