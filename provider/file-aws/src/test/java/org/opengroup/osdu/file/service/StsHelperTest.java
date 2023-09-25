@@ -24,12 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
@@ -42,6 +44,7 @@ import java.util.Date;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StsHelperTest {
 
     private final String roleArn = "arn:partition:service:region:account-id:resource-id";
@@ -55,7 +58,7 @@ public class StsHelperTest {
     @Mock
     private AWSSecurityTokenService securityTokenService;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         providerConfigurationBag.amazonRegion = "us-east-1";
         stsCredentialsHelper = new StsCredentialsHelper(providerConfigurationBag);

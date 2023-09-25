@@ -20,24 +20,30 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentialsProvider;
 import org.opengroup.osdu.file.provider.aws.helper.S3Helper;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 @ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class S3HelperTest {
 
     AmazonS3 s3Mock = mock(AmazonS3.class);
@@ -51,6 +57,48 @@ public class S3HelperTest {
 
     @Spy
     private List<S3ObjectSummary> s3ObjectSummary = new ArrayList<>();
+
+    @Test
+    public void testGeneratePresignedUrl() throws SdkClientException, MalformedURLException {
+
+        s3ClientMock.when(AmazonS3ClientBuilder::standard).thenReturn(mocks3Builder);
+
+        Mockito.when(mocks3Builder.withCredentials(Mockito.any())).thenReturn(mocks3Builder);
+
+        Mockito.when(mocks3Builder.withRegion(Mockito.any(Regions.class))).thenReturn(mocks3Builder);
+
+        Mockito.when(mocks3Builder.build()).thenReturn(s3Mock);
+
+        Mockito.when(s3Mock.generatePresignedUrl(Mockito.any(GeneratePresignedUrlRequest.class))).thenReturn(new URL("http:// localhost"));
+
+        URL actual = S3Helper.generatePresignedUrl(location, null, null, credentials);
+
+        assertEquals("http:// localhost", actual.toString());
+
+        s3ClientMock.close();
+
+    }
+
+    @Test
+    public void testGeneratePresignedUrlResponseHeaders() throws SdkClientException, MalformedURLException {
+
+        s3ClientMock.when(AmazonS3ClientBuilder::standard).thenReturn(mocks3Builder);
+
+        Mockito.when(mocks3Builder.withCredentials(Mockito.any())).thenReturn(mocks3Builder);
+
+        Mockito.when(mocks3Builder.withRegion(Mockito.any(Regions.class))).thenReturn(mocks3Builder);
+
+        Mockito.when(mocks3Builder.build()).thenReturn(s3Mock);
+
+        Mockito.when(s3Mock.generatePresignedUrl(Mockito.any(GeneratePresignedUrlRequest.class))).thenReturn(new URL("http:// localhost"));
+
+        URL actual = S3Helper.generatePresignedUrl(location, null, null, credentials, null);
+
+        assertEquals("http:// localhost", actual.toString());
+
+        s3ClientMock.close();
+
+    }
 
     @Test
     public void testDoesObjectExist() throws Exception {
@@ -107,6 +155,11 @@ public class S3HelperTest {
         Mockito.when(!s3ObjectSummary.isEmpty()).thenReturn(false);
         actual = S3Helper.doesObjectCollectionExist(location, credentials);
         assertTrue(actual);
+
+        Mockito.when(!s3ObjectSummary.isEmpty()).thenThrow(AmazonServiceException.class);
+        actual = S3Helper.doesObjectCollectionExist(location, credentials);
+        assertFalse(actual);
+
         s3ClientMock.close();
 
     }
