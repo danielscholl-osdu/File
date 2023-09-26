@@ -89,7 +89,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
     }
 
     private static FileCollectionDmsStorageLocation getFileCollectionDmsStorageLocation(ProviderLocation fileLocation, S3Location unsignedLocation, DpsHeaders headers) {
-        FileCollectionDmsStorageLocation dmsLocation = FileCollectionDmsStorageLocation
+        return FileCollectionDmsStorageLocation
             .builder()
             .unsignedUrl(fileLocation.getUnsignedUrl())
             .createdAt(fileLocation.getCreatedAt())
@@ -98,7 +98,6 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
             .createdBy(headers.getUserEmail())
             .region(S3Helper.getBucketRegion(unsignedLocation.getBucket(), fileLocation.getCredentials()))
             .build();
-        return dmsLocation;
     }
 
     private DatasetRetrievalProperties buildDatasetRetrievalProperties(FileRetrievalData fileRetrievalData) {

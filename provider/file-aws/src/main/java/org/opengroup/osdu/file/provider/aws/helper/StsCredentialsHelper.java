@@ -48,19 +48,19 @@ public class StsCredentialsHelper {
         this.securityTokenService = config.amazonSTS();
     }
 
-    public TemporaryCredentials getUploadCredentials(S3Location fileLocation, String roleArn, String user, Date expiration) {
+    public TemporaryCredentials getUploadCredentials(S3Location fileLocation, String roleArn, Date expiration) {
         Policy policy = createUploadPolicy(fileLocation);
 
-        return getCredentials(policy, roleArn, user, expiration);
+        return getCredentials(policy, roleArn, expiration);
     }
 
-    public TemporaryCredentials getRetrievalCredentials(S3Location fileLocation, String roleArn, String user, Date expiration) {
+    public TemporaryCredentials getRetrievalCredentials(S3Location fileLocation, String roleArn, Date expiration) {
         Policy policy = createRetrievalPolicy(fileLocation);
 
-        return getCredentials(policy, roleArn, user, expiration);
+        return getCredentials(policy, roleArn, expiration);
     }
 
-    public TemporaryCredentials getCredentials(Policy policy, String roleArn, String user, Date expiration) {
+    public TemporaryCredentials getCredentials(Policy policy, String roleArn, Date expiration) {
         Instant now = Instant.now();
         UUID uuid = UUID.randomUUID();
         String roleSessionName = uuid.toString();
@@ -110,7 +110,7 @@ public class StsCredentialsHelper {
     private Statement allowUserToSeeBucketList() {
         return (new Statement(Statement.Effect.Allow))
             .withActions(S3Actions.ListBuckets, S3Actions.GetBucketLocation)
-            .withResources(new Resource(String.format("arn:aws:s3:::*")));
+            .withResources(new Resource("arn:aws:s3:::*"));
     }
 
     private Statement allowRootAndLocationListing(S3Location fileLocation, String fileLocationKeyWithoutTrailingSlash) {

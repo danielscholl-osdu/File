@@ -53,7 +53,7 @@ public class StsCredentialsHelperTest {
 
                 StsCredentialsHelper helper = new StsCredentialsHelper(providerConfigurationBag);
 
-                assertNotNull(helper.getUploadCredentials(new S3Location("bucket", "key"), "roleArn", "user", new Date(2040, 1 ,1 ,1, 0, 0)));
+                assertNotNull(helper.getUploadCredentials(new S3Location("bucket", "key"), "roleArn", new Date(2040, 1 ,1 ,1, 0, 0)));
     
             }
     }

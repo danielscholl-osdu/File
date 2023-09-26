@@ -136,7 +136,7 @@ public class FileLocationProviderImplTest  {
         when(s3ConnectionInfoHelper.getS3ConnectionInfoForPartition(any(DpsHeaders.class), anyString())).thenReturn(new S3ClientConnectionInfo(bucketName, region, endpoint));
         providerConfigurationBag.stsRoleIamParameterRelativePath = stsRoleIamParameterRelativePath;
         when(stsRoleHelper.getRoleArnForPartition(any(DpsHeaders.class), anyString())).thenReturn(stsRoleArn);
-        when(stsCredentialsHelper.getUploadCredentials(any(), anyString(), any(), any())).thenReturn(credentials);
+        when(stsCredentialsHelper.getUploadCredentials(any(), anyString(), any())).thenReturn(credentials);
 
         mockS3Helper.when(() -> S3Helper.generatePresignedUrl(any(), any(), any(), any())).thenReturn(new URL(localhost));
 
@@ -155,7 +155,7 @@ public class FileLocationProviderImplTest  {
         when(s3ConnectionInfoHelper.getS3ConnectionInfoForPartition(any(DpsHeaders.class), anyString())).thenReturn(new S3ClientConnectionInfo(bucketName, region, endpoint));
         providerConfigurationBag.stsRoleIamParameterRelativePath = stsRoleIamParameterRelativePath;
         when(stsRoleHelper.getRoleArnForPartition(any(DpsHeaders.class), anyString())).thenReturn(stsRoleArn);
-        when(stsCredentialsHelper.getUploadCredentials(any(), anyString(), any(), any())).thenReturn(credentials);
+        when(stsCredentialsHelper.getUploadCredentials(any(), anyString(), any())).thenReturn(credentials);
 
         mockS3Helper.when(() -> S3Helper.generatePresignedUrl(any(), any(), any(), any())).thenReturn(new URL(badURL));
 
@@ -205,7 +205,7 @@ public class FileLocationProviderImplTest  {
 
         providerConfigurationBag.stsRoleIamParameterRelativePath = stsRoleIamParameterRelativePath;
         when(stsRoleHelper.getRoleArnForPartition(any(DpsHeaders.class), anyString())).thenReturn(stsRoleArn);
-        when(stsCredentialsHelper.getRetrievalCredentials(any(), anyString(), any(), any())).thenReturn(credentials);
+        when(stsCredentialsHelper.getRetrievalCredentials(any(), anyString(), any())).thenReturn(credentials);
 
         mockS3Helper.when(() -> S3Helper.doesObjectExist(any(), any())).thenReturn(true);
         mockS3Helper.when(() -> S3Helper.doesObjectCollectionExist(any(), any())).thenReturn(true);
@@ -223,7 +223,7 @@ public class FileLocationProviderImplTest  {
 
         providerConfigurationBag.stsRoleIamParameterRelativePath = stsRoleIamParameterRelativePath;
         when(stsRoleHelper.getRoleArnForPartition(any(DpsHeaders.class), anyString())).thenReturn(stsRoleArn);
-        when(stsCredentialsHelper.getRetrievalCredentials(any(), anyString(), any(), any())).thenReturn(credentials);
+        when(stsCredentialsHelper.getRetrievalCredentials(any(), anyString(), any())).thenReturn(credentials);
 
         mockS3Helper.when(() -> S3Helper.doesObjectExist(any(), any())).thenReturn(true);
         mockS3Helper.when(() -> S3Helper.generatePresignedUrl(any(), any(), any(), any(), any())).thenReturn(new URL(localhost));
@@ -239,7 +239,7 @@ public class FileLocationProviderImplTest  {
 
         providerConfigurationBag.stsRoleIamParameterRelativePath = stsRoleIamParameterRelativePath;
         when(stsRoleHelper.getRoleArnForPartition(any(DpsHeaders.class), anyString())).thenReturn(stsRoleArn);
-        when(stsCredentialsHelper.getRetrievalCredentials(any(), anyString(), any(), any())).thenReturn(credentials);
+        when(stsCredentialsHelper.getRetrievalCredentials(any(), anyString(), any())).thenReturn(credentials);
 
         mockS3Helper.when(() -> S3Helper.doesObjectExist(any(), any())).thenReturn(true);
         mockS3Helper.when(() -> S3Helper.generatePresignedUrl(any(), any(), any(), any())).thenReturn(new URL(badURL));

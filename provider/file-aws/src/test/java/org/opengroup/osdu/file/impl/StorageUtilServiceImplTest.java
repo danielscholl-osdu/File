@@ -90,7 +90,7 @@ public class StorageUtilServiceImplTest {
 
         Mockito.when(mocks3Builder.build()).thenReturn(s3Mock);
 
-        Mockito.when(stsCredentialsHelper.getRetrievalCredentials(Mockito.any(), Mockito.any(), Mockito.any(),
+        Mockito.when(stsCredentialsHelper.getRetrievalCredentials(Mockito.any(), Mockito.any(),
                 Mockito.any())).thenReturn(credentials);
         Mockito.when(stsRoleHelper.getRoleArnForPartition(Mockito.any(DpsHeaders.class), Mockito.any()))
                 .thenReturn("testRole");

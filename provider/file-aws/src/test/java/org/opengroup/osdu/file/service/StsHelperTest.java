@@ -48,7 +48,6 @@ import java.util.Date;
 public class StsHelperTest {
 
     private final String roleArn = "arn:partition:service:region:account-id:resource-id";
-    private final String user = "admin@example.com";
     private final S3Location fileLocation = S3Location.of("s3://bucket/path/key");
 
     private StsCredentialsHelper stsCredentialsHelper;
@@ -80,7 +79,7 @@ public class StsHelperTest {
         Mockito.when(mockAssumeRoleResult.getCredentials()).thenReturn(mockCredentials);
         Mockito.when(securityTokenService.assumeRole(Mockito.any())).thenReturn(mockAssumeRoleResult);
 
-        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, user, expirationDate);
+        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, expirationDate);
 
         ArgumentCaptor<AssumeRoleRequest> requestArgumentCaptor = ArgumentCaptor.forClass(AssumeRoleRequest.class);
         Mockito.verify(securityTokenService, Mockito.times(1)).assumeRole(requestArgumentCaptor.capture());
@@ -112,7 +111,7 @@ public class StsHelperTest {
         Mockito.when(mockAssumeRoleResult.getCredentials()).thenReturn(mockCredentials);
         Mockito.when(securityTokenService.assumeRole(Mockito.any())).thenReturn(mockAssumeRoleResult);
 
-        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, user, expirationDate);
+        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, expirationDate);
         ArgumentCaptor<AssumeRoleRequest> requestArgumentCaptor = ArgumentCaptor.forClass(AssumeRoleRequest.class);
         Mockito.verify(securityTokenService, Mockito.times(1)).assumeRole(requestArgumentCaptor.capture());
         AssumeRoleRequest assumeRoleRequest = requestArgumentCaptor.getValue();

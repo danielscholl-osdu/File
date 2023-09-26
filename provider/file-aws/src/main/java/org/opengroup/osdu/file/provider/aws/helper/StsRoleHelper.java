@@ -91,7 +91,7 @@ public class StsRoleHelper {
     private StsIamInfo getStsIamInfoFromSSM(String ssmPath) {
         List<Parameter> tableParams = ssmManagerUtil.getSsmParamsUnderPath(ssmPath);
 
-        if (tableParams.size() <= 0) {
+        if (tableParams.isEmpty()) {
             throw new NotFoundException("STS IAM role info not found in SSM");
         }
 

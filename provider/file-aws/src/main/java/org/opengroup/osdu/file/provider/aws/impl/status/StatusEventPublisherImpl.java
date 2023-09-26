@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
-import org.opengroup.osdu.core.aws.ssm.SSMConfig;
 import org.opengroup.osdu.core.common.exception.CoreException;
 import org.opengroup.osdu.core.common.model.status.Message;
 import org.opengroup.osdu.core.common.status.IEventPublisher;
@@ -48,7 +47,7 @@ public class StatusEventPublisherImpl implements IEventPublisher {
         AmazonSNSConfig snsConfig = new AmazonSNSConfig(providerConfigurationBag.amazonSnsRegion);
         snsClient = snsConfig.AmazonSNS();
         K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
-        amazonSnsTopic = Objects.requireNonNull(provider.getParameterAsStringOrDefault("FILE_SNS_ARN", null)).toString();
+        amazonSnsTopic = Objects.requireNonNull(provider.getParameterAsStringOrDefault("FILE_SNS_ARN", null));
     }
 
     @Override

@@ -26,14 +26,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class S3ConnectionInfoHelper {
 
-    private final IS3ClientConnectionInfoHelper s3ConnectionInfoHelper;
+    private final IS3ClientConnectionInfoHelper iHelper;
     private final S3ConnectionInfoCache s3ConnectionInfoCache;
     private final PartitionServiceClientWithCache partitionServiceClient;
 
     public S3ConnectionInfoHelper(IS3ClientConnectionInfoHelper s3ConnectionInfoHelper,
                                   S3ConnectionInfoCache s3ConnectionInfoCache,
                                   @Lazy PartitionServiceClientWithCache partitionServiceClient) {
-        this.s3ConnectionInfoHelper = s3ConnectionInfoHelper;
+        this.iHelper = s3ConnectionInfoHelper;
         this.s3ConnectionInfoCache = s3ConnectionInfoCache;
         this.partitionServiceClient = partitionServiceClient;
     }
@@ -58,7 +58,7 @@ public class S3ConnectionInfoHelper {
             }
 
             String tenantSSMPrefix = partitionInfo.getTenantSSMPrefix();
-            s3ClientConnectionInfo = s3ConnectionInfoHelper.getS3ConnectionInfoFromSSM(tenantSSMPrefix, bucketParameterRelativePath);
+            s3ClientConnectionInfo = iHelper.getS3ConnectionInfoFromSSM(tenantSSMPrefix, bucketParameterRelativePath);
             s3ConnectionInfoCache.put(dataPartitionAndBucketParameterCombo, s3ClientConnectionInfo);
         }
 

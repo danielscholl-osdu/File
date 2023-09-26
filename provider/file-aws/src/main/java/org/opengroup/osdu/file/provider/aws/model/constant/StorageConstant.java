@@ -16,6 +16,10 @@ package org.opengroup.osdu.file.provider.aws.model.constant;
 
 public final class StorageConstant {
 
+    private StorageConstant() {
+        //private constructor
+    }
+
     // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
     public static final int AWS_MAX_KEY_LENGTH = 1_024;
     

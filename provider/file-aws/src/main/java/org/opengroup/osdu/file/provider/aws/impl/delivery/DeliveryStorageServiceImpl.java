@@ -27,13 +27,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DeliveryStorageServiceImpl implements IDeliveryStorageService {
 
+    private static final String UNSUPPORTED_OPERATION_MSG = "Unsupported Operation Exception";
+
     @Override
     public SignedUrl createSignedUrl(String srn, String unsignedUrl, String authorizationToken) {
-        throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unsupported Operation Exception", "Unsupported Operation Exception");
+        throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, UNSUPPORTED_OPERATION_MSG, UNSUPPORTED_OPERATION_MSG);
     }
 
     @Override
     public SignedUrl createSignedUrl(String unsignedUrl, String authorizationToken) {
-        throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unsupported Operation Exception", "Unsupported Operation Exception");
+        throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, UNSUPPORTED_OPERATION_MSG, UNSUPPORTED_OPERATION_MSG);
     }
 }
