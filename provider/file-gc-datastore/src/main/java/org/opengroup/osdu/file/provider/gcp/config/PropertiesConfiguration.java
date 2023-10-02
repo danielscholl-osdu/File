@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Import;
 @Getter
 @ConfigurationProperties(prefix = "gcp.storage")
 @Import(SharedAutoConfiguration.class)
+@Deprecated
 public class PropertiesConfiguration {
 
   private String stagingArea;

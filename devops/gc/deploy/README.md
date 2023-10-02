@@ -43,7 +43,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **data.partitionHost** | Partition service host address | string | "http://partition" | yes
 **data.storageHost** | Storage service host address | string | "http://storage" | yes
 **data.springProfilesActive** | Spring profile that activate default configuration for Google Cloud environment | string | "gcp" | yes
-**data.fileLocationUserId** | file service location user ID | string | - | yes
 
 ### Deployment variables
 

@@ -66,6 +66,16 @@ public interface IStorageService {
     return null;
   }
 
+  /**
+   * Generates Signed URL for File Upload Operations in DMS API Context.
+   * @param datasetId Dataset ID
+   * @param partitionID partition ID
+   * @param signedUrlParameters Signed URL Parameters, wrapping an optional expiry time
+   * @return info about object URI, upload signed URL etc.
+   */
+  default StorageInstructionsResponse createStorageInstructions(String datasetId, String partitionID, SignedUrlParameters signedUrlParameters) {
+    return createStorageInstructions(datasetId, partitionID);
+  }
   //stub Implementation
   /**
    * Gets a signed url from an unsigned url
@@ -97,5 +107,16 @@ public interface IStorageService {
    */
   default Boolean revokeUrl(Map<String, String> revokeURLRequest) {
     return false;
+  }
+
+  /**
+   * Generates Signed URL for File Download Operations in DMS API Context.
+   * @param fileRetrievalData List of Unsigned URLs for which Signed URL / Temporary credentials should be generated.
+   * @param signedUrlParameters signedUrlParameters wrapping an expiry time for the signed URL
+    (optional parameter)
+   * @return info about object URI, download signed URL etc.
+   */
+  default RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalData, SignedUrlParameters signedUrlParameters) {
+    return createRetrievalInstructions(fileRetrievalData);
   }
 }

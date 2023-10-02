@@ -1,5 +1,6 @@
 /*
- * Copyright 2020  Microsoft Corporation
+ * Copyright 2020-2023 Google LLC
+ * Copyright 2020-2023 EPAM Systems, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.file.provider.azure.model;
+package org.opengroup.osdu.file.provider.gcp.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AzureFileCollectionDmsDownloadLocation {
-  private String signedUrl;
-  private String fileCollectionSource;
-  private String createdBy;
-  private String expiryTime;
+@Setter
+@Getter
+@Configuration
+@ConfigurationProperties(prefix = "partition.properties")
+public class PartitionPropertyNames {
+
+  private String stagingLocationName;
+  private String persistentLocationName;
 }

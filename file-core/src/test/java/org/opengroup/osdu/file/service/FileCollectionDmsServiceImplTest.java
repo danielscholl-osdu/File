@@ -32,6 +32,7 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.file.model.FileRetrievalData;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.filecollection.DatasetCopyOperation;
 import org.opengroup.osdu.file.model.filecollection.DatasetProperties;
 import org.opengroup.osdu.file.provider.interfaces.ICloudStorageOperation;
@@ -141,7 +142,7 @@ public class FileCollectionDmsServiceImplTest {
         .unsignedUrl(TEST_UNSIGNED_URL)
         .build());
 
-    given(storageService.createRetrievalInstructions(testRetrieveData)).willReturn(actualResponse);
+    given(storageService.createRetrievalInstructions(testRetrieveData, new SignedUrlParameters())).willReturn(actualResponse);
 
     // call
     RetrievalInstructionsResponse expectedResponse = fileCollectionDmsService.getRetrievalInstructions(testRequest);

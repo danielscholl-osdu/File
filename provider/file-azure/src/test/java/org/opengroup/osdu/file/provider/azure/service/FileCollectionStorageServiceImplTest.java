@@ -54,9 +54,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class FileCollectionStorageServiceImplTest {
@@ -100,6 +98,18 @@ public class FileCollectionStorageServiceImplTest {
 
     StorageInstructionsResponse response = fileCollectionStorageServiceImpl.
         createStorageInstructions(TestUtils.DIRECTORY_NAME, TestUtils.PARTITION);
+
+    then(response.getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
+    then(response.getStorageLocation().get("signedUrl")).isEqualTo(signedObject.getUrl().toString());
+
+    verifyMockForSignedUrl();
+  }
+  @Test
+  public void shouldCreateStorageInstructionsExpiryParams() {
+    SignedObject signedObject = getSignedObject();
+    prepareMockForSignedUrl(signedObject);
+    StorageInstructionsResponse response = fileCollectionStorageServiceImpl.
+        createStorageInstructions(TestUtils.DIRECTORY_NAME, TestUtils.PARTITION, new SignedUrlParameters("5D"));
 
     then(response.getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
     then(response.getStorageLocation().get("signedUrl")).isEqualTo(signedObject.getUrl().toString());
@@ -172,14 +182,14 @@ public class FileCollectionStorageServiceImplTest {
   private void prepareMockForSignedUrl(SignedObject signedObject) {
     when(dataLakeConfig.getStagingFileSystem()).thenReturn(TestUtils.STAGING_FILE_SYSTEM_NAME);
     when(fileLocationProperties.getUserId()).thenReturn(OSDU_USER);
-    when(storageRepository.createSignedObject(eq(TestUtils.STAGING_FILE_SYSTEM_NAME), anyString()))
+    when(storageRepository.createSignedObjectBasedOnParams(eq(TestUtils.STAGING_FILE_SYSTEM_NAME), anyString(), any()))
         .thenReturn(signedObject);
   }
 
   private void verifyMockForSignedUrl() {
     verify(dataLakeConfig).getStagingFileSystem();
     verify(fileLocationProperties).getUserId();
-    verify(storageRepository).createSignedObject(eq(TestUtils.STAGING_FILE_SYSTEM_NAME), anyString());
+    verify(storageRepository).createSignedObjectBasedOnParams(eq(TestUtils.STAGING_FILE_SYSTEM_NAME), anyString(), any());
   }
 
   private void prepareCreateSignedUrlFileLocationMocks(URL mockSignedUrl) {

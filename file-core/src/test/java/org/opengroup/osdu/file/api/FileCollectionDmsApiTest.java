@@ -25,6 +25,7 @@ import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsRequest;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
+import org.opengroup.osdu.core.common.model.file.LocationRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +36,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(SpringExtension.class)
 public class FileCollectionDmsApiTest {
@@ -63,7 +65,7 @@ public class FileCollectionDmsApiTest {
         .thenReturn(mockStorageInstructionsResp);
 
     ResponseEntity<StorageInstructionsResponse> storageInstructionsResponse
-        = fileCollectionDmsApi.getStorageInstructions();
+        = fileCollectionDmsApi.getStorageInstructions(null);
 
     assertEquals(HttpStatus.OK, storageInstructionsResponse.getStatusCode());
   }
@@ -74,7 +76,7 @@ public class FileCollectionDmsApiTest {
         .thenReturn(mockRetrievalInstructionsResp);
 
     ResponseEntity<RetrievalInstructionsResponse> retrievalInstructionsResponse
-        = fileCollectionDmsApi.getRetrievalInstructions(mockRetrievalInstructionsRequest);
+        = fileCollectionDmsApi.getRetrievalInstructions(mockRetrievalInstructionsRequest, null);
 
     assertEquals(HttpStatus.OK, retrievalInstructionsResponse.getStatusCode());
   }
@@ -94,4 +96,26 @@ public class FileCollectionDmsApiTest {
 
   }
 
+  @Test
+  public void testGetStorageInstructionsWithExpiryTime() {
+    when(fileCollectionDmsService.getStorageInstructions("5D"))
+        .thenReturn(mockStorageInstructionsResp);
+
+    ResponseEntity<StorageInstructionsResponse> storageInstructionsResponse
+        = fileCollectionDmsApi.getStorageInstructions("5D");
+
+    assertEquals(HttpStatus.OK, storageInstructionsResponse.getStatusCode());
+    verify(fileCollectionDmsService, times(1)).getStorageInstructions("5D");
+  }
+  @Test
+  public void testGetRetrievalInstructionsWithExpiryTime() {
+    when(fileCollectionDmsService.getRetrievalInstructions(mockRetrievalInstructionsRequest, "5D"))
+        .thenReturn(mockRetrievalInstructionsResp);
+
+    ResponseEntity<RetrievalInstructionsResponse> retrievalInstructionsResponse
+        = fileCollectionDmsApi.getRetrievalInstructions(mockRetrievalInstructionsRequest, "5D");
+
+    assertEquals(HttpStatus.OK, retrievalInstructionsResponse.getStatusCode());
+    verify(fileCollectionDmsService, times(1)).getRetrievalInstructions(mockRetrievalInstructionsRequest,"5D");
+  }
 }

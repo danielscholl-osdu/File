@@ -27,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
+import org.opengroup.osdu.core.gcp.obm.driver.EnvironmentResolver;
 import org.opengroup.osdu.core.gcp.obm.model.ObmHttpMethod;
 import org.opengroup.osdu.core.gcp.obm.model.ObmSignedUrlParams;
 import org.opengroup.osdu.core.gcp.obm.model.ObmSignedUrlParams.ObmSignedUrlParamsBuilder;
 import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
-import org.opengroup.osdu.core.gcp.obm.driver.EnvironmentResolver;
 import org.opengroup.osdu.file.provider.interfaces.IStorageRepository;
 import org.opengroup.osdu.file.util.ExpiryTimeUtil;
 import org.springframework.stereotype.Component;
@@ -89,8 +89,10 @@ public class ObmStorageRepository implements IStorageRepository {
     String contentType = signedUrlParameters.getContentType();
 
     if (Objects.nonNull(fileName) && !fileName.isEmpty()) {
+      String encompassFilename = encompassFilename(fileName);
       obmSignedUrlParamsBuilder.queryParams(
-          Collections.singletonMap(CONTENT_DISPOSITION_QUERY_PARAM, ATTACHMENT_FILENAME + fileName));
+          Collections.singletonMap(CONTENT_DISPOSITION_QUERY_PARAM,
+              ATTACHMENT_FILENAME + encompassFilename));
     }
 
     if (Objects.nonNull(contentType) && !contentType.isEmpty()) {
@@ -117,5 +119,18 @@ public class ObmStorageRepository implements IStorageRepository {
       transferProtocol = transferProtocol + "/";
     }
     return URI.create(format("%s%s/%s", transferProtocol, bucketName, filePath));
+  }
+
+  /**
+   * Because of the varied approaches to URL-encoded entities in browsers,
+   * we need to account for the file names that will be used later in the Blob Storage response's Content-Disposition header.
+   * For instance, Firefox will replace '%2C' in 'testing%2Ccopy.txt' with its ASCII representation,
+   * which is ','; however, Chrome does not, leading to the browser assigning the wrong name to the downloaded file.
+   * @param filepath will be encompassed in quotes
+   * @return "filepath"
+   *
+   */
+  private String encompassFilename(String filepath) {
+    return '"' + filepath + '"';
   }
 }

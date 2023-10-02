@@ -1,80 +1,114 @@
 # Service Configuration for Baremetal
 
-## Environment variables
+## Table of Contents <a name="TOC"></a>
 
-### Must have
+* [Configuration structure](#configuration-structure)
+* [Service level config](#service-level-config)
+  * [ENV variables to override service level defaults](#env-variables-to-override-service-level-defaults)
+  * [ENV variables to override environment level defaults](#env-variables-to-override-environment-level-defaults)
+  * [Service level secret ENV variables](#service-level-secret-env-variables)
+* [Partition level config](#partition-level-config)
+  * [Prefixes](#prefixes)
+  * [Non-sensitive partition properties](#non-sensitive-partition-properties)
+  * [Sensitive partition properties](#sensitive-partition-properties)
+  * [Partition level secret ENV variables](#partition-level-secret-env-variables)
+* [Infrastructure config](#infrastructure-config)
+  * [Postgres config](#postgres-config)
+  * [Minio config](#minio-config)
+  * [RabbitMq config](#rabbitmq-config)
+* [Testing config](#testing-config)
+* [Local config](#local-config)
+* [Config examples](#config-examples)
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `SPRING_PROFILES_ACTIVE` | ex `anthos` | Spring profile that activate default configuration for Google Cloud environment | false | - |
-| `OPENID_PROVIDER_CLIENT_ID` | `*****` |  Client id that represents this service and serves to request tokens, example `workload-identity-legal` |yes| - |
-| `OPENID_PROVIDER_CLIENT_SECRET` | `*****` | This client secret that serves to request tokens| yes | - |
-| `OPENID_PROVIDER_URL` | `https://keycloack.com/auth/realms/master` | URL of OpenID Connect provider, it will be used as `<OpenID URL> + /.well-known/openid-configuration` to auto configure endpoint for token request  | no | - |
-| `<POSTGRES_PASSWORD_ENV_VARIABLE_NAME>` | ex `POSTGRES_PASS_OSDU` | Postgres password env name, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of File service | yes | - |
-| `<MINIO_SECRETKEY_ENV_VARIABLE_NAME>` | ex `MINIO_SECRET_OSDU` | Minio secret env name, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of File service| yes | - |
-| `<AMQP_PASSWORD_ENV_VARIABLE_NAME>` | ex `AMQP_PASS_OSDU` | Amqp password env name, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of File service | yes | - |
-| `<AMQP_ADMIN_PASSWORD_ENV_VARIABLE_NAME>` | ex `AMQP_ADMIN_PASS_OSDU` | Amqp admin password env name, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of File service | yes | - |
+## Configuration structure
+1. Service level config
+   - Spring config `application.properties` - base layer, service level defaults
+   - Spring profiles `application-{environment}.properties` - environment level defaults, overrides `application.properties`
+   - ENV variables - overrides service and environment level defaults
+   - Secret ENV variables - stores secret values in runtime only
+2. Partition level config
+   - Non-sensitive partition properties
+   - Sensitive partition properties referencing to Secret ENV variables 
+   - Secret ENV variables - stores secret values in runtime only
+3. Infrastructure config
+   - Service account entitlements groups
+   - Service account RBAC permissions
+   - Third party services config
+4. Testing config
+   - Testing accounts
+   - ENV variables
+5. Local config
+   - ENV variables
 
-### Common-properties-for-all-environments
+***
 
-Define the following environment variables.
-Most of them are common to all hosting environments, but there are properties that are only necessary when running in Google Cloud.
+## Service level config
 
-In order to run the service locally, you will need to have the following environment variables defined.
+### ENV variables to override service level defaults
+| name                                            | value                           | description                                                                                                                  | sensitive? | source                              |
+|-------------------------------------------------|---------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------|
+| `LOG_LEVEL`                                     | `INFO`                          | Logging level                                                                                                                | no         | -                                   |
+| `LOG_PREFIX`                                    | `file`                          | Logging prefix                                                                                                               | no         | -                                   |
+| `GCP_STORAGE_STAGING_AREA`                      | ex `staging-area`               | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`)                                   | no         | output of infrastructure deployment |
+| `GCP_STORAGE_PERSISTENT_AREA`                   | ex `persistent-area`            | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area`                              | no         | output of infrastructure deployment |
+| `PARTITION_PROPERTIES_STAGING_LOCATION_NAME`    | ex `file.staging.location`      | name of partition property for staging location value                                                                        | yes        | -                                   |
+| `PARTITION_PROPERTIES_PERSISTENT_LOCATION_NAME` | ex `file.persistent.location`   | name of partition property for persistent location value                                                                     | yes        | -                                   |
+| `GCP_STATUS_CHANGED_MESSAGING_ENABLED`          | `true` or `false`               | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs | no         | -                                   |
+| `GCP_STATUS_CHANGED_TOPIC`                      | ex `status-changed`             | PubSub topic for status publishing                                                                                           | no         | output of infrastructure deployment |
+| `GCP_FILE_LOCATION_KIND`                        | by default `file-locations-osm` | Kind for Datastore or Table for postgres                                                                                     | no         | -                                   |
 
-**Required to run application**
+### ENV variables to override environment level defaults
+These variables define service behavior, and are used to switch between `reference` or `Google Cloud` environments, 
+their overriding and usage in mixed mode was not tested. Usage of spring profiles is preferred.
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `LOG_PREFIX` | `file` | Logging prefix | no | - |
-| `ENTITLEMENTS_HOST` | `http://entitlements` | Entitlements service host address | no | output of infrastructure deployment |
-| `STORAGE_HOST` | ex `http://storage` / Storage service host address | no | output of infrastructure deployment |
-| `GCP_STORAGE_STAGING_AREA` | ex `staging-area` | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`) |no | output of infrastructure deployment |
-| `GCP_STORAGE_PERSISTENT_AREA` | ex `persistent-area` | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area` | no | output of infrastructure deployment |
-| `PARTITION_HOST` | ex `http://partition` | Partition service host address | no | - |
-| `GCP_STATUS_CHANGED_MESSAGING_ENABLED` | `true` or `false` | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs| no | - |
-| `GCP_STATUS_CHANGED_TOPIC` | ex `status-changed` | PubSub topic for status publishing | no | output of infrastructure deployment |
-| `GCP_FILE_LOCATION_KIND` | by default `file-locations-osm` | Kind for Datastore or Table for postgres  | no | - |
+| name                     | value                 | required | description                                                                                                               | sensitive? | source                              |
+|--------------------------|-----------------------|----------|---------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------|
+| `SPRING_PROFILES_ACTIVE` | ex `anthos`           | YES      | Spring profile that activate default configuration for Google Cloud environment                                           | no         | -                                   |
+| `OBMDRIVER`              | `minio`               |          | Obm driver mode that defines which object storage will be used                                                            | no         | -                                   |
+| `OQMDRIVER`              | `rabbitmq`            |          | Oqm driver mode that defines which message broker will be used                                                            | no         | -                                   |
+| `OSMDRIVER`              | `postgres`            |          | Osm driver mode that defines which KV storage will be used                                                                | no         | -                                   |
+| `PARTITION_AUTH_ENABLED` | `true` or `false`     |          | Disable or enable auth token provisioning for requests to Partition service                                               | no         | -                                   |
+| `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID`     |          | Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no         | -                                   |
+| `ENTITLEMENTS_HOST`      | `http://entitlements` |          | Entitlements service host address                                                                                         | no         | output of infrastructure deployment |
+| `STORAGE_HOST`           | `http://storage`      |          | Storage service host address                                                                                              | no         | output of infrastructure deployment |        
+| `PARTITION_HOST`         | `http://partition`    |          | Partition service host address                                                                                            | no         | output of infrastructure deployment |
 
-These variables define service behavior, and are used to switch between `reference` or `Google Cloud` environments, their overriding and usage in mixed mode was not tested. Usage of spring profiles is preferred.
+### Service level secret ENV variables
+| name                            | value                                      | description                                                                                                                                        | sensitive? | source |
+|---------------------------------|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------|
+| `OPENID_PROVIDER_CLIENT_ID`     | `*****`                                    | Client id that represents this service and serves to request tokens, example `workload-identity-legal`                                             | yes        | -      |
+| `OPENID_PROVIDER_CLIENT_SECRET` | `*****`                                    | This client secret that serves to request tokens                                                                                                   | yes        | -      |
+| `OPENID_PROVIDER_URL`           | `https://keycloack.com/auth/realms/master` | URL of OpenID Connect provider, it will be used as `<OpenID URL> + /.well-known/openid-configuration` to auto configure endpoint for token request | no         | -      |
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `OBMDRIVER` | `minio` | Obm driver mode that defines which object storage will be used | no | - |
-| `OQMDRIVER` | `rabbitmq` | Oqm driver mode that defines which message broker will be used | no | - |
-| `OSMDRIVER` | `postgres` | Osm driver mode that defines which KV storage will be used | no | - |
-| `PARTITION_AUTH_ENABLED` | ex `true` or `false` | Disable or enable auth token provisioning for requests to Partition service | no | - |
-| `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID` |Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no | - |
+## Partition level config
 
-## Testing
+### Prefixes
+**prefix:** `osm.postgres`
 
-### Running E2E Tests
+It can be overridden by:
 
-**Required to run integration tests**
+- through the Spring Boot property `osm.postgres.partition-properties-prefix`
+- environment variable `OSM_POSTGRES_PARTITION_PROPERTIES_PREFIX`
 
-| name | value | description | sensitive? | source |
-| ---  | ---   | ---         | ---        | ---    |
-| `FILE_SERVICE_HOST` | ex `http://localhost:8080` | File service url | no | - |
-| `ACL_OWNERS` | `data.default.owners` | Acl owners group prefix | no | - |
-| `ACL_VIEWERS` | `data.default.viewers` | Acl viewers group prefix | no | - |
-| `DOMAIN` | ex `osdu-gc.go3-nrg.projects.epam.com` | - | no | - |
-| `TENANT_NAME` | `opendes` | Tenant name | no | - |
-| `SHARED_TENANT` | `opendes` | Shared tenant id | no | - |
-| `PRIVATE_TENANT1` | `opendes` | Private tenant id | no | - |
-| `PRIVATE_TENANT2` | `opendes` | Private tenant id | no | - |
-| `LEGAL_TAG` | ex `opendes-storage-tag` | Valid legal tag name| - | - |
-| `TEST_OPENID_PROVIDER_CLIENT_ID` | `********` | Client Id for `$INTEGRATION_TESTER` | yes | -- |
-| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********` |  | Client secret for `$INTEGRATION_TESTER` | -- |
-| `TEST_OPENID_PROVIDER_URL` | ex `https://keycloak.com/auth/realms/osdu` | OpenID provider url | yes | -- |
+**prefix:** `obm.minio`
+It can be overridden by:
 
-**Entitlements configuration for integration accounts**
+- through the Spring Boot property `osm.postgres.partition-properties-prefix`
+- environment variable `OBM_MINIO_PARTITION_PROPERTIES_PREFIX`
 
-| INTEGRATION_TESTER |
-| ---  |
-| users<br/>service.file.editors<br/>service.file.viewers |
+**prefix:** `oqm.rabbitmq`
+It can be overridden by:
 
-### Properties set in Partition service
+- through the Spring Boot property `oqm.rabbitmq.partition-properties-prefix`
+- environment variable `OQM_RABBITMQ_PARTITION_PROPERTIES_PREFIX`
 
+### Non-sensitive partition properties
+| name                                  | value                         | description                                | sensitive? | source                                          |
+|---------------------------------------|-------------------------------|--------------------------------------------|------------|-------------------------------------------------|
+| `<STAGING_LOCATION_PROPERTY_NAME>`    | ex `project.partition.bucket` | staging location address in OBM storage    | no         | `PARTITION_PROPERTIES_STAGING_LOCATION_NAME`    |
+| `<PERSISTENT_LOCATION_PROPERTY_NAME>` | ex `project.partition.bucket` | persistent location address in OBM storage | no         | `PARTITION_PROPERTIES_PERSISTENT_LOCATION_NAME` |
+
+### Sensitive partition properties
 Note that properties can be set in Partition as `sensitive` in that case in property `value` should be present **not value itself**, but **ENV variable name**.
 This variable should be present in environment of service that need that variable.
 
@@ -91,48 +125,48 @@ Example:
     }
 ```
 
-### For OSM Postgres
+| name                               | description                                                                                                                           |
+|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `osm.postgres.datasource.url`      | Postgres url                                                                                                                          |
+| `osm.postgres.datasource.username` | Postgres username                                                                                                                     |
+| `osm.postgres.datasource.password` | Postgres password                                                                                                                     |
+| `oqm.rabbitmq.amqp.password`       | Amqp username                                                                                                                         |
+| `oqm.rabbitmq.amqp.password`       | Amqp password                                                                                                                         |
+| `oqm.rabbitmq.admin.username`      | Amqp admin username                                                                                                                   |
+| `oqm.rabbitmq.admin.password`      | Amqp admin password                                                                                                                   |
+| `obm.minio.endpoint`               | server URL                                                                                                                            |
+| `obm.minio.accessKey`              | credentials access key                                                                                                                |
+| `obm.minio.secretKey`              | credentials secret key                                                                                                                |
+| `obm.minio.ignoreCertCheck`        | optional, default value is 'false'. When set to 'true' disables certificate check for MinIO client                                    |
+| `obm.minio.external.endpoint`      | optional, used when service should use internal endpoint(in cluster) but must provide credentials for end users for external endpoint |
+| `oqm.rabbitmq.amqp.host`           | messaging hostname or IP                                                                                                              |
+| `oqm.rabbitmq.amqp.port`           | - port                                                                                                                                |
+| `oqm.rabbitmq.amqp.path`           | - path                                                                                                                                |
+| `oqm.rabbitmq.amqp.username`       | - username                                                                                                                            |
+| `oqm.rabbitmq.amqp.password`       | - password                                                                                                                            |
+| `oqm.rabbitmq.admin.schema`        | admin host schema                                                                                                                     |
+| `oqm.rabbitmq.admin.host`          | - host name                                                                                                                           |
+| `oqm.rabbitmq.admin.port`          | - port                                                                                                                                |
+| `oqm.rabbitmq.admin.path`          | - path                                                                                                                                |
+| `oqm.rabbitmq.admin.username`      | - username                                                                                                                            |
+| `oqm.rabbitmq.admin.password`      | - password                                                                                                                            |
 
-**prefix:** `osm.postgres`
+### Partition level secret ENV variables
+| name                                          | value                        | description                         |
+|-----------------------------------------------|------------------------------|-------------------------------------|
+| `<POSTGRES_URL_ENV_VARIABLE_NAME>`            | ex `POSTGRES_URL`            | Postgres url sensitive value        |
+| `<POSTGRES_USERNAME_ENV_VARIABLE_NAME>`       | ex `POSTGRES_USERNAME`       | Postgres username sensitive value   |
+| `<POSTGRES_PASSWORD_ENV_VARIABLE_NAME>`       | ex `POSTGRES_PASSWORD`       | Postgres password sensitive value   |
+| `<MINIO_ACCESSKEY_ENV_VARIABLE_NAME>`         | ex `MINIO_ACCESS_KEY`        | Minio access key sensitive value    |
+| `<MINIO_SECRETKEY_ENV_VARIABLE_NAME>`         | ex `MINIO_SECRET_KEY`        | Minio secret sensitive value        |
+| `<RABBITMQ_USERNAME_ENV_VARIABLE_NAME>`       | ex `RABBITMQ_USERNAME`       | Amqp username sensitive value       |
+| `<RABBITMQ_PASSWORD_ENV_VARIABLE_NAME>`       | ex `RABBITMQ_PASSWORD`       | Amqp password sensitive value       |
+| `<RABBITMQ_ADMIN_USERNAME_ENV_VARIABLE_NAME>` | ex `RABBITMQ_ADMIN_USERNAME` | Amqp admin username sensitive value |
+| `<RABBITMQ_ADMIN_PASSWORD_ENV_VARIABLE_NAME>` | ex `RABBITMQ_ADMIN_PASSWORD` | Amqp admin password sensitive value |
 
-It can be overridden by:
+## Infrastructure config
 
-- through the Spring Boot property `osm.postgres.partition-properties-prefix`
-- environment variable `OSM_POSTGRES_PARTITION_PROPERTIES_PREFIX`
-
-**PropertySet:**
-
-| Property | Description |
-| --- | --- |
-| osm.postgres.datasource.url | server URL |
-| osm.postgres.datasource.username | username |
-| osm.postgres.datasource.password | password |
-
-<details><summary>Example of a definition for a single tenant</summary>
-
-```
-
-curl -L -X PATCH 'http://partition.com/api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
-  "properties": {
-    "osm.postgres.datasource.url": {
-      "sensitive": false,
-      "value": "jdbc:postgresql://127.0.0.1:5432/postgres"
-    },
-    "osm.postgres.datasource.username": {
-      "sensitive": false,
-      "value": "postgres"
-    },
-    "osm.postgres.datasource.password": {
-      "sensitive": true,
-     "value": "<POSTGRES_PASSWORD_ENV_VARIABLE_NAME>" <- (Not actual value, just name of env variable)
-    }
-  }
-}'
-
-```
-
-</details>
-
+### Postgres config
 **database structure**
 OSM works with data logically organized as "partition"->"namespace"->"kind"->"record"->"columns".
 The above sequence describes how it is named in Google Datastore, where "partition" maps to "Google Cloud"
@@ -185,54 +219,7 @@ CREATE TABLE osdu."file_locations_osm"(
 CREATE INDEX file_locations_osm_datagin ON osdu."file_locations_osm" USING GIN (data);
 ```
 
-### For OBM MinIO
-
-**prefix:** `obm.minio`
-It can be overridden by:
-
-- through the Spring Boot property `osm.postgres.partition-properties-prefix`
-- environment variable `OBM_MINIO_PARTITION_PROPERTIES_PREFIX`
-
-**PropertySet:**
-
-| Property                    | Description                                                                                                                           |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| obm.minio.endpoint          | server URL                                                                                                                            |
-| obm.minio.accessKey         | credentials access key                                                                                                                |
-| obm.minio.secretKey         | credentials secret key                                                                                                                |
-| obm.minio.ignoreCertCheck   | optional, default value is 'false'. When set to 'true' disables certificate check for MinIO client                                    |
-| obm.minio.external.endpoint | optional, used when service should use internal endpoint(in cluster) but must provide credentials for end users for external endpoint |
-
-<details><summary>Example of a definition for a single tenant</summary>
-
-```
-curl -L -X PATCH 'https:///api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
-  "properties": {
-    "obm.minio.endpoint": {
-      "sensitive": false,
-      "value": "http://localhost:9000"
-    },
-    "obm.minio.accessKey": {
-      "sensitive": false,
-      "value": "minioadmin"
-    },
-    "obm.minio.secretKey": {
-      "sensitive": true,
-      "value": "NAME_ENV_VARIABLE_WHICH_WILL_BE_IN_SERVICE_ENV"
-    }
-  }
-}'
-```
-
-</details>
-
-### Object store configuration <a name="ObjectStoreConfig"></a>
-
-#### Used Technology
-
-MinIO (or any other supported by OBM)
-
-#### Per-tenant buckets configuration
+### Minio config
 
 These buckets must be defined in tenants’ dedicated object store servers. OBM connection properties of these servers (url, etc.) are defined as specific properties in tenants’ PartitionInfo registration objects at the Partition service as described in accordant sections of this document.
 
@@ -257,31 +244,102 @@ These buckets must be defined in tenants’ dedicated object store servers. OBM 
   </tr>
 </table>
 
-### For OQM RabbitMQ
+### RabbitMq config
 
-**prefix:** `oqm.rabbitmq`
+At RabbitMq should be created exchange with name:
+
+**name:** `status-changed`
+
 It can be overridden by:
 
-- through the Spring Boot property `oqm.rabbitmq.partition-properties-prefix`
-- environment variable `OQM_RABBITMQ_PARTITION_PROPERTIES_PREFIX``
+- through the Spring Boot property `gcp.status-changed.topicName`
+- environment variable `STATUS_CHANGED_TOPIC_NAME`
 
-**PropertySet** (for two types of connection: messaging and admin operations):
+ex.
+![Screenshot](./pics/rabbit.PNG)
 
-| Property | Description |
-| --- | --- |
-| oqm.rabbitmq.amqp.host | messaging hostname or IP |
-| oqm.rabbitmq.amqp.port | - port |
-| oqm.rabbitmq.amqp.path | - path |
-| oqm.rabbitmq.amqp.username | - username |
-| oqm.rabbitmq.amqp.password | - password |
-| oqm.rabbitmq.admin.schema | admin host schema |
-| oqm.rabbitmq.admin.host | - host name |
-| oqm.rabbitmq.admin.port | - port |
-| oqm.rabbitmq.admin.path | - path |
-| oqm.rabbitmq.admin.username | - username |
-| oqm.rabbitmq.admin.password | - password |
+## Testing config
 
-<details><summary>Example of a single tenant definition</summary>
+### Testing accounts Entitlements groups
+| INTEGRATION_TESTER |
+| ---  |
+| users<br/>service.file.editors<br/>service.file.viewers |
+
+### Testing ENV variables
+| name                                 | value                                      | description                         | sensitive?                              | source |
+|--------------------------------------|--------------------------------------------|-------------------------------------|-----------------------------------------|--------|
+| `FILE_SERVICE_HOST`                  | ex `http://localhost:8080`                 | File service url                    | no                                      | -      |
+| `ACL_OWNERS`                         | `data.default.owners`                      | Acl owners group prefix             | no                                      | -      |
+| `ACL_VIEWERS`                        | `data.default.viewers`                     | Acl viewers group prefix            | no                                      | -      |
+| `DOMAIN`                             | ex `osdu-gc.go3-nrg.projects.epam.com`     | -                                   | no                                      | -      |
+| `TENANT_NAME`                        | `opendes`                                  | Tenant name                         | no                                      | -      |
+| `SHARED_TENANT`                      | `opendes`                                  | Shared tenant id                    | no                                      | -      |
+| `PRIVATE_TENANT1`                    | `opendes`                                  | Private tenant id                   | no                                      | -      |
+| `PRIVATE_TENANT2`                    | `opendes`                                  | Private tenant id                   | no                                      | -      |
+| `LEGAL_TAG`                          | ex `opendes-storage-tag`                   | Valid legal tag name                | -                                       | -      |
+| `TEST_OPENID_PROVIDER_CLIENT_ID`     | `********`                                 | Client Id for `$INTEGRATION_TESTER` | yes                                     | --     |
+| `TEST_OPENID_PROVIDER_CLIENT_SECRET` | `********`                                 |                                     | Client secret for `$INTEGRATION_TESTER` | --     |
+| `TEST_OPENID_PROVIDER_URL`           | ex `https://keycloak.com/auth/realms/osdu` | OpenID provider url                 | yes                                     | --     |
+
+## Local config
+
+### Local ENV variables
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
+
+***
+
+### Config examples
+
+<details><summary>Example of a OSM configuration for a single tenant</summary>
+
+```
+
+curl -L -X PATCH 'http://partition.com/api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
+  "properties": {
+    "osm.postgres.datasource.url": {
+      "sensitive": false,
+      "value": "jdbc:postgresql://127.0.0.1:5432/postgres"
+    },
+    "osm.postgres.datasource.username": {
+      "sensitive": false,
+      "value": "postgres"
+    },
+    "osm.postgres.datasource.password": {
+      "sensitive": true,
+     "value": "<POSTGRES_PASSWORD_ENV_VARIABLE_NAME>" <- (Not actual value, just name of env variable)
+    }
+  }
+}'
+
+```
+
+</details>
+
+<details><summary>Example of a OBM config for a single tenant</summary>
+
+```
+curl -L -X PATCH 'https:///api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
+  "properties": {
+    "obm.minio.endpoint": {
+      "sensitive": false,
+      "value": "http://localhost:9000"
+    },
+    "obm.minio.accessKey": {
+      "sensitive": false,
+      "value": "minioadmin"
+    },
+    "obm.minio.secretKey": {
+      "sensitive": true,
+      "value": "NAME_ENV_VARIABLE_WHICH_WILL_BE_IN_SERVICE_ENV"
+    }
+  }
+}'
+```
+
+</details>
+
+<details><summary>Example of a OQM config for single tenant</summary>
 
 ```
 curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
@@ -337,16 +395,4 @@ curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 
 
 </details>
 
-#### Exchanges and queues configuration
-
-At RabbitMq should be created exchange with name:
-
-**name:** `status-changed`
-
-It can be overridden by:
-
-- through the Spring Boot property `gcp.status-changed.topicName`
-- environment variable `STATUS_CHANGED_TOPIC_NAME`
-
-ex.
-![Screenshot](./pics/rabbit.PNG)
+***

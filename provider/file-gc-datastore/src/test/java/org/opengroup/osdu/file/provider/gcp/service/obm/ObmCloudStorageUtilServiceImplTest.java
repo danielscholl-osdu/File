@@ -28,8 +28,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.obm.driver.EnvironmentResolver;
+import org.opengroup.osdu.file.provider.gcp.config.PartitionPropertyNames;
 import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.opengroup.osdu.file.provider.gcp.provider.service.ObmCloudStorageUtilServiceImpl;
 
@@ -67,6 +69,10 @@ class ObmCloudStorageUtilServiceImplTest {
   private EnvironmentResolver environmentResolver;
   @Mock
   private PropertiesConfiguration properties;
+  @Mock
+  private PartitionPropertyNames partitionPropertyNames;
+  @Mock
+  private PartitionPropertyResolver partitionPropertyResolver;
 
   @Test
   void getGSPersistentLocation() {

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.opengroup.osdu.file.constant.ErrorMessages;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -106,4 +107,8 @@ public class ExpiryTimeUtil {
     return Optional.empty();
   }
 
+  public String getExpiryTimeInString(SignedUrlParameters input){
+    OffsetDateTime expiryTime = getExpiryTimeInOffsetDateTime(input.getExpiryTime());
+    return  expiryTime.toLocalDateTime().toString();
+  }
 }

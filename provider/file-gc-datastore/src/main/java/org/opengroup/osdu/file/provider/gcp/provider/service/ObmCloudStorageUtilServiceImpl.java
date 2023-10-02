@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.partition.PartitionPropertyResolver;
 import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.obm.driver.Driver;
 import org.opengroup.osdu.core.gcp.obm.driver.EnvironmentResolver;
@@ -30,6 +31,7 @@ import org.opengroup.osdu.core.gcp.obm.persistence.ObmDestination;
 import org.opengroup.osdu.file.api.FileDmsApi;
 import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
+import org.opengroup.osdu.file.provider.gcp.config.PartitionPropertyNames;
 import org.opengroup.osdu.file.provider.gcp.config.PropertiesConfiguration;
 import org.opengroup.osdu.file.provider.interfaces.IStorageUtilService;
 import org.springframework.stereotype.Component;
@@ -49,19 +51,25 @@ public class ObmCloudStorageUtilServiceImpl implements IStorageUtilService {
   private final Driver obmStorageDriver;
   private final DpsHeaders dpsHeaders;
   private final PropertiesConfiguration properties;
+  private final PartitionPropertyNames partitionPropertyNames;
+  private final PartitionPropertyResolver partitionPropertyResolver;
 
   @Override
   public String getPersistentLocation(String relativePath, String partitionId) {
-    TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
-    return String.format("%s%s-%s-%s%s", environmentResolver.getTransferProtocol(partitionId),
-        tenantInfo.getProjectId(), tenantInfo.getName(), properties.getPersistentArea(), relativePath);
+    return partitionPropertyResolver.getOptionalPropertyValue(partitionPropertyNames.getPersistentLocationName(), partitionId).orElseGet(() -> {
+      TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
+      return String.format("%s%s-%s-%s%s", environmentResolver.getTransferProtocol(partitionId),
+          tenantInfo.getProjectId(), tenantInfo.getName(), properties.getPersistentArea(), relativePath);
+    });
   }
 
   @Override
   public String getStagingLocation(String relativePath, String partitionId) {
-    TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
-    return String.format("%s%s-%s-%s%s", environmentResolver.getTransferProtocol(partitionId),
-        tenantInfo.getProjectId(), tenantInfo.getName(), properties.getStagingArea(), relativePath);
+    return partitionPropertyResolver.getOptionalPropertyValue(partitionPropertyNames.getStagingLocationName(), partitionId).orElseGet(() -> {
+      TenantInfo tenantInfo = tenantFactory.getTenantInfo(partitionId);
+      return String.format("%s%s-%s-%s%s", environmentResolver.getTransferProtocol(partitionId),
+          tenantInfo.getProjectId(), tenantInfo.getName(), properties.getStagingArea(), relativePath);
+    });
   }
 
   @Override
