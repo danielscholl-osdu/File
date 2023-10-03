@@ -39,8 +39,8 @@
     <jackson-databind.version>2.14.2</jackson-databind.version>
     <spring-webmvc.version>5.3.26</spring-webmvc.version>
     <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
-    <osdu.corelibazure.version>0.17.0-rc14</osdu.corelibazure.version>
-    <osdu.oscorecommon.version>0.19.0-rc2</osdu.oscorecommon.version>
+    <osdu.corelibazure.version>0.23.2</osdu.corelibazure.version>
+    <osdu.oscorecommon.version>0.23.3</osdu.oscorecommon.version>
     <netty.version>4.1.98.Final</netty.version>
     <reactor-netty.version>1.1.10</reactor-netty.version>
     <reactor-core.version>3.4.19</reactor-core.version>
