@@ -44,6 +44,13 @@ spec:
             runAsNonRoot: true
           ports:
             - containerPort: 8080
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/file/v2/liveness_check
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 20
           resources:
             requests:
               cpu: {{ .Values.data.requestsCpu | quote }}
