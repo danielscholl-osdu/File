@@ -2,6 +2,7 @@ package org.opengroup.osdu.file.provider.azure.status;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opengroup.osdu.azure.publisherFacade.MessagePublisher;
 import org.opengroup.osdu.azure.publisherFacade.PublisherInfo;
@@ -50,7 +51,7 @@ public class StatusEventPublisher implements IEventPublisher {
                 .eventGridEventDataVersion(EVENT_DATA_VERSION)
                 .serviceBusTopicName(serviceBusConfig.getServiceBusTopic())
                 .build();
-            messagePublisher.publishMessage(dpsHeaders, publisherInfo);
+            messagePublisher.publishMessage(dpsHeaders, publisherInfo, Optional.empty());
         }
     }
 
