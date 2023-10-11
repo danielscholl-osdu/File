@@ -23,14 +23,9 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.delivery.SignedUrl;
 import org.opengroup.osdu.file.model.delivery.SrnFileData;
 import org.opengroup.osdu.file.model.delivery.UrlSigningResponse;
-import org.opengroup.osdu.file.FileApplication;
 import org.opengroup.osdu.file.provider.interfaces.delivery.IDeliveryStorageService;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -41,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // @RunWith(MockitoJUnitRunner.class)
 // @SpringBootTest(classes = { FileApplication.class })
