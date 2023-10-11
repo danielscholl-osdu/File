@@ -109,7 +109,6 @@ public class StorageUtilServiceImpl implements IStorageUtilService {
         final TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(
             unsignedLocation,
             stsRoleArn,
-            headers.getUserEmail(),
             getTemporaryCredentialsExpirationDate());
 
         if (!S3Helper.doesObjectExist(unsignedLocation, credentials)) {
@@ -118,16 +117,14 @@ public class StorageUtilServiceImpl implements IStorageUtilService {
                 "S3 object not found");
         }
 
-        S3Object s3Obj = S3Helper.getObject(unsignedLocation, credentials);
-        return s3Obj;
+        return S3Helper.getObject(unsignedLocation, credentials);
     }
 
     private Date getTemporaryCredentialsExpirationDate() {
         final ExpiryTimeUtil.RelativeTimeValue relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit(null);
         final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
         final Duration expirationDuration = Duration.ofMillis(expireInMillis);
-        final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
-        return expiration;
+        return ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
     }
 
     private String calculateChecksum(S3Object s3Obj) {
@@ -140,10 +137,7 @@ public class StorageUtilServiceImpl implements IStorageUtilService {
             }
             byte[] digest = md.digest();
             return new String(Hex.encodeHex(digest));
-        } catch (NoSuchAlgorithmException ex) {
-            String message = FileMetadataConstant.CHECKSUM_EXCEPTION + s3Obj.toString();
-            throw new AppException(org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR, message , ex.getMessage(), ex);
-        } catch (IOException ex) {
+        } catch (NoSuchAlgorithmException | IOException ex) {
             String message = FileMetadataConstant.CHECKSUM_EXCEPTION + s3Obj.toString();
             throw new AppException(org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR, message , ex.getMessage(), ex);
         }

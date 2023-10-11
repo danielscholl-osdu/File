@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
@@ -37,26 +37,20 @@ public class S3LocationTest {
     }
 
     @Test
-    public void shouldBeInValidStateWithValidS3UriButWithOutKeyPath() {
+    public void shouldBeInValid() {
+        // With Out KeyPath
         String uri = "s3://bucket";
         S3Location fileLocation = S3Location.of(uri);
-
         assertFalse(fileLocation.isValid());
-    }
 
-    @Test
-    public void shouldBeInValidStateWithEmptyString() {
-        String uri = "";
-        S3Location fileLocation = S3Location.of(uri);
-
+        // With Empty String
+        uri = "";
+        fileLocation = S3Location.of(uri);
         assertFalse(fileLocation.isValid());
-    }
 
-    @Test
-    public void shouldBeInValidStateWithNull() {
-        String uri = null;
-
-        S3Location fileLocation = S3Location.of(uri);
+        //State With Null
+        uri = null;
+        fileLocation = S3Location.of(uri);
         assertFalse(fileLocation.isValid());
     }
 

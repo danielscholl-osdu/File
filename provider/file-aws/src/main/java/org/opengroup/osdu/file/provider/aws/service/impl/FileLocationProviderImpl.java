@@ -135,9 +135,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        final TemporaryCredentials credentials = stsCredentialsHelper.getUploadCredentials(unsignedLocation, stsRoleArn,
-                                                                                           headers.getUserEmail(),
-                                                                                           expiration);
+        final TemporaryCredentials credentials = stsCredentialsHelper.getUploadCredentials(unsignedLocation, stsRoleArn, expiration);
 
         if (isCollection) {
             s3LocationBuilder.withFolder(resourceName);
@@ -163,30 +161,16 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         }
     }
 
-    private void validateInput(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration, TemporaryCredentials credentials) {
-        if (!unsignedLocation.isValid()) {
-            throw new AppException(HttpStatus.BAD_REQUEST.value(),
-                "Malformed URL",
-                "Unsigned URL invalid, needs to be full S3 path");
-        }
+    private void validateInput(boolean isCollection, S3Location unsignedLocation, TemporaryCredentials credentials) {
 
-        if ((isCollection && unsignedLocation.isFile()) || (!isCollection && unsignedLocation.isFolder())) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Invalid S3 Object Key",
-                String.format("Invalid S3 Object Key - %s", isCollection ? "Object Key should contain trailing '/'"
-                                                                : "Object Key cannot contain trailing '/'"));
-        }
+        validateURL(unsignedLocation);
+
+        validateObjectKey(isCollection, unsignedLocation);
         
         if (isCollection) {
-            if (!S3Helper.doesObjectCollectionExist(unsignedLocation, credentials)) {
-                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Invalid/Empty File Collection Path",
-                    "Invalid/Empty File Collection Path - File collection not found at specified S3 path or is empty");
-            }
-        } else if (!S3Helper.doesObjectExist(unsignedLocation, credentials)) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Invalid File Path",
-                "Invalid File Path - File not found at specified S3 path");
+            validateFileCollectionPath(unsignedLocation, credentials);
+        } else {
+            validateFilePath(unsignedLocation, credentials);
         }
     }
     
@@ -199,9 +183,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         }
 
         
-        return stsCredentialsHelper.getRetrievalCredentials(unsignedLocation, stsRoleArn,
-            headers.getUserEmail(),
-            expiration);
+        return stsCredentialsHelper.getRetrievalCredentials(unsignedLocation, stsRoleArn, expiration);
     }
     
     private ProviderLocation getProviderLocation(boolean isCollection, S3Location unsignedLocation, TemporaryCredentials credentials, URL s3SignedUrl) {
@@ -223,7 +205,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration, ResponseHeaderOverrides responseHeaderOverrides) {	
     	final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
     	final TemporaryCredentials credentials = getTemporaryCredentials(unsignedLocation, expiration);
-    	validateInput(isCollection, unsignedLocation, expirationDuration, credentials);
+    	validateInput(isCollection, unsignedLocation, credentials);
 
         // Signed URLs only support single files.
         final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials, responseHeaderOverrides);	
@@ -233,10 +215,58 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     private ProviderLocation getRetrievalLocationInternal(boolean isCollection, S3Location unsignedLocation, Duration expirationDuration) {
         final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
         final TemporaryCredentials credentials = getTemporaryCredentials(unsignedLocation, expiration);
-    	validateInput(isCollection, unsignedLocation, expirationDuration, credentials);
+    	validateInput(isCollection, unsignedLocation, credentials);
 
         // Signed URLs only support single files.
         final URL s3SignedUrl = isCollection ? null : S3Helper.generatePresignedUrl(unsignedLocation, HttpMethod.GET, expiration, credentials);
         return getProviderLocation(isCollection, unsignedLocation, credentials, s3SignedUrl);
+    }
+
+    private void validateURL(S3Location unsignedLocation) {
+        if (!unsignedLocation.isValid()) {
+            throw new AppException(HttpStatus.BAD_REQUEST.value(),
+                "Malformed URL",
+                "Unsigned URL invalid, needs to be full S3 path");
+        }
+    }
+
+    private void validateObjectKey(boolean isCollection, S3Location unsignedLocation) {
+        if (isCollection) {
+            validateFileCollectionObjectKey(unsignedLocation);
+        } else {
+            validateFileObjectKey(unsignedLocation);
+        }
+    }
+
+    private void validateFileCollectionPath(S3Location unsignedLocation, TemporaryCredentials credentials) {
+        if (!S3Helper.doesObjectCollectionExist(unsignedLocation, credentials)) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Invalid/Empty File Collection Path",
+                "Invalid/Empty File Collection Path - File collection not found at specified S3 path or is empty");
+        }
+    }
+
+    private void validateFilePath(S3Location unsignedLocation, TemporaryCredentials credentials) {
+        if (!S3Helper.doesObjectExist(unsignedLocation, credentials)) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Invalid File Path",
+                "Invalid File Path - File not found at specified S3 path");
+        }
+    }
+
+    private void validateFileObjectKey(S3Location unsignedLocation) {
+        if (unsignedLocation.isFolder()) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Invalid S3 Object Key",
+                String.format("Invalid S3 Object Key - %s", "Object Key cannot contain trailing '/'"));
+        }
+    }
+
+    private void validateFileCollectionObjectKey(S3Location unsignedLocation) {
+        if (unsignedLocation.isFile()) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Invalid S3 Object Key",
+                String.format("Invalid S3 Object Key - %s", "Object Key should contain trailing '/'"));
+        }
     }
 }

@@ -24,12 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
@@ -42,10 +44,10 @@ import java.util.Date;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class StsHelperTest {
 
     private final String roleArn = "arn:partition:service:region:account-id:resource-id";
-    private final String user = "admin@example.com";
     private final S3Location fileLocation = S3Location.of("s3://bucket/path/key");
 
     private StsCredentialsHelper stsCredentialsHelper;
@@ -55,7 +57,7 @@ public class StsHelperTest {
     @Mock
     private AWSSecurityTokenService securityTokenService;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         providerConfigurationBag.amazonRegion = "us-east-1";
         stsCredentialsHelper = new StsCredentialsHelper(providerConfigurationBag);
@@ -77,7 +79,7 @@ public class StsHelperTest {
         Mockito.when(mockAssumeRoleResult.getCredentials()).thenReturn(mockCredentials);
         Mockito.when(securityTokenService.assumeRole(Mockito.any())).thenReturn(mockAssumeRoleResult);
 
-        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, user, expirationDate);
+        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, expirationDate);
 
         ArgumentCaptor<AssumeRoleRequest> requestArgumentCaptor = ArgumentCaptor.forClass(AssumeRoleRequest.class);
         Mockito.verify(securityTokenService, Mockito.times(1)).assumeRole(requestArgumentCaptor.capture());
@@ -109,7 +111,7 @@ public class StsHelperTest {
         Mockito.when(mockAssumeRoleResult.getCredentials()).thenReturn(mockCredentials);
         Mockito.when(securityTokenService.assumeRole(Mockito.any())).thenReturn(mockAssumeRoleResult);
 
-        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, user, expirationDate);
+        TemporaryCredentials credentials = stsCredentialsHelper.getRetrievalCredentials(fileLocation, roleArn, expirationDate);
         ArgumentCaptor<AssumeRoleRequest> requestArgumentCaptor = ArgumentCaptor.forClass(AssumeRoleRequest.class);
         Mockito.verify(securityTokenService, Mockito.times(1)).assumeRole(requestArgumentCaptor.capture());
         AssumeRoleRequest assumeRoleRequest = requestArgumentCaptor.getValue();

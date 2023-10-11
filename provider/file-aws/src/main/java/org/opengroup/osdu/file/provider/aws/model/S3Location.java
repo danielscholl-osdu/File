@@ -121,11 +121,11 @@ public class S3Location {
         }
 
         public S3Location build() {
-            String path = String.join("/", this.path);
+            String locationPath = String.join("/", this.path);
             if (!this.isFile) {
-                path += "/";
+                locationPath += "/";
             }
-            return S3Location.of(path);
+            return S3Location.of(locationPath);
         }
     }
 }

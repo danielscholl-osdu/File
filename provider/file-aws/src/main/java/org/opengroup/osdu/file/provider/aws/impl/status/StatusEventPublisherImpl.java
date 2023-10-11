@@ -14,27 +14,21 @@
 
 package org.opengroup.osdu.file.provider.aws.impl.status;
 
-import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement;
-import com.amazonaws.services.simplesystemsmanagement.model.GetParameterRequest;
-import com.amazonaws.services.simplesystemsmanagement.model.ParameterNotFoundException;
 import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.aws.sns.AmazonSNSConfig;
 import org.opengroup.osdu.core.aws.sns.PublishRequestBuilder;
 import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
-import org.opengroup.osdu.core.aws.ssm.SSMConfig;
 import org.opengroup.osdu.core.common.exception.CoreException;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.status.Message;
 import org.opengroup.osdu.core.common.status.IEventPublisher;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -45,55 +39,36 @@ public class StatusEventPublisherImpl implements IEventPublisher {
     private AmazonSNS snsClient;
     private String amazonSnsTopic;
 
+    @Value("${OSDU_TOPIC}")
+    private String osduFileTopic;
+
     @Autowired
     public StatusEventPublisherImpl(ProviderConfigurationBag providerConfigurationBag) {
         AmazonSNSConfig snsConfig = new AmazonSNSConfig(providerConfigurationBag.amazonSnsRegion);
         snsClient = snsConfig.AmazonSNS();
-        SSMConfig ssmConfig = new SSMConfig();
         K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
-        amazonSnsTopic = Objects.requireNonNull(provider.getParameterAsStringOrDefault("FILE_SNS_ARN", null)).toString();
+        amazonSnsTopic = Objects.requireNonNull(provider.getParameterAsStringOrDefault("FILE_SNS_ARN", null));
     }
 
     @Override
     public void publish(Message[] messages, Map<String, String> attributesMap) throws CoreException {
-        validateInput(messages, attributesMap);
-        PublishRequest publishRequest = new PublishRequestBuilder().generatePublishRequest(
-            "data",
-            Arrays.asList(messages),
-            createMessageMap(attributesMap),
-            amazonSnsTopic);
+        PublishRequestBuilder<Message> publishRequestBuilder = new PublishRequestBuilder<>();
+        publishRequestBuilder.setGeneralParametersFromMap(attributesMap);
+        validateInput(messages);
+        PublishRequest publishRequest = publishRequestBuilder.generatePublishRequest(
+            osduFileTopic,
+            amazonSnsTopic,
+            Arrays.asList(messages));
         snsClient.publish(publishRequest);
     }
 
-    private HashMap<String, MessageAttributeValue> createMessageMap(Map<String, String> attributesMap) {
-        HashMap<String, MessageAttributeValue> messageAttributes = new HashMap<>();
-        messageAttributes.put(DpsHeaders.DATA_PARTITION_ID, new MessageAttributeValue()
-                                                                .withDataType("String")
-                                                                .withStringValue(attributesMap.get(DpsHeaders.DATA_PARTITION_ID)));
-        messageAttributes.put(DpsHeaders.CORRELATION_ID, new MessageAttributeValue()
-                                                             .withDataType("String")
-                                                             .withStringValue(attributesMap.get(DpsHeaders.CORRELATION_ID)));
-        return messageAttributes;
-    }
-
-    private void validateInput(Message[] messages, Map<String, String> attributesMap) throws CoreException {
+    private void validateInput(Message[] messages) throws CoreException {
         validateMsg(messages);
-        validateAttributesMap(attributesMap);
     }
 
     private void validateMsg(Message[] messages) throws CoreException {
         if (messages == null || messages.length == 0) {
             throw new CoreException("Nothing in message to publish");
-        }
-    }
-
-    private void validateAttributesMap(Map<String, String> attributesMap) throws CoreException {
-        if (attributesMap == null || attributesMap.isEmpty()) {
-            throw new CoreException("data-partition-id and correlation-id are required to publish status event");
-        } else if (attributesMap.get(DpsHeaders.DATA_PARTITION_ID) == null) {
-            throw new CoreException("data-partition-id is required to publish status event");
-        } else if (attributesMap.get(DpsHeaders.CORRELATION_ID) == null) {
-            throw new CoreException("correlation-id is required to publish status event");
         }
     }
 }

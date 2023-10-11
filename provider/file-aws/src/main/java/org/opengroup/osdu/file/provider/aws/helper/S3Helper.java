@@ -30,6 +30,10 @@ import java.util.Date;
 
 public class S3Helper {
 
+    private S3Helper() {
+        //private constructor
+    }
+
     /**
      * Generates a presigned URL for the S3 location
      */
@@ -96,8 +100,7 @@ public class S3Helper {
     public static S3Object getObject(S3Location location, TemporaryCredentials credentials) {
         AmazonS3 s3 = generateClientWithCredentials(location.getBucket(), credentials);
         GetObjectRequest getObjectRequest = new GetObjectRequest(location.getBucket(), location.getKey());
-        S3Object s3Obj = s3.getObject(getObjectRequest);
-        return s3Obj;
+        return s3.getObject(getObjectRequest);
     }
 
     private static AmazonS3 generateClientWithCredentials(String bucket, TemporaryCredentials credentials) {
