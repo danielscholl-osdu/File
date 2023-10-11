@@ -57,6 +57,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>2021.0.6</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- Inherit managed dependencies from core-lib-azure -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
@@ -125,7 +132,6 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-openfeign-core</artifactId>
-      <version>3.1.3</version>
     </dependency>
 
     <dependency>
@@ -260,8 +266,13 @@
     </dependency>
     <dependency>
       <groupId>com.azure</groupId>
+      <artifactId>azure-core</artifactId>
+      <version>1.42.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.azure</groupId>
       <artifactId>azure-storage-blob</artifactId>
-      <version>12.13.0</version>
+      <version>12.24.0</version>
     </dependency>
     <dependency>
       <groupId>com.azure.resourcemanager</groupId>
@@ -389,6 +400,7 @@
         </dependencies>
         <executions>
           <execution>
+            <id>shade-jar-with-dependencies</id>
             <goals>
               <goal>shade</goal>
             </goals>
