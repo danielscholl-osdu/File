@@ -77,7 +77,7 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-gc</artifactId>
-      <version>0.23.1</version>
+      <version>0.24.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -89,17 +89,17 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>oqm</artifactId>
-      <version>0.23.0</version>
+      <version>0.24.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>osm</artifactId>
-      <version>0.23.0</version>
+      <version>0.24.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>obm</artifactId>
-      <version>0.24.0-rc3</version>
+      <version>0.24.0</version>
     </dependency>
 
     <dependency>
