@@ -29,8 +29,8 @@
 
 
   <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
     <google.oauth.version>0.21.1</google.oauth.version>
     <os-core-lib-azure.version>0.23.2</os-core-lib-azure.version>
@@ -90,7 +90,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
+      <version>1.18.30</version>
       <scope>test</scope>
     </dependency>
 

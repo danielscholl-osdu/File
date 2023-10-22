@@ -27,8 +27,8 @@
   <description>Baremetal implementation of test project for file service</description>
 
   <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
   </properties>
 
