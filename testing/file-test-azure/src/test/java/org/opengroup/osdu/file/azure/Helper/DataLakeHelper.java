@@ -21,7 +21,7 @@ public class DataLakeHelper {
 
     long fileSize = content.length();
     fileClient.append(targetStream, 0, fileSize);
-    fileClient.flush(fileSize);
+    fileClient.flush(fileSize, true);
     targetStream.close();
   }
 

@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.opengroup.osdu</groupId>
 		<artifactId>os-file</artifactId>
-		<version>0.24.0-SNAPSHOT</version>
+		<version>0.25.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
@@ -26,17 +26,17 @@
 
 	<properties>
 		<start-class>org.opengroup.osdu.file.provider.ibm.FileIBMApplication</start-class>
-		<os-core-lib-ibm.version>0.17.0-rc4</os-core-lib-ibm.version>
+		<os-core-lib-ibm.version>0.24.0</os-core-lib-ibm.version>
 		<aws.version>1.12.261</aws.version>
 		<spring-webmvc.version>5.3.22</spring-webmvc.version>
-		<jackson-databind.version>2.13.4.2</jackson-databind.version>
+		<jackson-databind.version>2.14.2</jackson-databind.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.opengroup.osdu</groupId>
 			<artifactId>file-core</artifactId>
-			<version>0.24.0-SNAPSHOT</version>
+			<version>0.25.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.tomcat.embed</groupId>
@@ -205,6 +205,18 @@
 		    <version>2.8.9</version>
 		</dependency>
 	</dependencies>
+	
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>2021.0.6</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+  </dependencyManagement>
   <repositories>
     <repository>
       <id>${repo.releases.id}</id>

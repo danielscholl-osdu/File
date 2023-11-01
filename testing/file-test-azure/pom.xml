@@ -20,13 +20,13 @@
   <parent>
     <groupId>org.opengroup.osdu</groupId>
     <artifactId>os-file-test</artifactId>
-    <version>0.24.0-SNAPSHOT</version>
+    <version>0.25.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
 
   </parent>
     <groupId>org.opengroup.osdu.file.azure</groupId>
     <artifactId>file-test-azure</artifactId>
-    <version>0.24.0-SNAPSHOT</version>
+    <version>0.25.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -35,13 +35,35 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.basedir>${project.basedir}</project.main.basedir>
         <jackson.version>2.13.2.2</jackson.version>
-        <os-core-common.version>0.23.1</os-core-common.version>
+        <os-core-common.version>0.24.0</os-core-common.version>
     </properties>
     <dependencies>
         <dependency>
+          <groupId>com.azure</groupId>
+          <artifactId>azure-storage-blob</artifactId>
+          <version>12.24.0</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.azure</groupId>
+          <artifactId>azure-identity</artifactId>
+          <version>1.3.0</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.azure</groupId>
+          <artifactId>azure-core-http-netty</artifactId>
+          <version>1.13.1</version>
+        </dependency>
+        <dependency>
+          <groupId>com.azure</groupId>
+          <artifactId>azure-core</artifactId>
+          <version>1.42.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>file-test-core</artifactId>
-            <version>0.24.0-SNAPSHOT</version>
+            <version>0.25.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -73,8 +95,14 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>core-lib-azure</artifactId>
-        <version>0.16.0</version>
+        <version>0.24.0</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>azure-core</artifactId>
+            <groupId>com.azure</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
         <!-- Tests -->
@@ -112,37 +140,15 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>file-core</artifactId>
-        <version>0.24.0-SNAPSHOT</version>
+        <version>0.25.0-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>com.azure</groupId>
-        <artifactId>azure-storage-blob</artifactId>
-        <version>12.14.2</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.azure</groupId>
-        <artifactId>azure-identity</artifactId>
-        <version>1.3.0</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-all</artifactId>
-        <version>4.1.50.Final</version>
-      </dependency>
+
       <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
         <version>1.18.12</version>
         <scope>test</scope>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/com.azure/azure-core -->
-      <dependency>
-        <groupId>com.azure</groupId>
-        <artifactId>azure-core</artifactId>
-        <version>1.23.0</version>
       </dependency>
     </dependencies>
     <dependencyManagement>
@@ -151,7 +157,7 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>core-lib-azure</artifactId>
-        <version>0.16.0</version>
+        <version>0.24.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

@@ -14,33 +14,21 @@
 
 package org.opengroup.osdu.file.service.delivery;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import org.junit.jupiter.api.BeforeAll;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import com.google.gson.Gson;
-import org.apache.http.HttpStatus;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.http.IUrlFetchService;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.HttpResponse;
 import org.opengroup.osdu.core.common.model.search.QueryResponse;
-import org.opengroup.osdu.file.FileApplication;
 import org.opengroup.osdu.file.model.delivery.SrnFileData;
 import org.opengroup.osdu.file.model.delivery.UrlSigningResponse;
 import org.opengroup.osdu.file.provider.interfaces.delivery.IDeliveryUnsignedUrlLocationMapper;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -48,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 // @SpringBootTest(classes={FileApplication.class})

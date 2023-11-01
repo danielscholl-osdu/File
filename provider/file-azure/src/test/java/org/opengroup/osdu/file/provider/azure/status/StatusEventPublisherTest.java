@@ -96,7 +96,7 @@ class StatusEventPublisherTest {
 
     statusEventPublisher.publish(messages, attributes);
 
-    verify(messagePublisher).publishMessage(any(), any());
+    verify(messagePublisher).publishMessage(any(), any(), any());
   }
 
   @Test
@@ -111,7 +111,7 @@ class StatusEventPublisherTest {
     messages[1] = message;
     statusEventPublisher.publish(messages, attributes);
 
-    verify(messagePublisher, times(2)).publishMessage(any(), any());
+    verify(messagePublisher, times(2)).publishMessage(any(), any(), any());
   }
 
 }
