@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  ~ Copyright 2020 Google LLC
+  ~ Copyright 2020-2023 Google LLC
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -60,14 +60,20 @@
         <artifactId>okhttp</artifactId>
         <version>4.9.2</version>
       </dependency>
-    </dependencies>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-bom</artifactId>
+        <version>5.7.11</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+  </dependencies>
   </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot</artifactId>
-      <version>2.7.10</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -128,11 +134,6 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core</artifactId>
-      <version>5.7.3</version>
     </dependency>
   </dependencies>
   <build>
