@@ -35,6 +35,10 @@
     <google.oauth.version>0.21.1</google.oauth.version>
     <os-core-lib-azure.version>0.24.0</os-core-lib-azure.version>
     <groovy.version>3.0.2</groovy.version>
+    <argLine>
+      --add-opens java.base/java.lang=ALL-UNNAMED
+      --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+    </argLine>
   </properties>
 
   <dependencies>

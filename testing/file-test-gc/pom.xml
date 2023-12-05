@@ -31,7 +31,11 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<junit-jupiter.version>5.5.2</junit-jupiter.version>
 		<google.oauth.version>0.21.1</google.oauth.version>
-	</properties>
+    <argLine>
+      --add-opens java.base/java.lang=ALL-UNNAMED
+      --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+    </argLine>
+  </properties>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
@@ -145,7 +149,7 @@
 							<goal>integration-test</goal>
 						</goals>
 						<configuration>
-							<excludes>
+              <excludes>
 								<exclude>none</exclude>
 							</excludes>
 							<includes>
