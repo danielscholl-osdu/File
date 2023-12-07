@@ -35,7 +35,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.basedir>${project.basedir}</project.main.basedir>
         <jackson.version>2.13.2.2</jackson.version>
-        <os-core-common.version>0.24.0</os-core-common.version>
+        <os-core-common.version>0.25.0-rc2</os-core-common.version>
     </properties>
     <dependencies>
         <dependency>
