@@ -6,9 +6,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Pre-requisistes
 
-* JDK 8 (https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+* JDK 17 (https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
 * Maven 3.8.3 or later
-* Lombok 1.16 or later
+* Lombok 1.18.26 or later
 * OSDU Instance deployed on AWS
 
 ### Service Configuration
@@ -47,7 +47,7 @@ example:
 > mvn --version
 Apache Maven 3.8.4 (9b656c72d54e5bacbed989b64718c159fe39b537)
 Maven home: C:\Users\estepamo\AppData\Roaming\maven\apache-maven-3.8.4
-Java version: 1.8.0_302, vendor: Amazon.com Inc., runtime: C:\Program Files\Amazon Corretto\jdk1.8.0_302\jre
+Java version: 17.0.7, vendor: Amazon.com Inc.
 Default locale: en_US, platform encoding: Cp1252
 OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
 ...

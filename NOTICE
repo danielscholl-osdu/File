@@ -348,7 +348,7 @@ The following software have components provided under the terms of this license:
 - Apache Commons FileUpload (from https://commons.apache.org/proper/commons-fileupload/)
 - Apache Commons IO (from http://commons.apache.org/io/, https://commons.apache.org/proper/commons-io/, https://repo1.maven.org/maven2/commons-io/commons-io)
 - Apache Commons Lang (from https://commons.apache.org/proper/commons-lang/)
-- Apache Commons Logging (from http://commons.apache.org/logging/, http://commons.apache.org/proper/commons-logging/)
+- Apache Commons Logging (from http://commons.apache.org/logging/, http://commons.apache.org/proper/commons-logging/, https://commons.apache.org/proper/commons-logging/)
 - Apache Commons Validator (from http://commons.apache.org/proper/commons-validator/, http://jakarta.apache.org/commons/${pom.artifactId.substring(8)}/, https://repo1.maven.org/maven2/commons-validator/commons-validator)
 - Apache Geronimo JMS Spec 2.0 (from http://geronimo.apache.org/maven/${siteId}/${version})
 - Apache Groovy (from http://groovy-lang.org, http://groovy.codehaus.org/, https://groovy-lang.org)
@@ -379,7 +379,7 @@ The following software have components provided under the terms of this license:
 - Byte Buddy Java agent (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
 - Cloud Key Management Service (KMS) API v1-rev20231012-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
-- Cloud Storage JSON API (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
+- Cloud Storage JSON API v1-rev20231117-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - CloudWatch Metrics for AWS Java SDK (from https://aws.amazon.com/sdkforjava)
 - Collections (from https://repo1.maven.org/maven2/commons-collections/commons-collections)
 - Commons Digester (from http://commons.apache.org/digester/)
@@ -439,7 +439,7 @@ The following software have components provided under the terms of this license:
 - Jackson-dataformat-XML (from http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding, https://github.com/FasterXML/jackson-dataformat-xml)
 - Jackson-dataformat-YAML (from https://github.com/FasterXML/jackson, https://github.com/FasterXML/jackson-dataformats-text)
 - Jackson-module-parameter-names (from https://repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names)
-- Jakarta Bean Validation API (from https://beanvalidation.org)
+- Jakarta Validation API (from https://beanvalidation.org)
 - Jakarta XML Binding API (from https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api, https://repo1.maven.org/maven2/org/jboss/spec/javax/xml/bind/jboss-jaxb-api_2.3_spec)
 - Java Architecture for XML Binding (from http://jaxb.java.net/, https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api)
 - Java Libraries for Amazon Simple WorkFlow (from https://github.com/aws/aws-swf-flow-library)
@@ -794,7 +794,7 @@ The following software have components provided under the terms of this license:
 - JUnit Platform Commons (from http://junit.org/junit5/, https://junit.org/junit5/)
 - JUnit Platform Engine API (from http://junit.org/junit5/, https://junit.org/junit5/)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Bean Validation API (from https://beanvalidation.org)
+- Jakarta Validation API (from https://beanvalidation.org)
 - Jakarta XML Binding API (from https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api, https://repo1.maven.org/maven2/org/jboss/spec/javax/xml/bind/jboss-jaxb-api_2.3_spec)
 - Logback Contrib :: JSON :: Classic (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-classic)
 - Logback Contrib :: JSON :: Core (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-core)
@@ -819,7 +819,7 @@ The following software have components provided under the terms of this license:
 - JUnit Platform Engine API (from http://junit.org/junit5/, https://junit.org/junit5/)
 - Jakarta Activation API (from https://github.com/eclipse-ee4j/jaf, https://github.com/jakartaee/jaf-api, https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Bean Validation API (from https://beanvalidation.org)
+- Jakarta Validation API (from https://beanvalidation.org)
 - Jakarta XML Binding API (from https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api, https://repo1.maven.org/maven2/org/jboss/spec/javax/xml/bind/jboss-jaxb-api_2.3_spec)
 
 ========================================================================
@@ -845,7 +845,7 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 - Jakarta Activation API (from https://github.com/eclipse-ee4j/jaf, https://github.com/jakartaee/jaf-api, https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Jakarta Bean Validation API (from https://beanvalidation.org)
+- Jakarta Validation API (from https://beanvalidation.org)
 - Jakarta XML Binding API (from https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api, https://repo1.maven.org/maven2/org/jboss/spec/javax/xml/bind/jboss-jaxb-api_2.3_spec)
 - Java Architecture for XML Binding (from http://jaxb.java.net/, https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api)
 - JavaBeans Activation Framework (from <http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp>, http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp, https://repo1.maven.org/maven2/com/sun/activation/javax.activation)
@@ -858,7 +858,6 @@ GPL-3.0-only
 The following software have components provided under the terms of this license:
 
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
-- Project Lombok (from http://projectlombok.org, https://projectlombok.org)
 
 ========================================================================
 IPA
@@ -1064,4 +1063,3 @@ The following software have components provided under the terms of this license:
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
 - Microsoft Azure client library for Blob Storage (from https://github.com/Azure/azure-sdk-for-java)
 - PostgreSQL JDBC Driver
-- Project Lombok (from http://projectlombok.org, https://projectlombok.org)

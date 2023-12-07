@@ -19,9 +19,9 @@ system.
 Pre-requisites
 
 * GCloud SDK with java (latest version)
-* JDK 8
-* Lombok 1.16 or later
-* Maven
+* JDK 17
+* Lombok 1.18.26 or later
+* Maven 3.8.0+
 
 ### Baremetal Service Configuration
 
@@ -47,9 +47,9 @@ Check that maven is installed:
 
 ```bash
 $ mvn --version
-Apache Maven 3.6.0
+Apache Maven 3.8.0+
 Maven home: /usr/share/maven
-Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b04/jre
+Java version: 17, vendor: AdoptOpenJDK
 ...
 ```
 

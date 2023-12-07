@@ -14,7 +14,7 @@
 
 # https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html
 
-FROM amazoncorretto:8
+FROM amazoncorretto:17
 
 ARG JAR_FILE=provider/file-aws/target/file-aws*.jar
 

@@ -59,6 +59,7 @@ export STORAGE_HOST=$STORAGE_URL
 export LEGAL_HOST=$LEGAL_URL
 export DELIVERY_INT_TEST_BUCKET_NAME="${RESOURCE_PREFIX}-osdu-delivery-integration-test-bucket-${RANDOM}${RANDOM}"
 export AWS_S3_REGION=$AWS_REGION
+export JAVA_HOME='/usr/lib/jvm/java-17-openjdk-amd64'
 
 #### RUN INTEGRATION TEST #########################################################################
 
