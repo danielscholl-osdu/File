@@ -7,7 +7,10 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<repo.releases.id>community-maven-via-job-token</repo.releases.id>
+				<!-- Downloading packages does not require any credentials, so this server ID does not need a configuration -->
+				<repo.releases.id>community-maven-via-public-access</repo.releases.id>
+
+				<!-- Publishing packages does require credentials -->
 				<publish.snapshots.id>community-maven-via-job-token</publish.snapshots.id>
 				<publish.releases.id>community-maven-via-job-token</publish.releases.id>
 
@@ -28,7 +31,10 @@
 			</property>
 			</activation>
 			<properties>
-				<repo.releases.id>community-maven-via-private-token</repo.releases.id>
+				<!-- Downloading packages does not require any credentials, so this server ID does not need a configuration -->
+				<repo.releases.id>community-maven-via-public-access</repo.releases.id>
+
+				<!-- Publishing packages does require credentials -->
 				<publish.snapshots.id>community-maven-via-private-token</publish.snapshots.id>
 				<publish.releases.id>community-maven-via-private-token</publish.releases.id>
 
