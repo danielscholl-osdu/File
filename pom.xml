@@ -40,6 +40,7 @@
     <module>provider/file-ibm</module>
     <module>provider/file-gc-datastore</module>
     <module>provider/file-azure</module>
+    <module>file-core-plus</module>
   </modules>
 
   <properties>
