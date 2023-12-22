@@ -70,7 +70,7 @@ their overriding and usage in mixed mode was not tested. Usage of spring profile
 | `PARTITION_AUTH_ENABLED` | `true` or `false`     |          | Disable or enable auth token provisioning for requests to Partition service                                               | no         | -                                   |
 | `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID`     |          | Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no         | -                                   |
 | `ENTITLEMENTS_HOST`      | `http://entitlements` |          | Entitlements service host address                                                                                         | no         | output of infrastructure deployment |
-| `STORAGE_HOST`           | `http://storage`      |          | Storage service host address                                                                                              | no         | output of infrastructure deployment |        
+| `STORAGE_HOST`           | `http://storage`      |          | Storage service host address                                                                                              | no         | output of infrastructure deployment |
 | `PARTITION_HOST`         | `http://partition`    |          | Partition service host address                                                                                            | no         | output of infrastructure deployment |
 
 ### Service level secret ENV variables
@@ -81,86 +81,20 @@ their overriding and usage in mixed mode was not tested. Usage of spring profile
 ## Partition level config
 
 ### Prefixes
-**prefix:** `osm.postgres`
+
+**prefix:** `osm.datastore`
 
 It can be overridden by:
 
-- through the Spring Boot property `osm.postgres.partition-properties-prefix`
-- environment variable `OSM_POSTGRES_PARTITION_PROPERTIES_PREFIX`
-
-**prefix:** `obm.minio`
-It can be overridden by:
-
-- through the Spring Boot property `osm.postgres.partition-properties-prefix`
-- environment variable `OBM_MINIO_PARTITION_PROPERTIES_PREFIX`
-
-**prefix:** `oqm.rabbitmq`
-It can be overridden by:
-
-- through the Spring Boot property `oqm.rabbitmq.partition-properties-prefix`
-- environment variable `OQM_RABBITMQ_PARTITION_PROPERTIES_PREFIX`
+- through the Spring Boot property `osm.datastore.partition-properties-prefix`
+- environment variable `OSM_DATASTORE_PARTITION_PROPERTIES_PREFIX`
 
 ### Non-sensitive partition properties
 | name                                  | value                         | description                                | sensitive? | source                                          |
 |---------------------------------------|-------------------------------|--------------------------------------------|------------|-------------------------------------------------|
 | `<STAGING_LOCATION_PROPERTY_NAME>`    | ex `project.partition.bucket` | staging location address in OBM storage    | no         | `PARTITION_PROPERTIES_STAGING_LOCATION_NAME`    |
 | `<PERSISTENT_LOCATION_PROPERTY_NAME>` | ex `project.partition.bucket` | persistent location address in OBM storage | no         | `PARTITION_PROPERTIES_PERSISTENT_LOCATION_NAME` |
-
-### Sensitive partition properties
-Note that properties can be set in Partition as `sensitive` in that case in property `value` should be present **not value itself**, but **ENV variable name**.
-This variable should be present in environment of service that need that variable.
-
-Example:
-
-```
-    "elasticsearch.port": {
-      "sensitive": false, <- value not sensitive
-      "value": "9243"  <- will be used as is.
-    },
-      "elasticsearch.password": {
-      "sensitive": true, <- value is sensitive
-      "value": "ELASTIC_SEARCH_PASSWORD_OSDU" <- service consumer should have env variable ELASTIC_SEARCH_PASSWORD_OSDU with elastic search password
-    }
-```
-
-| name                               | description                                                                                                                           |
-|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `osm.postgres.datasource.url`      | Postgres url                                                                                                                          |
-| `osm.postgres.datasource.username` | Postgres username                                                                                                                     |
-| `osm.postgres.datasource.password` | Postgres password                                                                                                                     |
-| `oqm.rabbitmq.amqp.password`       | Amqp username                                                                                                                         |
-| `oqm.rabbitmq.amqp.password`       | Amqp password                                                                                                                         |
-| `oqm.rabbitmq.admin.username`      | Amqp admin username                                                                                                                   |
-| `oqm.rabbitmq.admin.password`      | Amqp admin password                                                                                                                   |
-| `obm.minio.endpoint`               | server URL                                                                                                                            |
-| `obm.minio.accessKey`              | credentials access key                                                                                                                |
-| `obm.minio.secretKey`              | credentials secret key                                                                                                                |
-| `obm.minio.ignoreCertCheck`        | optional, default value is 'false'. When set to 'true' disables certificate check for MinIO client                                    |
-| `obm.minio.external.endpoint`      | optional, used when service should use internal endpoint(in cluster) but must provide credentials for end users for external endpoint |
-| `oqm.rabbitmq.amqp.host`           | messaging hostname or IP                                                                                                              |
-| `oqm.rabbitmq.amqp.port`           | - port                                                                                                                                |
-| `oqm.rabbitmq.amqp.path`           | - path                                                                                                                                |
-| `oqm.rabbitmq.amqp.username`       | - username                                                                                                                            |
-| `oqm.rabbitmq.amqp.password`       | - password                                                                                                                            |
-| `oqm.rabbitmq.admin.schema`        | admin host schema                                                                                                                     |
-| `oqm.rabbitmq.admin.host`          | - host name                                                                                                                           |
-| `oqm.rabbitmq.admin.port`          | - port                                                                                                                                |
-| `oqm.rabbitmq.admin.path`          | - path                                                                                                                                |
-| `oqm.rabbitmq.admin.username`      | - username                                                                                                                            |
-| `oqm.rabbitmq.admin.password`      | - password                                                                                                                            |
-
-### Partition level secret ENV variables
-| name                                          | value                        | description                         |
-|-----------------------------------------------|------------------------------|-------------------------------------|
-| `<POSTGRES_URL_ENV_VARIABLE_NAME>`            | ex `POSTGRES_URL`            | Postgres url sensitive value        |
-| `<POSTGRES_USERNAME_ENV_VARIABLE_NAME>`       | ex `POSTGRES_USERNAME`       | Postgres username sensitive value   |
-| `<POSTGRES_PASSWORD_ENV_VARIABLE_NAME>`       | ex `POSTGRES_PASSWORD`       | Postgres password sensitive value   |
-| `<MINIO_ACCESSKEY_ENV_VARIABLE_NAME>`         | ex `MINIO_ACCESS_KEY`        | Minio access key sensitive value    |
-| `<MINIO_SECRETKEY_ENV_VARIABLE_NAME>`         | ex `MINIO_SECRET_KEY`        | Minio secret sensitive value        |
-| `<RABBITMQ_USERNAME_ENV_VARIABLE_NAME>`       | ex `RABBITMQ_USERNAME`       | Amqp username sensitive value       |
-| `<RABBITMQ_PASSWORD_ENV_VARIABLE_NAME>`       | ex `RABBITMQ_PASSWORD`       | Amqp password sensitive value       |
-| `<RABBITMQ_ADMIN_USERNAME_ENV_VARIABLE_NAME>` | ex `RABBITMQ_ADMIN_USERNAME` | Amqp admin username sensitive value |
-| `<RABBITMQ_ADMIN_PASSWORD_ENV_VARIABLE_NAME>` | ex `RABBITMQ_ADMIN_PASSWORD` | Amqp admin password sensitive value |
+| `osm.datastore.database.id`           | ex `osdu-database-id`         | Datastore database id                      | no         | -                                               |
 
 ## Infrastructure config
 
