@@ -341,6 +341,12 @@ Integration tests are located in a separate project for each cloud in the ```tes
 
 All the Swagger and OpenAPI related common properties are managed here [swagger.properties](./file-core/src/main/resources/swagger.properties)
 
+#### Server Url(full path vs relative path) configuration
+- `api.server.fullUrl.enabled=true` It will generate full server url in the OpenAPI swagger
+- `api.server.fullUrl.enabled=false` It will generate only the contextPath only
+- default value is false (Currently only in Azure it is enabled)
+[Reference]:(https://springdoc.org/faq.html#_how_is_server_url_generated) 
+
 #***REMOVED*** Implementation
 
 * All documentation for The Cloud Datastore implementation of File service is located [here](./provider/file-gc-datastore/README.md).
