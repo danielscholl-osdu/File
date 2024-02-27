@@ -49,11 +49,15 @@ public class S3Location {
         if (uri != null && uri.startsWith(UNSIGNED_URL_PREFIX)) {
             String[] bucketAndKey = uri.substring(UNSIGNED_URL_PREFIX.length()).split("/", 2);
 
-            if (bucketAndKey.length == 2) {
-                bucket = bucketAndKey[0];
-                key = bucketAndKey[1];
-                isValid = true;
-            }
+            this.uriSetup(bucketAndKey);
+        }
+    }
+
+    private void uriSetup(String[] bucketAndKey) {
+        if (bucketAndKey.length == 2) {
+            this.bucket = bucketAndKey[0];
+            this.key = bucketAndKey[1];
+            this.isValid = true;
         }
     }
 
@@ -94,14 +98,18 @@ public class S3Location {
             if (this.path.isEmpty()) {
                 this.path.add(prefixedName);
             } else {
-                if (!this.path.get(0).startsWith(UNSIGNED_URL_PREFIX)) {
-                    this.path.add(0, prefixedName);
-                } else {
-                    this.path.set(0, prefixedName);
-                }
+                this.handlePrefixedName(prefixedName);
             }
 
             return this;
+        }
+
+        private void handlePrefixedName(String prefixedName) {
+            if (!this.path.get(0).startsWith(UNSIGNED_URL_PREFIX)) {
+                this.path.add(0, prefixedName);
+            } else {
+                this.path.set(0, prefixedName);
+            }
         }
 
         public S3LocationBuilder withFolder(String folderName) {

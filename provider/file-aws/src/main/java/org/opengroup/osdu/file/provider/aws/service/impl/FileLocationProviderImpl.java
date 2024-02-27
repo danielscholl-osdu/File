@@ -108,18 +108,11 @@ public class FileLocationProviderImpl implements FileLocationProvider {
     private ProviderLocation getUploadLocationInternal(boolean isCollection, String resourceName, String partitionID) {
         final S3ClientConnectionInfo s3ConnectionInfo = s3ConnectionInfoHelper.getS3ConnectionInfoForPartition(headers,
                                                                                                                providerConfigurationBag.bucketParameterRelativePath);
-        if (s3ConnectionInfo == null) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                   HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                                   "Unable to get connection info for S3 bucket");
-        }
+        this.checkS3ConnectionInfo(s3ConnectionInfo);        
 
         final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
-        if (stsRoleArn == null) {
-            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                   HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                                   "Unable to get RoleArn to assume using STS for bucket access");
-        }
+        
+        this.checkStsRoleArn(stsRoleArn);
 
         final S3LocationBuilder s3LocationBuilder = S3Location.newBuilder();
         s3LocationBuilder.withBucket(s3ConnectionInfo.getBucketName())
@@ -131,11 +124,8 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         final S3Location unsignedLocation = s3LocationBuilder.build();
 
         final String objectKey = unsignedLocation.getKey();
-        if (objectKey.length() > StorageConstant.AWS_MAX_KEY_LENGTH) {
-            String errorMessage = String.format("The maximum object key length is %s characters, but got %s",
-                                                StorageConstant.AWS_MAX_KEY_LENGTH, objectKey.length());
-            throw new IllegalArgumentException(errorMessage);
-        }
+        
+        this.checkObjectKeyLength(objectKey);
 
         final TemporaryCredentials credentials = stsCredentialsHelper.getUploadCredentials(unsignedLocation, stsRoleArn, expiration);
 
@@ -160,6 +150,30 @@ public class FileLocationProviderImpl implements FileLocationProvider {
         } catch (URISyntaxException e) {
             log.error("There was an error generating the URI.", e);
             throw new AppException(HttpStatus.BAD_REQUEST.value(), "Malformed S3 URL", "Exception creating signed url", e);
+        }
+    }
+
+    private void checkS3ConnectionInfo(S3ClientConnectionInfo s3ConnectionInfo) {
+        if (s3ConnectionInfo == null) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                   HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                                   "Unable to get connection info for S3 bucket");
+        }
+    }
+
+    private void checkStsRoleArn(String stsRoleArn) {
+        if (stsRoleArn == null) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                   HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                                   "Unable to get RoleArn to assume using STS for bucket access");
+        }
+    }
+
+    private void checkObjectKeyLength(String objectKey) {
+        if (objectKey.length() > StorageConstant.AWS_MAX_KEY_LENGTH) {
+            String errorMessage = String.format("The maximum object key length is %s characters, but got %s",
+                                                StorageConstant.AWS_MAX_KEY_LENGTH, objectKey.length());
+            throw new IllegalArgumentException(errorMessage);
         }
     }
 
