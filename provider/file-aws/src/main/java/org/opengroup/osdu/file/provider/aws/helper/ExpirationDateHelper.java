@@ -26,6 +26,10 @@ import java.util.Date;
  */
 public class ExpirationDateHelper {
 
+    private ExpirationDateHelper() {
+        //Private constructor, do nothing here.
+    }
+
     /**
      * Adds the timespan to the Local date and returns a Date object of that time.
      *
