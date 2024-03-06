@@ -39,17 +39,8 @@ public class AzureBootstrapConfig {
   @Value("${azure.cosmosdb.database}")
   private String cosmosDBName;
 
-  @Value("${azure.application-insights.instrumentation-key}")
-  private String appInsightsKey;
-
   @Value("${spring.application.name}")
   private String springAppName;
-
-  @Bean
-  @Named("APPINSIGHTS_KEY")
-  public String appInsightsKey() {
-    return appInsightsKey;
-  }
 
   @Bean
   @Named("spring.application.name")

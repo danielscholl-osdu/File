@@ -92,7 +92,6 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 | `AZURE_TENANT_ID` | `********` | AD tenant to authenticate users from | yes | -- |
 | `AZURE_CLIENT_SECRET` | `********` | Secret for `$AZURE_CLIENT_ID` | yes | keyvault secret: `$KEYVAULT_URI/secrets/app-dev-sp-password` |
 | `KEYVAULT_URL` | ex `https://foo-keyvault.vault.azure.net/` | URI of KeyVault that holds application secrets | no | output of infrastructure deployment |
-| `appinsights_key` | `********` | API Key for App Insights | yes | output of infrastructure deployment |
 | `cosmosdb_database` | ex `foo-db` | The name of the CosmosDB database | no | output of infrastructure deployment |
 | `AZURE_AD_APP_RESOURCE_ID` | `********` | AAD client application ID | yes | output of infrastructure deployment |
 | `osdu_entitlements_url` | ex `https://foo-osdu.msft-osdu-test.org/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
