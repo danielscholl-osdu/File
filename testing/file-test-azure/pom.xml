@@ -76,7 +76,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-      <!-- Added depedency of core-lib-Azure to add Azure Service Principle class -->
+      <!-- Added dependency of core-lib-azure to add Azure Service Principle class -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>os-core-common</artifactId>
@@ -95,7 +95,7 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>core-lib-azure</artifactId>
-        <version>0.25.0</version>
+        <version>0.26.0-rc5</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -157,7 +157,7 @@
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
         <artifactId>core-lib-azure</artifactId>
-        <version>0.25.0</version>
+        <version>0.26.0-rc5</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
