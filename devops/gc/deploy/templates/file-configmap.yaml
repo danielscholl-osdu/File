@@ -10,4 +10,8 @@ data:
   ENTITLEMENTS_HOST: {{ .Values.data.entitlementsHost | quote }}
   PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
   STORAGE_HOST: {{ .Values.data.storageHost | quote }}
-  SPRING_PROFILES_ACTIVE: {{ .Values.data.springProfilesActive | quote }}
+  {{- if .Values.global.onPremEnabled }}
+  SPRING_PROFILES_ACTIVE: "anthos"
+  {{- else }}
+  SPRING_PROFILES_ACTIVE: "gcp"
+  {{- end }}

@@ -17,7 +17,6 @@ data:
   entitlementsHost: "http://entitlements"
   partitionHost: "http://partition"
   storageHost: "http://storage"
-  springProfilesActive: "gcp"
 
 conf:
   configmap: "file-config"

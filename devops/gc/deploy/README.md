@@ -42,7 +42,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 **data.entitlementsHost** | Entitlements service host address | string | "http://entitlements" | yes
 **data.partitionHost** | Partition service host address | string | "http://partition" | yes
 **data.storageHost** | Storage service host address | string | "http://storage" | yes
-**data.springProfilesActive** | Spring profile that activate default configuration for Google Cloud environment | string | "gcp" | yes
 
 ### Deployment variables
 
