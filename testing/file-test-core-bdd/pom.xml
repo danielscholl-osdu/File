@@ -33,7 +33,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
     <google.oauth.version>0.21.1</google.oauth.version>
-    <os-core-lib-azure.version>0.26.0-rc5</os-core-lib-azure.version>
+    <os-core-lib-azure.version>0.26.0</os-core-lib-azure.version>
     <groovy.version>3.0.2</groovy.version>
     <argLine>
       --add-opens java.base/java.lang=ALL-UNNAMED
@@ -157,7 +157,7 @@
     <dependency>
 	    <groupId>org.opengroup.osdu</groupId>
 	    <artifactId>os-core-common</artifactId>
-	    <version>0.25.0</version>
+	    <version>0.26.0</version>
     </dependency>
   </dependencies>
 

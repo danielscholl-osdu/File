@@ -34,7 +34,7 @@
 
     <properties>
         <aws.version>1.12.261</aws.version>
-        <os-core-lib-aws.version>0.26.0-rc3</os-core-lib-aws.version>
+        <os-core-lib-aws.version>0.26.0</os-core-lib-aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
         <log4j2.version>2.17.1</log4j2.version>
