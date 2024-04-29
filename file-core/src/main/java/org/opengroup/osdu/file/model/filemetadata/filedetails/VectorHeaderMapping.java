@@ -1,6 +1,6 @@
 package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

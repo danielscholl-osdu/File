@@ -36,7 +36,7 @@ import org.opengroup.osdu.file.provider.interfaces.delivery.IDeliveryUnsignedUrl
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;

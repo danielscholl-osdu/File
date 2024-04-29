@@ -2,7 +2,7 @@ package org.opengroup.osdu.file.model.filemetadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.opengroup.osdu.file.model.filemetadata.filedetails.ForKind;
 import lombok.AllArgsConstructor;

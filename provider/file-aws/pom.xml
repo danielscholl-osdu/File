@@ -34,7 +34,7 @@
 
     <properties>
         <aws.version>1.12.261</aws.version>
-        <os-core-lib-aws.version>0.26.0</os-core-lib-aws.version>
+        <os-core-lib-aws.version>0.26.0-spring6-rc1</os-core-lib-aws.version>
         <deployment.environment>dev</deployment.environment>
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
         <log4j2.version>2.17.1</log4j2.version>
@@ -51,7 +51,7 @@
             </dependency>
             <dependency>
                 <groupId>org.opengroup.osdu</groupId>
-                <artifactId>os-core-common</artifactId>
+                <artifactId>os-core-common-spring6</artifactId>
                 <version>${os-core-common.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -78,7 +78,6 @@
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
-                <version>5.8.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -112,7 +111,7 @@
         <!-- Internal packages -->
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
-            <artifactId>os-core-common</artifactId>
+            <artifactId>os-core-common-spring6</artifactId>
             <version>${os-core-common.version}</version>
         </dependency>
         <dependency>
@@ -154,6 +153,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-inline</artifactId>
+            <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

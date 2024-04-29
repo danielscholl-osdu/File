@@ -17,7 +17,7 @@
 package org.opengroup.osdu.file.validation;
 
 import java.time.LocalDateTime;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.model.file.FileListRequest;
@@ -33,11 +33,11 @@ public class CommonFileListRequestValidator implements FileListRequestValidator 
   private static final String ITEMS_FIELD = "Items";
   private static final String USER_ID_FIELD = "UserID";
 
-  private static final String NOT_BLANK_MESSAGE = "{javax.validation.constraints.NotBlank.message}";
-  private static final String NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
+  private static final String NOT_BLANK_MESSAGE = "{jakarta.validation.constraints.NotBlank.message}";
+  private static final String NOT_NULL_MESSAGE = "{jakarta.validation.constraints.NotNull.message}";
   private static final String POSITIVE_OR_ZERO_MESSAGE =
-      "{javax.validation.constraints.PositiveOrZero.message}";
-  private static final String POSITIVE_MESSAGE = "{javax.validation.constraints.Positive.message}";
+      "{jakarta.validation.constraints.PositiveOrZero.message}";
+  private static final String POSITIVE_MESSAGE = "{jakarta.validation.constraints.Positive.message}";
 
   @Override
   public boolean isValid(FileListRequest request,

@@ -18,7 +18,7 @@
 package org.opengroup.osdu.file.provider.gcp.validation;
 
 import java.util.Objects;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
 import org.opengroup.osdu.file.validation.CommonFileLocationRequestValidator;

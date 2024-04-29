@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -34,10 +34,7 @@ import org.opengroup.osdu.file.exception.*;
 import org.opengroup.osdu.file.service.storage.StorageException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -161,7 +158,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+      HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     String errorMessage = "Parameter validation error :" + ex.getBindingResult().getFieldErrors().toString();
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
     errorResponse.setCode(400);
@@ -215,7 +212,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
   @Override
   protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-                                                                HttpHeaders headers, HttpStatus status, WebRequest request) {
+                                                                HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     if(ex.getMostSpecificCause() instanceof EnumValidationException) {
       String errorMessage = ex.getMostSpecificCause().getMessage();
       ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST);
@@ -229,7 +226,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
       return buildResponseEntity(errorResponse);
     }
     else {
-     ApiError apiError = ApiError.builder().status(status).message("Invalid Json Input").build();
+     ApiError apiError = ApiError.builder().status((HttpStatus) status).message("Invalid Json Input").build();
      return handleExceptionInternal(ex, apiError, headers, status, request);
     }
   }

@@ -2,7 +2,7 @@ package org.opengroup.osdu.file.model.filemetadata.filedetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.opengroup.osdu.file.model.filemetadata.MetaItem;
 import com.fasterxml.jackson.annotation.JsonProperty;

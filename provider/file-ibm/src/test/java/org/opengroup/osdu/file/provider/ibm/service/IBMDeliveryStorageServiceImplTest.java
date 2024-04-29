@@ -29,7 +29,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Date;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.http.HttpStatus;
 import org.junit.Assert;

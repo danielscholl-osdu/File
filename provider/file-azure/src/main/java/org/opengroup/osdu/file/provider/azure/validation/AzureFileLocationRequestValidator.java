@@ -16,7 +16,7 @@
 
 package org.opengroup.osdu.file.provider.azure.validation;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
 import org.opengroup.osdu.file.provider.azure.model.constant.StorageConstant;
@@ -53,6 +53,7 @@ public class AzureFileLocationRequestValidator extends CommonFileLocationRequest
       hibernateContext
           .addExpressionVariable("max_length", StorageConstant.AZURE_MAX_FILEPATH)
           .buildConstraintViolationWithTemplate(FILE_ID_MAX_AZURE_LENGTH)
+          .enableExpressionLanguage()
           .addPropertyNode(FILE_ID_FIELD)
           .addConstraintViolation();
       return false;

@@ -27,7 +27,7 @@ import org.opengroup.osdu.file.model.delivery.UrlSigningResponse;
 import org.opengroup.osdu.file.provider.interfaces.delivery.IDeliveryStorageService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

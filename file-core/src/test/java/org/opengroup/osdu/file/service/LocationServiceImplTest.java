@@ -49,7 +49,7 @@ import org.opengroup.osdu.file.provider.interfaces.IStorageService;
 import org.opengroup.osdu.file.provider.interfaces.IValidationService;
 import org.opengroup.osdu.file.util.JsonUtils;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Date;

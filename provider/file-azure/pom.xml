@@ -30,15 +30,13 @@
     <java.version>17</java.version>
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
-    <jackson.version>2.13.2</jackson.version>
-    <jackson-databind.version>2.14.2</jackson-databind.version>
-    <spring-webmvc.version>5.3.30</spring-webmvc.version>
+    <jackson.version>2.15.4</jackson.version>
+    <jackson-databind.version>2.15.4</jackson-databind.version>
     <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
-    <osdu.corelibazure.version>0.26.0</osdu.corelibazure.version>
-    <osdu.oscorecommon.version>0.26.0</osdu.oscorecommon.version>
-    <netty.version>4.1.101.Final</netty.version>
-    <reactor-netty.version>1.1.14</reactor-netty.version>
-    <reactor-core.version>3.4.19</reactor-core.version>
+    <osdu.corelibazure.version>0.26.0-rc7</osdu.corelibazure.version>
+    <netty.version>4.1.107.Final</netty.version>
+    <reactor-netty.version>1.1.15</reactor-netty.version>
+    <reactor-core.version>3.6.4</reactor-core.version>
     <woodstox-core.version>6.4.0</woodstox-core.version>
     <okhttp.version>4.12.0</okhttp.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
@@ -55,16 +53,23 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2021.0.6</version>
+        <version>2023.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <!-- Inherit managed dependencies from core-lib-azure -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
-        <artifactId>core-lib-azure</artifactId>
+        <artifactId>core-lib-azure-spring6</artifactId>
         <version>${osdu.corelibazure.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -74,7 +79,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>os-core-common</artifactId>
+      <artifactId>os-core-common-spring6</artifactId>
       <version>${os-core-common.version}</version>
       <exclusions>
         <exclusion>
@@ -140,7 +145,6 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
-      <version>9.0.69</version>
       <exclusions>
         <exclusion>
           <artifactId>tomcat-annotations-api</artifactId>
@@ -150,41 +154,8 @@
     </dependency>
     <dependency>
       <groupId>com.azure.spring</groupId>
-      <artifactId>azure-spring-boot-starter-active-directory</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-web</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-web</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-core</artifactId>
-        </exclusion>
-         <exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-config</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty-codec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
+      <version>5.11.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -192,7 +163,7 @@
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-azure</artifactId>
+      <artifactId>core-lib-azure-spring6</artifactId>
       <version>${osdu.corelibazure.version}</version>
       <exclusions>
         <exclusion>
@@ -238,38 +209,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>5.3.30</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-web</artifactId>
-      <version>5.7.11</version>
-      <exclusions>
-	      <exclusion>
-	          <groupId>org.springframework.security</groupId>
-	          <artifactId>spring-security-core</artifactId>
-	        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>5.3.23</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>5.3.23</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>${spring-webmvc.version}</version>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/io.netty/netty-tcnative-boringssl-static -->
     <dependency>
       <groupId>io.netty</groupId>
@@ -279,17 +218,15 @@
     <dependency>
       <groupId>com.azure</groupId>
       <artifactId>azure-core</artifactId>
-      <version>1.42.0</version>
     </dependency>
     <dependency>
       <groupId>com.azure</groupId>
       <artifactId>azure-storage-blob</artifactId>
-      <version>12.24.0</version>
     </dependency>
     <dependency>
-      <groupId>com.azure.resourcemanager</groupId>
-      <artifactId>azure-resourcemanager</artifactId>
-      <version>2.26.0</version>
+      <groupId>com.azure.spring</groupId>
+      <artifactId>spring-cloud-azure-resourcemanager</artifactId>
+      <version>5.11.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -305,22 +242,6 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson-databind.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core</artifactId>
-      <version>5.7.11</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-config</artifactId>
-      <version>5.7.11</version>
-      <exclusions>
-	      <exclusion>
-	          <groupId>org.springframework.security</groupId>
-	          <artifactId>spring-security-core</artifactId>
-	        </exclusion>
-      </exclusions>
     </dependency>
     <!-- reactor-netty related dependencies -->
     <dependency>

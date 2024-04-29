@@ -3,7 +3,7 @@
 
 package org.opengroup.osdu.file.provider.ibm.validation;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.opengroup.osdu.core.common.model.file.FileLocationRequest;
 import org.opengroup.osdu.file.provider.ibm.model.constant.StorageConstant;
@@ -40,6 +40,7 @@ public class IBMFileLocationRequestValidator extends CommonFileLocationRequestVa
       hibernateContext
           .addExpressionVariable("max_length", StorageConstant.GCS_MAX_FILEPATH)
           .buildConstraintViolationWithTemplate(FILE_ID_MAX_GCP_LENGTH)
+          .enableExpressionLanguage()
           .addPropertyNode(FILE_ID_FIELD)
           .addConstraintViolation();
       return false;

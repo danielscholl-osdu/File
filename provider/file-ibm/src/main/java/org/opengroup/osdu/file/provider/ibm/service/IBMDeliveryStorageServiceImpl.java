@@ -22,8 +22,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
@@ -199,7 +199,7 @@ public class IBMDeliveryStorageServiceImpl implements IDeliveryStorageService {
 	  public SignedUrl createSignedUrl(String unsignedUrl, String authorizationToken) {
 	    throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Unsupported Operation Exception",UNSUPPORTED_EXCEPTION_REASON);
 	  }
-	 
+
 	 public Policy createPolicy(String srn, String s3BucketName, String s3ObjectKey) {
 	    	
      	
@@ -245,12 +245,12 @@ public class IBMDeliveryStorageServiceImpl implements IDeliveryStorageService {
 	                 AwsClientBuilder.EndpointConfiguration("https://"+endpointurl, region))
 	                 .withClientConfiguration(clientConfiguration) .withCredentials(new
 	                 AWSStaticCredentialsProvider(credentials)) .build();
-	    	
-	    	
+	    						 					 
+	    						 
 		     AssumeRoleResult response = stsClient.assumeRole(roleRequest);
              Credentials session_creds = response.getCredentials();
 		     
-		     	       
+
 		     String connectionString = "Region="+region+";"+"AccessKeyId="+session_creds.getAccessKeyId()+";"+"SecretKey="+session_creds.getSecretAccessKey()+";"+"SessionToken="+session_creds.getSessionToken()+";"+"EndpointOverride="+"https://"+endpointurl   ;
 	    	 
 		     return connectionString;

@@ -1,6 +1,6 @@
 package org.opengroup.osdu.file.provider.azure.config;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.opengroup.osdu.azure.blobstorage.IBlobServiceClientFactory;
 import org.opengroup.osdu.common.Validators;

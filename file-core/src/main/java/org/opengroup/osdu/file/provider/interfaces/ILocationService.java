@@ -23,7 +23,7 @@ import org.opengroup.osdu.core.common.model.file.LocationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 
 public interface ILocationService {
 

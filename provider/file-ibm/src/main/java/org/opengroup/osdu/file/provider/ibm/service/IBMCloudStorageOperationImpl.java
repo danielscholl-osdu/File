@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -123,7 +123,7 @@ public class IBMCloudStorageOperationImpl implements ICloudStorageOperation {
 	    return operationResponses;
 	  }
 	
-	
+
 	public String[] getFileName(String unsignedUrl) {
 		
 		String[] arr = new String[2];

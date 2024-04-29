@@ -16,7 +16,7 @@
 
 package org.opengroup.osdu.file.validation;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import org.opengroup.osdu.core.common.model.file.FileListRequest;
 
 public interface FileListRequestValidator {

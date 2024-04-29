@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.file.FileListRequest;
