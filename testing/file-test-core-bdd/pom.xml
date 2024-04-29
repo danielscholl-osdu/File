@@ -33,8 +33,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <junit-jupiter.version>5.5.2</junit-jupiter.version>
     <google.oauth.version>0.21.1</google.oauth.version>
-    <os-core-lib-azure.version>0.26.0</os-core-lib-azure.version>
-    <groovy.version>3.0.2</groovy.version>
+    <os-core-lib-azure.version>0.26.0-rc7</os-core-lib-azure.version>
     <argLine>
       --add-opens java.base/java.lang=ALL-UNNAMED
       --add-opens java.base/java.lang.reflect=ALL-UNNAMED
@@ -46,50 +45,37 @@
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>file-core</artifactId>
       <version>0.27.0-SNAPSHOT</version>
+      <exclusions>
+        <!--    Exclude to fix conflict with groovy from rest-assured    -->
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-xml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
       <version>3.9</version>
 		</dependency>
-
     <!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>4.3.1</version>
     </dependency>
     <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>json-path</artifactId>
-      <version>4.3.1</version>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt</artifactId>
+      <version>0.12.5</version>
     </dependency>
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>xml-path</artifactId>
-      <version>4.3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-xml</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-json</artifactId>
-      <version>${groovy.version}</version>
-    </dependency>
-    <dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-		</dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -150,23 +136,29 @@
 
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-azure</artifactId>
+      <artifactId>core-lib-azure-spring6</artifactId>
       <version>${os-core-lib-azure.version}</version>
     </dependency>
 
     <dependency>
 	    <groupId>org.opengroup.osdu</groupId>
-	    <artifactId>os-core-common</artifactId>
-	    <version>0.26.0</version>
+	    <artifactId>os-core-common-spring6</artifactId>
+	    <version>0.26.0-rc2</version>
     </dependency>
   </dependencies>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>io.rest-assured</groupId>
+        <artifactId>rest-assured-bom</artifactId>
+        <version>5.4.0</version>
+        <type>pom</type>
+      </dependency>
       <!-- Inherit managed dependencies from core-lib-azure -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
-        <artifactId>core-lib-azure</artifactId>
+        <artifactId>core-lib-azure-spring6</artifactId>
         <version>${os-core-lib-azure.version}</version>
         <type>pom</type>
         <scope>import</scope>

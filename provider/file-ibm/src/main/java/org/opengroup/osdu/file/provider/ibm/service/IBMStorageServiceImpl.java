@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 //import org.opengroup.osdu.file.provider.ibm.security.WhoamiController;
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;

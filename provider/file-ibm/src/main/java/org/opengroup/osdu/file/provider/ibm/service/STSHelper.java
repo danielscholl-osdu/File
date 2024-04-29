@@ -3,7 +3,7 @@ package org.opengroup.osdu.file.provider.ibm.service;
 import java.time.Instant;
 import java.util.Date;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.opengroup.osdu.file.provider.ibm.model.file.S3Location;
 import org.opengroup.osdu.file.provider.ibm.model.file.TemporaryCredentials;
@@ -146,7 +146,7 @@ public class STSHelper {
 	    	    //Statement 3: Allow Downloading files at the file location
 	    	    Statement AllowDownloadStatement = new Statement(Statement.Effect.Allow);
 	    	    String resource3 = String.format("arn:aws:s3:::%s/%s", fileLocation.bucket, fileLocationKey);    
-	    	    
+
 	    	    AllowDownloadStatement = AllowDownloadStatement
 	    	        .withResources(new Resource(resource3))        
 	    	        .withActions(S3Actions.GetObject, S3Actions.GetBucketLocation);
@@ -154,7 +154,7 @@ public class STSHelper {
 	    	    //Statement 4: Allow Downloading files under the file location
 	    	    Statement AllowDownloadSubpathStatement = new Statement(Statement.Effect.Allow);
 	    	    String resource4 = String.format("arn:aws:s3:::%s/%s/*", fileLocation.bucket, fileLocationKeyWithoutTrailingSlash);    
-	    	    
+
 	    	    AllowDownloadSubpathStatement = AllowDownloadSubpathStatement
 	    	        .withResources(new Resource(resource4))        
 	    	        .withActions(S3Actions.GetObject, S3Actions.GetBucketLocation);
@@ -174,7 +174,7 @@ public class STSHelper {
 	    //Statement 1: Allow Listing files at the file location
 	    Statement listBucketStatement = new Statement(Statement.Effect.Allow);
 	    String resource = String.format("arn:aws:s3:::%s", fileLocation.bucket);    
-	    
+	    			
 	    listBucketStatement = listBucketStatement
 	      .withResources(new Resource(resource))
 	      .withActions(S3Actions.ListObjects);
@@ -191,7 +191,7 @@ public class STSHelper {
 	    //Statement 3: Allow Uploading files at the file location
 	    Statement AllowUploadStatement = new Statement(Statement.Effect.Allow);
 	    String resource3 = String.format("arn:aws:s3:::%s/%s", fileLocation.bucket, fileLocationKey);    
-	    
+
 	    AllowUploadStatement = AllowUploadStatement
 	        .withResources(new Resource(resource3))        
 	        .withActions(S3Actions.PutObject, S3Actions.ListBucketMultipartUploads, 

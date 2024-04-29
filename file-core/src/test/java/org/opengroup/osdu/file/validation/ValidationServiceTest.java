@@ -26,15 +26,16 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorFactory;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorFactory;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.assertj.core.groups.Tuple;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.cfg.context.DefaultConstraintMapping;
+import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -70,6 +71,7 @@ class ValidationServiceTest {
 
   private static Validator validator;
   private IValidationService validationService;
+  private static JavaBeanHelper javaBeanHelper;
 
   @BeforeAll
   static void initAll() {
@@ -79,7 +81,7 @@ class ValidationServiceTest {
     RequestConstraintMappingContributor requestConstraintMappingContributor
         = new RequestConstraintMappingContributor();
     requestConstraintMappingContributor.createConstraintMappings(() -> {
-      DefaultConstraintMapping mapping = new DefaultConstraintMapping();
+      DefaultConstraintMapping mapping = new DefaultConstraintMapping(javaBeanHelper);
       configuration.addMapping(mapping);
       return mapping;
     });

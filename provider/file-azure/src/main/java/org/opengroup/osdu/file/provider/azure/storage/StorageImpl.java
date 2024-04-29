@@ -35,7 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.opengroup.osdu.azure.blobstorage.IBlobContainerClientFactory;
 import org.opengroup.osdu.file.provider.azure.common.base.MoreObjects;

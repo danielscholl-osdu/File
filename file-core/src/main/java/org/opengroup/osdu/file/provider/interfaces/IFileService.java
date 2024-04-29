@@ -16,7 +16,7 @@
 
 package org.opengroup.osdu.file.provider.interfaces;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import org.opengroup.osdu.core.common.model.file.FileRequest;
 import org.opengroup.osdu.core.common.model.file.FileResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;

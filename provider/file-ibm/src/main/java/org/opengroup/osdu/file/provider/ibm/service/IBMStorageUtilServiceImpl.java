@@ -7,8 +7,8 @@ package org.opengroup.osdu.file.provider.ibm.service;
 import java.util.Arrays;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -87,7 +87,7 @@ public class IBMStorageUtilServiceImpl implements IStorageUtilService{
 				  .map(String::trim)
 				  .toArray(String[]::new);
 		  		  
-		  Map<String, Object> rawMetadata = cosFactory.getClient().getObjectMetadata(filePath_split[2], filePath_split[3]).getRawMetadata();		 		  
+		  Map<String, Object> rawMetadata = cosFactory.getClient().getObjectMetadata(filePath_split[2], filePath_split[3]).getRawMetadata();	  	 		
 		  return rawMetadata.get("etag").toString();
 	  }
 	  

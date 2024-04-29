@@ -16,8 +16,8 @@
 
 package org.opengroup.osdu.file.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.model.file.LocationRequest;
 import org.opengroup.osdu.file.validation.annotation.ValidLocationRequest;

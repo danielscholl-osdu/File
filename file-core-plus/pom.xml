@@ -18,9 +18,6 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
-    <spring-webmvc.version>5.3.22</spring-webmvc.version>
-    <jackson-databind.version>2.14.2</jackson-databind.version>
-    <jackson.version>2.13.2</jackson.version>
   </properties>
 
   <dependencyManagement>
@@ -28,11 +25,10 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2021.0.6</version>
+        <version>2023.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>okhttp</artifactId>
@@ -41,7 +37,7 @@
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-bom</artifactId>
-        <version>5.7.11</version>
+        <version>6.2.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -50,44 +46,66 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>file-core</artifactId>
       <version>0.27.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-plus-common-lib</artifactId>
-      <version>0.24.0-rc3</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>os-core-common</artifactId>
+      <artifactId>os-core-common-spring6</artifactId>
       <version>${os-core-common.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-loader</artifactId>
     </dependency>
-
-
+    <dependency>
+      <groupId>org.opengroup.osdu</groupId>
+      <artifactId>core-plus-common-lib</artifactId>
+      <version>0.24.0-rc3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.opengroup.osdu</groupId>
+          <artifactId>os-core-common</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-oqm-core</artifactId>
       <version>0.26.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.opengroup.osdu</groupId>
+          <artifactId>os-core-common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-osm-core</artifactId>
       <version>0.26.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.opengroup.osdu</groupId>
+          <artifactId>os-core-common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-obm-core</artifactId>
       <version>0.26.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.opengroup.osdu</groupId>
+          <artifactId>os-core-common</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
 
@@ -101,22 +119,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${spring-webmvc.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <!--TODO used only in TypeMapper.class, dependency should be removed later when clean dev env is created.-->
@@ -138,7 +140,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <classifier>spring-boot</classifier>
-          <mainClass>org.springframework.boot.loader.PropertiesLauncher</mainClass>
+          <mainClass>org.springframework.boot.loader.launch.PropertiesLauncher</mainClass>
         </configuration>
       </plugin>
     </plugins>

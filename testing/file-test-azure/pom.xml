@@ -34,31 +34,32 @@
         <maven.compiler.source>17</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.main.basedir>${project.basedir}</project.main.basedir>
-        <jackson.version>2.13.2.2</jackson.version>
-        <os-core-common.version>0.26.0</os-core-common.version>
+        <jackson.version>2.15.4</jackson.version>
+        <os-core-common.version>0.26.0-rc2</os-core-common.version>
+        <netty.version>4.1.107.Final</netty.version>
     </properties>
     <dependencies>
         <dependency>
           <groupId>com.azure</groupId>
           <artifactId>azure-storage-blob</artifactId>
-          <version>12.24.0</version>
+          <version>12.25.2</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>com.azure</groupId>
           <artifactId>azure-identity</artifactId>
-          <version>1.3.0</version>
+          <version>1.11.2</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>com.azure</groupId>
           <artifactId>azure-core-http-netty</artifactId>
-          <version>1.13.1</version>
+          <version>1.14.0</version>
         </dependency>
         <dependency>
           <groupId>com.azure</groupId>
           <artifactId>azure-core</artifactId>
-          <version>1.42.0</version>
+          <version>1.46.0</version>
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
@@ -79,7 +80,7 @@
       <!-- Added dependency of core-lib-azure to add Azure Service Principle class -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
-        <artifactId>os-core-common</artifactId>
+        <artifactId>os-core-common-spring6</artifactId>
         <version>${os-core-common.version}</version>
         <exclusions>
           <exclusion>
@@ -94,8 +95,8 @@
       </dependency>
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
-        <artifactId>core-lib-azure</artifactId>
-        <version>0.26.0</version>
+        <artifactId>core-lib-azure-spring6</artifactId>
+        <version>0.26.0-rc7</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -116,7 +117,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>5.3.23</version>
+            <version>6.1.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -153,11 +154,25 @@
     </dependencies>
     <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>3.2.4</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- Inherit managed dependencies from core-lib-azure -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
-        <artifactId>core-lib-azure</artifactId>
-        <version>0.26.0</version>
+        <artifactId>core-lib-azure-spring6</artifactId>
+        <version>0.26.0-rc7</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

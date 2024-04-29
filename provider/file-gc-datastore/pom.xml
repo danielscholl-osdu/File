@@ -34,7 +34,6 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
-    <spring-webmvc.version>5.3.22</spring-webmvc.version>
     <jackson-databind.version>2.14.2</jackson-databind.version>
     <jackson.version>2.13.2</jackson.version>
   </properties>
@@ -44,7 +43,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2021.0.6</version>
+        <version>2023.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -63,11 +62,11 @@
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-bom</artifactId>
-        <version>5.7.11</version>
+        <version>6.2.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-  </dependencies>
+    </dependencies>
   </dependencyManagement>
 
   <dependencies>
@@ -82,12 +81,12 @@
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-gc</artifactId>
-      <version>0.26.0</version>
+      <artifactId>core-lib-gc-spring6</artifactId>
+      <version>0.26.0-rc5</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>os-core-common</artifactId>
+      <artifactId>os-core-common-spring6</artifactId>
       <version>${os-core-common.version}</version>
     </dependency>
 
@@ -118,7 +117,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>${spring-webmvc.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

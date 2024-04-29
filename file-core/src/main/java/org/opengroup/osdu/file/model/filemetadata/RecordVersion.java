@@ -3,8 +3,8 @@ package org.opengroup.osdu.file.model.filemetadata;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.opengroup.osdu.core.common.model.entitlements.Acl;

@@ -16,7 +16,7 @@
 
 package org.opengroup.osdu.file.validation;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.model.file.LocationRequest;
@@ -43,7 +43,7 @@ public class CommonLocationRequestValidator implements LocationRequestValidator 
     if (StringUtils.isBlank(fileID)) {
       constraintValidatorContext.disableDefaultConstraintViolation();
       constraintValidatorContext
-          .buildConstraintViolationWithTemplate("{javax.validation.constraints.NotBlank.message}")
+          .buildConstraintViolationWithTemplate("{jakarta.validation.constraints.NotBlank.message}")
           .addPropertyNode(FILE_ID_FIELD)
           .addConstraintViolation();
       return false;

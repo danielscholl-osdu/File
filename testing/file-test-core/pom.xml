@@ -35,8 +35,8 @@
   <properties>
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
-    <spring-boot.version>2.2.2.RELEASE</spring-boot.version>
-    <os-core-common.version>0.26.0</os-core-common.version>
+    <spring-boot.version>3.2.4</spring-boot.version>
+    <os-core-common.version>0.26.0-rc2</os-core-common.version>
   </properties>
 
   <dependencyManagement>
@@ -54,7 +54,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>os-core-common</artifactId>
+      <artifactId>os-core-common-spring6</artifactId>
       <version>${os-core-common.version}</version>
     </dependency>
     <dependency>

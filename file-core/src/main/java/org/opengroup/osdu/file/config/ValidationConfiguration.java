@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.internal.cfg.context.DefaultConstraintMapping;
+import org.hibernate.validator.internal.properties.javabean.JavaBeanHelper;
 import org.hibernate.validator.spi.cfg.ConstraintMappingContributor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,17 +44,18 @@ public class ValidationConfiguration {
   public static class ValidatorFactoryBean extends LocalValidatorFactoryBean {
 
     private final List<ConstraintMappingContributor> contributors;
+    private static JavaBeanHelper javaBeanHelper;
 
     ValidatorFactoryBean(List<ConstraintMappingContributor> contributors) {
       this.contributors = contributors;
     }
 
     @Override
-    protected void postProcessConfiguration(javax.validation.Configuration<?> cfg) {
+    protected void postProcessConfiguration(jakarta.validation.Configuration<?> cfg) {
       if (cfg instanceof HibernateValidatorConfiguration) {
         HibernateValidatorConfiguration configuration = (HibernateValidatorConfiguration) cfg;
         this.contributors.forEach(contributor -> contributor.createConstraintMappings(() -> {
-          DefaultConstraintMapping mapping = new DefaultConstraintMapping();
+          DefaultConstraintMapping mapping = new DefaultConstraintMapping(javaBeanHelper);
           configuration.addMapping(mapping);
           return mapping;
         }));
