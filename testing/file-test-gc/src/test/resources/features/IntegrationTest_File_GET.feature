@@ -18,7 +18,6 @@ Feature: File service API integration test
 
 
   #Negative scenario for GET /files/uploadURL
-  @File
   Scenario Outline: Verify that File service's GET upload-url API throws an appropriate exception if the signed-url has expired and the same url is used to upload a file
     Given I hit File service GET uploadURL API
     Then service should respond back with a valid <ReponseStatusCode> and upload input file from <InputFilePath>
