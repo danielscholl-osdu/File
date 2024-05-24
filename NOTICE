@@ -374,7 +374,7 @@ The following software have components provided under the terms of this license:
 - Byte Buddy (without dependencies) (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy)
 - Byte Buddy Java agent (from https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
-- Cloud Key Management Service (KMS) API v1-rev20240219-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
+- Cloud Key Management Service (KMS) API v1-rev20240502-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-cloudkms)
 - Cloud Storage JSON API v1-rev20240319-2.0.0 (from https://repo1.maven.org/maven2/com/google/apis/google-api-services-storage)
 - CloudWatch Metrics for AWS Java SDK (from https://aws.amazon.com/sdkforjava)
 - Collections (from https://repo1.maven.org/maven2/commons-collections/commons-collections)
@@ -416,6 +416,9 @@ The following software have components provided under the terms of this license:
 - JBoss Marshalling API (from https://repo1.maven.org/maven2/org/jboss/marshalling/jboss-marshalling)
 - JBoss Marshalling River (from https://repo1.maven.org/maven2/org/jboss/marshalling/jboss-marshalling-river)
 - JCIP Annotations under Apache License (from http://stephenc.github.com/jcip-annotations)
+- JJWT :: API (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt-api)
+- JJWT :: Extensions :: Jackson (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt-jackson)
+- JJWT :: Impl (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt-impl)
 - JJWT :: Legacy Transitive Dependency Jar (from https://repo1.maven.org/maven2/io/jsonwebtoken/jjwt)
 - JMES Path Query library (from https://aws.amazon.com/sdkforjava)
 - JSON Small and Fast Parser (from https://repo1.maven.org/maven2/net/minidev/json-smart, https://urielch.github.io/)
@@ -687,13 +690,6 @@ The following software have components provided under the terms of this license:
 - ThreeTen backport (from https://github.com/ThreeTen/threetenbp, https://www.threeten.org/threetenbp)
 
 ========================================================================
-BSL-1.0
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
-
-========================================================================
 Beerware
 ========================================================================
 The following software have components provided under the terms of this license:
@@ -815,6 +811,7 @@ GPL-2.0-only
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- javax.annotation API (from http://jcp.org/en/jsr/detail?id=250)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 
 ========================================================================
@@ -845,6 +842,7 @@ ISC
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Spring Security - Core (from http://spring.io/spring-security, https://repo1.maven.org/maven2/org/springframework/security/spring-security-core, https://spring.io/projects/spring-security, https://spring.io/spring-security)
 
 ========================================================================
@@ -859,6 +857,8 @@ LGPL-2.1-only
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Java Native Access (from https://github.com/java-native-access/jna, https://github.com/twall/jna)
+- Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Logback Classic Module (from http://logback.qos.ch, https://repo1.maven.org/maven2/ch/qos/logback/logback-classic)
 - Logback Contrib :: JSON :: Classic (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-classic)
 - Logback Contrib :: JSON :: Core (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-core)
@@ -885,7 +885,6 @@ The following software have components provided under the terms of this license:
 
 - AWS Java SDK for AWS Lambda (from https://aws.amazon.com/sdkforjava)
 - Animal Sniffer Annotations (from https://repo1.maven.org/maven2/org/codehaus/mojo/animal-sniffer-annotations)
-- Apache HttpClient Cache (from http://hc.apache.org/httpcomponents-client, http://hc.apache.org/httpcomponents-client-ga)
 - Apache Log4j API (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api)
 - Apache Log4j to SLF4J Adapter (from https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-to-slf4j)
 - Azure Java Client Authentication Library for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
@@ -1039,6 +1038,7 @@ The following software have components provided under the terms of this license:
 
 - Apache Groovy (from http://groovy-lang.org, http://groovy.codehaus.org/, https://groovy-lang.org)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
+- JBoss Logging 3 (from http://www.jboss.org)
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
 - Microsoft Azure client library for Blob Storage (from https://github.com/Azure/azure-sdk-for-java)
 - PostgreSQL JDBC Driver

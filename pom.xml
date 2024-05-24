@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <relativePath />
   </parent>
 
@@ -53,12 +53,14 @@
     <jakarta.inject-api.version>2.0.1</jakarta.inject-api.version>
     <org.mapstruct.version>1.5.1.Final</org.mapstruct.version>
     <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
-    <os-core-common.version>0.26.0-rc2</os-core-common.version>
+    <os-core-common.version>0.27.0-rc1</os-core-common.version>
     <lombok.version>1.18.30</lombok.version>
     <log4j2.version>2.21.1</log4j2.version>
     <springfox.version>3.0.0</springfox.version>
     <openapi.version>2.3.0</openapi.version>
     <json-smart.version>2.5.0</json-smart.version>
+    <spring-framework-version>6.1.6</spring-framework-version>
+
   </properties>
 
   <licenses>
@@ -100,6 +102,59 @@
         <artifactId>json-smart</artifactId>
         <version>${json-smart.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring-framework-version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-bom</artifactId>
+        <version>${spring-security.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>1.5.6</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.5.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>3.2.5</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -130,10 +185,7 @@
 
 
     <!-- Spring Boot-->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
