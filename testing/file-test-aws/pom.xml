@@ -66,7 +66,13 @@
     <dependency>
       <groupId>org.opengroup.osdu.core.aws</groupId>
       <artifactId>os-core-lib-aws</artifactId>
-      <version>0.26.0-spring6-rc1</version>
+      <version>0.26.0-spring6-rc2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.15.1</version>
     </dependency>
 
     <dependency>
