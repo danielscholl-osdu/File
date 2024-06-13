@@ -28,7 +28,7 @@
    - Secret ENV variables - stores secret values in runtime only
 2. Partition level config
    - Non-sensitive partition properties
-   - Sensitive partition properties referencing to Secret ENV variables 
+   - Sensitive partition properties referencing to Secret ENV variables
    - Secret ENV variables - stores secret values in runtime only
 3. Infrastructure config
    - Service account entitlements groups
@@ -45,20 +45,22 @@
 ## Service level config
 
 ### ENV variables to override service level defaults
-| name                                            | value                           | description                                                                                                                  | sensitive? | source                              |
-|-------------------------------------------------|---------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------|
-| `LOG_LEVEL`                                     | `INFO`                          | Logging level                                                                                                                | no         | -                                   |
-| `LOG_PREFIX`                                    | `file`                          | Logging prefix                                                                                                               | no         | -                                   |
-| `GCP_STORAGE_STAGING_AREA`                      | ex `staging-area`               | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`)                                   | no         | output of infrastructure deployment |
-| `GCP_STORAGE_PERSISTENT_AREA`                   | ex `persistent-area`            | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area`                              | no         | output of infrastructure deployment |
-| `PARTITION_PROPERTIES_STAGING_LOCATION_NAME`    | ex `file.staging.location`      | name of partition property for staging location value                                                                        | yes        | -                                   |
-| `PARTITION_PROPERTIES_PERSISTENT_LOCATION_NAME` | ex `file.persistent.location`   | name of partition property for persistent location value                                                                     | yes        | -                                   |
-| `GCP_STATUS_CHANGED_MESSAGING_ENABLED`          | `true` or `false`               | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs | no         | -                                   |
-| `GCP_STATUS_CHANGED_TOPIC`                      | ex `status-changed`             | PubSub topic for status publishing                                                                                           | no         | output of infrastructure deployment |
-| `GCP_FILE_LOCATION_KIND`                        | by default `file-locations-osm` | Kind for Datastore or Table for postgres                                                                                     | no         | -                                   |
+| name                                            | value                                      | description                                                                                                                  | sensitive? | source                              |
+|-------------------------------------------------|--------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------|
+| `LOG_LEVEL`                                     | `INFO`                                     | Logging level                                                                                                                | no         | -                                   |
+| `LOG_PREFIX`                                    | `file`                                     | Logging prefix                                                                                                               | no         | -                                   |
+| `GCP_STORAGE_STAGING_AREA`                      | ex `staging-area`                          | staging area bucket(will be concatenated with project id ex `osdu-cicd-epam-staging-area`)                                   | no         | output of infrastructure deployment |
+| `GCP_STORAGE_PERSISTENT_AREA`                   | ex `persistent-area`                       | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area`                              | no         | output of infrastructure deployment |
+| `PARTITION_PROPERTIES_STAGING_LOCATION_NAME`    | ex `file.staging.location`                 | name of partition property for staging location value                                                                        | yes        | -                                   |
+| `PARTITION_PROPERTIES_PERSISTENT_LOCATION_NAME` | ex `file.persistent.location`              | name of partition property for persistent location value                                                                     | yes        | -                                   |
+| `GCP_STATUS_CHANGED_MESSAGING_ENABLED`          | `true` or `false`                          | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs | no         | -                                   |
+| `GCP_STATUS_CHANGED_TOPIC`                      | ex `status-changed`                        | PubSub topic for status publishing                                                                                           | no         | output of infrastructure deployment |
+| `GCP_FILE_LOCATION_KIND`                        | by default `file-locations-osm`            | Kind for Datastore or Table for postgres                                                                                     | no         | -                                   |
+| `MANAGEMENT_ENDPOINTS_WEB_BASE`                 | ex `/`                                     | Web base for Actuator                                                                                                        | no         | -                                   |
+| `MANAGEMENT_SERVER_PORT`                        | ex `8081`                                  | Port for Actuator                                                                                                            | no         | -                                   |
 
 ### ENV variables to override environment level defaults
-These variables define service behavior, and are used to switch between `reference` or `Google Cloud` environments, 
+These variables define service behavior, and are used to switch between `reference` or `Google Cloud` environments,
 their overriding and usage in mixed mode was not tested. Usage of spring profiles is preferred.
 
 | name                     | value                 | required | description                                                                                                               | sensitive? | source                              |
@@ -70,7 +72,7 @@ their overriding and usage in mixed mode was not tested. Usage of spring profile
 | `PARTITION_AUTH_ENABLED` | `true` or `false`     |          | Disable or enable auth token provisioning for requests to Partition service                                               | no         | -                                   |
 | `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID`     |          | Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no         | -                                   |
 | `ENTITLEMENTS_HOST`      | `http://entitlements` |          | Entitlements service host address                                                                                         | no         | output of infrastructure deployment |
-| `STORAGE_HOST`           | `http://storage`      |          | Storage service host address                                                                                              | no         | output of infrastructure deployment |        
+| `STORAGE_HOST`           | `http://storage`      |          | Storage service host address                                                                                              | no         | output of infrastructure deployment |
 | `PARTITION_HOST`         | `http://partition`    |          | Partition service host address                                                                                            | no         | output of infrastructure deployment |
 
 ### Service level secret ENV variables
