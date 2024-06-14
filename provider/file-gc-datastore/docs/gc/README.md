@@ -56,6 +56,8 @@
 | `GCP_STATUS_CHANGED_MESSAGING_ENABLED`          | `true` or `false`               | If set `true`then status messages will be published to specified topic, otherwise stub publisher will write messages to logs | no         | -                                   |
 | `GCP_STATUS_CHANGED_TOPIC`                      | ex `status-changed`             | PubSub topic for status publishing                                                                                           | no         | output of infrastructure deployment |
 | `GCP_FILE_LOCATION_KIND`                        | by default `file-locations-osm` | Kind for Datastore or Table for postgres                                                                                     | no         | -                                   |
+| `MANAGEMENT_ENDPOINTS_WEB_BASE`                 | ex `/`                          | Web base for Actuator                                                                                                        | no         | -                                   |
+| `MANAGEMENT_SERVER_PORT`                        | ex `8081`                       | Port for Actuator                                                                                                            | no         | -                                   |
 
 ### ENV variables to override environment level defaults
 These variables define service behavior, and are used to switch between `reference` or `Google Cloud` environments,
