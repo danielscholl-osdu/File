@@ -49,10 +49,16 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /api/file/v2/liveness_check
-              port: 8080
+              path: /health/liveness
+              port: 8081
             initialDelaySeconds: 120
             periodSeconds: 20
+          readinessProbe:
+            failureThreshold: 2
+            httpGet: 
+              path: /health/readiness
+              port: 8081
+            periodSeconds: 15
           resources:
             requests:
               cpu: {{ .Values.data.requestsCpu | quote }}
