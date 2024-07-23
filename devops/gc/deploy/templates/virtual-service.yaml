@@ -17,7 +17,7 @@ spec:
   http:
     - match:
         - uri:
-            prefix: "/api/file"
+            prefix: "/api/file/v2"
       route:
         - destination:
             port:
