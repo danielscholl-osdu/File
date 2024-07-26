@@ -34,7 +34,6 @@
 
   <properties>
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
-    <jackson-databind.version>2.14.2</jackson-databind.version>
   </properties>
 
   <dependencyManagement>
@@ -42,7 +41,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2023.0.0</version>
+        <version>2023.0.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -61,7 +60,7 @@
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-bom</artifactId>
-        <version>6.2.3</version>
+        <version>${spring-security.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

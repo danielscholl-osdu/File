@@ -31,7 +31,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
-    <osdu.corelibazure.version>0.26.0-rc7</osdu.corelibazure.version>
+    <core-lib-azure-spring6.version>0.27.0-rc3</core-lib-azure-spring6.version>
     <woodstox-core.version>6.4.0</woodstox-core.version>
     <okhttp.version>4.12.0</okhttp.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
@@ -39,29 +39,15 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.opengroup.osdu</groupId>
-        <artifactId>os-core-common-spring6</artifactId>
-        <version>${os-core-common.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2023.0.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- Inherit managed dependencies from core-lib-azure -->
-      <dependency>
-        <groupId>org.opengroup.osdu</groupId>
-        <artifactId>core-lib-azure-spring6</artifactId>
-        <version>${osdu.corelibazure.version}</version>
+        <version>2023.0.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -86,12 +72,12 @@
     <dependency>
       <groupId>com.azure.spring</groupId>
       <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
-      <version>5.11.0</version>
+      <version>5.14.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-azure-spring6</artifactId>
-      <version>${osdu.corelibazure.version}</version>
+      <version>${core-lib-azure-spring6.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.data</groupId>
@@ -127,15 +113,17 @@
     <dependency>
       <groupId>com.azure</groupId>
       <artifactId>azure-core</artifactId>
+      <version>1.46.0</version>
     </dependency>
     <dependency>
       <groupId>com.azure</groupId>
       <artifactId>azure-storage-blob</artifactId>
+      <version>12.25.2</version>
     </dependency>
     <dependency>
       <groupId>com.azure.spring</groupId>
       <artifactId>spring-cloud-azure-resourcemanager</artifactId>
-      <version>5.11.0</version>
+      <version>5.14.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.woodstox</groupId>
