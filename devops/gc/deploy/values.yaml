@@ -25,7 +25,7 @@ conf:
   fileMinioSecretName: "file-minio-secret"
   fileKeycloakSecretName: "file-keycloak-secret"
   filePostgresSecretName: "file-postgres-secret"
-  replicas: 1
+  replicas: 2
 
 istio:
   proxyCPU: "5m"
