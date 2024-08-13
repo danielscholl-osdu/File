@@ -16,14 +16,13 @@
 
 package org.opengroup.osdu.file.provider.azure.service;
 
-import com.azure.cosmos.implementation.InternalServerErrorException;
 import com.azure.storage.file.datalake.sas.FileSystemSasPermission;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.azure.datalakestorage.DataLakeStore;
 import org.opengroup.osdu.azure.di.MSIConfiguration;
