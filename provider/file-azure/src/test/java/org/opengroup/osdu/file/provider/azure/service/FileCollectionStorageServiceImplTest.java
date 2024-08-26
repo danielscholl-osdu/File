@@ -31,7 +31,6 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
-import org.opengroup.osdu.file.model.SignedUrl;
 import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.azure.TestUtils;
 import org.opengroup.osdu.file.provider.azure.config.DataLakeConfig;
@@ -54,7 +53,10 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class FileCollectionStorageServiceImplTest {
@@ -134,12 +136,19 @@ public class FileCollectionStorageServiceImplTest {
     URL mockSignedUrl = TestUtils.getAzureObjectUrl(TestUtils.STAGING_FILE_SYSTEM_NAME, TestUtils.DIRECTORY_NAME);
     prepareCreateSignedUrlFileLocationMocks(mockSignedUrl);
     when(msiConfiguration.getIsEnabled()).thenReturn(false);
+    List<String> fileNames = List.of("file1.txt", "file2.txt");
+    when(dataLakeStore
+        .getFileNamesFromDirectory(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
+            eq(TestUtils.DIRECTORY_NAME))).thenReturn(fileNames);
 
     RetrievalInstructionsResponse response = fileCollectionStorageServiceImpl.
         createRetrievalInstructions(getFileRetrievalDataList());
 
     then(response.getDatasets().get(0).getProviderKey()).isEqualTo(TestUtils.PROVIDER_KEY);
     then(response.getDatasets().get(0).getDatasetRegistryId()).isEqualTo(TestUtils.FILE_COLLECTION_RECORD_ID);
+    then(response.getDatasets().get(0).getRetrievalProperties().get("fileNames")).isEqualTo(fileNames);
+    then(response.getDatasets().get(0).getRetrievalProperties().get("fileCount")).isEqualTo(fileNames.size());
+
     verifyCreateSignedUrlFileLocationMocks();
   }
 
@@ -208,9 +217,9 @@ public class FileCollectionStorageServiceImplTest {
   private void verifyCreateSignedUrlFileLocationMocks() {
     verify(fileLocationProperties).getUserId();
     verify(expiryTimeUtil).getExpiryTimeInOffsetDateTime(any());
-    verify(serviceHelper).getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
-    verify(serviceHelper).getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
-    verify(dpsHeaders).getPartitionId();
+    verify(serviceHelper, times(2)).getFileSystemNameFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    verify(serviceHelper, times(2)).getRelativeDirectoryPathFromAbsoluteDirectoryPath(TestUtils.ABSOLUTE_DIRECTORY_PATH);
+    verify(dpsHeaders,times(2)).getPartitionId();
     verify(dataLakeStore).generatePreSignedURL(eq(TestUtils.PARTITION), eq(TestUtils.STAGING_FILE_SYSTEM_NAME),
         eq(TestUtils.DIRECTORY_NAME), any(), any());
   }

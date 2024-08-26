@@ -1,5 +1,6 @@
 package org.opengroup.osdu.file.azure.apitest;
 
+import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.file.azure.Helper.DataLakeHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse;
@@ -19,6 +20,7 @@ import util.StorageUtilAzure;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -116,20 +118,23 @@ public class TestFileCollection extends TestBase {
     RetrievalInstructionsResponse retrievalResponse = mapper.readValue(
         retrievalInstructionsResponse.getEntity(String.class), RetrievalInstructionsResponse.class);
 
-    assertEquals("AZURE", retrievalResponse.getDatasets().get(0).getProviderKey());
+    DatasetRetrievalProperties datasetRetrievalProperties = retrievalResponse.getDatasets().get(0);
+    assertEquals("AZURE", datasetRetrievalProperties.getProviderKey());
     assertEquals(1, retrievalResponse.getDatasets().size());
 
-    assertEquals(createdRecords.getRecordIds().get(0),
-        retrievalResponse.getDatasets().get(0).getDatasetRegistryId());
+    assertEquals(createdRecords.getRecordIds().get(0), datasetRetrievalProperties.getDatasetRegistryId());
 
-    assertTrue(retrievalResponse.getDatasets().get(0).getRetrievalProperties().containsKey("signedUrl"));
+    List<String> fileNames = List.of(FIRST_FILE_NAME, SECOND_FILE_NAME, THIRD_FILE_NAME);
+    assertTrue(datasetRetrievalProperties.getRetrievalProperties().containsKey("signedUrl"));
+    assertEquals(fileNames.size(),datasetRetrievalProperties.getRetrievalProperties().get("fileCount"));
+    assertEquals(fileNames ,datasetRetrievalProperties.getRetrievalProperties().get("fileNames"));
 
     //Download file
-    ByteArrayOutputStream firstDownloadedContent = dataLakeHelper.downloadFile(retrievalResponse.getDatasets().get(0)
+    ByteArrayOutputStream firstDownloadedContent = dataLakeHelper.downloadFile(datasetRetrievalProperties
         .getRetrievalProperties().get("signedUrl").toString(), FIRST_FILE_NAME);
-    ByteArrayOutputStream secondDownloadedContent = dataLakeHelper.downloadFile(retrievalResponse.getDatasets().get(0)
+    ByteArrayOutputStream secondDownloadedContent = dataLakeHelper.downloadFile(datasetRetrievalProperties
         .getRetrievalProperties().get("signedUrl").toString(), SECOND_FILE_NAME);
-    ByteArrayOutputStream thirdDownloadedContent = dataLakeHelper.downloadFile(retrievalResponse.getDatasets().get(0)
+    ByteArrayOutputStream thirdDownloadedContent = dataLakeHelper.downloadFile(datasetRetrievalProperties
         .getRetrievalProperties().get("signedUrl").toString(), THIRD_FILE_NAME);
 
     assertEquals(FIRST_FILE_CONTENT, firstDownloadedContent.toString());

@@ -32,10 +32,10 @@ import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.dms.model.StorageInstructionsResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.exception.OsduBadRequestException;
-import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.model.FileRetrievalData;
 import org.opengroup.osdu.file.model.SignedObject;
 import org.opengroup.osdu.file.model.SignedUrl;
+import org.opengroup.osdu.file.model.SignedUrlParameters;
 import org.opengroup.osdu.file.provider.azure.config.BlobStoreConfig;
 import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsDownloadLocation;
 import org.opengroup.osdu.file.provider.azure.model.AzureFileDmsUploadLocation;
@@ -57,7 +57,9 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 

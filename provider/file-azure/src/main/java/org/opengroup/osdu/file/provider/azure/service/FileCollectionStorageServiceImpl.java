@@ -57,6 +57,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -109,7 +110,8 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
         .build();
 
-    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {
+    });
     StorageInstructionsResponse response = StorageInstructionsResponse.builder()
         .providerKey(PROVIDER_KEY)
         .storageLocation(uploadLocation).build();
@@ -120,7 +122,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
   /**
    * Generates Signed URL for File Upload Operations in DMS API Context.
    *
-   * @param directoryID  directoryID
+   * @param directoryID directoryID
    * @param partitionID partition ID
    * @return info about object URI, upload signed URL etc.
    */
@@ -135,7 +137,8 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         .expiryTime(expiryTimeUtil.getExpiryTimeInString(new SignedUrlParameters()))
         .build();
 
-    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
+    Map<String, Object> uploadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {
+    });
     StorageInstructionsResponse response = StorageInstructionsResponse.builder()
         .providerKey(PROVIDER_KEY)
         .storageLocation(uploadLocation).build();
@@ -157,40 +160,49 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
   @Override
   public RetrievalInstructionsResponse createRetrievalInstructions(List<FileRetrievalData> fileRetrievalDataList, SignedUrlParameters signedUrlParameters) {
 
-    List<DatasetRetrievalProperties> datasetRetrievalProperties = new ArrayList<>(fileRetrievalDataList.size());
-
-    for(FileRetrievalData fileRetrievalData : fileRetrievalDataList) {
-      SignedUrl signedUrl = this.createSignedUrlDirectoryLocation(fileRetrievalData.getUnsignedUrl(),
-          signedUrlParameters);
-
-      AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
-          .signedUrl(signedUrl.getUrl().toString())
-          .fileCollectionSource(signedUrl.getFileSource())
-          .createdBy(signedUrl.getCreatedBy())
-          .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
-          .build();
-
-      Map<String, Object> downloadLocation = OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<Map<String, Object>>() {});
-      DatasetRetrievalProperties datasetRetrievalProperty = DatasetRetrievalProperties.builder()
-          .retrievalProperties(downloadLocation)
-          .datasetRegistryId(fileRetrievalData.getRecordId())
-          .providerKey(PROVIDER_KEY)
-          .build();
-
-      datasetRetrievalProperties.add(datasetRetrievalProperty);
-    }
+    List<DatasetRetrievalProperties> datasetRetrievalProperties = fileRetrievalDataList.stream()
+        .map(fileRetrievalDataItem -> DatasetRetrievalProperties.builder()
+            .datasetRegistryId(fileRetrievalDataItem.getRecordId())
+            .retrievalProperties(getRetrievalProperties(signedUrlParameters, fileRetrievalDataItem))
+            .providerKey(PROVIDER_KEY)
+            .build())
+        .toList();
 
     return RetrievalInstructionsResponse.builder()
         .datasets(datasetRetrievalProperties)
         .build();
   }
+
+  private Map<String, Object> getRetrievalProperties(SignedUrlParameters signedUrlParameters, FileRetrievalData fileRetrievalData) {
+    SignedUrl signedUrl = this.createSignedUrlDirectoryLocation(fileRetrievalData.getUnsignedUrl(),
+        signedUrlParameters);
+    List<String> fileNames = getFileNames(fileRetrievalData);
+    AzureFileCollectionDmsUploadLocation dmsLocation = AzureFileCollectionDmsUploadLocation.builder()
+        .signedUrl(signedUrl.getUrl().toString())
+        .fileCollectionSource(signedUrl.getFileSource())
+        .fileNames(fileNames)
+        .fileCount(fileNames.size())
+        .createdBy(signedUrl.getCreatedBy())
+        .expiryTime(expiryTimeUtil.getExpiryTimeInString(signedUrlParameters))
+        .build();
+    return OBJECT_MAPPER.convertValue(dmsLocation, new TypeReference<>() {});
+  }
+
+  private List<String> getFileNames(FileRetrievalData fileRetrievalData) {
+    String fileSystemName = serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(fileRetrievalData.getUnsignedUrl());
+    String directoryPath = serviceHelper.getRelativeDirectoryPathFromAbsoluteDirectoryPath(fileRetrievalData.getUnsignedUrl());
+    List<String> fileNames = dataLakeStore
+        .getFileNamesFromDirectory(dpsHeaders.getPartitionId(), fileSystemName, directoryPath);
+    return fileNames;
+  }
+
   /**
    * Creates the empty object blob in storage.
    * Bucket name is determined by tenant using {@code partitionID}.
    * Object name is concat of a filepath and a fileID. Filepath is determined by user.
    *
-   * @param directoryId        directory ID
-   * @param partitionID        partition ID
+   * @param directoryId directory ID
+   * @param partitionID partition ID
    * @return info about object URI, signed URL and when and who created blob.
    */
   private SignedUrl createSignedUrl(String directoryId, String partitionID, SignedUrlParameters signedUrlParameters) {
@@ -238,7 +250,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
     if (StringUtils.isBlank(unsignedUrl)) {
       throw new IllegalArgumentException(
           String.format("invalid received for unsignedURL (value: %s)",
-               unsignedUrl));
+              unsignedUrl));
     }
 
     String fileSystemName = serviceHelper.getFileSystemNameFromAbsoluteDirectoryPath(unsignedUrl);
@@ -251,7 +263,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
         .getExpiryTimeInOffsetDateTime(signedUrlParameters.getExpiryTime());
 
     String signedUrlString;
-    if(!msiConfiguration.getIsEnabled()) {
+    if (!msiConfiguration.getIsEnabled()) {
       signedUrlString = dataLakeStore
           .generatePreSignedURL(dpsHeaders.getPartitionId(), fileSystemName, directoryPath,
               expiryTime, permission);
@@ -261,7 +273,7 @@ public class FileCollectionStorageServiceImpl implements IFileCollectionStorageS
               expiryTime, permission);
     }
 
-    if(StringUtils.isBlank(signedUrlString)) {
+    if (StringUtils.isBlank(signedUrlString)) {
       throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Internal Server Error",
           String.format("Could not generate signed URL for directory location %s", unsignedUrl));
     }
