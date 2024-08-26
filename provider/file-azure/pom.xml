@@ -31,7 +31,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
-    <core-lib-azure-spring6.version>0.27.0-rc7</core-lib-azure-spring6.version>
+    <core-lib-azure.version>1.0.1</core-lib-azure.version>
     <woodstox-core.version>6.4.0</woodstox-core.version>
     <okhttp.version>4.12.0</okhttp.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
@@ -76,8 +76,8 @@
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>core-lib-azure-spring6</artifactId>
-      <version>${core-lib-azure-spring6.version}</version>
+      <artifactId>core-lib-azure</artifactId>
+      <version>${core-lib-azure.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.data</groupId>

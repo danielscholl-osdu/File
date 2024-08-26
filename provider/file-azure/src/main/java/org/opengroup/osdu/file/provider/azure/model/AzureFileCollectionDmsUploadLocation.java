@@ -21,6 +21,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -28,6 +30,8 @@ import lombok.NoArgsConstructor;
 public class AzureFileCollectionDmsUploadLocation {
   private String signedUrl;
   private String fileCollectionSource;
+  private int fileCount;
+  private List<String> fileNames;
   private String createdBy;
   private String expiryTime;
 }
