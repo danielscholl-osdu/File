@@ -6,7 +6,7 @@ metadata:
   name: {{ .Values.conf.configmap | quote }}
   namespace: {{ .Release.Namespace | quote }}
 data:
-  LOG_LEVEL: {{ .Values.data.logLevel | quote }}
+  LOG_LEVEL: {{ .Values.data.logLevel | default .Values.global.logLevel | quote }}
   ENTITLEMENTS_HOST: {{ .Values.data.entitlementsHost | quote }}
   PARTITION_HOST: {{ .Values.data.partitionHost | quote }}
   STORAGE_HOST: {{ .Values.data.storageHost | quote }}
