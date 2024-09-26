@@ -173,18 +173,18 @@ It can be overridden by:
 | users<br/>service.file.editors<br/>service.file.viewers |
 
 ### Testing ENV variables
-| name                 | value                                  | description                                            | sensitive? | source |
-|----------------------|----------------------------------------|--------------------------------------------------------|------------|--------|
-| `FILE_SERVICE_HOST`  | ex `http://localhost:8080`             | File service url                                       | no         | -      |
-| `ACL_OWNERS`         | `data.default.owners`                  | Acl owners group prefix                                | no         | -      |
-| `ACL_VIEWERS`        | `data.default.viewers`                 | Acl viewers group prefix                               | no         | -      |
-| `DOMAIN`             | ex `osdu-gc.go3-nrg.projects.epam.com` | -                                                      | no         | -      |
-| `TENANT_NAME`        | `opendes`                              | Tenant name                                            | no         | -      |
-| `SHARED_TENANT`      | `opendes`                              | Shared tenant id                                       | no         | -      |
-| `PRIVATE_TENANT1`    | `opendes`                              | Private tenant id                                      | no         | -      |
-| `PRIVATE_TENANT2`    | `opendes`                              | Private tenant id                                      | no         | -      |
-| `INTEGRATION_TESTER` | ex `ewogICJ***`                        | Service account for API calls as Base64 encoded string | yes        | -      |
-| `LEGAL_TAG`          | ex `opendes-storage-tag`               | Valid legal tag name                                   | -          | -      |
+| name                 | value                                    | description                                                              | sensitive? | source |
+|----------------------|------------------------------------------|--------------------------------------------------------------------------|------------|--------|
+| `FILE_SERVICE_HOST`  | ex `http://localhost:8080`               | File service url                                                         | no         | -      |
+| `ACL_OWNERS`         | `data.default.owners`                    | Acl owners group prefix                                                  | no         | -      |
+| `ACL_VIEWERS`        | `data.default.viewers`                   | Acl viewers group prefix                                                 | no         | -      |
+| `DOMAIN`             | ex `osdu-gc.go3-nrg.projects.epam.com`   | -                                                                        | no         | -      |
+| `TENANT_NAME`        | `opendes`                                | Tenant name                                                              | no         | -      |
+| `SHARED_TENANT`      | `opendes`                                | Shared tenant id                                                         | no         | -      |
+| `PRIVATE_TENANT1`    | `opendes`                                | Private tenant id                                                        | no         | -      |
+| `PRIVATE_TENANT2`    | `opendes`                                | Private tenant id                                                        | no         | -      |
+| `INTEGRATION_TESTER` | `ewogICJ0....` or `tmp/service-acc.json` | Service account for API calls as Base64 encoded string or path to a file | yes        | -      |
+| `LEGAL_TAG`          | ex `opendes-storage-tag`                 | Valid legal tag name                                                     | -          | -      |
 
 ## Local config
 

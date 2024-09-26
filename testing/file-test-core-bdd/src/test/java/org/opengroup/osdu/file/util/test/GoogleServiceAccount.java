@@ -1,13 +1,18 @@
 package org.opengroup.osdu.file.util.test;
 
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.function.Predicate;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -17,30 +22,19 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
 public class GoogleServiceAccount {
 
+  private final static Predicate<String> contentAcceptanceTester = s -> s.trim().startsWith("{");
   private static final String DEFAULT_TARGET_AUDIENCE = "osdu";
 
   final ServiceAccountCredentials serviceAccount;
 
-    public GoogleServiceAccount(String serviceAccountEncoded) throws IOException {
-        this(Base64.getDecoder().decode(serviceAccountEncoded));
+  public GoogleServiceAccount(String serviceAccountValue) throws IOException {
+    serviceAccountValue = new DecodedContentExtractor(serviceAccountValue, contentAcceptanceTester).getContent();
+    try (InputStream inputStream = new ByteArrayInputStream(serviceAccountValue.getBytes())) {
+      this.serviceAccount = ServiceAccountCredentials.fromStream(inputStream);
     }
-
-    public GoogleServiceAccount(byte[] serviceAccountJson) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(serviceAccountJson)) {
-
-            this.serviceAccount = ServiceAccountCredentials.fromStream(inputStream);
-        }
-    }
+  }
 
     public String getEmail() {
         return this.serviceAccount.getClientEmail();
