@@ -26,7 +26,7 @@
 
 	<properties>
 		<start-class>org.opengroup.osdu.file.provider.ibm.FileIBMApplication</start-class>
-		<os-core-lib-ibm.version>0.26.0-rc8</os-core-lib-ibm.version>
+		<os-core-lib-ibm.version>0.27.0-SNAPSHOT</os-core-lib-ibm.version>
 		<aws.version>1.12.261</aws.version>
 		<spring-webmvc.version>6.1.6</spring-webmvc.version>
 		<jackson-databind.version>2.14.2</jackson-databind.version>
