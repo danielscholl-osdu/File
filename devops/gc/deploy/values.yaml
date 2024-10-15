@@ -3,6 +3,8 @@ global:
   onPremEnabled: false
   limitsEnabled: true
   logLevel: "ERROR"
+  tier: ""
+  autoscaling: true
 
 data:
   #Deployment
@@ -34,3 +36,20 @@ istio:
   proxyMemory: "50Mi"
   proxyMemoryLimit: "512Mi"
   sidecarInject: true
+
+hpa:
+  minReplicas: 6
+  maxReplicas: 15
+  targetType: "AverageValue"
+  targetValue: 45 #27*0.85*2
+  behaviorScaleUpStabilizationWindowSeconds: 10
+  behaviorScaleUpPoliciesValue: 50
+  behaviorScaleUpPoliciesPeriodSeconds: 15
+  behaviorScaleDownStabilizationWindowSeconds: 60
+  behaviorScaleDownPoliciesValue: 25
+  behaviorScaleDownPoliciesPeriodSeconds: 60
+
+limits:
+  maxTokens: 27
+  tokensPerFill: 27
+  fillInterval: "1s"
