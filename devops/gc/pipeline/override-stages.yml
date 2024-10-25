@@ -2,11 +2,6 @@ variables:
   GC_SERVICE: file
   GC_VENDOR: gc-datastore
 
-gc-baremetal-test:
-  variables:
-    GC_VENDOR: baremetal
-    DOMAIN: $GROUP_ID
-
 gc-dev2-test:
   variables:
     GC_VENDOR: gc
