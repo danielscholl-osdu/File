@@ -15,7 +15,11 @@
 # https://docs.spring.io/spring-boot/docs/current/reference/html/deployment.html
 
 FROM public.ecr.aws/amazoncorretto/amazoncorretto:17
-RUN yum update -y
+
+RUN yum update -y && yum install -y shadow-utils \
+    && groupadd -g 10001 -r appgroup \
+    && useradd -M -g 10001 -r -u 10001 appuser
+
 ARG JAR_FILE=provider/file-aws/target/file-aws*.jar
 
 
@@ -24,4 +28,5 @@ COPY ${JAR_FILE} app.jar
 COPY /provider/file-aws/build-aws/entrypoint.sh /entrypoint.sh
 EXPOSE 8080
 
+USER 10001:10001
 ENTRYPOINT ["/bin/sh", "-c", ". /entrypoint.sh"]
