@@ -41,6 +41,7 @@
     <module>provider/file-gc-datastore</module>
     <module>provider/file-azure</module>
     <module>file-core-plus</module>
+    <module>file-acceptance-test</module>
   </modules>
 
   <properties>
