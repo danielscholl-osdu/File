@@ -28,6 +28,7 @@ variables:
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
+    ref: "remove-quiet-tests-for-file"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/maven.yml"
