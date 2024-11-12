@@ -225,7 +225,6 @@ aws-acceptance-test:
     - !reference [.aws, before_script]
     - !reference [.aws_variables, before_script]
   variables:
-    OPA_INTEGRATION_ENABLED: "true"
   script:
     - export GROUP_ID=$DOMAIN
     - >

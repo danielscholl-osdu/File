@@ -19,10 +19,12 @@ package org.opengroup.osdu.file.util;
 
 import com.google.common.base.Strings;
 
+import static org.opengroup.osdu.file.constants.TestConstants.PRIVILEGED_USER_TOKEN;
+
 public class AuthUtil {
 
   public synchronized String getToken() throws Exception {
-    String token = null;
+    String token = PRIVILEGED_USER_TOKEN;
     if (Strings.isNullOrEmpty(token)) {
       token = new OpenIDTokenProvider().getToken();
     }

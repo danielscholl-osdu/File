@@ -29,8 +29,6 @@ Or tokens can be used directly from env variables:
 | name                    | value      | description           | sensitive? | source |
 |-------------------------|------------|-----------------------|------------|--------|
 | `PRIVILEGED_USER_TOKEN` | `********` | PRIVILEGED_USER Token | yes        | -      |
-| `NO_ACCESS_USER_TOKEN`  | `********` | NO_ACCESS_USER Token  | yes        | -      |
-| `ROOT_USER_TOKEN`       | `********` | ROOT_USER Token       | yes        | -      |
 
 
 Execute following command to build code and run all the integration tests:

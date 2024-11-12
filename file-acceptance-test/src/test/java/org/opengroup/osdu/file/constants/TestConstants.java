@@ -83,4 +83,6 @@ public class TestConstants {
   public static final String TEST_OPENID_PROVIDER_URL = System.getProperty(
       "TEST_OPENID_PROVIDER_URL",
       System.getenv("TEST_OPENID_PROVIDER_URL"));
+  public static final String PRIVILEGED_USER_TOKEN = System.getProperty("PRIVILEGED_USER_TOKEN",
+      System.getenv("PRIVILEGED_USER_TOKEN"));;
 }
