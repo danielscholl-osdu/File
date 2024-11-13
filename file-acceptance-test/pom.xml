@@ -10,7 +10,6 @@
   <packaging>jar</packaging>
 
 
-  <name>file-test-baremetal</name>
   <description>Acceptance Test module</description>
 
   <properties>
