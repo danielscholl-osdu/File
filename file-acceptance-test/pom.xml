@@ -126,6 +126,7 @@
               <excludes>
                 <exclude>none</exclude>
               </excludes>
+              <failIfNoTests>true</failIfNoTests>
               <includes>
                 <include>org.opengroup.osdu.file.runner.FileTestsRunner</include>
                 <include>org.opengroup.osdu.file.runner.FileDmsTestsRunner</include>
