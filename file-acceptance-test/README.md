@@ -20,8 +20,8 @@ Authentication can be provided as OIDC config:
 
 | name                                            | value                                   | description                   | sensitive? | source |
 |-------------------------------------------------|-----------------------------------------|-------------------------------|------------|--------|
-| `TEST_OPENID_PROVIDER_CLIENT_ID`                | `********`                              | OpenId Provider Client Id     | yes        | -      |
-| `TEST_OPENID_PROVIDER_CLIENT_SECRET`            | `********`                              | OpenId Provider Client secret | yes        | -      |
+| `PRIVILEGED_USER_OPENID_PROVIDER_CLIENT_ID`     | `********`                              | PRIVILEGED_USER Client Id     | yes        | -      |
+| `PRIVILEGED_USER_OPENID_PROVIDER_CLIENT_SECRET` | `********`                              | PRIVILEGED_USER Client secret | yes        | -      |
 | `TEST_OPENID_PROVIDER_URL`                      | `https://keycloak.com/auth/realms/osdu` | OpenID provider url           | yes        | -      |
 
 Or tokens can be used directly from env variables:
@@ -37,7 +37,7 @@ Execute following command to build code and run all the integration tests:
  # Note: this assumes that the environment variables for integration tests as outlined
  #       above are already exported in your environment.
  # build + install integration test core
- $ (cd file-acceptance-test && mvn clean test)
+ $ (cd file-acceptance-test && mvn clean verify)
  ```
 
 ## License

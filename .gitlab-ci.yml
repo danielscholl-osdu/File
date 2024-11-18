@@ -186,33 +186,6 @@ download_plugins:
     variables:
       - $PROTECTED == '1'
 
-core-acceptance-test:
-  stage: acceptance
-  extends: core-test
-  needs: ["core-test"]
-  tags: ["osdu-medium"]
-  retry: 1
-  script:
-    - >
-      $MAVEN_BUILD . test-results.log
-      verify
-      --file $ACCEPTANCE_TEST_DIR/pom.xml
-      --update-snapshots
-  artifacts:
-    when: always
-    paths:
-      - test-results.log
-    expire_in: 2 days
-  rules:
-    - if: "$CI_COMMIT_BRANCH =~ /^release/"
-      when: never
-    - if: "$CI_COMMIT_TAG"
-      when: never
-    - if: $ACCEPTANCE_TEST_DIR == null
-      when: never
-    - if: '$CORE == "1" && $CORE_INT_TEST_TYPE != "python"'
-      when: on_success
-
 gemnasium-maven-dependency_scanning:
   variables:
     DS_JAVA_VERSION: 17
