@@ -1,12 +1,12 @@
 /**
 * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-* 
+*
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 *      http://www.apache.org/licenses/LICENSE-2.0
-* 
+*
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,7 @@ package org.opengroup.osdu.file.provider.aws.impl;
 import java.net.MalformedURLException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
@@ -64,7 +61,7 @@ public class StorageServiceImpl implements IStorageService {
     private final DpsHeaders headers;
     private final ObjectMapper objectMapper;
     private final ExpiryTimeUtil expiryTimeUtil;
-    
+
 
     @Autowired
     public StorageServiceImpl(FileLocationProvider fileLocationProvider,
@@ -137,17 +134,17 @@ public class StorageServiceImpl implements IStorageService {
         String fileName = signedUrlParameters.getFileName();
         String contentType = signedUrlParameters.getContentType();
         ResponseHeaderOverrides responseHeaderOverrides = new ResponseHeaderOverrides();
-        
+
         if (Objects.nonNull(fileName) && !fileName.isEmpty()) {
         	responseHeaderOverrides.setContentDisposition("attachment; filename =\"" + fileName + "\"");
-        	
+
         }
-        
+
         if (Objects.nonNull(contentType) && !contentType.isEmpty()) {
         	responseHeaderOverrides.setContentType(contentType);
         }
-        
-        
+
+
         final RelativeTimeValue relativeTimeValue = expiryTimeUtil.getExpiryTimeValueInTimeUnit(signedUrlParameters.getExpiryTime());
         final long expireInMillis = relativeTimeValue.getTimeUnit().toMillis(relativeTimeValue.getValue());
         final Duration expiration = Duration.ofMillis(expireInMillis);
