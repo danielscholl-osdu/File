@@ -1,12 +1,12 @@
 /**
 * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-* 
+*
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 *      http://www.apache.org/licenses/LICENSE-2.0
-* 
+*
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,7 @@
 
 package org.opengroup.osdu.file.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -48,6 +46,7 @@ import org.opengroup.osdu.core.common.model.file.FileListRequest;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.datamodel.entity.FileLocationDoc;
@@ -62,7 +61,7 @@ public class FileLocationRepositoryImplTest {
     private final String fileID = "fileID";
     private final String partitionID = "partitionID";
     private final DriverType driver = DriverType.GCS;
-    private final String location = "location"; 
+    private final String location = "location";
     private final Date createdAt = Date.from(Instant.now());
     private final String createdBy = "createdBy";
     private final String cursor = "cursor";
@@ -148,9 +147,31 @@ public class FileLocationRepositoryImplTest {
         when(doc.createFileLocationFromDoc()).thenReturn(new FileLocation());
         when(dynamoDBQueryHelperFactory.getQueryHelperForPartition(any(DpsHeaders.class), any())).thenReturn(queryHelper);
         doReturn(docs).when(queryHelper).scanPage(any(), anyInt(), any(), anyString(), anyMap());
-        //when(queryHelper.scanPage(any(), anyInt(), any(), anyString(), anyMap())).thenReturn(docs);
         when(headers.getPartitionIdWithFallbackToAccountId()).thenReturn(partitionID);
 
         assertNotNull(repository.findAll(request));
+    }
+
+    @Test
+    public void testFindAll_empty() throws InvalidCursorException, UnsupportedEncodingException {
+
+        short num = 1000;
+
+        FileListRequest request = new FileListRequest(LocalDateTime.of(2024, 11, 21, 15, 21, 4), LocalDateTime.of(2040, 1, 1, 1, 0, 0), 0, num, "userID");
+        List<FileLocationDoc> results = new ArrayList<FileLocationDoc>();
+        DynamoDBQueryHelperV2 queryHelper = mock(DynamoDBQueryHelperV2.class);
+        QueryPageResult<FileLocationDoc> docs = new QueryPageResult<FileLocationDoc>(cursor, results);
+
+        when(dynamoDBQueryHelperFactory.getQueryHelperForPartition(any(DpsHeaders.class), any())).thenReturn(queryHelper);
+        doReturn(docs).when(queryHelper).scanPage(any(), anyInt(), any(), anyString(), anyMap());
+        when(headers.getPartitionIdWithFallbackToAccountId()).thenReturn(partitionID);
+
+        FileLocationNotFoundException exception = assertThrows(FileLocationNotFoundException.class, () -> {
+            repository.findAll(request);
+        });
+
+        assertEquals("No file locations found for user userID and time range 2024-11-21T15:21:04 to 2040-01-01T01:00", exception.getMessage());
+
+
     }
 }
