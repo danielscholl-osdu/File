@@ -1,12 +1,12 @@
 /**
 * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-* 
+*
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 *      http://www.apache.org/licenses/LICENSE-2.0
-* 
+*
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.helper.*;
@@ -96,9 +97,7 @@ public class StorageUtilServiceImpl implements IStorageUtilService {
     private S3Object getS3Object(String fileLocation) {
         S3Location unsignedLocation = S3Location.of(fileLocation);
         if (!unsignedLocation.isValid()) {
-            throw new AppException(HttpStatus.BAD_REQUEST.value(),
-                "Malformed URL",
-                "Unsigned URL invalid, needs to be full S3 path");
+            throw new OsduBadRequestException(FileMetadataConstant.INVALID_SOURCE_EXCEPTION + fileLocation);
         }
 
         final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(this.headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
