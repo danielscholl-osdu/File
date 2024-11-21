@@ -23,6 +23,7 @@ import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.file.constant.ChecksumAlgorithm;
 import org.opengroup.osdu.file.constant.FileMetadataConstant;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.helper.*;
@@ -96,9 +97,7 @@ public class StorageUtilServiceImpl implements IStorageUtilService {
     private S3Object getS3Object(String fileLocation) {
         S3Location unsignedLocation = S3Location.of(fileLocation);
         if (!unsignedLocation.isValid()) {
-            throw new AppException(HttpStatus.BAD_REQUEST.value(),
-                "Malformed URL",
-                "Unsigned URL invalid, needs to be full S3 path");
+            throw new OsduBadRequestException(FileMetadataConstant.INVALID_SOURCE_EXCEPTION + fileLocation);
         }
 
         final String stsRoleArn = stsRoleHelper.getRoleArnForPartition(this.headers, providerConfigurationBag.stsRoleIamParameterRelativePath);
