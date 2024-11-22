@@ -64,7 +64,7 @@ public class TestConstants {
 	public static final String ACL_VIEWERS_GROUP_VALUE = System.getProperty("ACL_VIEWERS",
 			System.getenv("ACL_VIEWERS"));
 	public static final String ACL_OWNERS_GROUP_VALUE = System.getProperty("ACL_OWNERS", System.getenv("ACL_OWNERS"));
-	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("DOMAIN", System.getenv("DOMAIN"));
+	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("ENTITLEMENTS_DOMAIN", System.getenv("ENTITLEMENTS_DOMAIN"));
 	public static final String LEGAL_TAGS_VALUE = System.getProperty("LEGAL_TAG", System.getenv("LEGAL_TAG"));
 
 	public static final String GET_LOCATION = "/v2/getLocation";
@@ -84,5 +84,8 @@ public class TestConstants {
       "TEST_OPENID_PROVIDER_URL",
       System.getenv("TEST_OPENID_PROVIDER_URL"));
   public static final String PRIVILEGED_USER_TOKEN = System.getProperty("PRIVILEGED_USER_TOKEN",
-      System.getenv("PRIVILEGED_USER_TOKEN"));;
+      System.getenv("PRIVILEGED_USER_TOKEN"));
+  public static final String SIGNED_URL_EXPIRY_TIME_MINUTES = System.getProperty("SIGNED_URL_EXPIRY_TIME_MINUTES",
+      System.getenv("SIGNED_URL_EXPIRY_TIME_MINUTES"));
+  public static final int MAX_SIGNED_URL_EXPIRY_TIME_MINUTES = 20;
 }

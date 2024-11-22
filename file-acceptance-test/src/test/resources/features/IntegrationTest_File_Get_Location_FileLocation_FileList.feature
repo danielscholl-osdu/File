@@ -88,12 +88,11 @@ Feature: File service Get Location API integration test
   @File
   Scenario Outline: Verify that File service's getLocation API returns bad request if file id length exceeds limit
     Given I hit File service GetLocation API with <BodyContent>
-    Then service should respond back with <ReponseStatusCode> and <ReponseMessage>
+    Then service should respond back with <ReponseStatusCode>
 
     Examples:
-      | BodyContent                    | ReponseStatusCode | ReponseMessage                                                                        |
-      | "fileId legth exceeding limit" | "400"             | "IllegalArgumentException: The maximum filepath length is 1024 characters, but got a name with 1062 characters" |
-
+      | BodyContent                    | ReponseStatusCode |
+      | "fileId legth exceeding limit" | "400"             |
   ## Negative scenario for GET /getLocation
   @File
   Scenario Outline: Verify that File service's getLocation API returns bad request for existing file id

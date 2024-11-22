@@ -213,6 +213,10 @@ public class FileStepDef_GET implements En {
 					String id = this.context.getId();
 
 					Map<String, String> queryParam = new HashMap<>();
+          //updating the expiry time, if configured from env variable
+          expiryTimeInMinutes = CommonUtility.getSignedURLExpiryTime(expiryTimeInMinutes);
+          LOGGER.log(Level.INFO, "Configured Expiry Time for Signed URL is " + expiryTimeInMinutes);
+
 					queryParam.put(TestConstants.EXPIRY_TIME_PARA_NAME, expiryTimeInMinutes);
 
 					HttpRequest httpRequest = HttpRequest.builder()
@@ -243,7 +247,7 @@ public class FileStepDef_GET implements En {
 
 		And("I should not be able to download the file after {string}", (String expiryTimeInMinutes) -> {
 			// wait for timeout to expire
-			CommonUtility.customStaticWait_Max_5_Minutes(
+			CommonUtility.customStaticWait_Timeout_Minutes(
 					Long.valueOf(expiryTimeInMinutes.substring(0, expiryTimeInMinutes.length() - 1)));
 
 			String response = this.context.getHttpResponse().getBody();
@@ -262,7 +266,7 @@ public class FileStepDef_GET implements En {
 
 	}
 
-	private String readDownloadedFileContent(BufferedReader br) throws IOException {
+  private String readDownloadedFileContent(BufferedReader br) throws IOException {
 		String inputLine;
 		StringBuilder downloadedFile = new StringBuilder();
 		while ((inputLine = br.readLine()) != null) {

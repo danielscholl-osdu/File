@@ -2,17 +2,17 @@
 
 You will need to have the following environment variables defined.
 
-| name                | value                              | description                   | sensitive? | source |
-|---------------------|------------------------------------|-------------------------------|------------|--------|
-| `ACL_OWNERS`        | ex `data.default.owners`           | ACL Owner privilege           | no         | -      |
-| `ACL_VIEWERS`       | ex `data.default.viewers`          | ACL Viewer privilege          | no         | -      |
-| `FILE_SERVICE_HOST` | ex`http://localhost:8080/api/file` | Endpoint of File service host | no         | -      |
-| `TENANT_NAME`       | ex `opendes`                       | OSDU tenant used for testing  | no         | --     |
-| `SHARED_TENANT`     | ex `opendes`                       | Shared Tenant name            | no         | -      |
-| `PRIVATE_TENANT1`   | ex `opendes`                       | Private Tenant                | no         | -      |
-| `PRIVATE_TENANT2`   | ex `opendes`                       | Private Tenant 2              | no         | -      |
-| `LEGAL_TAG`         | ex `opendes`                       | Legal Tag name                | no         | -      |
-| `DOMAIN`            | ex `group`                         | Group ID                      | no         | -      |
+| name                  | value                              | description                   | sensitive? | source |
+|-----------------------|------------------------------------|-------------------------------|------------|--------|
+| `ACL_OWNERS`          | ex `data.default.owners`           | ACL Owner privilege           | no         | -      |
+| `ACL_VIEWERS`         | ex `data.default.viewers`          | ACL Viewer privilege          | no         | -      |
+| `FILE_SERVICE_HOST`   | ex`http://localhost:8080/api/file` | Endpoint of File service host | no         | -      |
+| `TENANT_NAME`         | ex `opendes`                       | OSDU tenant used for testing  | no         | --     |
+| `SHARED_TENANT`       | ex `opendes`                       | Shared Tenant name            | no         | -      |
+| `PRIVATE_TENANT1`     | ex `opendes`                       | Private Tenant                | no         | -      |
+| `PRIVATE_TENANT2`     | ex `opendes`                       | Private Tenant 2              | no         | -      |
+| `LEGAL_TAG`           | ex `opendes`                       | Legal Tag name                | no         | -      |
+| `ENTITLEMENTS_DOMAIN` | ex `group`                         | Group ID                      | no         | -      |
 
 
 
