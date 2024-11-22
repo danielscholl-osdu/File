@@ -1,12 +1,12 @@
 /**
 * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-* 
+*
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 *      http://www.apache.org/licenses/LICENSE-2.0
-* 
+*
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,7 @@ import org.opengroup.osdu.core.common.model.file.FileListResponse;
 import org.opengroup.osdu.core.common.model.file.FileLocation;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
 import org.opengroup.osdu.file.exception.OsduException;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.datamodel.entity.FileLocationDoc;
@@ -42,6 +43,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 @Slf4j
 @Repository
@@ -132,16 +135,24 @@ public class FileLocationRepositoryImpl implements IFileLocationRepository {
         }
 
         if (docs != null) {
+            log.debug("Found {} records", docs.results.size());
+
+            if (docs.results.isEmpty()) {
+                throw new FileLocationNotFoundException(
+                    format("No file locations found for user %s and time range %s to %s", request.getUserID(), request.getTimeFrom(), request.getTimeTo()));
+            }
+
+
             List<FileLocation> locations = new ArrayList<>();
             for (FileLocationDoc doc : docs.results) {
                 locations.add(doc.createFileLocationFromDoc());
             }
 
             response = FileListResponse.builder()
-                                       .content(locations)
-                                       .size(pageSize)
-                                       .number(pageNum)
-                                       .numberOfElements(locations.size()).build();
+                .content(locations)
+                .size(pageSize)
+                .number(pageNum)
+                .numberOfElements(locations.size()).build();
         }
 
         return response;
