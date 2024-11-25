@@ -17,6 +17,8 @@
 
 package org.opengroup.osdu.file.constants;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class TestConstants {
 	public static final String FORWARD_SLASH = "/";
 	public static final String PUT_ENDPOINT = "";
@@ -62,8 +64,9 @@ public class TestConstants {
 	public static final String TENANT_NAME_PLACEHOLDER_VALUE = System.getProperty("TENANT_NAME",
 			System.getenv("TENANT_NAME"));
 	public static final String ACL_VIEWERS_GROUP_VALUE = System.getProperty("ACL_VIEWERS",
-			System.getenv("ACL_VIEWERS"));
-	public static final String ACL_OWNERS_GROUP_VALUE = System.getProperty("ACL_OWNERS", System.getenv("ACL_OWNERS"));
+      StringUtils.isNotEmpty(System.getenv("ACL_VIEWERS")) ? System.getenv("ACL_VIEWERS") : "data.default.viewers");
+	public static final String ACL_OWNERS_GROUP_VALUE = System.getProperty("ACL_OWNERS",
+      StringUtils.isNotEmpty(System.getenv("ACL_OWNERS")) ? System.getenv("ACL_OWNERS") : "data.default.owners");
 	public static final String CLOUD_DOMAIN_VALUE = System.getProperty("ENTITLEMENTS_DOMAIN", System.getenv("ENTITLEMENTS_DOMAIN"));
 	public static final String LEGAL_TAGS_VALUE = System.getProperty("LEGAL_TAG", System.getenv("LEGAL_TAG"));
 
