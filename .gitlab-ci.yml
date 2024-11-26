@@ -23,6 +23,8 @@ variables:
   AWS_DEPLOY_TARGET: TF
   AWS_EKS_DEPLOYMENT_NAME: os-file
 
+  ACCEPTANCE_TEST_DIR: "file-acceptance-test"
+
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
