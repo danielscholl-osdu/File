@@ -27,8 +27,8 @@ public class ProviderConfigurationBag {
     @Value("${aws.region}")
     public String amazonRegion;
 
-    @Value("${aws.s3.signed-url.expiration-days}")
-    public int s3SignedUrlExpirationTimeInDays;
+    @Value("${aws.s3.signed-url.expiration-minutes}")
+    public int s3SignedUrlExpirationTimeInMinutes;
 
     @Value("${aws.s3.endpoint}")
     public String s3Endpoint;
@@ -59,8 +59,8 @@ public class ProviderConfigurationBag {
 
     @PostConstruct
     public void init() {
-        if (s3SignedUrlExpirationTimeInDays == 0) {
-            s3SignedUrlExpirationTimeInDays = 1; //default to 1 if unset
+        if (s3SignedUrlExpirationTimeInMinutes == 0) {
+            s3SignedUrlExpirationTimeInMinutes = 60;
         }
     }
 }

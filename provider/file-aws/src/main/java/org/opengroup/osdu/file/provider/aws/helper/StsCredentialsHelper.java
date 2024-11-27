@@ -1,12 +1,12 @@
 /**
 * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-* 
+*
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-* 
+*
 *      http://www.apache.org/licenses/LICENSE-2.0
-* 
+*
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,10 +22,12 @@ import com.amazonaws.auth.policy.Resource;
 import com.amazonaws.auth.policy.Statement;
 import com.amazonaws.auth.policy.actions.S3Actions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.Credentials;
 import org.opengroup.osdu.core.aws.sts.STSConfig;
+import org.opengroup.osdu.file.exception.OsduBadRequestException;
 import org.opengroup.osdu.file.provider.aws.auth.TemporaryCredentials;
 import org.opengroup.osdu.file.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.file.provider.aws.model.S3Location;
@@ -37,10 +39,6 @@ import java.util.Date;
 
 @Component
 public class StsCredentialsHelper {
-
-    // Role to role chaining limits credential duration to a max of 1 hr
-    // https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html#iam-term-role-chaining
-    private static final Integer MAX_DURATION_IN_SECONDS = 3_600;
 
     private final AWSSecurityTokenService securityTokenService;
 
@@ -66,23 +64,28 @@ public class StsCredentialsHelper {
         Instant now = Instant.now();
         UUID uuid = UUID.randomUUID();
         String roleSessionName = uuid.toString();
-        long duration = Math.min(((expiration.getTime() - now.toEpochMilli()) / 1_000), MAX_DURATION_IN_SECONDS);
+        long duration = Math.round(((expiration.getTime() - now.toEpochMilli()) / 1_000.0) / 60.0) * 60;
 
-        AssumeRoleRequest roleRequest = new AssumeRoleRequest()
-            .withRoleArn(roleArn)
-            .withRoleSessionName(roleSessionName)
-            .withDurationSeconds((int) duration)
-            .withPolicy(policy.toJson());
+        try {
+            AssumeRoleRequest roleRequest = new AssumeRoleRequest()
+                .withRoleArn(roleArn)
+                .withRoleSessionName(roleSessionName)
+                .withDurationSeconds((int) duration)
+                .withPolicy(policy.toJson());
 
-        AssumeRoleResult response = securityTokenService.assumeRole(roleRequest);
-        Credentials sessionCredentials = response.getCredentials();
+            AssumeRoleResult response = securityTokenService.assumeRole(roleRequest);
+            Credentials sessionCredentials = response.getCredentials();
 
-        return TemporaryCredentials.builder()
-            .accessKeyId(sessionCredentials.getAccessKeyId())
-            .expiration(sessionCredentials.getExpiration())
-            .secretAccessKey(sessionCredentials.getSecretAccessKey())
-            .sessionToken(sessionCredentials.getSessionToken())
-            .build();
+            return TemporaryCredentials.builder()
+                .accessKeyId(sessionCredentials.getAccessKeyId())
+                .expiration(sessionCredentials.getExpiration())
+                .secretAccessKey(sessionCredentials.getSecretAccessKey())
+                .sessionToken(sessionCredentials.getSessionToken())
+                .build();
+
+        } catch (AWSSecurityTokenServiceException e) {
+            throw new OsduBadRequestException("Failed to assume role: " + e.getMessage(), e);
+        }
     }
 
     private Policy createUploadPolicy(S3Location fileLocation) {

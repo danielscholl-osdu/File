@@ -119,7 +119,7 @@ public class FileLocationProviderImpl implements FileLocationProvider {
             .withFolder(partitionID)
             .withFolder(RandomStringUtils.randomAlphanumeric(RANDOM_KEY_LENGTH));
 
-        final Duration expirationDuration = Duration.ofDays(providerConfigurationBag.s3SignedUrlExpirationTimeInDays);
+        final Duration expirationDuration = Duration.ofMinutes(providerConfigurationBag.s3SignedUrlExpirationTimeInMinutes);
         final Date expiration = ExpirationDateHelper.getExpiration(Instant.now(), expirationDuration);
         final S3Location unsignedLocation = s3LocationBuilder.build();
 
