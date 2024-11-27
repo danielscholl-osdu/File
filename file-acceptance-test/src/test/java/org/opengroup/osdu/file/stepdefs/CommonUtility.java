@@ -94,14 +94,15 @@ public class CommonUtility {
 		return RandomStringUtils.randomAlphanumeric(1025).toLowerCase();
 	}
 
-  public static void customStaticWait_Timeout_Minutes(long timeout) {
-    int expiryTime = Integer.parseInt(getSignedURLExpiryTime(String.valueOf(timeout)));
+  public static void customStaticWait_Timeout_Minutes() {
+
+    int expiryTime = Integer.parseInt(getSignedURLExpiryTime());
     // adding an extra minute to avoid race condition between the actual wait and configured wait in Awaitility, so that actual wait time is always less.
     Awaitility.setDefaultTimeout(Duration.ONE_MINUTE.multiply(expiryTime).plus(Duration.ONE_MINUTE));
     await().pollDelay(expiryTime, TimeUnit.MINUTES).until(() -> true);
   }
 
-  public static String getSignedURLExpiryTime(String expiryTimeInMinutes) {
-    return StringUtils.isNotEmpty(TestConstants.SIGNED_URL_EXPIRY_TIME_MINUTES) ? TestConstants.SIGNED_URL_EXPIRY_TIME_MINUTES : expiryTimeInMinutes;
+  public static String getSignedURLExpiryTime() {
+    return StringUtils.isNotEmpty(TestConstants.SIGNED_URL_EXPIRY_TIME_MINUTES) ? TestConstants.SIGNED_URL_EXPIRY_TIME_MINUTES : "1";
   }
 }
