@@ -208,16 +208,16 @@ public class FileStepDef_GET implements En {
 					compareFileContent(outputFilePath, inputFilePath);
 				});
 
-		When("I hit File service GET download signed API with a valid Id and {string}",
-				(String expiryTimeInMinutes) -> {
+		When("I hit File service GET download signed API with a valid Id and expiry",
+				() -> {
 					String id = this.context.getId();
 
 					Map<String, String> queryParam = new HashMap<>();
           //updating the expiry time, if configured from env variable
-          expiryTimeInMinutes = CommonUtility.getSignedURLExpiryTime(expiryTimeInMinutes);
+          String expiryTimeInMinutes = CommonUtility.getSignedURLExpiryTime();
           LOGGER.log(Level.INFO, "Configured Expiry Time for Signed URL is " + expiryTimeInMinutes);
 
-					queryParam.put(TestConstants.EXPIRY_TIME_PARA_NAME, expiryTimeInMinutes);
+					queryParam.put(TestConstants.EXPIRY_TIME_PARA_NAME, expiryTimeInMinutes + "M");
 
 					HttpRequest httpRequest = HttpRequest.builder()
 							.url(TestConstants.HOST + TestConstants.GET_SIGNEDURL_DOWNLOAD_ENDPOINT1 + id
@@ -245,10 +245,9 @@ public class FileStepDef_GET implements En {
 			}
 		});
 
-		And("I should not be able to download the file after {string}", (String expiryTimeInMinutes) -> {
+		And("I should not be able to download the file after expiry period", () -> {
 			// wait for timeout to expire
-			CommonUtility.customStaticWait_Timeout_Minutes(
-					Long.valueOf(expiryTimeInMinutes.substring(0, expiryTimeInMinutes.length() - 1)));
+			CommonUtility.customStaticWait_Timeout_Minutes();
 
 			String response = this.context.getHttpResponse().getBody();
 			DownloadUrlResponse signedURLResp = JsonUtils.getPojoFromJSONString(DownloadUrlResponse.class, response);

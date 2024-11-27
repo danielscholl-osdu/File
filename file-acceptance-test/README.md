@@ -2,19 +2,18 @@
 
 You will need to have the following environment variables defined.
 
-| name                  | value                              | description                   | sensitive? | source |
-|-----------------------|------------------------------------|-------------------------------|------------|--------|
-| `ACL_OWNERS`          | ex `data.default.owners`           | ACL Owner privilege           | no         | -      |
-| `ACL_VIEWERS`         | ex `data.default.viewers`          | ACL Viewer privilege          | no         | -      |
-| `FILE_SERVICE_HOST`   | ex`http://localhost:8080/api/file` | Endpoint of File service host | no         | -      |
-| `TENANT_NAME`         | ex `opendes`                       | OSDU tenant used for testing  | no         | --     |
-| `SHARED_TENANT`       | ex `opendes`                       | Shared Tenant name            | no         | -      |
-| `PRIVATE_TENANT1`     | ex `opendes`                       | Private Tenant                | no         | -      |
-| `PRIVATE_TENANT2`     | ex `opendes`                       | Private Tenant 2              | no         | -      |
-| `LEGAL_TAG`           | ex `opendes`                       | Legal Tag name                | no         | -      |
-| `ENTITLEMENTS_DOMAIN` | ex `group`                         | Group ID                      | no         | -      |
-
-
+| name                             | value                              | description                   | sensitive? | source | required |
+|----------------------------------|------------------------------------|-------------------------------|------------|--------|----------|
+| `ACL_OWNERS`                     | ex `data.default.owners`           | ACL Owner privilege           | no         | -      | no       |
+| `ACL_VIEWERS`                    | ex `data.default.viewers`          | ACL Viewer privilege          | no         | -      | no       |
+| `SIGNED_URL_EXPIRY_TIME_MINUTES` | ex `15`                            | Time to wait for file expiry  | no         | -      | no       |
+| `ENTITLEMENTS_DOMAIN`            | ex `group`                         | Group ID                      | no         | -      | yes      |
+| `FILE_SERVICE_HOST`              | ex`http://localhost:8080/api/file` | Endpoint of File service host | no         | -      | yes      |
+| `TENANT_NAME`                    | ex `opendes`                       | OSDU tenant used for testing  | no         | -      | yes      |
+| `SHARED_TENANT`                  | ex `opendes`                       | Shared Tenant name            | no         | -      | yes      |
+| `PRIVATE_TENANT1`                | ex `opendes`                       | Private Tenant                | no         | -      | yes      |
+| `PRIVATE_TENANT2`                | ex `opendes`                       | Private Tenant 2              | no         | -      | yes      |
+| `LEGAL_TAG`                      | ex `opendes`                       | Legal Tag name                | no         | -      | yes      |
 
 Authentication can be provided as OIDC config:
 

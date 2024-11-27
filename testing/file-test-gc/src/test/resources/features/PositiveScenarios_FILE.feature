@@ -40,13 +40,13 @@ Feature: File Service API integration test
     Then service should respond back with a valid <getReponseStatusCode> and upload input file from <inputFilePath>
     When I hit File service metadata service POST API with <inputPayload> and data-partition-id as <tenant>
     Then Service should respond back with <postReponseStatusCode>
-    When I hit File service GET download signed API with a valid Id and <expiryTimeInMinutes>
+    When I hit File service GET download signed API with a valid Id
     Then I should be able to download the file within expiry period
-    And I should not be able to download the file after <expiryTimeInMinutes>
+    And I should not be able to download the file after expiry period
 
     Examples:
-      | expiryTimeInMinutes | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                   | outputFilePath                                 | outPathToCreateFile                                               |
-      | "1M"                | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/test.csv" | "/sample_downloaded_files/test_downloaded.csv" | "/src/test/resources/sample_downloaded_files/test_downloaded.csv" |
+      | getReponseStatusCode | inputPayload                               | postReponseStatusCode | tenant            | inputFilePath                   | outputFilePath                                 | outPathToCreateFile                                               |
+      | "200"                | "/input_payloads/File_CorrectPayload.json" | "201"                 | "PRIVATE_TENANT1" | "/sample_upload_files/test.csv" | "/sample_downloaded_files/test_downloaded.csv" | "/src/test/resources/sample_downloaded_files/test_downloaded.csv" |
 
   @File
   Scenario Outline: Verify that checksum is added to the file's metadata
