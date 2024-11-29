@@ -66,46 +66,22 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-plus-common-lib</artifactId>
-      <version>0.24.0-rc3</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opengroup.osdu</groupId>
-          <artifactId>os-core-common</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>0.27.2</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-oqm-core</artifactId>
-      <version>0.26.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opengroup.osdu</groupId>
-          <artifactId>os-core-common</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>0.27.2</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-osm-core</artifactId>
-      <version>0.26.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opengroup.osdu</groupId>
-          <artifactId>os-core-common</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>0.27.3</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-obm-core</artifactId>
-      <version>0.26.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.opengroup.osdu</groupId>
-          <artifactId>os-core-common</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>0.27.3</version>
     </dependency>
 
 
@@ -119,14 +95,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-    </dependency>
-
-    <!--TODO used only in TypeMapper.class, dependency should be removed later when clean dev env is created.-->
-
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-datastore</artifactId>
-      <version>2.21.3</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

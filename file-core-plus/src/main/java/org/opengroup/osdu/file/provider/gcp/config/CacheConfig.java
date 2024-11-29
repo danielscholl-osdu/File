@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class CacheConfig {
 
-  private final GcpConfigurationProperties properties;
+  private final CorePlusConfigurationProperties properties;
 
   @Bean
   public ICache<String, PartitionInfo> partitionInfoCache() {

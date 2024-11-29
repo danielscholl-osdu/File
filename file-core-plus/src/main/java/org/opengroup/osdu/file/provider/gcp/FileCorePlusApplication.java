@@ -25,10 +25,10 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationPropertiesScan(basePackages = "org.opengroup")
 @SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
 @PropertySource("classpath:swagger.properties")
-public class FileDatastoreApplication {
+public class FileCorePlusApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(FileDatastoreApplication.class, args);
+    SpringApplication.run(FileCorePlusApplication.class, args);
   }
 
 }

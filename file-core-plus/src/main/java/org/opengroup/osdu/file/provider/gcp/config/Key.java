@@ -1,6 +1,6 @@
 /*
- *  Copyright 2020-2023 Google LLC
- *  Copyright 2020-2023 EPAM Systems, Inc
+ *  Copyright 2020-2024 Google LLC
+ *  Copyright 2020-2024 EPAM Systems, Inc
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,20 @@
  *  limitations under the License.
  */
 
-/**
- * This module contains the provider-level implementation of the service interfaces defined in the core module.
- */
-package org.opengroup.osdu.file.provider.gcp.provider;
+package org.opengroup.osdu.file.provider.gcp.config;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
+public class Key {
+
+  private Long id;
+}

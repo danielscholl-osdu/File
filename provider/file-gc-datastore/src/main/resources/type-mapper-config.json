@@ -1,0 +1,19 @@
+{
+  "instrumentations": [
+    {
+      "entityType": "org.opengroup.osdu.file.provider.gcp.model.FileLocationOsm",
+      "fieldNameCustomMapping": {},
+      "fieldTypeCustomMapping": {
+        "createdAt": "shaded.osm.com.google.cloud.Timestamp"
+      },
+      "identityTranslator": {
+        "getIdMethod": "getId",
+        "setIdMethod": "setId",
+        "keyClass": "java.lang.Long"
+      },
+      "keyFields": [
+        "id"
+      ]
+    }
+  ]
+}

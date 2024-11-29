@@ -23,19 +23,11 @@ Pre-requisites
 * Lombok 1.18.26 or later
 * Maven 3.8.0+
 
-### Baremetal Service Configuration
-
-[Baremetal service configuration](docs/baremetal/README.md)
-
 ##***REMOVED*** Service Configuration
 
 [Google Cloud service configuration](docs/gc/README.md)
 
 ## Testing
-
-#### Baremetal
-
-[Baremetal Testing](docs/baremetal/README.md)
 
 ###***REMOVED***
 

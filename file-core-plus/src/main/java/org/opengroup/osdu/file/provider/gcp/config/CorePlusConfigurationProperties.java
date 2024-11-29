@@ -22,12 +22,21 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Setter
-@Getter
 @Configuration
-@ConfigurationProperties(prefix = "partition.properties")
-public class PartitionPropertyNames {
+@ConfigurationProperties(prefix = "gcp")
+@Getter
+@Setter
+public class CorePlusConfigurationProperties {
 
-  private String stagingLocationName;
-  private String persistentLocationName;
+  private String fileLocationKind;
+  private int partitionInfoVmCacheExpTime = 60;
+  private int partitionInfoVmCacheSize = 100;
+  private SignedUrl signedUrl = new SignedUrl();
+
+  @Getter
+  @Setter
+  public static class SignedUrl {
+
+    private int expirationDays = 1;
+  }
 }
