@@ -6,6 +6,12 @@ ARG PROVIDER_NAME
 ENV PROVIDER_NAME $PROVIDER_NAME
 ARG PORT
 ENV PORT $PORT
+ENV LOADER_PATH="gc/"
+
+COPY tmp-gc/gc-oqm-pubsub-*.jar gc/oqm-pubsub.jar
+COPY tmp-gc/gc-obm-gs-*.jar gc/obm-gs.jar
+COPY tmp-gc/gc-osm-datastore-*.jar gc/osm-datastore.jar
+
 # Copy the jar to the production image from the builder stage.
 COPY provider/file-${PROVIDER_NAME}/target/file-${PROVIDER_NAME}-*-spring-boot.jar file-${PROVIDER_NAME}.jar
 # Add a non-root user
@@ -17,4 +23,5 @@ USER 10001:10001
 CMD java -Djava.security.egd=file:/dev/./urandom \
          -Dserver.port=${PORT} \
          -Dlog4j.formatMsgNoLookups=true \
+         -Dloader.main=org.opengroup.osdu.file.provider.gcp.FileGcpDatastoreApplication \
          -jar /app/file-${PROVIDER_NAME}.jar

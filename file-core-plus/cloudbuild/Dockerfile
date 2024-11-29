@@ -24,5 +24,5 @@ CMD java -Djava.security.egd=file:/dev/./urandom \
          -Dserver.port=${PORT} \
          -Dlog4j.formatMsgNoLookups=true \
          -Dloader.path=plugins/ \
-         -Dloader.main=org.opengroup.osdu.file.provider.gcp.FileDatastoreApplication \
+         -Dloader.main=org.opengroup.osdu.file.provider.gcp.FileCorePlusApplication \
          -jar /app/file-${PROVIDER_NAME}.jar

@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.PropertySource;
 
 @ConfigurationPropertiesScan(basePackages = "org.opengroup")
-@SpringBootApplication(scanBasePackages = "org.opengroup.osdu.file")
+@SpringBootApplication(scanBasePackages = "org.opengroup.osdu")
 @PropertySource("classpath:swagger.properties")
 public class FileGcpDatastoreApplication {
 

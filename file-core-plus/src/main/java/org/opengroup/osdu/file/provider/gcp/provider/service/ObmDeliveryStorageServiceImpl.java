@@ -28,7 +28,7 @@ import org.opengroup.osdu.core.obm.core.ObmPathProvider;
 import org.opengroup.osdu.core.obm.core.model.DirectoryInfo;
 import org.opengroup.osdu.core.obm.core.persistence.ObmDestination;
 import org.opengroup.osdu.file.model.delivery.SignedUrl;
-import org.opengroup.osdu.file.provider.gcp.config.GcpConfigurationProperties;
+import org.opengroup.osdu.file.provider.gcp.config.CorePlusConfigurationProperties;
 import org.opengroup.osdu.file.provider.interfaces.delivery.IDeliveryStorageService;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +38,7 @@ public class ObmDeliveryStorageServiceImpl implements IDeliveryStorageService {
 
   private final DpsHeaders dpsHeaders;
   private final Driver obmDriver;
-  private final GcpConfigurationProperties properties;
+  private final CorePlusConfigurationProperties properties;
   private final ObmPathProvider pathProvider;
 
   @Override

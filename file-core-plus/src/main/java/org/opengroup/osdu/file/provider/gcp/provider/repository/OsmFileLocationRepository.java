@@ -45,7 +45,7 @@ import org.opengroup.osdu.core.osm.core.model.where.predicate.Ge;
 import org.opengroup.osdu.core.osm.core.model.where.predicate.Le;
 import org.opengroup.osdu.core.osm.core.service.Context;
 import org.opengroup.osdu.file.exception.FileLocationNotFoundException;
-import org.opengroup.osdu.file.provider.gcp.config.GcpConfigurationProperties;
+import org.opengroup.osdu.file.provider.gcp.config.CorePlusConfigurationProperties;
 import org.opengroup.osdu.file.provider.gcp.model.FileLocationOsm;
 import org.opengroup.osdu.file.provider.interfaces.IFileLocationRepository;
 import org.springframework.beans.support.PagedListHolder;
@@ -60,7 +60,7 @@ public class OsmFileLocationRepository implements IFileLocationRepository {
   private static final String FILE_ID = "fileID";
 
   private final Context osmDatabaseContext;
-  private final GcpConfigurationProperties configurationProperties;
+  private final CorePlusConfigurationProperties configurationProperties;
   private final TenantInfo tenantInfo;
   private final Random random = new Random();
 
@@ -82,7 +82,7 @@ public class OsmFileLocationRepository implements IFileLocationRepository {
     this.random.setSeed(fileLocation.hashCode());
     long aLong = random.nextLong();
     FileLocationOsm fileLocationOsm = new FileLocationOsm(fileLocation, aLong);
-    return osmDatabaseContext.createAndGet(fileLocationOsm, getDestination()).toFileLocation();
+    return osmDatabaseContext.createAndGet(getDestination(), fileLocationOsm).toFileLocation();
   }
 
   //  TODO refactor after pagination implemented in osm

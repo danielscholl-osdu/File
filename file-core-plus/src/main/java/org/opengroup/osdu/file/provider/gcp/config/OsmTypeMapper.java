@@ -17,16 +17,15 @@
 
 package org.opengroup.osdu.file.provider.gcp.config;
 
-import com.google.cloud.Timestamp;
-import com.google.cloud.datastore.Key;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.sql.Timestamp;
 import java.util.Collections;
 import org.opengroup.osdu.core.osm.core.persistence.IdentityTranslator;
 import org.opengroup.osdu.core.osm.core.translate.Instrumentation;
 import org.opengroup.osdu.core.osm.core.translate.TypeMapper;
 import org.opengroup.osdu.file.provider.gcp.model.FileLocationOsm;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
