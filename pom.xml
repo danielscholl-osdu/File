@@ -60,7 +60,7 @@
     <openapi.version>2.3.0</openapi.version>
     <json-smart.version>2.5.0</json-smart.version>
     <spring-framework-version>6.1.13</spring-framework-version>
-    <spring-security.version>6.3.3</spring-security.version>
+    <spring-security.version>6.3.4</spring-security.version>
   </properties>
 
   <licenses>
