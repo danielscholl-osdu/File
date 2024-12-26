@@ -18,18 +18,21 @@ package org.opengroup.osdu.file.provider.azure.model.entity;
 
 import java.util.Date;
 
+import com.azure.spring.data.cosmos.core.mapping.Container;
+import com.azure.spring.data.cosmos.core.mapping.PartitionKey;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//@Document(collection = "file-locations")
+@Container(containerName = "file-locations")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class FileLocationEntity {
 
+  @PartitionKey
   String id;
 
   String fileID;

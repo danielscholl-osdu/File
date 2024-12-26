@@ -58,7 +58,7 @@ public class ServiceHelper {
     }
     catch (Exception e) {
       throw new InternalServerErrorException(
-          String.format("Could not parse {%s} from file path provided {%s}\n %s",matchingString, input, e));
+          String.format("Could not parse {%s} from file path provided {%s}\n %s",matchingString, input, e), 500);
     }
   }
 }

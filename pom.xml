@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.1</version>
+    <version>3.3.2</version>
     <relativePath />
   </parent>
 
@@ -57,9 +57,9 @@
     <lombok.version>1.18.30</lombok.version>
     <log4j2.version>2.21.1</log4j2.version>
     <springfox.version>3.0.0</springfox.version>
-    <openapi.version>2.3.0</openapi.version>
+    <openapi.version>2.6.0</openapi.version>
     <json-smart.version>2.5.0</json-smart.version>
-    <spring-framework-version>6.1.13</spring-framework-version>
+    <spring-framework-version>6.1.14</spring-framework-version>
     <spring-security.version>6.3.4</spring-security.version>
   </properties>
 

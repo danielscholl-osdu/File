@@ -226,7 +226,7 @@ public class StorageServiceImpl implements IStorageService {
     }
 
    if(StringUtils.isBlank(signedUrlString)) {
-      throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl));
+      throw new InternalServerErrorException(String.format("Could not generate signed URL for file location %s", unsignedUrl), 500);
     }
 
     return SignedUrl.builder()
