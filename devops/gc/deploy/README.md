@@ -54,7 +54,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 | **data.requestsMemory**     | amount of requested memory   | string | `450Mi`        | yes                                    |
 | **data.limitsCpu**          | CPU limit                    | string | `1`            | only if `global.limitsEnabled` is true |
 | **data.limitsMemory**       | memory limit                 | string | `1G`           | only if `global.limitsEnabled` is true |
-| **data.serviceAccountName** | name of your service account | string | -              | yes                                    |
+| **data.serviceAccountName** | name of your service account | string | `file`         | yes                                    |
 | **data.imagePullPolicy**    | when to pull image           | string | `IfNotPresent` | yes                                    |
 | **data.image**              | service image                | string | -              | yes                                    |
 
