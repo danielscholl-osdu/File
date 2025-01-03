@@ -12,7 +12,7 @@ data:
   requestsMemory: "350Mi"
   limitsCpu: "1"
   limitsMemory: "1G"
-  serviceAccountName: ""
+  serviceAccountName: "file"
   imagePullPolicy: "IfNotPresent"
   image: ""
   #Configmap
