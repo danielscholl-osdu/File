@@ -15,24 +15,29 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.2</version>
-    <relativePath />
-  </parent>
-
   <groupId>org.opengroup.osdu</groupId>
   <artifactId>os-file</artifactId>
   <version>0.28.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-
   <name>file</name>
   <description>File service</description>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.7</version>
+    <relativePath />
+  </parent>
 
   <modules>
     <module>file-core</module>
@@ -48,31 +53,53 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-boot.version>3.2.4</spring-boot.version>
+
+    <!-- OSDU Versions-->
+    <os-core-common.version>0.27.0-rc4</os-core-common.version>
+
+    <!-- Spring Versions-->
+    <!--
+       Important: spring-boot.version must be the same as the parent version
+    -->
+    <spring-boot.version>3.3.7</spring-boot.version>
     <spring-cloud.version>2023.0.1</spring-cloud.version>
+    <spring-framework-version>6.1.16</spring-framework-version>
+    <spring-security.version>6.3.6</spring-security.version>
+
+    <!-- Project Versions-->
+    <json-smart.version>2.5.0</json-smart.version>
+    <openapi.version>2.6.0</openapi.version>
+    <lombok.version>1.18.30</lombok.version>
+    <guava.version>32.0.1-jre</guava.version>
+    <log4j2.version>2.21.1</log4j2.version>
+    <logback.version>1.5.16</logback.version>
     <jakarta.inject-api.version>2.0.1</jakarta.inject-api.version>
     <org.mapstruct.version>1.5.1.Final</org.mapstruct.version>
-    <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
-    <os-core-common.version>0.27.0-rc1</os-core-common.version>
-    <lombok.version>1.18.30</lombok.version>
-    <log4j2.version>2.21.1</log4j2.version>
     <springfox.version>3.0.0</springfox.version>
-    <openapi.version>2.6.0</openapi.version>
-    <json-smart.version>2.5.0</json-smart.version>
-    <spring-framework-version>6.1.14</spring-framework-version>
-    <spring-security.version>6.3.4</spring-security.version>
+    <snakeyaml.version>2.1</snakeyaml.version>
+    <commons-collections4.version>4.4</commons-collections4.version>
+
+    <!-- Plugin Versions -->
+    <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
+    <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+    <maven-pmd-plugin.version>3.21.0</maven-pmd-plugin.version>
+    <spotbugs-maven-plugin.version>4.7.3.6</spotbugs-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
   </properties>
 
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
 
   <dependencyManagement>
+    <!-- BOMs listed in order of dependency hierarchy:
+      spring-boot-dependencies first as it's the parent BOM providing default dependency management,
+      spring-security-bom second as it may need to override Spring Framework versions for security purposes,
+      spring-framework-bom third as it provides core dependencies that can be safely overridden by the security BOM
+      os-core-common last as it provides the default dependencies for the project.dependency>
+    -->
+
+    <!-- BOM Section Start-->
     <dependencies>
+      <!-- 1. Spring Boot BOM (via parent) -->
+      <!-- 2. Spring Cloud Dependencies -->
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
@@ -80,28 +107,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-to-slf4j</artifactId>
-        <version>${log4j2.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${log4j2.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.minidev</groupId>
-        <artifactId>json-smart</artifactId>
-        <version>${json-smart.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${spring-framework-version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+      <!-- 3. Spring Security BOM -->
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-bom</artifactId>
@@ -109,26 +115,20 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- 4. Spring Framework BOM -->
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.5.6</version>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-framework-bom</artifactId>
+        <version>${spring-framework-version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.5.6</version>
-        <exclusions>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+      <!-- BOM Section End-->
+
+      <!-- Any dependencies here will be used by all projects. -->
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
-        <version>3.2.5</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework.boot</groupId>
@@ -148,21 +148,41 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-to-slf4j</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.minidev</groupId>
+        <artifactId>json-smart</artifactId>
+        <version>${json-smart.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.inject</groupId>
-      <artifactId>jakarta.inject-api</artifactId>
-      <version>${jakarta.inject-api.version}</version>
-    </dependency>
-
     <!-- OSDU -->
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -170,15 +190,7 @@
       <version>${os-core-common.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>${openapi.version}</version>
-    </dependency>
-
-
-    <!-- Spring Boot-->
-
+    <!-- Spring -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
@@ -188,15 +200,44 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-json</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
 
+    <!-- MISC Version Controlled by BOM -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
+      <artifactId>hibernate-validator</artifactId>
+      <groupId>org.hibernate.validator</groupId>
+    </dependency>
+
+    <!-- MISC -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${openapi.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <version>${jakarta.inject-api.version}</version>
+    </dependency>
+
+
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-      <version>4.4</version>
+      <version>${commons-collections4.version}</version>
     </dependency>
 
     <dependency>
@@ -208,17 +249,13 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>32.0.1-jre</version>
+      <version>${guava.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-    </dependency>
-
-    <dependency>
-      <artifactId>hibernate-validator</artifactId>
-      <groupId>org.hibernate.validator</groupId>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${snakeyaml.version}</version>
     </dependency>
 
     <!-- Testing -->
@@ -244,18 +281,11 @@
       <version>5.6.0</version>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>2.0</version>
-    </dependency>
 
   </dependencies>
 
   <build>
     <pluginManagement>
-
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -304,12 +334,11 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven-checkstyle-plugin.version}</version>
         <configuration>
           <configLocation>google_checks.xml</configLocation>
         </configuration>
@@ -325,7 +354,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.21.0</version>
+        <version>${maven-pmd-plugin.version}</version>
         <configuration>
           <targetJdk>${java.version}</targetJdk>
           <excludes>
@@ -348,7 +377,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.7.3.6</version>
+        <version>${spotbugs-maven-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -361,7 +390,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.10</version>
+        <version>${jacoco-maven-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -400,24 +429,6 @@
     </plugins>
   </build>
 
-  <repositories>
-    <repository>
-      <id>${repo.releases.id}</id>
-      <url>${repo.releases.url}</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <repository>
-      <id>${publish.releases.id}</id>
-      <url>${publish.releases.url}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${publish.snapshots.id}</id>
-      <url>${publish.snapshots.url}</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <profiles>
     <profile>
       <id>Default</id>
@@ -437,4 +448,21 @@
     </profile>
   </profiles>
 
+  <repositories>
+    <repository>
+      <id>${repo.releases.id}</id>
+      <url>${repo.releases.url}</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>${publish.releases.id}</id>
+      <url>${publish.releases.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${publish.snapshots.id}</id>
+      <url>${publish.snapshots.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>

@@ -31,7 +31,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
-    <core-lib-azure.version>2.0.2</core-lib-azure.version>
+    <core-lib-azure.version>2.0.3</core-lib-azure.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
     <azure-sdk.version>1.2.30</azure-sdk.version>
     <azure-spring.version>5.18.0</azure-spring.version>
