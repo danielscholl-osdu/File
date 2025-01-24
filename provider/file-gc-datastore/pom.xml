@@ -37,10 +37,22 @@
   </properties>
 
   <dependencies>
+
+    <!-- LogBack vesion stuck to 1.5.6 to use contrib of 0.1.5 -->
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>file-core-plus</artifactId>
       <version>0.28.0-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback.contrib</groupId>
