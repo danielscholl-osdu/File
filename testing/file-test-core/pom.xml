@@ -54,7 +54,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>os-core-common</artifactId>
+      <artifactId>os-core-common-spring6</artifactId>
       <version>${os-core-common.version}</version>
     </dependency>
     <dependency>

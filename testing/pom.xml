@@ -51,11 +51,6 @@
     </repository>
   </repositories>
 
-  <properties>
-    <!-- OSDU Versions-->
-    <os-core-common.version>3.3.0</os-core-common.version>
-  </properties>
-
   <distributionManagement>
     <repository>
       <id>${publish.releases.id}</id>
