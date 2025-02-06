@@ -1,13 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!-- ~ Copyright 2020 Microsoft ~ ~ Licensed under the Apache License, Version
-	2.0 (the "License"); ~ you may not use this file except in compliance with
-	the License. ~ You may obtain a copy of the License at ~ ~ https://www.apache.org/licenses/LICENSE-2.0
-	~ ~ Unless required by applicable law or agreed to in writing, software ~
-	distributed under the License is distributed on an "AS IS" BASIS, ~ WITHOUT
-	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ~ See the
-	License for the specific language governing permissions and ~ limitations
-	under the License. -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2020 Microsoft
 
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -26,17 +32,40 @@
   <description>Azure implementation of File service APIs for CosmosDB and Blob Storage</description>
 
   <properties>
+    <!-- Build Properties -->
     <spring-boot.repackage.skip>false</spring-boot.repackage.skip>
     <java.version>17</java.version>
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
-    <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
+
+    <!-- Azure Dependencies -->
     <core-lib-azure.version>2.0.3</core-lib-azure.version>
-    <commons-fileupload.version>1.5</commons-fileupload.version>
     <azure-sdk.version>1.2.30</azure-sdk.version>
     <azure-spring.version>5.18.0</azure-spring.version>
     <azure-core.version>1.45.0</azure-core.version>
+
+    <!-- Spring Dependencies -->
+    <spring-cloud.version>2023.0.4</spring-cloud.version>
+
+    <!-- Utility Dependencies -->
+    <commons-fileupload.version>1.5</commons-fileupload.version>
     <lombok.version>1.18.24</lombok.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
+    <netty-tcnative.version>2.0.46.Final</netty-tcnative.version>
+    <slf4j.version>2.0.9</slf4j.version>
+    <checker-compat-qual.version>2.5.5</checker-compat-qual.version>
+
+    <!-- Test Dependencies -->
+    <junit-jupiter.version>5.10.1</junit-jupiter.version>
+    <mockito.version>5.8.0</mockito.version>
+    <byte-buddy.version>1.14.11</byte-buddy.version>
+    <jacoco.version>0.8.8</jacoco.version>
+
+    <!-- Plugin Dependencies -->
+    <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+    <!-- Sonar Configuration -->
+    <sonar.coverage.exclusions>**/*org/opengroup/osdu/file/provider/azure/config/**/*,**/*org/opengroup/osdu/file/provider/azure/model/**/*,**/*org/opengroup/osdu/file/provider/azure/common/base/**/*,**/*org/opengroup/osdu/file/provider/azure/security/**/*,**/*org/opengroup/osdu/file/provider/azure/FileAzureApplication.class</sonar.coverage.exclusions>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -57,7 +86,7 @@
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
-        <version>2023.0.4</version>
+        <version>${spring-cloud.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -65,6 +94,7 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- OSDU Dependencies -->
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-core-common</artifactId>
@@ -73,31 +103,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.9</version>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>5.10.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>5.8.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>5.8.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.bytebuddy</groupId>
-      <artifactId>byte-buddy</artifactId>
-      <version>1.14.11</version>
-      <scope>test</scope>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
@@ -123,14 +129,6 @@
       <version>0.28.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-log4j2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.azure.spring</groupId>
-      <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-lib-azure</artifactId>
       <version>${core-lib-azure.version}</version>
@@ -142,7 +140,7 @@
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>checker-compat-qual</artifactId>
-      <version>2.5.5</version>
+      <version>${checker-compat-qual.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -163,7 +161,13 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-tcnative-boringssl-static</artifactId>
-      <version>2.0.46.Final</version>
+      <version>${netty-tcnative.version}</version>
+    </dependency>
+
+    <!-- Azure Dependencies -->
+    <dependency>
+      <groupId>com.azure.spring</groupId>
+      <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
     </dependency>
     <dependency>
       <groupId>com.azure</groupId>
@@ -178,22 +182,55 @@
       <artifactId>spring-cloud-azure-resourcemanager</artifactId>
     </dependency>
 
+    <!-- Spring Dependencies -->
     <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct</artifactId>
-      <version>1.5.5.Final</version>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.mapstruct</groupId>
-      <artifactId>mapstruct-processor</artifactId>
-      <version>1.5.5.Final</version>
-      <scope>provided</scope>
-    </dependency>
+
+    <!-- Utility Dependencies -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>${mapstruct.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>${byte-buddy.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -201,7 +238,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.8</version>
+        <version>${jacoco.version}</version>
         <configuration>
           <excludes>
             <exclude>**/*org/opengroup/osdu/file/provider/azure/config/**</exclude>
@@ -241,12 +278,12 @@
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
-              <version>1.5.5.Final</version>
+              <version>${mapstruct.version}</version>
             </path>
             <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok-mapstruct-binding</artifactId>
-              <version>0.2.0</version>
+              <version>${lombok-mapstruct-binding.version}</version>
             </path>
           </annotationProcessorPaths>
           <compilerArgs>
