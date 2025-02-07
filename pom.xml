@@ -55,7 +55,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- OSDU Versions-->
-    <os-core-common.version>0.27.0-rc4</os-core-common.version>
+    <os-core-common.version>3.3.0</os-core-common.version>
 
     <!-- Spring Versions-->
     <!--
@@ -186,7 +186,7 @@
     <!-- OSDU -->
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
-      <artifactId>os-core-common-spring6</artifactId>
+      <artifactId>os-core-common</artifactId>
       <version>${os-core-common.version}</version>
     </dependency>
 
