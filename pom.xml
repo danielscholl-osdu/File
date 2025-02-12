@@ -39,15 +39,6 @@
     <relativePath />
   </parent>
 
-  <modules>
-    <module>file-core</module>
-    <module>provider/file-aws</module>
-    <module>provider/file-ibm</module>
-    <module>provider/file-gc-datastore</module>
-    <module>provider/file-azure</module>
-    <module>file-core-plus</module>
-  </modules>
-
   <properties>
     <java.version>17</java.version>
     <maven.compiler.target>17</maven.compiler.target>
@@ -445,6 +436,40 @@
         <publish.snapshots.url>https://community.opengroup.org/api/v4/projects/90/packages/maven</publish.snapshots.url>
         <publish.releases.url>https://community.opengroup.org/api/v4/projects/90/packages/maven</publish.releases.url>
       </properties>
+    </profile>
+    <profile>
+      <id>core</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>file-core</module>
+        <module>file-core-plus</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>aws</id>
+      <modules>
+        <module>provider/file-aws</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>azure</id>
+      <modules>
+        <module>provider/file-azure</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ibm</id>
+      <modules>
+        <module>provider/file-ibm</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gc</id>
+      <modules>
+        <module>provider/file-gc-datastore</module>
+      </modules>
     </profile>
   </profiles>
 

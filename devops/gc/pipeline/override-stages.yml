@@ -31,7 +31,7 @@ download_gc_plugins:
       - $GC == '1'
 
 gc-containerize-gitlab:
-  needs: ["compile-and-unit-test", "download_gc_plugins"]
+  needs: ["gc-compile-and-unit-test", "download_gc_plugins"]
 
 gc-test:
   variables:
