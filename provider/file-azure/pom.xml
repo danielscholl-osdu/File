@@ -39,7 +39,7 @@
     <maven.compiler.source>17</maven.compiler.source>
 
     <!-- Azure Dependencies -->
-    <core-lib-azure.version>2.0.3</core-lib-azure.version>
+    <core-lib-azure.version>2.0.4</core-lib-azure.version>
     <azure-sdk.version>1.2.30</azure-sdk.version>
     <azure-spring.version>5.18.0</azure-spring.version>
     <azure-core.version>1.45.0</azure-core.version>
