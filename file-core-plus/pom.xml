@@ -5,14 +5,14 @@
   <parent>
     <groupId>org.opengroup.osdu</groupId>
     <artifactId>os-file</artifactId>
-    <version>0.28.0-SNAPSHOT</version>
+    <version>0.29.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>file-core-plus</artifactId>
   <description>implementation of File service APIs for cloud agnostic Datastore</description>
-  <version>0.28.0-SNAPSHOT</version>
+  <version>0.29.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
 
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>file-core</artifactId>
-      <version>0.28.0-SNAPSHOT</version>
+      <version>0.29.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

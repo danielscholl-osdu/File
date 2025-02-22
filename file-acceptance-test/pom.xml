@@ -6,7 +6,7 @@
 
   <groupId>org.opengroup.osdu</groupId>
   <artifactId>file-acceptance-test</artifactId>
-  <version>0.28.0-SNAPSHOT</version>
+  <version>0.29.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
 
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>file-core</artifactId>
-      <version>0.28.0-SNAPSHOT</version>
+      <version>0.29.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
