@@ -1,0 +1,55 @@
+global:
+  domain: ""
+  onPremEnabled: false
+  limitsEnabled: true
+  logLevel: "ERROR"
+  tier: ""
+  autoscaling: true
+
+data:
+  #Deployment
+  requestsCpu: "5m"
+  requestsMemory: "350Mi"
+  limitsCpu: "1"
+  limitsMemory: "1G"
+  serviceAccountName: "file"
+  imagePullPolicy: "IfNotPresent"
+  image: ""
+  #Configmap
+  logLevel: ""
+  entitlementsHost: "http://entitlements"
+  partitionHost: "http://partition"
+  storageHost: "http://storage"
+
+conf:
+  configmap: "file-config"
+  appName: "file"
+  rabbitmqSecretName: "rabbitmq-secret"
+  fileMinioSecretName: "file-minio-secret"
+  fileKeycloakSecretName: "file-keycloak-secret"
+  filePostgresSecretName: "file-postgres-secret"
+  replicas: 2
+
+istio:
+  proxyCPU: "5m"
+  proxyCPULimit: "500m"
+  proxyMemory: "50Mi"
+  proxyMemoryLimit: "512Mi"
+  sidecarInject: true
+
+hpa:
+  minReplicas: 6
+  maxReplicas: 15
+  targetType: "AverageValue"
+  targetValue: 60
+  behaviorScaleUpStabilizationWindowSeconds: 10
+  behaviorScaleUpPoliciesValue: 50
+  behaviorScaleUpPoliciesPeriodSeconds: 15
+  behaviorScaleDownStabilizationWindowSeconds: 60
+  behaviorScaleDownPoliciesValue: 25
+  behaviorScaleDownPoliciesPeriodSeconds: 60
+
+limits:
+  maxTokens: 45
+  tokensPerFill: 45
+  fillInterval: "1s"

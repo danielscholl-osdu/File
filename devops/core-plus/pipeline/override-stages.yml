@@ -1,0 +1,5 @@
+variables:
+  CORE_BUILD_PATH: "file-core-plus/cloudbuild/Dockerfile"
+  CORE_SERVICE: file
+  CORE_HELM_TIMEOUT: "--timeout 15m"
+  CORE_TEST_SUBDIR: testing/file-test-core

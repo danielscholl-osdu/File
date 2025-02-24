@@ -1,0 +1,78 @@
+variables:
+  GC_SERVICE: file
+  GC_VENDOR: gc-datastore
+
+gc-dev2-test:
+  variables:
+    GC_VENDOR: gc
+    DOMAIN: $GROUP_ID
+
+download_gc_plugins:
+  image: maven:3.8.3-openjdk-17-slim
+  stage: build
+  variables:
+    GC_OSM_PACKAGE_REGISTRY_URL: "https://community.opengroup.org/api/v4/projects/1476/packages/maven"
+    GC_OSM_VERSION: "0.27.2"
+    GC_OBM_PACKAGE_REGISTRY_URL: "https://community.opengroup.org/api/v4/projects/1475/packages/maven"
+    GC_OBM_VERSION: "0.27.2"
+    GC_OQM_PACKAGE_REGISRTY_URL: "https://community.opengroup.org/api/v4/projects/1477/packages/maven"
+    GC_OQM_VERSION: "0.27.2"
+  artifacts:
+    paths:
+      - ./tmp-gc/*.jar
+    when: always
+    expire_in: 1 days
+  script:
+    - mvn dependency:copy -DrepoUrl=$GC_OSM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:gc-osm-datastore:$GC_OSM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp-gc"
+    - mvn dependency:copy -DrepoUrl=$GC_OBM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:gc-obm-gs:$GC_OBM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp-gc"
+    - mvn dependency:copy -DrepoUrl=$GC_OQM_PACKAGE_REGISRTY_URL -Dartifact="org.opengroup.osdu:gc-oqm-pubsub:$GC_OQM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp-gc"
+  only:
+    variables:
+      - $GC == '1'
+
+gc-containerize-gitlab:
+  needs: ["gc-compile-and-unit-test", "download_gc_plugins"]
+
+gc-test:
+  variables:
+    VENDOR: gcp
+    GC_VENDOR: gc
+    HOST: https://community.gcp.gnrg-osdu.projects.epam.com/api/file/v2
+    CLOUD_DOMAIN: $GROUP_ID
+    INTEGRATION_TESTER: $GC_INTEGRATION_TESTER_SA_FILE
+    NO_DATA_ACCESS_TESTER: $GC_NO_DATA_ACCESS_TESTER_FILE
+    SEARCH_INTEGRATION_TESTER: $GC_INTEGRATION_TESTER_SA_FILE
+    DE_OPS_TESTER: $GC_R3_OPS_TESTER_FILE
+    DE_ADMIN_TESTER: $GC_R3_ADMIN_TESTER_FILE
+    DE_EDITOR_TESTER: $GC_R3_EDITOR_TESTER_FILE
+    DE_NO_ACCESS_TESTER: $GC_R3_NO_ACCESS_TESTER_FILE
+    LEGAL_TAGS: $LEGAL_TAG
+    DOMAIN: $GROUP_ID
+  script:
+    - echo "COMMON TESTS"
+    - >
+      $MAVEN_BUILD . test-results.log
+      verify -DdisableXmlReport=true
+      --quiet
+      --file $GC_TESTING_DIR/pom.xml
+      --projects $GC_TEST_PROJECT
+      --update-snapshots
+    - echo "ADDITIONAL TESTS"
+    - >
+      $MAVEN_BUILD . test-results.log
+      verify -DdisableXmlReport=true
+      --quiet
+      --file $GC_TESTING_DIR/file-test-core-bdd/pom.xml
+      --update-snapshots
+  artifacts:
+    when: always
+    paths:
+      - test-results.log
+    expire_in: 2 days
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$GC == "1" && $GC_INT_TEST_TYPE != "python"'
+      when: on_success

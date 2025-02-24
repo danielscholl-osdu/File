@@ -1,0 +1,13 @@
+{
+    "error": {
+        "code": 400,
+        "message": "Invalid source file path to copy from /osdu-user/1628228076310-2021-08-06-05-34-36-310/054e6b33156c47f1b684c9b6c6f722f2asd",
+        "errors": [
+            {
+                "domain": "global",
+                "reason": "badRequest",
+                "message": "Invalid source file path to copy from /osdu-user/1628228076310-2021-08-06-05-34-36-310/054e6b33156c47f1b684c9b6c6f722f2asd"
+            }
+        ]
+    }
+}
